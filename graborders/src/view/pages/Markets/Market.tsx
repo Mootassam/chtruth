@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import selector from "src/modules/product/list/productListSelectors";
 import productListActions from "src/modules/product/list/productListActions";
 import ListCoins from "./ListCoin";
+import Header from "src/view/layout/Header";
 
 function Market() {
   const dispatch = useDispatch();
@@ -30,8 +31,10 @@ function Market() {
         flexDirection: "column",
       }}
     >
-      <h3>Crypto Currencies prices and signals</h3>
+<Header />
 
+      <br />
+      <br />
       <br />
       <br />
 

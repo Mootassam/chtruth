@@ -56,8 +56,8 @@ function TabBottomNavigator() {
             </div>
           ) : (
             <div className="singleTab">
-              <img
-                src={item.icon}
+              <i
+      
                 style={{ width: 20, height: 20 }}
                 className={`${item.icon} ${isActive(item.path) && "active"}`}
               />

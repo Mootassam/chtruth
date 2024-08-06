@@ -5,14 +5,13 @@ function Header() {
   return (
     <div className="app__header">
       <div>
-        <i className="fas fa-user-cog"></i>
       </div>
       <div>
-        <span></span>
+        <span>CryptoCurrencies</span>
       </div>
-      <Link to={"/currency"} className="linkWithoutUnderline">
-        <div>INR</div>
-      </Link>
+
+        <div></div>
+
     </div>
   );
 }
