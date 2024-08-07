@@ -57,42 +57,6 @@ function Portfolio() {
             <div>Order Time: {Dates.currentDate(item?.date)}</div>
             <div>Order Number: {item.number}</div>
           </div>
-          <div className={`badge__ ${item?.status}`}>
-            <label>{item?.status}</label>
-          </div>
-          <div className="product__image">
-            <div className="image__">
-              <img src={item?.product?.photo[0]?.downloadUrl} alt="" />
-            </div>
-            <div className="product__detail">
-              <div className="detail__name">{item?.product?.title}</div>
-              <div className="detail__price">
-                <div>{item?.product?.amount}</div>
-                <div>      <Rating  initialValue={item?.rating}   readonly={true}  size={24}/>
-               </div>
-              </div>
-            </div>
-          </div>
-          <div className="bottom__cadre">
-            <div className="cadre__detail">
-              <div>Total order amount</div>
-              <div>${item?.product?.amount} </div>
-            </div>
-            <div className="cadre__detail">
-              <div>Commission</div>
-              <div>{item?.product?.commission}% </div>
-            </div>
-            <div className="cadre__detail">
-              <div>Estimated return</div>
-              <div>
-                ${Calcule.calcule__total(
-                  item?.product?.amount,
-                  item?.product?.commission
-                )}{" "}
-             
-              </div>
-            </div>
-          </div>
         </div>
       ))}
     </>
@@ -126,7 +90,7 @@ function Portfolio() {
             </div>
           </div>
         </div> */}
-        <div className="order__list">
+        {/* <div className="order__list">
           <div className="list__actions">
             <div
               onClick={() => setActive("completed")}
@@ -147,7 +111,7 @@ function Portfolio() {
               <span>Canceled</span>
             </div>
           </div>
-        </div>
+        </div> */}
         <div className="list__product">
           {loading && <LoadingModal />}
           {!loading && record && <All />}

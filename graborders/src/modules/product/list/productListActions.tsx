@@ -8,6 +8,14 @@ const productListActions = {
   FETCH_SUCCESS: `${prefix}_FETCH_SUCCESS`,
   FETCH_ERROR: `${prefix}_FETCH_ERROR`,
 
+
+  FIND_STARTED: `${prefix}_FIND_STARTED`,
+  FIND_SUCCESS: `${prefix}_FIND_SUCCESS`,
+  FIND_ERROR: `${prefix}_FIND_ERROR`,
+
+
+
+
   RESETED: `${prefix}_RESETED`,
   TOGGLE_ONE_SELECTED: `${prefix}_TOGGLE_ONE_SELECTED`,
   TOGGLE_ALL_SELECTED: `${prefix}_TOGGLE_ALL_SELECTED`,
@@ -41,6 +49,30 @@ const productListActions = {
 
         dispatch({
           type: productListActions.FETCH_ERROR,
+        });
+      }
+    },
+
+
+
+    doFindById:
+    (id) =>
+    async (dispatch, getState) => {
+      try {
+        dispatch({
+          type: productListActions.FIND_STARTED,
+        });
+        const response = await ProductService.find(id);
+
+        dispatch({
+          type: productListActions.FIND_SUCCESS,
+          payload: response
+        });
+        
+      } catch (error) {
+        Errors.handle(error);
+        dispatch({
+          type: productListActions.FIND_ERROR,
         });
       }
     },

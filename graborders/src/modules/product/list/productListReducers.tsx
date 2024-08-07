@@ -123,5 +123,40 @@ rawFilter: payload ? payload.rawFilter : {},
     };
   }
 
+
+
+  if (type === actions.FIND_STARTED) {
+    return {
+      ...state,
+      loading: true,
+
+      
+    };
+  }
+
+
+  if (type === actions.FIND_SUCCESS) {
+    return {
+      ...state,
+      loading: false,
+      rows: payload,
+      
+    };
+  }
+
+
+  if (type === actions.FIND_ERROR) {
+    return {
+      ...state,
+      loading: false,
+      
+    };
+}
+
+
+
+
+
+
   return state;
 };

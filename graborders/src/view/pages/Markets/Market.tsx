@@ -31,7 +31,7 @@ function Market() {
         flexDirection: "column",
       }}
     >
-<Header />
+      <Header />
 
       <br />
       <br />

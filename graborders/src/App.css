@@ -575,8 +575,8 @@ td {
 }
 
 .active__order {
-  color: #ca2400 !important;
-  border-bottom: 3px solid #ca2400;
+  color: #aed651 !important;
+  border-bottom: 3px solid #aed651 !important;
 }
 
 .list__product {
@@ -591,7 +591,7 @@ td {
 
 .single__product {
   background-color: #121212;
-  border: 1px solid #ca2400 ;
+  border: 1px solid #aed651 !important;
   border-radius: 10px;
   padding: 10px 0px 10px 20px;
   color: #343434;
@@ -1321,7 +1321,7 @@ button {
   border-radius: 5px;
 }
 
-button:hover { 
+button:hover {
   /* background-color: #0056b3;  */
 }
 
@@ -1558,13 +1558,12 @@ button:disabled {
   text-decoration: none;
   color: #000;
   display: flex;
-  gap:3px;
+  gap: 3px;
 }
 
 .remove__lg {
   text-decoration: none;
- color: rgb(209, 209, 92) !important; 
-  
+  color: rgb(209, 209, 92) !important;
 }
 
 /* styling the subpage__header */
@@ -1842,7 +1841,7 @@ button:disabled {
 }
 
 .confirm {
-  background-color: #EAD66A;
+  background-color: #ead66a;
   color: white;
   padding: 14px;
   justify-content: center;
@@ -1901,9 +1900,9 @@ button:disabled {
 .header__signup {
   gap: 6px !important;
   position: relative;
-  top:-210px;
+  top: -210px;
 }
-.__position__relative{ 
+.__position__relative {
   position: relative;
 }
 .auth__title {
@@ -1959,7 +1958,7 @@ button:disabled {
   font-weight: 500;
 }
 .auth__input:focus {
-  outline: none
+  outline: none;
 }
 
 .auth__button {
@@ -2244,22 +2243,20 @@ button:disabled {
   align-items: center;
   flex-direction: column;
   align-items: center;
-  
 }
 
-.promotion__code{ 
-  color: #F3F8A4;
- 
+.promotion__code {
+  color: #f3f8a4;
 }
 
-.small__inviation__left{ 
+.small__inviation__left {
   display: flex;
   align-items: center;
   font-size: 16px;
   font-weight: 400 !important;
-  gap:10px;
+  gap: 10px;
 }
-.my__code{ 
+.my__code {
   font-size: 16px !important;
 }
 
@@ -2268,7 +2265,7 @@ button:disabled {
   color: white;
   display: flex;
   align-items: center;
-  gap:10px;
+  gap: 10px;
 }
 
 .small__invitation {
@@ -2294,7 +2291,7 @@ button:disabled {
 }
 
 .second__cadre {
-  border-right: 1px solid #F3F8A4
+  border-right: 1px solid #f3f8a4;
 }
 
 .title__cadre {
@@ -2432,8 +2429,8 @@ button:disabled {
   gap: 10px;
   padding: 25px 20px;
   border-radius: 5px;
+  background-color: white;
 
-  background: linear-gradient(185deg, #076bff, #3486ff, #38a6fd);
 }
 
 .time__ {
@@ -2492,20 +2489,18 @@ button:disabled {
 }
 
 .title__showing {
-
 }
 .comming__soon {
   font-weight: bold;
   cursor: pointer;
 }
 
-.under__linge{ 
+.under__linge {
   color: rgb(209, 209, 92);
   border-bottom: 1px solid rgb(209, 209, 92);
   padding-bottom: 10px;
   font-weight: bold;
   cursor: pointer;
-
 }
 
 .list__film {
@@ -2555,7 +2550,7 @@ button:disabled {
   align-items: center;
   justify-content: center;
   font-weight: bold;
-  background-color: #EAD66A;
+  background-color: #ead66a;
   color: white;
   text-align: center;
 }
@@ -2579,7 +2574,7 @@ button:disabled {
   justify-content: center;
 }
 .terms__ > span {
-  color: rgb(209, 209, 92) !important; 
+  color: rgb(209, 209, 92) !important;
   padding-bottom: 10px;
   font-weight: bold;
   cursor: pointer;
@@ -2598,7 +2593,6 @@ button:disabled {
     width: 200px;
   }
 }
-
 
 @media screen and (max-width: 523px) {
   .images__show {
@@ -2629,7 +2623,7 @@ button:disabled {
   justify-content: space-between;
   width: 100%;
   font-size: 22px;
-  color: #F3F8A4;
+  color: #f3f8a4;
 }
 
 .film__cadre {
@@ -2638,14 +2632,14 @@ button:disabled {
   background-color: #1d1d1d;
   border-radius: 5px;
   margin-top: 17px;
-  gap:5px;
+  gap: 5px;
   align-items: center;
   display: flex;
   justify-content: space-evenly;
 }
 
 .av__balance {
-  color: #F3F8A4;
+  color: #f3f8a4;
   font-size: 13px;
 }
 
@@ -2672,18 +2666,17 @@ button:disabled {
   flex-direction: column;
 }
 
-
-.header__image{ 
+.header__image {
   border: 2px solid white;
   border-radius: 50%;
-  background-image: url('/images/admin.jpg');
+  background-image: url("/images/admin.jpg");
   background-repeat: no-repeat;
   background-size: contain;
   height: 95px;
   width: 95px;
 }
 
-.header__profile__image{ 
+.header__profile__image {
   border: 2px solid white;
   border-radius: 50%;
   background-repeat: no-repeat;
@@ -2692,39 +2685,37 @@ button:disabled {
   width: 95px;
 }
 
-.assesment__ { 
+.assesment__ {
   justify-content: space-around;
   display: flex;
   align-items: center;
   padding: 10px 50px;
-
 }
-.text__assesment{ 
+.text__assesment {
   width: 250px !important;
   color: white;
 }
-.credit__bar{ 
+.credit__bar {
   width: 100%;
   height: 6px;
-  background-color: #EAD66A;
+  background-color: #ead66a;
   border-radius: 30px;
   display: flex;
   align-items: center;
-
 }
 
-.circle__bar{ 
+.circle__bar {
   position: relative;
   right: 0;
-background-color:#EAD66A ;
-padding: 4px 13px;
-width: max-content;
-border-radius: 30px;
-color: white;
-font-size: 13px;
+  background-color: #ead66a;
+  padding: 4px 13px;
+  width: max-content;
+  border-radius: 30px;
+  color: white;
+  font-size: 13px;
 }
 
-.auth__cinema { 
+.auth__cinema {
   width: 100%;
   height: 600px;
   background-image: url("/images/cinema.jpeg");
@@ -2732,11 +2723,11 @@ font-size: 13px;
   background-size: contain;
 }
 
-.register__now{
+.register__now {
   color: white !important;
   font-size: 13px;
 }
-.button__error{ 
+.button__error {
   background-color: #000;
 }
 
@@ -2962,4 +2953,94 @@ td {
 .tabactive {
   border-bottom: 3px solid #6f55ca;
   transition: all 0.3s ease;
+}
+
+.time__div {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  margin-bottom: 15px;
+  gap:10px;
+}
+
+.time__div > div {
+  padding: 20px 0;
+  width: 100%;
+  display: flex;
+  color: #1E6AD4;
+  flex-direction: column;
+  align-items: center;
+  border: 2px solid #1E6AD4;
+  font-weight: bold;
+}
+
+
+.time__div > div:hover {
+  background-color: #3b57e7;
+  cursor: pointer;
+  color: white;
+ }
+
+
+.timing__ {
+  width: 100%;
+}
+
+.amount {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+}
+.button__modal {
+  display: flex;
+  align-items: center;
+}
+.button__modal > div {
+  background-color: #00984e;
+}
+.exchnage {
+   color: #A2A4A8; 
+   font-weight: bold;
+}
+
+.confirmation {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 10px;
+}
+.modal__button {
+  display: flex;
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.order {
+  color: #A2A4A8;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.button__close {
+  background-color: #6c757e;
+  color: white;
+  padding: 10px 30px;
+  cursor: pointer;
+  width: 100px;
+display: flex;
+align-items: center;
+justify-content: center;
+}
+
+.button__confirm {
+  color: white;
+  padding: 10px;
+  background-color: #3b57e7;
+  cursor: pointer;
+  width: 100px;
+
+  display: flex;
+align-items: center;
+justify-content: center;
+
 }

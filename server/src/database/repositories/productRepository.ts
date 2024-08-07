@@ -95,18 +95,15 @@ class ProductRepository {
   }
 
   static async findById(id, options: IRepositoryOptions) {
-    const currentTenant = MongooseRepository.getCurrentTenant(options);
 
-    let record = await MongooseRepository.wrapWithSessionIfExists(
-      Product(options.database).findById(id).populate("vip"),
-      options
+    const response = await axios.get(
+      `https://coinranking.com/api/v2/coin/${id}?referenceCurrencyUuid=yhjMzLPhuIDl&timePeriod=24h`
     );
 
-    if (!record || String(record.tenant) !== String(currentTenant.id)) {
-      throw new Error404();
-    }
+    
+    let rows = response.data.data.coin
 
-    return this._fillFileDownloadUrls(record);
+return rows
   }
 
   static async findAndCountAll(
@@ -114,7 +111,7 @@ class ProductRepository {
     options: IRepositoryOptions
   ) {
     const response = await axios.get(
-      "https://coinranking.com/api/v2/coins?offset=0&orderBy=marketCap&limit=50&orderDirection=desc&referenceCurrencyUuid=6mUvpzCc2lFo&timePeriod=1h&search="
+      "https://coinranking.com/api/v2/coins?offset=0&orderBy=marketCap&limit=50&orderDirection=desc&referenceCurrencyUuid=yhjMzLPhuIDl&timePeriod=24h&search="
     );
     let rows = response.data.data.coins;
 

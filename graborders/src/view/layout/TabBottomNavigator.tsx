@@ -15,7 +15,7 @@ function TabBottomNavigator() {
 
     {
       icon: "far fa-star",
-      path: "/portfolio",
+      path: "/Order",
       name: "Orders",
     },
 

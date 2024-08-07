@@ -39,6 +39,13 @@ const privateRoutes = [
     permissionRequired: permissions.categoryRead,
     exact: true,
   },
+
+  {
+    path: "/invitation",
+    loader: () => import("src/view/pages/Invitation/Invitation"),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
 ];
 
 const screenRoutes = [
@@ -47,12 +54,7 @@ const screenRoutes = [
     loader: () => import("src/view/pages/Currency/CurrecnyPage"),
     permissionRequired: permissions.categoryRead,
   },
-  {
-    path: "/invitation",
-    loader: () => import("src/view/pages/Invitation/Invitation"),
-    permissionRequired: permissions.categoryRead,
-    exact: true,
-  },
+
   {
     path: "/company",
     loader: () => import("src/view/pages/Company/Company"),
