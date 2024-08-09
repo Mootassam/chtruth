@@ -13,7 +13,8 @@ import ButtonIcon from "src/shared/ButtonIcon";
 import styled, { createGlobalStyle } from "styled-components";
 const GlobalStyle = createGlobalStyle`
   body {
-    background-image: none !important;
+    background-image: #1c1d21 !important;
+  height:100dvh;
   }
 `;
 

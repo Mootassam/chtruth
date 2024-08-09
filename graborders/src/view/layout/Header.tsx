@@ -7,7 +7,7 @@ function Header() {
       <div>
       </div>
       <div>
-        <span>CryptoCurrencies</span>
+<img src="/icons/Mexec.svg" alt="" style={{width:130}} />
       </div>
 
         <div></div>

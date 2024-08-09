@@ -33,7 +33,8 @@ body {
   background-repeat: no-repeat;
   font-family: "Roboto", sans-serif;
   overflow-x: hidden;
-  background-color: #171b26;
+  /* background-color: #171b26; */
+  background: linear-gradient(180deg, #141821, #0d0e0f);
   margin: auto;
 }
 

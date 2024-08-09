@@ -1,5 +1,7 @@
 .app__header {
   background-color: #1d1d1d;
+  background: linear-gradient(89deg, #16171a 50.72%, #1f283f 98.73%);
+
   width: 100%;
   height: 50px;
   display: flex;
@@ -15,6 +17,7 @@
   left: 0;
   right: 0;
   z-index: 100;
+  border-bottom: 1px solid #222429;
 }
 
 .header__search {
@@ -43,7 +46,7 @@
 /* styles the tabbarBottom */
 .tabbottomNavigator {
   position: fixed;
-  background-color: #2e3142;
+  background-color: #1C1D20;
   /* border-top-left-radius: 19px; */
   /* border-top-right-radius: 19px; */
   width: auto;
@@ -63,7 +66,7 @@
 }
 
 .active {
-  color: #aed651 !important;
+  color: #4281ff !important
 }
 
 .singleTab {
