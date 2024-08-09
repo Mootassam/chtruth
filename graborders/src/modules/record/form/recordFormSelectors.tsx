@@ -17,11 +17,11 @@ const selectSaveLoading = createSelector(
   (raw) => Boolean(raw.saveLoading),
 );
 
-const couponsFormSelectors = {
+const recordFormSelectors = {
   selectInitLoading,
   selectSaveLoading,
   selectRecord,
   selectRaw,
 };
 
-export default couponsFormSelectors;
+export default recordFormSelectors;

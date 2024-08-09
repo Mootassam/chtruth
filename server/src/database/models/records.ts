@@ -17,16 +17,7 @@ export default (database) => {
         ref: "user",
         required: true,
       },
-      product: {
-        type: Schema.Types.ObjectId,
-        ref: "product",
-        required: true,
-      },
-      status: {
-        type: String,
-        enum: ["pending", "completed", "canceled"],
-        default: "pending",
-      },
+
 
       date: {
         type: Date,
@@ -39,7 +30,29 @@ export default (database) => {
         type: String,
         required: true,
       },
+      amount: {
+        type: Number,
+        required: true,
+      },
+      profit: {
+        type: Number,
+        required: true,
+      },
 
+      coin: {
+        type: String,
+        required: true,
+      },
+
+      price :{ 
+        type: Number,
+        required: true,
+      },
+
+      time: {
+        type: Number,
+        // required: true,
+      },
       tenant: {
         type: Schema.Types.ObjectId,
         ref: "tenant",

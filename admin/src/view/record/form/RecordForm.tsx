@@ -10,7 +10,6 @@ import InputFormItem from 'src/view/shared/form/items/InputFormItem';
 import SelectFormItem from 'src/view/shared/form/items/SelectFormItem';
 import couponsEnumerators from 'src/modules/record/recordEnumerators';
 import UserAutocompleteFormItem from 'src/view/user/autocomplete/UserAutocompleteFormItem';
-import ProductAutocompleteFormItem from 'src/view/product/autocomplete/ProductAutocompleteFormItem';
 
 const schema = yup.object().shape({
   user: yupFormSchemas.relationToOne(
@@ -19,12 +18,7 @@ const schema = yup.object().shape({
       required: true,
     },
   ),
-  product: yupFormSchemas.relationToOne(
-    i18n('entities.record.fields.product'),
-    {
-      required: true,
-    },
-  ),
+
   status: yupFormSchemas.enumerator(
     i18n('entities.record.fields.status'),
     {
@@ -50,7 +44,6 @@ function CouponsForm(props) {
     const record = props.record || {};
     return {
       user: record.user,
-      product: record.product,
       status: record.status,
       date: record.date,
       number: record.number,
@@ -87,16 +80,7 @@ function CouponsForm(props) {
               />
             </div>
 
-            <div className="col-lg-7 col-md-8 col-12">
-              <ProductAutocompleteFormItem
-                name="product"
-                label={i18n(
-                  'entities.record.fields.product',
-                )}
-                required={true}
-                autoFocus
-              />
-            </div>
+      
 
             <div className="col-lg-7 col-md-8 col-12">
               <SelectFormItem

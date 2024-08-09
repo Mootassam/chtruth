@@ -43,7 +43,7 @@ const fr = {
   },
 
   app: {
-    title: 'The Highland Cinema',
+    title: 'MEXC',
   },
 
   api: {

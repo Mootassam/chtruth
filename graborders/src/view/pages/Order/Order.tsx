@@ -8,6 +8,7 @@ import Dates from "src/view/shared/utils/Dates";
 import Nodata from "src/view/shared/Nodata";
 import SubHeader from "src/view/shared/Header/SubHeader";
 import { Rating } from "react-simple-star-rating";
+import Currency from "src/view/shared/utils/Currency";
 
 function Portfolio() {
   const [active, setActive] = useState("completed");
@@ -21,7 +22,7 @@ function Portfolio() {
 
   useEffect(() => {
     const values = {
-      status: active,
+
     };
 
 
@@ -55,7 +56,11 @@ function Portfolio() {
         <div className="single__product" key={`${item.id}-${index}`}>
           <div className="order__time">
             <div>Order Time: {Dates.currentDate(item?.date)}</div>
-            <div>Order Number: {item.number}</div>
+            <div>Order price :${Currency.formatNumber(item?.price)}</div>
+            <div>Amount :{item.amount}</div>
+            <div>Profit: {item.profit}</div>
+            <div>Coin : {item.coin}</div>
+            <div>Time : {item.time} </div>
           </div>
         </div>
       ))}

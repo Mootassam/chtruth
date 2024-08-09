@@ -64,7 +64,7 @@ const recordFormActions = {
         i18n('entities.record.create.success'),
       );
 
-      getHistory().push('/grap');
+      getHistory().push('/invitation');
     } catch (error) {
       Errors.handle(error);
 

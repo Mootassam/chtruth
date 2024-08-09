@@ -14,18 +14,8 @@ import User from "../models/user";
 class RecordRepository {
   static async create(data, options: IRepositoryOptions) {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
-
     const currentUser = MongooseRepository.getCurrentUser(options);
-
-    await this.checkOrder(options);
-
-    await this.calculeGrap(data, options);
-
-    await User(options.database).updateOne(
-      { _id: currentUser.id }, 
-      { $set: { tasksDone: currentUser.tasksDone + 1 } }
-    );
-
+    console.log(data);
     const [record] = await Records(options.database).create(
       [
         {
@@ -257,8 +247,7 @@ class RecordRepository {
     let record = await MongooseRepository.wrapWithSessionIfExists(
       Records(options.database)
         .findById(id)
-        .populate("user")
-        .populate("product"),
+        .populate("user"),
       options
     );
 
@@ -266,7 +255,7 @@ class RecordRepository {
       throw new Error404();
     }
 
-    return this._fillFileDownloadUrls(record);
+    // return this._fillFileDownloadUrls(record);
   }
 
   static async findAndCountAll(
@@ -334,7 +323,6 @@ class RecordRepository {
 
     const count = await Records(options.database).countDocuments(criteria);
 
-    rows = await Promise.all(rows.map(this._fillFileDownloadUrls));
 
     return { rows, count };
   }
@@ -417,21 +405,7 @@ class RecordRepository {
 
     const count = await Records(options.database).countDocuments(criteria);
 
-    rows = await Promise.all(rows.map(this._fillFileDownloadUrls));
-
-    let total = 0;
-
-    listitems.map((item) => {
-      let data = item.product;
-      let itemTotal =
-     
-        (parseFloat(data.commission) * parseFloat(data.amount)) / 100;
-
-      total += itemTotal;
-    });
-    total = parseFloat(total.toFixed(3));
-
-    return { rows, count, total };
+    return { rows, count};
   }
 
   static async findAndCountPerDay(
