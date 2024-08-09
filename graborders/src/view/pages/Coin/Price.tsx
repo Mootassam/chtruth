@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import "../styles/styles.css";
 import Currency from "src/view/shared/utils/Currency";
 import { useDispatch, useSelector } from "react-redux";
@@ -25,35 +25,30 @@ const schema = yup.object().shape({
 function Price(props) {
   const dispatch = useDispatch();
   const [close, setClose] = useState(false);
-  const [profits, setProfit] = useState();
-  const [time, setTime] = useState(60);
+  const [response, setResponse] = useState({});
   const [link, setLinks] = useState([]);
   const record = useSelector(productListSelectors.selectRows);
   const loading = useSelector(productListSelectors.selectLoading);
   const saveLoading = useSelector(recordFormSelectors.selectSaveLoading);
-  const currentUser = useSelector(authSelectors.selectCurrentUser);
 
-  const number = Dates.Number();
-
-  const form = useForm({
-    resolver: yupResolver(schema),
-    mode: "all",
-  });
-
-  const searchAllCoins = useCallback(async () => {
+  const searchAllCoins = async () => {
     try {
       dispatch(productListActions.doFindById(props.id));
     } catch (error) {
       console.log(error);
     }
-  }, [dispatch, props.id]);
+  };
 
   useEffect(() => {
-    searchAllCoins();
-  }, [searchAllCoins]);
+    const fetchData = async () => {
+      await searchAllCoins();
+    };
+    fetchData();
+  }, [props.id, dispatch]);
 
   useEffect(() => {
     if (record) {
+      setResponse(record);
       setLinks(record.links || []);
     }
   }, [record]);
@@ -61,13 +56,13 @@ function Price(props) {
   useEffect(() => {
     if (
       !loading &&
-      record &&
-      record.symbol &&
-      record.symbol !== undefined
+      response &&
+      response.symbol &&
+      response.symbol !== undefined
     ) {
-      const widget = new TradingView.widget({
+      new TradingView.widget({
         autosize: true,
-        symbol: `BINANCE:${record.symbol}USDT`,
+        symbol: `BINANCE:${response?.symbol}USDT`,
         timezone: "Asia/India",
         theme: "dark",
         toolbar_bg: "#f1f3f6",
@@ -106,26 +101,31 @@ function Price(props) {
         utm_medium: false,
         utm_campaign: false,
       });
-
-      return () => {
-        if (widget) {
-          widget.remove();
-        }
-      };
     }
-  }, [loading, record]);
+  }, [loading, response]);
 
+  const form = useForm({
+    resolver: yupResolver(schema),
+    mode: "all",
+  });
+
+  const [profits, setProfit] = useState();
+  const [time, setTime] = useState(60);
+  const [number] = useState(Dates.Number());
+
+  const { setValue } = form;
   const handleBalanceClick = (profit, time) => {
     setProfit(profit);
     setTime(time);
   };
+  const currentUser = useSelector(authSelectors.selectCurrentUser);
 
   const onSubmit = (values) => {
     values.number = number;
     values.user = currentUser.id;
     values.profit = profits;
-    values.coin = record?.name;
-    values.price = record?.price;
+    values.coin = response?.name;
+    values.price = response?.price;
     values.time = time;
     dispatch(recordFormActions.doCreate(values));
     setClose(false);
@@ -133,44 +133,59 @@ function Price(props) {
 
   return (
     <div>
-      {!loading && record && (
+      {!loading && response && (
         <div>
           <div
-            className="coin-info"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 5,
+              justifyContent: "space-between",
+              marginTop: 10,
+            }}
           >
-            <div className="coin-details">
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
               <img
-                src={record.iconUrl}
-                className="coin-icon"
+                src={response.iconUrl}
+                style={{ width: 40, height: 40 }}
                 alt="coin icon"
               />
               <div>
-                <p>{record.name}</p>
-                <p className="coin-symbol">{record.symbol}</p>
+                <p>{response.name}</p>
+                <p style={{ fontSize: 12 }}>{response.symbol}</p>
               </div>
             </div>
 
-            <div className="coin-price">
-              <h3>{Currency.formatNumber(record?.price)}</h3>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                textAlign: "end",
+              }}
+            >
+              <h3>{Currency.formatNumber(response?.price)}</h3>
               <div className="live">
                 <p>Live</p>
               </div>
             </div>
           </div>
 
+          <br />
+
           <div
             className="tradingview-widget-container"
             id="tvchart"
+            style={{ width: "100%", height: 460 }}
           ></div>
-
+          <br />
           <div className="pricedetaill">
             <div className="coins__detail">
-              <p>About {record.name}</p>
+              <p>About {response.name}</p>
               <div className="box__detail">
                 <p
                   className="news__p"
                   dangerouslySetInnerHTML={{
-                    __html: record.description || "",
+                    __html: response.description || "",
                   }}
                 />
               </div>
@@ -183,17 +198,24 @@ function Price(props) {
                   link.map((item, index) => (
                     <div
                       key={index}
-                      className="link-item"
+                      style={{
+                        display: "flex",
+                        paddingBottom: 10,
+                        justifyContent: "space-between",
+                      }}
                     >
-                      <p>{item.type}</p>
+                      <div>
+                        <p>{item.type}</p>
+                      </div>
                       <a
                         href={item.url}
-                        className="link"
+                        style={{ textDecoration: "none" }}
                         target="_blank"
                         rel="noopener noreferrer"
                       >
                         <i
                           className="fas fa-link"
+                          style={{ color: "white" }}
                         ></i>
                       </a>
                     </div>
@@ -209,7 +231,7 @@ function Price(props) {
                 <p
                   className="news__p"
                   dangerouslySetInnerHTML={{
-                    __html: record.description || "",
+                    __html: response.description || "",
                   }}
                 />
               </div>
@@ -235,36 +257,60 @@ function Price(props) {
                 className="fa fa-close"
                 onClick={() => setClose(false)}
                 style={{ fontSize: "24px" }}
-              />
+              >
+                {" "}
+              </i>{" "}
             </div>
           </div>
 
           <FormProvider {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit)}
-              className="form"
+              style={{ width: "100%" }}
             >
-              <div className="timing__">
-                <div className="time__div">
-                  <div onClick={() => handleBalanceClick(20, 60)}>60s</div>
-                  <div onClick={() => handleBalanceClick(20, 90)}>90s</div>
-                  <div onClick={() => handleBalanceClick(45, 120)}>120s</div>
+              <div className="">
+                <div className="timing__">
+                  <div className="time__div">
+                    <div onClick={() => handleBalanceClick(20, 60)}>60s</div>
+                    <div onClick={() => handleBalanceClick(20, 90)}>90s</div>
+                    <div onClick={() => handleBalanceClick(45, 120)}>120s</div>
+                  </div>
+                  <div className="time__div">
+                    <div onClick={() => handleBalanceClick(60, 180)}>180s</div>
+                    <div onClick={() => handleBalanceClick(60, 360)}>360s</div>
+                    <div onClick={() => handleBalanceClick(60, 480)}>480s</div>
+                  </div>
                 </div>
-                <div className="time__div">
-                  <div onClick={() => handleBalanceClick(60, 180)}>180s</div>
-                  <div onClick={() => handleBalanceClick(60, 360)}>360s</div>
-                  <div onClick={() => handleBalanceClick(60, 480)}>480s</div>
+                <div>
+                  <span className="exchnage">Number of lots to exchange:</span>
+                  <InputFormItem
+                    type="text"
+                    name="amount"
+                    placeholder={i18n("entities.transaction.fields.amount")}
+                    className="input__withdraw"
+                  />
                 </div>
-              </div>
-              <div>
-                <span className="exchange">Number of lots to exchange:</span>
-                <InputFormItem
-                  type="text"
-                  name="amount"
-                  placeholder={i18n("entities.transaction.fields.amount")}
-                  className="input__withdraw"
-                />
               </div>
 
               <div className="modal__button">
-                <div className="button__close" onClick
+                <div className="button__close" onClick={() => setClose(false)}>
+                  Close
+                </div>
+                <button
+                  className="button__confirm"
+                  onClick={form.handleSubmit(onSubmit)}
+                  disabled={saveLoading}
+                >
+                  <ButtonIcon loading={saveLoading} />
+                  <span>Confirm</span>
+                </button>
+              </div>
+            </form>
+          </FormProvider>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default Price;
