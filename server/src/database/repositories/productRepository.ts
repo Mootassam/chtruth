@@ -106,6 +106,23 @@ class ProductRepository {
 return rows
   }
 
+
+  static async findByCoin(id, options: IRepositoryOptions) {
+
+    const response = await axios.get(
+      ` https://coinranking.com/api/v2/search-suggestions?query=${id}&referenceCurrencyUuid=yhjMzLPhuIDl`
+    );
+
+    
+    let rows = response.data.data.coins
+
+return rows
+  }
+
+
+
+ 
+
   static async findAndCountAll(
     { filter, limit = 0, offset = 0, orderBy = "" },
     options: IRepositoryOptions

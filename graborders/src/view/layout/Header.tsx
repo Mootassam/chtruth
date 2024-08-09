@@ -5,13 +5,17 @@ function Header() {
   return (
     <div className="app__header">
       <div>
+      <img src="/icons/Mexec.svg" alt="" style={{width:130}} />
+
       </div>
       <div>
-<img src="/icons/Mexec.svg" alt="" style={{width:130}} />
       </div>
+      <Link to={"/currency"} className="linkWithoutUnderline">
+        <div>
 
-        <div></div>
-
+          <i className="fa fa-search" style={{fontSize:22}}></i>
+        </div>
+        </Link>
     </div>
   );
 }

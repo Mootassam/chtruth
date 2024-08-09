@@ -27,6 +27,11 @@ export default (app) => {
     `/tenant/:tenantId/product/:id`,
     require('./productFind').default,
   );
+
+  app.get(
+    `/tenant/:tenantId/findcoin/:id`,
+    require('./productFindCoin').default,
+  );
   app.get(
     `/tenant/:tenantId/grap`,
     require('./grapOrders').default,

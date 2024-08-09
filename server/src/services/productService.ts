@@ -89,6 +89,11 @@ export default class ProductServices {
     return ProductRepository.findById(id, this.options);
   }
 
+  async findByCoin(id) {
+    return ProductRepository.findByCoin(id, this.options);
+  }
+
+
   async findAllAutocomplete(search, limit) {
     return ProductRepository.findAllAutocomplete(search, limit, this.options);
   }

@@ -5,6 +5,7 @@ import selector from "src/modules/product/list/productListSelectors";
 import productListActions from "src/modules/product/list/productListActions";
 import Header from "src/view/layout/Header";
 import ListCoins from "../Markets/ListCoin";
+import LoadingModal from "src/shared/LoadingModal";
 
 function Market() {
   const dispatch = useDispatch();
@@ -38,7 +39,7 @@ function Market() {
       <br />
       <br />
 
-      {loading && <h1 style={{ color: "white" }}>Loading ...</h1>}
+      {loading && <LoadingModal />}
       {!loading && response && <ListCoins data={response} />}
     </div>
   );
