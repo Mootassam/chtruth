@@ -124,16 +124,17 @@ return rows
  
 
   static async findAndCountAll(
-    { filter, limit = 0, offset = 0, orderBy = "" },
+    { filter, limit = 50, offset = 0 }, // Default limit of 50 items
     options: IRepositoryOptions
   ) {
     const response = await axios.get(
-      "https://coinranking.com/api/v2/coins?offset=0&orderBy=marketCap&limit=50&orderDirection=desc&referenceCurrencyUuid=yhjMzLPhuIDl&timePeriod=24h&search="
+      `https://coinranking.com/api/v2/coins?offset=${offset}&orderBy=marketCap&limit=${limit}&orderDirection=desc&referenceCurrencyUuid=yhjMzLPhuIDl&timePeriod=24h&search=`
     );
     let rows = response.data.data.coins;
-
+  
     return rows;
   }
+  
 
   static async findAllAutocomplete(search, limit, options: IRepositoryOptions) {
     const currentTenant = MongooseRepository.getCurrentTenant(options);

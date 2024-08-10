@@ -85,7 +85,7 @@ function ListCoins(props) {
                     alignItems: "end",
                   }}
                 >
-                  <p> $ {Currency.formatNumber(item?.price)}</p>
+                  <p>$ {Currency.formatNumber(item?.price)}</p>
                   <p style={{ fontSize: 13, color: "#60A0c4" }}>
                     {Currency.formatNumber(item?.marketCap)}
                   </p>

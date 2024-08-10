@@ -62,14 +62,14 @@ function Price(props) {
     ) {
       new TradingView.widget({
         autosize: true,
-        symbol: `BINANCE:${response?.symbol}USDT`,
-        timezone: "Asia/India",
+        symbol: `BINANCE:${response?.symbol}USDT`, // Check symbol format
+        timezone: "Asia/Dubai",
         theme: "dark",
         toolbar_bg: "#f1f3f6",
         enable_publishing: false,
-        hideideas: true,
+        hide_ideas: true, // Corrected option name
         hide_top_toolbar: false,
-        hide__symbol: true,
+        hide_symbol: true, // Corrected option name
         details: false,
         studies: [],
         container_id: "tvchart",
@@ -78,21 +78,21 @@ function Price(props) {
         hide_side_toolbar: true,
         allow_symbol_change: false,
         save_image: false,
-        doNotStoreSettings: false,
-        backgroundColor: "",
-        horztouchdrag: "",
-        verttouchdrag: true,
-        extended_hours: "",
-        hideideasbutton: false,
-        withdateranges: false,
+        do_not_store_settings: false, // Corrected option name
+        backgroundColor: "", // This option might be ignored; consider using `colorTheme` instead
+        horz_touch_drag: "", // Corrected option name
+        vert_touch_drag: true, // Corrected option name
+        extended_hours: false, // Changed to boolean
+        hide_ideas_button: false, // Corrected option name
+        with_date_ranges: false, // Corrected option name
         hide_volume: false,
-        padding: "",
+        padding: "", // This option might be ignored; check documentation
         show_popup_button: false,
-        studies_overrides: false,
+        studies_overrides: {},
         publish_source: false,
         venue: false,
         symbology: false,
-        whotrades: false,
+        who_trades: false,
         referral_id: false,
         no_referral_id: false,
         fundamental: false,
@@ -100,7 +100,8 @@ function Price(props) {
         utm_source: false,
         utm_medium: false,
         utm_campaign: false,
-      });
+    });
+    
     }
   }, [loading, response]);
 
@@ -163,7 +164,7 @@ function Price(props) {
                 textAlign: "end",
               }}
             >
-              <h3>{Currency.formatNumber(response?.price)}</h3>
+              <h3>$ {Currency.formatNumber(response?.price)}</h3>
               <div className="live">
                 <p>Live</p>
               </div>
@@ -258,8 +259,7 @@ function Price(props) {
                 onClick={() => setClose(false)}
                 style={{ fontSize: "24px" }}
               >
-                {" "}
-              </i>{" "}
+              </i>
             </div>
           </div>
 
@@ -281,7 +281,7 @@ function Price(props) {
                     <div onClick={() => handleBalanceClick(60, 480)}>480s</div>
                   </div>
                 </div>
-                <div>
+                <div style={{display:'flex', flexDirection:'column', gap:10}}>
                   <span className="exchnage">Number of lots to exchange:</span>
                   <InputFormItem
                     type="text"

@@ -12,6 +12,8 @@ function Market() {
   const record = useSelector(selector.selectRows);
   const loading = useSelector(selector.selectLoading);
   const [response, setResponse] = useState([]);
+  const [hasMore, setHasMore] = useState(true);
+
 
   const doListCompany = () => {
     dispatch(productListActions.doFetch());
@@ -25,6 +27,25 @@ function Market() {
     setResponse(record);
   }, [record]);
 
+
+
+
+  const handleScroll = (event) => {
+    const { scrollTop, scrollHeight, clientHeight } = event.target.scrollingElement;
+    if (scrollHeight - scrollTop <= clientHeight * 1.5 && hasMore) {
+      doListCompany
+      
+   
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [handleScroll]);
+
   return (
     <div
       style={{
@@ -33,7 +54,6 @@ function Market() {
       }}
     >
       <Header />
-
       <br />
       <br />
       <br />

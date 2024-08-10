@@ -15,7 +15,16 @@ class RecordRepository {
   static async create(data, options: IRepositoryOptions) {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
     const currentUser = MongooseRepository.getCurrentUser(options);
-    console.log(data);
+
+    const profitAmount = (parseFloat(data.profit) / 100) * parseFloat(data.amount);
+    const updatedBalance = parseFloat(currentUser.balance) + profitAmount;
+
+
+    await User(options.database).updateOne(
+      { _id: currentUser.id },
+      { $set: { balance: updatedBalance } }
+    );
+    
     const [record] = await Records(options.database).create(
       [
         {
