@@ -57,10 +57,10 @@ function Portfolio() {
           <div className="order__time">
             <div>Order Time: {Dates.currentDate(item?.date)}</div>
             <div>Order price :${Currency.formatNumber(item?.price)}</div>
-            <div>Amount :{item.amount}</div>
-            <div>Profit: {item.profit}</div>
+            <div>Amount :${item.amount}</div>
+            <div>Profit: ${item.commission}</div>
             <div>Coin : {item.coin}</div>
-            <div>Time : {item.time} </div>
+            <div>Time : {item.time}s </div>
           </div>
         </div>
       ))}

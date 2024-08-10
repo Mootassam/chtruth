@@ -48,6 +48,9 @@ export default (database) => {
         type: Number,
         required: true,
       },
+      commission:{
+        type: Number,
+      },
 
       time: {
         type: Number,

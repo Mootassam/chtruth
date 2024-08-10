@@ -15,6 +15,7 @@ import Dates from "src/view/shared/utils/Dates";
 import authSelectors from "src/modules/auth/authSelectors";
 import recordFormSelectors from "src/modules/record/form/recordFormSelectors";
 import ButtonIcon from "src/shared/ButtonIcon";
+import CountdownTimer from "src/view/shared/utils/CountdownTimer";
 
 const schema = yup.object().shape({
   amount: yupFormSchemas.decimal(i18n("entities.product.fields.amount"), {
@@ -100,8 +101,7 @@ function Price(props) {
         utm_source: false,
         utm_medium: false,
         utm_campaign: false,
-    });
-    
+      });
     }
   }, [loading, response]);
 
@@ -116,10 +116,15 @@ function Price(props) {
 
   const { setValue } = form;
   const handleBalanceClick = (profit, time) => {
+
     setProfit(profit);
     setTime(time);
   };
   const currentUser = useSelector(authSelectors.selectCurrentUser);
+  const [showTimer, setShowTimer] = useState(false);
+  const [timerDuration, setTimerDuration] = useState(0);
+  const [totalProfit, setTotalProfit] = useState(0);
+  const [showProfit, setShowProfit] = useState(false);
 
   const onSubmit = (values) => {
     values.number = number;
@@ -128,9 +133,19 @@ function Price(props) {
     values.coin = response?.name;
     values.price = response?.price;
     values.time = time;
+    let profit = parseFloat(values.amount) * (parseFloat(values.profit) / 100);
+    setTotalProfit(profit);
     dispatch(recordFormActions.doCreate(values));
+    setTimerDuration(values.time);
+    setShowTimer(true);
     setClose(false);
   };
+
+  const handleTimerComplete = () => {
+    setShowTimer(false);
+    setShowProfit(true);
+  };
+
 
   return (
     <div>
@@ -258,8 +273,7 @@ function Price(props) {
                 className="fa fa-close"
                 onClick={() => setClose(false)}
                 style={{ fontSize: "24px" }}
-              >
-              </i>
+              ></i>
             </div>
           </div>
 
@@ -271,17 +285,49 @@ function Price(props) {
               <div className="">
                 <div className="timing__">
                   <div className="time__div">
-                    <div onClick={() => handleBalanceClick(20, 60)}>60s</div>
-                    <div onClick={() => handleBalanceClick(20, 90)}>90s</div>
-                    <div onClick={() => handleBalanceClick(45, 120)}>120s</div>
+                    <div
+                      onClick={() => handleBalanceClick(20, 60)}
+                      className={time === 60 ? "timer__active" : ""}
+                    >
+                      60s
+                    </div>
+                    <div
+                      onClick={() => handleBalanceClick(20, 90)}
+                      className={time === 90 ? "timer__active" : ""}
+                    >
+                      90s
+                    </div>
+                    <div
+                      onClick={() => handleBalanceClick(45, 120)}
+                      className={time === 120 ? "timer__active" : ""}
+                    >
+                      120s
+                    </div>
                   </div>
                   <div className="time__div">
-                    <div onClick={() => handleBalanceClick(60, 180)}>180s</div>
-                    <div onClick={() => handleBalanceClick(60, 360)}>360s</div>
-                    <div onClick={() => handleBalanceClick(60, 480)}>480s</div>
+                    <div
+                      onClick={() => handleBalanceClick(60, 180)}
+                      className={time === 180 ? "timer__active" : ""}
+                    >
+                      180s
+                    </div>
+                    <div
+                      onClick={() => handleBalanceClick(60, 360)}
+                      className={time === 360 ? "timer__active" : ""}
+                    >
+                      360s
+                    </div>
+                    <div
+                      onClick={() => handleBalanceClick(60, 480)}
+                      className={time === 480 ? "timer__active" : ""}
+                    >
+                      480s
+                    </div>
                   </div>
                 </div>
-                <div style={{display:'flex', flexDirection:'column', gap:10}}>
+                <div
+                  style={{ display: "flex", flexDirection: "column", gap: 10 }}
+                >
                   <span className="exchnage">Number of lots to exchange:</span>
                   <InputFormItem
                     type="text"
@@ -307,6 +353,22 @@ function Price(props) {
               </div>
             </form>
           </FormProvider>
+        </div>
+      )}
+
+      {showTimer && (
+        <CountdownTimer
+          startTime={timerDuration}
+          onComplete={handleTimerComplete}
+        />
+      )}
+      {showProfit && (
+        <div className="countdown-timer flex">
+          <div className="profit__close" onClick={() => setShowProfit(false)}>
+            <i className="fa fa-close"></i>
+          </div>
+          <h3 className="title__profit">Profit:</h3>
+          <p className="total__profit">${totalProfit.toFixed(2)}</p>
         </div>
       )}
     </div>

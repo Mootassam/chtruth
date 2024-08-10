@@ -1649,6 +1649,7 @@ const en = {
         id: "Id",
         name: "Name",
         slug: "Slug",
+        amount :"amount",
         tags: "Tags",
         video: "Video",
         specificationName: "Specification Name",

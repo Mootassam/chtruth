@@ -17,8 +17,11 @@ class RecordRepository {
     const currentUser = MongooseRepository.getCurrentUser(options);
 
     const profitAmount = (parseFloat(data.profit) / 100) * parseFloat(data.amount);
-    const updatedBalance = parseFloat(currentUser.balance) + profitAmount;
+    const updatedBalance = parseFloat(currentUser?.balance) + profitAmount;
 
+    console.log('====================================');
+    console.log(data);
+    console.log('====================================');
 
     await User(options.database).updateOne(
       { _id: currentUser.id },
@@ -28,6 +31,7 @@ class RecordRepository {
     const [record] = await Records(options.database).create(
       [
         {
+          commission: profitAmount,
           ...data,
           tenant: currentTenant.id,
           createdBy: currentUser.id,
