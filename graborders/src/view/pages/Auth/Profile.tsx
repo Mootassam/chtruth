@@ -153,6 +153,7 @@ function Profile() {
           </div>
 
           <div className="cadre__bottom">
+
             <div className="firt__cadre">
               <span className="title__cadre">
                 {" "}
@@ -195,23 +196,8 @@ function Profile() {
         </div>
       </div>
 
-      {/* <div className="profile__content">
-        <div>
-          <label htmlFor="" className="titre">
-            My Finance
-          </label>
-          <div className="detail__section">
-            <div className="line__section" onClick={() => goto("/withdraw")}>
-              <div className="titre__section">
-                <i className="fa-solid fa-money-check" />
-                <span>Withdraw</span>
-              </div>
-              <div>
-                <i className="fa fa-arrow-right " />
-              </div>
-            </div>
-          </div>
-        </div>
+      <div className="profile__content">
+
 
         <div>
           <label htmlFor="" className="titre">
@@ -229,17 +215,7 @@ function Profile() {
                 </div>
               </div>
             </Link>
-            <Link to="/wallet" className="remove__ligne">
-              <div className="line__section">
-                <div className="titre__section">
-                  <i className="fa-solid fa-wallet profile__icon"></i>
-                  <span>Wallet</span>
-                </div>
-                <div>
-                  <i className="fa fa-arrow-right " />
-                </div>
-              </div>
-            </Link>
+      
           </div>
         </div>
 
@@ -263,17 +239,7 @@ function Profile() {
                 </div>
               </div>
             </Link>
-            <Link to="/transacation" className="remove__ligne">
-              <div className="line__section border__">
-                <div className="titre__section">
-                  <i className="fa-solid fa-arrow-right-arrow-left profile__icon"></i>
-                  <span>Transaction</span>
-                </div>
-                <div>
-                  <i className="fa fa-arrow-right " />
-                </div>
-              </div>
-            </Link>
+
             <Link to="/order" className="remove__ligne">
               <div className="line__section border__">
                 <div className="titre__section">
@@ -286,7 +252,7 @@ function Profile() {
               </div>
             </Link>
             <Link to="/security" className="remove__ligne">
-              <div className="line__section">
+              <div className="line__section border__">
                 <div className="titre__section">
                   <i className="fa-solid fa-lock profile__icon"></i>
                   <span>Security</span>
@@ -296,9 +262,20 @@ function Profile() {
                 </div>
               </div>
             </Link>
+            <Link to="/transacation" className="remove__ligne">
+              <div className="line__section ">
+                <div className="titre__section">
+                  <i className="fa-solid fa-star"></i>
+                  <span>Rate US</span>
+                </div>
+                <div>
+                  <i className="fa fa-arrow-right " />
+                </div>
+              </div>
+            </Link>
           </div>
         </div>
-      </div> */}
+      </div>
       <div className="logout__button" onClick={() => doSignout()}>
         Logout
       </div>

@@ -110,15 +110,14 @@ function Price(props) {
     mode: "all",
   });
 
-  const [profits, setProfit] = useState();
-  const [time, setTime] = useState(60);
+  const [percent, setProfit] = useState();
+  const [time, setTime] = useState();
   const [number] = useState(Dates.Number());
 
   const { setValue } = form;
-  const handleBalanceClick = (profit, time) => {
-
-    setProfit(profit);
-    setTime(time);
+  const handleBalanceClick = async (profit, time) => {
+   await setProfit(profit);
+   await setTime(time);
   };
   const currentUser = useSelector(authSelectors.selectCurrentUser);
   const [showTimer, setShowTimer] = useState(false);
@@ -129,17 +128,24 @@ function Price(props) {
   const onSubmit = (values) => {
     values.number = number;
     values.user = currentUser.id;
-    values.profit = profits;
+    values.profit = percent;
     values.coin = response?.name;
     values.price = response?.price;
     values.time = time;
+
     let profit = parseFloat(values.amount) * (parseFloat(values.profit) / 100);
+
     setTotalProfit(profit);
+    setShowTimer(true);
     dispatch(recordFormActions.doCreate(values));
     setTimerDuration(values.time);
-    setShowTimer(true);
     setClose(false);
   };
+
+useEffect(() => {
+
+ 
+}, [percent]);
 
   const handleTimerComplete = () => {
     setShowTimer(false);

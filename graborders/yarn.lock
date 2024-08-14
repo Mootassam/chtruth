@@ -10949,6 +10949,11 @@
     "lodash" "^4.17.19"
     "prop-types" "^15.7.2"
 
+"react-circular-progressbar@^2.1.0":
+  "integrity" "sha512-xp4THTrod4aLpGy68FX/k1Q3nzrfHUjUe5v6FsdwXBl3YVMwgeXYQKDrku7n/D6qsJA9CuunarAboC2xCiKs1g=="
+  "resolved" "https://registry.npmjs.org/react-circular-progressbar/-/react-circular-progressbar-2.1.0.tgz"
+  "version" "2.1.0"
+
 "react-datepicker@3.3.0":
   "integrity" "sha512-QnIlBxDSWEGBi2X5P1BqWzvfnPFRKhtrsgAcujUVwyWeID/VatFaAOEjEjfD1bXR9FuSYVLlLR3j/vbG19hWOA=="
   "resolved" "https://registry.npmjs.org/react-datepicker/-/react-datepicker-3.3.0.tgz"

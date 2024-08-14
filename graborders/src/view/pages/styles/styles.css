@@ -274,6 +274,7 @@
   justify-content: space-around;
   gap: 15px;
   margin: auto;
+  max-width: 500px;
 }
 
 .buy,

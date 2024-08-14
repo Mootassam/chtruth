@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { CircularProgressbar } from 'react-circular-progressbar';
+import 'react-circular-progressbar/dist/styles.css';
 
 const CountdownTimer = ({ startTime, onComplete }) => {
   const [timeLeft, setTimeLeft] = useState(startTime);
@@ -13,7 +15,8 @@ const CountdownTimer = ({ startTime, onComplete }) => {
     const interval = setInterval(() => {
       setTimeLeft((prev) => {
         const newTimeLeft = prev - 1;
-        setProgress((newTimeLeft / startTime) * 100);
+        const newProgress = Math.max((newTimeLeft / startTime) * 100, 0); // Ensure progress doesn't go below 0
+        setProgress(newProgress);
         return newTimeLeft;
       });
     }, 1000);
@@ -23,10 +26,10 @@ const CountdownTimer = ({ startTime, onComplete }) => {
 
   return (
     <div className="countdown-timer">
-      <div className="timer-progress">
-        <div className="progress-bar" style={{ width: `${progress}%` }}></div>
-      </div>
-      <p>{timeLeft}s</p>
+      <CircularProgressbar
+        value={progress}
+        text={`${Math.ceil(timeLeft)}s`} // Display percentage rounded to the nearest whole number
+      />
     </div>
   );
 };

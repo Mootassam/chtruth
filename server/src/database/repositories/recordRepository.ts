@@ -16,41 +16,41 @@ class RecordRepository {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
     const currentUser = MongooseRepository.getCurrentUser(options);
 
-    const profitAmount = (parseFloat(data.profit) / 100) * parseFloat(data.amount);
-    const updatedBalance = parseFloat(currentUser?.balance) + profitAmount;
+    await this.checkOrder(data,options)
 
-    console.log('====================================');
-    console.log(data);
-    console.log('====================================');
+    const profitAmount = (parseFloat(data.profit) / 100) * parseFloat(data.amount);
+    const updatedBalance =   parseFloat(currentUser?.balance) + profitAmount;
+
+
 
     await User(options.database).updateOne(
       { _id: currentUser.id },
       { $set: { balance: updatedBalance } }
     );
     
-    const [record] = await Records(options.database).create(
-      [
-        {
-          commission: profitAmount,
-          ...data,
-          tenant: currentTenant.id,
-          createdBy: currentUser.id,
-          updatedBy: currentUser.id,
-          date: Dates.getDate(),
-          datecreation: Dates.getTimeZoneDate(),
-        },
-      ],
-      options
-    );
+    // const [record] = await Records(options.database).create(
+    //   [
+    //     {
+    //       commission: profitAmount,
+    //       ...data,
+    //       tenant: currentTenant.id,
+    //       createdBy: currentUser.id,
+    //       updatedBy: currentUser.id,
+    //       date: Dates.getDate(),
+    //       datecreation: Dates.getTimeZoneDate(),
+    //     },
+    //   ],
+    //   options
+    // );
 
-    await this._createAuditLog(
-      AuditLogRepository.CREATE,
-      record.id,
-      data,
-      options
-    );
+    // await this._createAuditLog(
+    //   AuditLogRepository.CREATE,
+    //   record.id,
+    //   data,
+    //   options
+    // );
 
-    return this.findById(record.id, options);
+    // return this.findById(record.id, options);
   }
 
   static async calculeGrap(data, options) {
@@ -152,35 +152,16 @@ class RecordRepository {
 
 
 
-  static async checkOrder(options) {
+  static async checkOrder(data, options) {
     const currentUser = MongooseRepository.getCurrentUser(options);
-    const currentDate = this.getTimeZoneDate(); // Get current date
-
-    const record = await Records(options.database)
-      .find({
-        user: currentUser.id,
-        // Compare dates in the same format
-        datecreation: { $in: Dates.getTimeZoneDate() }, // Convert current date to Date object
-      })
-      .countDocuments();
-
-    const dailyOrder = currentUser.vip.dailyorder;
-
-    if (currentUser && currentUser.vip && currentUser.vip.id) {
-      if (currentUser.tasksDone >= dailyOrder) {
-        throw new Error405(
-          "This is your limit. Please contact customer support for more tasks"
-        );
-      }
-      
-      if (currentUser.balance <= 0 ) {
-        throw new Error405("insufficient balance please upgrade.");
-      }
-    } else {
-      throw new Error405("Please subscribe to at least one VIP package.");
+  
+    if (currentUser.balance <= 0 || currentUser.balance < data.amount) {
+      throw new Error405("Insufficient balance. Please upgrade.");
     }
+  
+    // Additional logic for processing the order can be added here
   }
-
+  
   static getTimeZoneDate() {
     const estTimezone = "America/New_York";
     const options = {

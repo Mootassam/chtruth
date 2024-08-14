@@ -10,7 +10,7 @@ function TabBottomNavigator() {
     {
       icon: "fas fa-home",
       path: "/",
-      name: "Markets",
+      name: "Home",
     },
 
     {

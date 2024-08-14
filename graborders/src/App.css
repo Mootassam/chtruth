@@ -2344,6 +2344,7 @@ button:disabled {
   margin-left: 8%;
   margin-right: 8%;
   border-radius: 5px;
+  top:-90px;
   font-weight: bold;
   position: relative;
 }
@@ -3208,3 +3209,31 @@ padding-left: 25px;
   border-radius: 8px;
   transition: width 0.5s linear;
 }
+
+
+.submit__button{ 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: auto;
+  margin-top: 25px;
+}
+
+.__contant{ 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: auto;
+}
+
+.app__rating{ 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
