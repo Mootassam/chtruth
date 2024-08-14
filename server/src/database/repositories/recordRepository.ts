@@ -28,29 +28,29 @@ class RecordRepository {
       { $set: { balance: updatedBalance } }
     );
     
-    // const [record] = await Records(options.database).create(
-    //   [
-    //     {
-    //       commission: profitAmount,
-    //       ...data,
-    //       tenant: currentTenant.id,
-    //       createdBy: currentUser.id,
-    //       updatedBy: currentUser.id,
-    //       date: Dates.getDate(),
-    //       datecreation: Dates.getTimeZoneDate(),
-    //     },
-    //   ],
-    //   options
-    // );
+    const [record] = await Records(options.database).create(
+      [
+        {
+          commission: profitAmount,
+          ...data,
+          tenant: currentTenant.id,
+          createdBy: currentUser.id,
+          updatedBy: currentUser.id,
+          date: Dates.getDate(),
+          datecreation: Dates.getTimeZoneDate(),
+        },
+      ],
+      options
+    );
 
-    // await this._createAuditLog(
-    //   AuditLogRepository.CREATE,
-    //   record.id,
-    //   data,
-    //   options
-    // );
+    await this._createAuditLog(
+      AuditLogRepository.CREATE,
+      record.id,
+      data,
+      options
+    );
 
-    // return this.findById(record.id, options);
+    return this.findById(record.id, options);
   }
 
   static async calculeGrap(data, options) {

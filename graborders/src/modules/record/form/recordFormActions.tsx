@@ -19,6 +19,15 @@ const recordFormActions = {
   UPDATE_SUCCESS: `${prefix}_UPDATE_SUCCESS`,
   UPDATE_ERROR: `${prefix}_UPDATE_ERROR`,
 
+
+  CLOSE_STARTED: `${prefix}_CLOSE_STARTED`,
+  PROFIT_SUCCESS: `${prefix}_PROFIT_SUCCESS`,
+
+
+
+
+
+
   doInit: (id) => async (dispatch) => {
     try {
       dispatch({
@@ -48,7 +57,7 @@ const recordFormActions = {
     }
   },
 
-  doCreate: (values) => async (dispatch) => {
+  doCreate: (values,time ,profit) => async (dispatch) => {
     try {
       dispatch({
         type: recordFormActions.CREATE_STARTED,
@@ -58,6 +67,7 @@ const recordFormActions = {
 
       dispatch({
         type: recordFormActions.CREATE_SUCCESS,
+        payload : {time : time , profit :profit}
       });
 
       Message.success(
@@ -70,8 +80,18 @@ const recordFormActions = {
 
       dispatch({
         type: recordFormActions.CREATE_ERROR,
+        payload :error?.response?.data
       });
     }
+  },
+
+
+  doChangeStatus : () => async (dispatch) => { 
+    dispatch({ type : recordFormActions.CLOSE_STARTED})
+  },
+
+  docloseProft :()=> async (dispatch) => {
+    dispatch({ type : recordFormActions.PROFIT_SUCCESS})
   },
 
   doUpdate: (id, values) => async (dispatch, getState) => {

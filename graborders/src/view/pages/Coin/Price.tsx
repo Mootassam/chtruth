@@ -32,6 +32,12 @@ function Price(props) {
   const loading = useSelector(productListSelectors.selectLoading);
   const saveLoading = useSelector(recordFormSelectors.selectSaveLoading);
 
+  const currentUser = useSelector(authSelectors.selectCurrentUser);
+  const [showProfit, setShowProfit] = useState(false);
+  const [percent, setProfit] = useState();
+  const [time, setTime] = useState();
+  const [number] = useState(Dates.Number());
+
   const searchAllCoins = async () => {
     try {
       dispatch(productListActions.doFindById(props.id));
@@ -110,48 +116,52 @@ function Price(props) {
     mode: "all",
   });
 
-  const [percent, setProfit] = useState();
-  const [time, setTime] = useState();
-  const [number] = useState(Dates.Number());
-
-  const { setValue } = form;
   const handleBalanceClick = async (profit, time) => {
-   await setProfit(profit);
-   await setTime(time);
+    await setProfit(profit);
+    await setTime(time);
   };
-  const currentUser = useSelector(authSelectors.selectCurrentUser);
-  const [showTimer, setShowTimer] = useState(false);
-  const [timerDuration, setTimerDuration] = useState(0);
-  const [totalProfit, setTotalProfit] = useState(0);
-  const [showProfit, setShowProfit] = useState(false);
 
-  const onSubmit = (values) => {
+  const selectError = useSelector(recordFormSelectors.selectError);
+  const selectShowTime = useSelector(recordFormSelectors.selectShowTime);
+  const selectShowProfit = useSelector(recordFormSelectors.selectShowProfit);
+
+  const selectTime = useSelector(recordFormSelectors.selectTime);
+  const selectProfit = useSelector(recordFormSelectors.selectProfit);
+
+  const onSubmit = async (values) => {
+    // Set additional values
     values.number = number;
     values.user = currentUser.id;
-    values.profit = percent;
+    values.profit = percent; // Make sure `percent` is defined
     values.coin = response?.name;
     values.price = response?.price;
     values.time = time;
+    // Calculate profit
+    const profit =
+      parseFloat(values.amount) * (parseFloat(values.profit) / 100);
+    try {
+      // Dispatch action and wait for it to complete
+      await dispatch(recordFormActions.doCreate(values, time, profit));
 
-    let profit = parseFloat(values.amount) * (parseFloat(values.profit) / 100);
+      setClose(false);
 
-    setTotalProfit(profit);
-    setShowTimer(true);
-    dispatch(recordFormActions.doCreate(values));
-    setTimerDuration(values.time);
-    setClose(false);
+      // If dispatch is successful, set timer duration and close the modal
+    } catch (error) {
+      console.error("Error dispatching action:", error);
+      // Handle the error appropriately, e.g., show an error message
+    }
   };
-
-useEffect(() => {
-
- 
-}, [percent]);
 
   const handleTimerComplete = () => {
-    setShowTimer(false);
-    setShowProfit(true);
+    dispatch(recordFormActions.doChangeStatus())
   };
 
+
+const dispatchProfitClose = () => {
+  dispatch(recordFormActions.docloseProft())
+}
+
+  useEffect(() => {}, [percent, selectError, time]);
 
   return (
     <div>
@@ -362,20 +372,25 @@ useEffect(() => {
         </div>
       )}
 
-      {showTimer && (
+      {selectShowTime && (
         <CountdownTimer
-          startTime={timerDuration}
+          startTime={selectTime}
           onComplete={handleTimerComplete}
         />
       )}
-      {showProfit && (
-        <div className="countdown-timer flex">
-          <div className="profit__close" onClick={() => setShowProfit(false)}>
-            <i className="fa fa-close"></i>
-          </div>
-          <h3 className="title__profit">Profit:</h3>
-          <p className="total__profit">${totalProfit.toFixed(2)}</p>
-        </div>
+      {selectShowProfit && (
+   <div className="countdown-timer flex">
+   <div className="profit__close" onClick={() => dispatchProfitClose()}>
+     <i className="fa fa-close"></i>
+   </div>
+   <div className="profit-content">
+     <h3 className="title__profit">Congratulations!</h3>
+     <p className="message__profit">Your trade has been successfully processed.</p>
+     <p className="message__profit">Here’s your profit:</p>
+     <p className="total__profit">${selectProfit.toFixed(2)}</p>
+   </div>
+ </div>
+ 
       )}
     </div>
   );

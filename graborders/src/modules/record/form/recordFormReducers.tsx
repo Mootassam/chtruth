@@ -1,9 +1,15 @@
+import { error } from 'console';
 import actions from 'src/modules/record/form/recordFormActions';
 
 const initialData = {
   initLoading: false,
   saveLoading: false,
   record: null,
+  error:"",
+  showtime: false ,
+  showprofit: false ,
+   time :60 ,
+   profit:20
 };
 
 export default (state = initialData, { type, payload }) => {
@@ -35,6 +41,9 @@ export default (state = initialData, { type, payload }) => {
     return {
       ...state,
       saveLoading: true,
+      error:null,
+      showtime : false,
+    
     };
   }
 
@@ -42,6 +51,10 @@ export default (state = initialData, { type, payload }) => {
     return {
       ...state,
       saveLoading: false,
+      error:null, 
+      showtime : true,
+      time : payload.time, 
+      profit :payload.profit
     };
   }
 
@@ -49,8 +62,31 @@ export default (state = initialData, { type, payload }) => {
     return {
       ...state,
       saveLoading: false,
+      error:payload,
+      showtime : false
+
     };
   }
+
+  if( type === actions.CLOSE_STARTED) { 
+    return {
+      ...state,
+      showtime: false,
+      showprofit: true,
+    }
+  }
+
+  if( type === actions.PROFIT_SUCCESS) { 
+    return {
+      ...state,
+      showtime: false,
+      showprofit: false,
+    }
+  }
+
+
+
+  
 
   if (type === actions.UPDATE_STARTED) {
     return {

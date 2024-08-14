@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { CircularProgressbar } from 'react-circular-progressbar';
-import 'react-circular-progressbar/dist/styles.css';
+import { CircularProgressbar } from "react-circular-progressbar";
+import "react-circular-progressbar/dist/styles.css";
 
 const CountdownTimer = ({ startTime, onComplete }) => {
   const [timeLeft, setTimeLeft] = useState(startTime);
@@ -26,10 +26,24 @@ const CountdownTimer = ({ startTime, onComplete }) => {
 
   return (
     <div className="countdown-timer">
-      <CircularProgressbar
-        value={progress}
-        text={`${Math.ceil(timeLeft)}s`} // Display percentage rounded to the nearest whole number
-      />
+      <div style={{ width: "200px" }}>
+        <CircularProgressbar
+          value={progress}
+          text={`${Math.ceil(timeLeft)}s`} // Display percentage rounded to the nearest whole number
+        />
+      </div>
+      <div className="loader"></div>
+      <p style={{ color: "black" }} className="loading__text">
+        <span>
+          Thank you for your selection. Our system is now processing your trade
+          with the amount and time you’ve chosen. Please be patient as we work
+          to secure the best outcome for you.
+        </span>
+        <span>
+          Your profit details will be available shortly. Hang tight, we're
+          working for your success!
+        </span>
+      </p>
     </div>
   );
 };
