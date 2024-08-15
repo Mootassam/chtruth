@@ -11,7 +11,7 @@ import ExploreNews from "./Explore";
 import productListSelectors from "src/modules/product/list/productListSelectors";
 
 function Market() {
-  const [newselected, setNewSelected] = useState("");
+  const [newselected, setNewSelected] = useState("news");
   const [coincategory, setCoinCategory] = useState("");
   const [response, setResponse] = useState([]);
   const record = useSelector(selector.selectRows);

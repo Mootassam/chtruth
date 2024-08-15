@@ -3368,7 +3368,9 @@ padding-left: 25px;
 }
 
 .news__active {
- color : #4281ff !important
+ background-color: rgb(8, 71, 169);
+    padding: 3px 10px;
+    border-radius: 10px;
 }
 
 
