@@ -187,7 +187,7 @@ function Market() {
           </div>
         </div>
 
-        <div className="home__questions">
+        {/* <div className="home__questions">
           <h2>What’s MEXEC about?</h2>
 
           <p>
@@ -219,7 +219,7 @@ function Market() {
               <li>Does MEXEC list all cryptocurrencies?</li>
             </ul>
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );

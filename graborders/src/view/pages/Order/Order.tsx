@@ -52,18 +52,39 @@ function Portfolio() {
 
   const All = () => (
     <>
-      {record.map((item, index) => (
-        <div className="single__product" key={`${item.id}-${index}`}>
-          <div className="order__time">
-            <div>Order Time: {Dates.currentDate(item?.date)}</div>
-            <div>Order price :${Currency.formatNumber(item?.price)}</div>
-            <div>Amount :${item.amount}</div>
-            <div>Profit: ${item.commission}</div>
-            <div>Coin : {item.coin}</div>
-            <div>Time : {item.time}s </div>
-          </div>
+<div className="orders-list">
+<div className="orders-list">
+  {record.map((item, index) => (
+    <div className="single-product" key={`${item.id}-${index}`}>
+      <div className="order-header">
+        <span className="order-status">Completed</span>
+      </div>
+      <div className="order-details">
+        <div className="order-time">
+          <strong>Order Time:</strong> {Dates.currentDate(item?.date)}
         </div>
-      ))}
+        <div className="order-amount">
+          <strong>Order Price:</strong> ${Currency.formatNumber(item?.price)}
+        </div>
+        <div className="order-time">
+          <strong>Amount:</strong> ${item.amount}
+        </div>
+        <div className="order-price">
+          <strong>Profit:</strong> ${item.commission}
+        </div>
+        <div className="order-coin">
+          <strong>Coin:</strong> {item.coin}
+        </div>
+        <div className="order-time-seconds">
+          <strong>Time:</strong> {item.time}s
+        </div>
+      </div>
+    </div>
+  ))}
+</div>
+
+</div>
+
     </>
   );
 

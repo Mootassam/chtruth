@@ -3555,4 +3555,76 @@ news__p {
   height: 100%;
   background: linear-gradient(124.53deg, var(--bg-primary) 21.5%, transparent 71.02%);
   z-index: 1;
+}.orders-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 0.5rem;
+}
+
+.single-product {
+  background-color: #1b1f29;
+  border: 1px solid #2a2f3a;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  transition: transform 0.2s ease-in-out;
+}
+
+.single-product:hover {
+  transform: translateY(-5px);
+}
+
+.order-header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0.5rem;
+}
+
+.order-status {
+  background-color: #28a745;
+  color: #fff;
+  padding: 0.3rem 0.8rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+}
+
+.order-details {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.order-details div {
+  padding: 0.5rem;
+  font-size: 0.9rem;
+  background-color: #202431;
+  border-radius: 6px;
+  color: #b1b6c3;
+}
+
+.order-details strong {
+  font-weight: 600;
+  color: #fff;
+}
+
+.order-price {
+  color: #28a745 !important ;
+}
+
+.order-profit {
+  color: #f39c12; /* Vibrant amber color for profit */
+}
+
+.order-amount {
+  color: #d35400 !;  /* Bold orange color for amount */
+}
+
+.order-coin {
+  color: #ff6347;
+}
+
+.order-time-seconds {
+  color: #6c757d;
 }
