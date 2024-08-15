@@ -59,10 +59,13 @@ function Signin() {
     <div className="auth__page">
       <div className="auth__header">
 
+<img src="/icons/Mexec.svg" alt=""  style={{width:230}}  />
+<div className="signin__logo">
         <h1 className="auth__title"> Welcome Back!</h1>
         <span className="auth__description">
           You have been missed for long time
         </span>
+        </div>
       </div>
       <FormProvider {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>

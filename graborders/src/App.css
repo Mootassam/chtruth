@@ -302,9 +302,7 @@ td {
   align-items: center;
   padding: 8px 10px;
   width: 100%;
-  background-color: rgb(0, 0, 0, 0.1);
-  margin-top: 10px;
-  border-radius: 10px;
+  background-color: #1c1d21;
 }
 
 .speaker {
@@ -1898,6 +1896,9 @@ button:disabled {
   justify-content: center;
   position: relative;
   z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap:75px;
 }
 .header__signup {
   gap: 6px !important;
@@ -3327,4 +3328,229 @@ padding-left: 25px;
   font-size: 32px;
   font-weight: bold;
   color: #007bff;
+}
+
+
+.signin__logo{ 
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+
+.homelist__coins{ 
+  align-items: center;
+  /* background-color: white; */
+  text-align: center;
+  margin-top: 10px;
+  padding: 10px 10px;
+  display: flex;
+  align-items: start;
+  gap: 35px;
+  border-radius: 10px;
+  overflow-x: auto;
+  white-space: nowrap;
+  color: #fff;
+}
+
+.list__news{ 
+  display: flex;
+  align-items: center;
+  gap:10px;
+  color: white;
+  margin-top: 10px;
+}
+
+.home__news{ display: flex;
+  flex-direction: column;
+  gap:16px;
+  margin-top: 10px;
+}
+
+.news__active {
+ color : #4281ff !important
+}
+
+
+.view__more{ 
+  display: flex;
+  align-items: center;
+  margin: auto;
+  color: #076bff;
+  padding: 9px 25px;
+  text-decoration: none;
+}
+.home__page{ 
+  margin-left: 2%;
+  margin-right: 2%;
+}
+
+.home__questions{ 
+  display: flex;
+  flex-direction: column;
+  gap:25px;
+  margin-top: 25px;
+}
+.second__p{ 
+  margin-top: 23px;
+}
+
+.ul__list{ 
+  display: flex;
+  flex-direction: column;
+color: whitesmoke;
+}
+.ul__list > li { 
+  padding:15px 0;
+  border-top: 1px solid #eeee;
+}
+
+/* Styling the produt */
+
+news__p {
+  line-height: 1.5 !important;
+  margin: 8px 0px 0px !important;
+  color: rgb(161, 167, 187) !important;
+  font-size: 14px !important;
+}
+
+.news__h3 {
+  line-height: 1.5 !important;
+  margin: 0px !important;
+  color: rgb(255, 255, 255) !important;
+  font-weight: 700 !important;
+  font-size: 18px !important;
+  padding-top: 5px;
+}
+
+.news__h5 {
+  line-height: 1.5;
+  margin: 0px;
+  color: rgb(255, 255, 255);
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.news__item {
+  display: flex;
+  flex-direction: column;
+}
+.date__news {
+  font-size: 11px;
+  color: rgb(255, 255, 255);
+}
+
+.ligne__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 4px;
+}
+
+.time__news {
+  line-height: 1.5;
+  margin: 0px;
+  color: #a1a7bb;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.news__today {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  /* padding-top: 80px; */
+}
+
+.news__todatext {
+  font-size: 18px;
+  font-weight: 700;
+  color: rgb(255, 255, 255) !important;
+}
+
+.item__list {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  padding-top: 20px;
+  margin-bottom: 20px;
+}
+
+/* styling the singleItem */
+.trading__h2 {
+  font-size: 18px;
+  font-weight: 700;
+  color: rgb(255, 255, 255) !important;
+}
+.small__detail {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+  padding-top: 10px;
+}
+
+.text__aligndetail {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.text__smalldetail {
+  color: rgb(118, 128, 143);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.45;
+  color: #fff;
+}
+
+.__smallspace {
+  padding-right: 5px;
+}
+
+
+
+/* HTML: <div class="loader"></div> */
+/* HTML: <div class="loader"></div> */
+.loader__news {
+  width: fit-content;
+  font-weight: bold;
+  font-family: sans-serif;
+  font-size: 30px;
+  padding-bottom: 8px;
+  color: #fff; /* Set text color to white */
+  background: linear-gradient(currentColor 0 0) 0 100%/0% 3px no-repeat;
+  animation: l2 2s linear infinite;
+}
+
+.loader__news:before {
+  content: "Loading...";
+}
+
+@keyframes l2 {
+  to {
+    background-size: 100% 3px;
+  }
+}
+
+.news__loading{ 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: auto;
+}
+
+.max__video{ 
+  max-width: 100dvw;
+  width: 100%;
+}
+
+.banner-background_contentBoxBg__gIWHU .banner-background_shadowBox__cfBgI {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(124.53deg, var(--bg-primary) 21.5%, transparent 71.02%);
+  z-index: 1;
 }

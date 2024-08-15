@@ -9,6 +9,11 @@ const productListActions = {
   FETCH_ERROR: `${prefix}_FETCH_ERROR`,
 
 
+  NEWS_STARTED: `${prefix}_NEWS_STARTED`,
+  NEWS_SUCCESS: `${prefix}_NEWS_SUCCESS`,
+  NEWS_ERROR: `${prefix}_NEWS_ERROR`,
+
+
   FIND_STARTED: `${prefix}_FIND_STARTED`,
   FIND_SUCCESS: `${prefix}_FIND_SUCCESS`,
   FIND_ERROR: `${prefix}_FIND_ERROR`,
@@ -73,6 +78,28 @@ const productListActions = {
         Errors.handle(error);
         dispatch({
           type: productListActions.FIND_ERROR,
+        });
+      }
+    },
+
+    doFindNews:
+    (id) =>
+    async (dispatch, getState) => {
+      try {
+        dispatch({
+          type: productListActions.NEWS_STARTED,
+        });
+        const response = await ProductService.findNews(id);
+
+        dispatch({
+          type: productListActions.NEWS_SUCCESS,
+          payload: response
+        });
+        
+      } catch (error) {
+        Errors.handle(error);
+        dispatch({
+          type: productListActions.NEWS_ERROR,
         });
       }
     },

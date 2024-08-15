@@ -13,6 +13,9 @@ const initialData = {
   },
   sorter: {},
   selectedKeys: [] as Array<string>,
+  loadingnews: false, 
+  news:[]
+
 };
 
 export default (state = initialData, { type, payload }) => {
@@ -153,6 +156,37 @@ rawFilter: payload ? payload.rawFilter : {},
     };
 }
 
+
+
+
+
+if (type === actions.NEWS_STARTED) {
+  return {
+    ...state,
+    loadingnews: true,
+
+    
+  };
+}
+
+
+if (type === actions.NEWS_SUCCESS) {
+  return {
+    ...state,
+    loadingnews: false,
+    news: payload,
+    
+  };
+}
+
+
+if (type === actions.NEWS_ERROR) {
+  return {
+    ...state,
+    loadingnews: false,
+    
+  };
+}
 
 
 

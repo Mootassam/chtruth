@@ -20,7 +20,7 @@ function TabBottomNavigator() {
     },
 
     {
-      icon: "fas fa-exchange-alt",
+      icon: "fas fa-chart-simple",
       path: "/invitation",
       name: "Markets",
     },

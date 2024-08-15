@@ -93,6 +93,15 @@ export default class ProductServices {
     return ProductRepository.findByCoin(id, this.options);
   }
 
+  async findNews(id) {
+    return ProductRepository.FindNews(id, this.options);
+  }
+
+  async findTopCoins(data) { 
+    return ProductRepository.findTopCoins(data, this.options)
+  }
+
+
 
   async findAllAutocomplete(search, limit) {
     return ProductRepository.findAllAutocomplete(search, limit, this.options);

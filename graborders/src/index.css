@@ -17,9 +17,9 @@
 img {
   top: 0px;
   left: 0px;
-  height: 100%;
-  object-fit: contain;
-  border-radius: 8px;
+  /* height: 100%;
+  object-fit: contain; */
+  /* border-radius: 8px; */
 }
 .start__ {
   font-size: 54px !important;

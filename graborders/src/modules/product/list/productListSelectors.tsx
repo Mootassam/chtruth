@@ -1,28 +1,17 @@
-import { createSelector } from 'reselect';
+import { createSelector } from "reselect";
 
 const selectRaw = (state) => state.product;
 
-const selectLoading = createSelector(
-  [selectRaw],
-  (raw) => raw.loading,
-);
+const selectLoading = createSelector([selectRaw], (raw) => raw.loading);
 
 const selectExportLoading = createSelector(
   [selectRaw],
-  (raw) => raw.exportLoading,
+  (raw) => raw.exportLoading
 );
 
-const selectRows = createSelector(
-  [selectRaw],
-  (raw) => raw.rows,
-);
+const selectRows = createSelector([selectRaw], (raw) => raw.rows);
 
-
-
-const selectSorter = createSelector(
-  [selectRaw],
-  (raw) => raw.sorter || {},
-);
+const selectSorter = createSelector([selectRaw], (raw) => raw.sorter || {});
 
 const selectOrderBy = createSelector([selectRaw], (raw) => {
   const sorter = raw.sorter;
@@ -35,8 +24,7 @@ const selectOrderBy = createSelector([selectRaw], (raw) => {
     return null;
   }
 
-  let direction =
-    sorter.order === 'descend' ? 'DESC' : 'ASC';
+  let direction = sorter.order === "descend" ? "DESC" : "ASC";
 
   return `${sorter.field}_${direction}`;
 });
@@ -45,12 +33,9 @@ const selectFilter = createSelector([selectRaw], (raw) => {
   return raw.filter;
 });
 
-const selectRawFilter = createSelector(
-  [selectRaw],
-  (raw) => {
-    return raw.rawFilter;
-  },
-);
+const selectRawFilter = createSelector([selectRaw], (raw) => {
+  return raw.rawFilter;
+});
 
 const selectLimit = createSelector([selectRaw], (raw) => {
   const pagination = raw.pagination;
@@ -69,30 +54,27 @@ const selectOffset = createSelector([selectRaw], (raw) => {
   return (current - 1) * pagination.pageSize;
 });
 
-
-
-const selectSelectedKeys = createSelector(
-  [selectRaw],
-  (raw) => {
-    return raw.selectedKeys;
-  },
-);
+const selectSelectedKeys = createSelector([selectRaw], (raw) => {
+  return raw.selectedKeys;
+});
 
 const selectSelectedRows = createSelector(
   [selectRaw, selectRows],
   (raw, rows) => {
-    return rows.filter((row) =>
-      raw.selectedKeys.includes(row.id),
-    );
-  },
+    return rows.filter((row) => raw.selectedKeys.includes(row.id));
+  }
 );
 
 const selectIsAllSelected = createSelector(
   [selectRows, selectSelectedKeys],
   (rows, selectedKeys) => {
     return rows.length === selectedKeys.length;
-  },
+  }
 );
+
+const selectNews = createSelector([selectRaw], (raw) => raw.news);
+
+const selectloadingNews = createSelector([selectRaw], (raw) => raw.loadingnews);
 
 const productListSelectors = {
   selectLoading,
@@ -106,6 +88,8 @@ const productListSelectors = {
   selectExportLoading,
   selectRawFilter,
   selectIsAllSelected,
+  selectNews,
+  selectloadingNews,
   selectSorter,
 };
 

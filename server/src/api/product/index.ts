@@ -36,4 +36,10 @@ export default (app) => {
     `/tenant/:tenantId/grap`,
     require('./grapOrders').default,
   )
+
+
+  app.get(
+    `/tenant/:tenantId/findNews/:id`,
+    require('./findNews').default,
+  )
 };

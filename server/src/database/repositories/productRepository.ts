@@ -95,33 +95,24 @@ class ProductRepository {
   }
 
   static async findById(id, options: IRepositoryOptions) {
-
     const response = await axios.get(
       `https://coinranking.com/api/v2/coin/${id}?referenceCurrencyUuid=yhjMzLPhuIDl&timePeriod=24h`
     );
 
-    
-    let rows = response.data.data.coin
+    let rows = response.data.data.coin;
 
-return rows
+    return rows;
   }
 
-
   static async findByCoin(id, options: IRepositoryOptions) {
-
     const response = await axios.get(
       ` https://coinranking.com/api/v2/search-suggestions?query=${id}&referenceCurrencyUuid=yhjMzLPhuIDl`
     );
 
-    
-    let rows = response.data.data.coins
+    let rows = response.data.data.coins;
 
-return rows
+    return rows;
   }
-
-
-
- 
 
   static async findAndCountAll(
     { filter, limit = 50, offset = 0 }, // Default limit of 50 items
@@ -131,10 +122,53 @@ return rows
       `https://coinranking.com/api/v2/coins?offset=${offset}&orderBy=marketCap&limit=${limit}&orderDirection=desc&referenceCurrencyUuid=yhjMzLPhuIDl&timePeriod=24h&search=`
     );
     let rows = response.data.data.coins;
-  
+
     return rows;
   }
-  
+
+
+
+
+  static async findTopCoins(
+    { filter, limit = 6, offset = 0 }, // Default limit of 50 items
+    options: IRepositoryOptions
+  ) {
+    const response = await axios.get(
+      `https://coinranking.com/api/v2/coins?offset=${offset}&orderBy=marketCap&limit=${limit}&orderDirection=desc&referenceCurrencyUuid=yhjMzLPhuIDl&timePeriod=24h&search=`
+    );
+    let rows = response.data.data.coins;
+
+    return rows;
+  }
+
+  static async FindNews(id, options: IRepositoryOptions) {
+
+    let data
+    if(parseInt(id) === 0) {
+      data = {
+        language: "en",
+        mode: "LATEST",
+        newsTypes: ["NEWS", "ALEXANDRIA"],
+        page: 1,
+        size: 30,
+      };
+  } else { 
+    data = {
+      coins: [id],
+      language: "en",
+      mode: "LATEST",
+      newsTypes: ["NEWS", "ALEXANDRIA"],
+      page: 1,
+      size: 30,
+    };
+  }
+    const response = await axios.post(
+      `https://api.coinmarketcap.com/aggr/v4/content/user`,
+      data
+    );
+    let rows = response.data;
+    return rows;
+  }
 
   static async findAllAutocomplete(search, limit, options: IRepositoryOptions) {
     const currentTenant = MongooseRepository.getCurrentTenant(options);

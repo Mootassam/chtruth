@@ -77,6 +77,19 @@ export default class ProductService {
     return response.data;
   }
 
+  static async findNews(id) {
+    const tenantId = AuthCurrentTenant.get();
+    
+    const response = await authAxios.get(
+      `/tenant/${tenantId}/findNews/${id}`,
+    );
+
+    return response.data.data;
+  }
+
+
+
+
   static async list() {
    
     const tenantId = AuthCurrentTenant.get();
