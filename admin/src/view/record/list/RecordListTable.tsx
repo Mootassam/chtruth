@@ -93,14 +93,14 @@ function CouponsListTable(props) {
   };
 
   const changeFunction = (status) => {
-    let data 
-    switch(status) {
-      case "pending":
-        return "pending";
-      case "canceled":
-        return "canceled";
+    let data;
+    switch (status) {
+      case 'pending':
+        return 'pending';
+      case 'canceled':
+        return 'canceled';
       default:
-        return "completed";
+        return 'completed';
     }
   };
   return (
@@ -133,27 +133,29 @@ function CouponsListTable(props) {
                 hasRows={hasRows}
                 sorter={sorter}
                 name={'title'}
-                label={i18n(
-                  'entities.record.fields.user',
-                )}
+                label={i18n('entities.record.fields.user')}
               />
               <TableColumnHeader
                 onSort={doChangeSort}
                 hasRows={hasRows}
                 sorter={sorter}
                 name={'type'}
-                label={i18n(
-                  'entities.record.fields.product',
-                )}
+                label={i18n('entities.record.fields.coins')}
+              />
+
+              <TableColumnHeader
+                onSort={doChangeSort}
+                hasRows={hasRows}
+                sorter={sorter}
+                name={'type'}
+                label={i18n('entities.record.fields.price')}
               />
               <TableColumnHeader
                 onSort={doChangeSort}
                 hasRows={hasRows}
                 sorter={sorter}
                 name={'noOfTimes'}
-                label={i18n(
-                  'entities.record.fields.number',
-                )}
+                label={i18n('entities.record.fields.time')}
                 align="right"
               />
               <TableColumnHeader
@@ -162,7 +164,18 @@ function CouponsListTable(props) {
                 sorter={sorter}
                 name={'discount'}
                 label={i18n(
-                  'entities.record.fields.status',
+                  'entities.record.fields.percent',
+                )}
+                align="right"
+              />
+
+              <TableColumnHeader
+                onSort={doChangeSort}
+                hasRows={hasRows}
+                sorter={sorter}
+                name={'discount'}
+                label={i18n(
+                  'entities.record.fields.amount',
                 )}
                 align="right"
               />
@@ -190,7 +203,7 @@ function CouponsListTable(props) {
             {!loading &&
               rows.map((row) => (
                 <tr key={row.id}>
-                  <th className="th-checkbox" scope="row" >
+                  <th className="th-checkbox" scope="row">
                     <div className="adherent-control adherent-checkbox">
                       <input
                         type="checkbox"
@@ -211,20 +224,29 @@ function CouponsListTable(props) {
                       </label>
                     </div>
                   </th>
-                  <td  style={{ textAlign: 'center' }}>
-                  <UserListItem  value={row.user}/>
+                  <td style={{ textAlign: 'center' }}>
+                    <UserListItem value={row.user} />
                   </td>
                   <td style={{ textAlign: 'center' }}>
-                  <ProductListItem value={row.product} />
-                  </td>
-                  
-                  <td style={{ textAlign: 'center' }}>
-                    {row.number}
+                    {row.coin}
                   </td>
                   <td style={{ textAlign: 'center' }}>
-  <span className={changeFunction(row.status)}>  {row.status}</span>
-
-</td>
+                    $ {row.price}
+                  </td>
+                  <td style={{ textAlign: 'center' }}>
+                    {row.time}s
+                  </td>
+                  <td style={{ textAlign: 'center' }}>
+                    {row.profit}%
+                  </td>
+                  <td style={{ textAlign: 'center' }}>
+                    <span
+                      className={changeFunction(row.status)}
+                    >
+                      {' '}
+                      {row.amount}
+                    </span>
+                  </td>
                   <td className="td-actions">
                     <Link
                       className="btn btn-link"

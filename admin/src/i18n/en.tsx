@@ -64,6 +64,11 @@ const en = {
         product: 'product',
         number: 'record Number',
         status: 'status',
+        coins :'coins',
+        time :"Time",
+        amount:"amount",
+        percent:"Percentage", 
+        price : "Coin Price"
       },
       list: {
         title: 'List of records',

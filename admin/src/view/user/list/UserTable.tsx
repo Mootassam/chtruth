@@ -157,10 +157,7 @@ function UserTable() {
                   className="text-center"
                   label={i18n('user.fields.status')}
                 />
-                <TableColumnHeader
-                  className="text-center"
-                  label={i18n('user.fields.currentrecord')}
-                />
+              
                 <TableColumnHeader className="th-actions" />
               </tr>
             </thead>
@@ -230,19 +227,6 @@ function UserTable() {
                     </td>
                     <td className="text-center">
                       <UserStatusView value={row.status} />
-                    </td>
-
-                    <td>
-                      <button
-                        onClick={() =>
-                          showThecurrentRecord(
-                            row?.tasksDone,
-                            row?.vip?.dailyorder,
-                          )
-                        }
-                      >
-                        Show{' '}
-                      </button>
                     </td>
 
                     <td className="td-actions">
