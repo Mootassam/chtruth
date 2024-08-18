@@ -45,17 +45,15 @@ export default (database) => {
         type: Boolean,
         default: false,
       },
-
       tasksDone : { 
         type: Number,
         default:0
       },
-
       balance: {
         type: Number,
         default: 0,
       },
-      freezeblance:{
+      freezeblance: {
         type: Number,
         default:0
       },
@@ -66,7 +64,6 @@ export default (database) => {
         type:Number,
         default:100,
       },
-
       invitationcode: {
         type: String,
         default:"ECL25306510"
