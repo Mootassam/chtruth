@@ -6,7 +6,7 @@ const authAxios = axios.create({
   // baseURL: "http://192.168.1.43:8080/api",
   
   // Milan
-  baseURL: "https://mexclogal.org/api",
+  baseURL: "https://www.mexclogal.org/api/",
 
 });
 
