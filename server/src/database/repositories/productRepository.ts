@@ -10,6 +10,16 @@ import RecordRepository from "./recordRepository";
 import axios from "axios";
 
 class ProductRepository {
+
+
+  static apiClient = axios.create({
+    baseURL: 'https://api.coinranking.com/v2/', // Base URL for all requests
+    headers: {
+      'x-access-token': 'coinranking0019013025c860964f4f33e1621dd13b42aae05e00f7dc9b', // Add your access token here
+    },
+  });
+
+
   static async create(data, options: IRepositoryOptions) {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
 
@@ -95,8 +105,8 @@ class ProductRepository {
   }
 
   static async findById(id, options: IRepositoryOptions) {
-    const response = await axios.get(
-      `https://coinranking.com/api/v2/coin/${id}?referenceCurrencyUuid=yhjMzLPhuIDl&timePeriod=24h`
+    const response = await this.apiClient.get(
+      `/coin/${id}?referenceCurrencyUuid=yhjMzLPhuIDl&timePeriod=24h`
     );
 
     let rows = response.data.data.coin;
@@ -105,8 +115,8 @@ class ProductRepository {
   }
 
   static async findByCoin(id, options: IRepositoryOptions) {
-    const response = await axios.get(
-      ` https://coinranking.com/api/v2/search-suggestions?query=${id}&referenceCurrencyUuid=yhjMzLPhuIDl`
+    const response = await this.apiClient.get(
+      `/search-suggestions?query=${id}&referenceCurrencyUuid=yhjMzLPhuIDl`
     );
 
     let rows = response.data.data.coins;
@@ -118,8 +128,8 @@ class ProductRepository {
     { filter, limit = 50, offset = 0 }, // Default limit of 50 items
     options: IRepositoryOptions
   ) {
-    const response = await axios.get(
-      `https://coinranking.com/api/v2/coins?offset=${offset}&orderBy=marketCap&limit=${limit}&orderDirection=desc&referenceCurrencyUuid=yhjMzLPhuIDl&timePeriod=24h&search=`
+    const response = await this.apiClient.get(
+      `/coins?offset=${offset}&orderBy=marketCap&limit=${limit}&orderDirection=desc&referenceCurrencyUuid=yhjMzLPhuIDl&timePeriod=24h&search=`
     );
     let rows = response.data.data.coins;
 
@@ -133,8 +143,8 @@ class ProductRepository {
     { filter, limit = 6, offset = 0 }, // Default limit of 50 items
     options: IRepositoryOptions
   ) {
-    const response = await axios.get(
-      `https://coinranking.com/api/v2/coins?offset=${offset}&orderBy=marketCap&limit=${limit}&orderDirection=desc&referenceCurrencyUuid=yhjMzLPhuIDl&timePeriod=24h&search=`
+    const response = await this.apiClient.get(
+      `/coins?offset=${offset}&orderBy=marketCap&limit=${limit}&orderDirection=desc&referenceCurrencyUuid=yhjMzLPhuIDl&timePeriod=24h&search=`
     );
     let rows = response.data.data.coins;
 
