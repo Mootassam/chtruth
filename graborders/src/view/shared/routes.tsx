@@ -111,6 +111,15 @@ const screenRoutes = [
     permissionRequired: permissions.categoryRead,
     exact: true,
   },
+
+  {
+    path: "/transacations",
+    loader: () => import("src/view/pages/Transactions/Transacations"),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+
+
   {
     path: "/wallet",
     loader: () => import("src/view/pages/wallet/Wallet"),

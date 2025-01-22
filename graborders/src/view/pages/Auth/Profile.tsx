@@ -64,6 +64,7 @@ function Profile() {
       name: "Withdraw",
       url: "/withdraw",
     },
+    
     { icon: "fa-solid fa-user", name: "Profile", url: "/myprofile" },
     { icon: "fa-solid fa-lock", name: "Security", url: "/security" },
   ];
@@ -251,6 +252,33 @@ function Profile() {
                 </div>
               </div>
             </Link>
+
+            <Link to="/withdraw" className="remove__ligne">
+              <div className="line__section border__">
+                <div className="titre__section">
+                  <i className="fa-solid fa-money-bill-transfer profile__icon"></i>
+                  <span>Withdraw</span>
+                </div>
+                <div>
+                  <i className="fa fa-arrow-right " />
+                </div>
+              </div>
+            </Link>
+
+
+
+            <Link to="/transacations" className="remove__ligne">
+              <div className="line__section border__">
+                <div className="titre__section">
+                  <i className="fa-solid fa-arrow-right-arrow-left profile__icon"></i>
+                  <span>Transaction</span>
+                </div>
+                <div>
+                  <i className="fa fa-arrow-right " />
+                </div>
+              </div>
+            </Link>
+
             <Link to="/security" className="remove__ligne">
               <div className="line__section border__">
                 <div className="titre__section">
