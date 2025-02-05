@@ -26,7 +26,6 @@ const privateRoutes = [
     permissionRequired: permissions.categoryRead,
     exact: true,
   },
-
   {
     path: "/Online",
     loader: () => import("src/view/pages/Online/Online"),

@@ -3,6 +3,7 @@ import permissionCheker from "../../../modules/auth/permissionChecker";
 import LayoutPage from "src/view/layout/LayoutPage";
 
 function PrivateRoute({component: Component,currentTenant, currentUser,permissionRequired, ...reset }) {
+  
   const location = useLocation();
   return (
     <Route
