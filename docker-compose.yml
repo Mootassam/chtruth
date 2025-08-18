@@ -12,21 +12,21 @@ services:
   db:
     image: mongo:4.0-xenial
     ports:
-      - 2717:27017
+      - 2737:27017
     restart: unless-stopped
     volumes:
       - phone:/data/db
-  # web:
-  #   build: ./admin
-  #   ports:
-  #     - 3055:80
-  #   restart: unless-stopped
-  #   volumes:
-  #     - "./admin:/app"
-  #     - "/app/node_modules"
-  #   stdin_open: true
-  #   environment:
-  #     - CHOKIDAR_USEPOLLING=true
+  web:
+    build: ./admin
+    ports:
+      - 3055:80
+    restart: unless-stopped
+    volumes:
+      - "./admin:/app"
+      - "/app/node_modules"
+    stdin_open: true
+    environment:
+      - CHOKIDAR_USEPOLLING=true
 
   # web1:
   #   build: ./graborders
