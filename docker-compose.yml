@@ -3,7 +3,7 @@ services:
   backend:
     build: ./server
     ports:
-      - 8080:8080
+      - 8083:8083
     restart: unless-stopped
     volumes:
       - upload:/upload

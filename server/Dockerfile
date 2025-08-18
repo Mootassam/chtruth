@@ -8,5 +8,5 @@ RUN npm install
 # ENV BACKEND_URL="http://localhost:8080/api"
 ENV BACKEND_URL="https://www.mexclogal.org/api/"
 # ENV BACKEND_URL="http://localhost:8080/api"
-EXPOSE 8080
+EXPOSE 8083
 CMD ["npm", "start"]
