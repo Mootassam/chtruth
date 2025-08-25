@@ -72,13 +72,13 @@ const onEditorStateChange = (newEditorState) => {
   return (
     <>
     
-    <Breadcrumb
+    {/* <Breadcrumb
         items={[
           [i18n('dashboard.menu'), '/'],
           [i18n('company.menu'),'/company'],
           [i18n('company.faqs')],
         ]}
-      />
+      /> */}
 
       <ContentWrapper>
 {loading && <Spinner />}

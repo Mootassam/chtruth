@@ -3,10 +3,10 @@ import authToken from "src/modules/auth/authToken";
 
 const authAxios = axios.create({
   // Local link
-  // baseURL: "http://192.168.1.15:8080/api",
+  baseURL: "http://localhost:8083/api",
   
   // Milan
-  baseURL: "https://www.mexclogal.org/api/",
+  // baseURL: "https://www.mexclogal.org/api/",
 
 });
 

@@ -20,7 +20,7 @@
   --gray-dark: #343a40;
   --hover: #485162;
   /* --primary: #061e33; */
-  --primary: #1c253d;
+  --primary: #222d32;
   /* --secondary: #6c757d; */
   --secondary: #5869f0;
   --success: #28a745;
@@ -71,9 +71,9 @@ body {
     Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif,
     'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
     'Noto Color Emoji';
-  font-size: 1rem;
+  font-size: 14px;
   font-weight: 400;
-  line-height: 1.5;
+  /* line-height: 1.5; */
   color: #212529;
   text-align: left;
   background-color: #fff;

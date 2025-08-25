@@ -3,121 +3,62 @@ const permissions = Permissions.values;
 
 const privateRoutes = [
   {
-    path: "/",
-    loader: () => import("src/view/pages/Markets/Market"),
+    path: "/market",
+    loader: () => import("src/view/pages/Market/Market"),
     permissionRequired: permissions.categoryRead,
     exact: true,
   },
   {
-    path: "/Order",
-    loader: () => import("src/view/pages/Order/Order"),
-    permissionRequired: permissions.categoryRead,
-    exact: true,
-  },
-  {
-    path: "/search",
-    loader: () => import("src/view/pages/Search/Search"),
-    permissionRequired: permissions.categoryRead,
-    exact: true,
-  },
-  {
-    path: "/grap",
-    loader: () => import("src/view/pages/Grap/GrapPage"),
-    permissionRequired: permissions.categoryRead,
-    exact: true,
-  },
-  {
-    path: "/Online",
-    loader: () => import("src/view/pages/Online/Online"),
-    permissionRequired: permissions.categoryRead,
-    exact: true,
-  },
-  {
-    path: "/profile",
-    loader: () => import("src/view/pages/Auth/Profile"),
+    path: "/market/detail",
+    loader: () => import("src/view/pages/Market/MarketDetail"),
     permissionRequired: permissions.categoryRead,
     exact: true,
   },
 
-  {
-    path: "/invitation",
-    loader: () => import("src/view/pages/Invitation/Invitation"),
+
+      {
+    path: "/trade",
+    loader: () => import("src/view/pages/Trade/Trade"),
     permissionRequired: permissions.categoryRead,
     exact: true,
   },
+
+
+  
+
+    {
+    path: "/wallets",
+    loader: () => import("src/view/pages/wallet/MyWallet"),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+    {
+    path: "/",
+    loader: () => import("src/view/pages/Home/Home"),
+    permissionRequired: permissions.categoryRead,
+  },
+
 ];
 
 const screenRoutes = [
+
   {
-    path: "/currency",
-    loader: () => import("src/view/pages/Currency/CurrecnyPage"),
+    path: "/invitation",
+    loader: () => import("src/view/pages/invitation/invitation"),
     permissionRequired: permissions.categoryRead,
   },
 
   {
-    path: "/company",
-    loader: () => import("src/view/pages/Company/Company"),
+    path: "/language",
+    loader: () => import("src/view/pages/Language/Language"),
     permissionRequired: permissions.categoryRead,
-    exact: true,
-  },
-  {
-    path: "/faqs",
-    loader: () => import("src/view/pages/Faqs/Faqs"),
-    permissionRequired: permissions.categoryRead,
-    exact: true,
-  },
-  {
-    path: "/tc",
-    loader: () => import("src/view/pages/T&C/Tc"),
-    permissionRequired: permissions.categoryRead,
-    exact: true,
   },
 
-  {
-    path: "/Certificate",
-    loader: () => import("src/view/pages/Certificate/Certificate"),
+    {
+    path: "/withdrawaddress",
+    loader: () => import("src/view/pages/withdraw/WirthdrawAddress"),
     permissionRequired: permissions.categoryRead,
-    exact: true,
   },
-
-  {
-    path: "/tasks",
-    loader: () => import("src/view/pages/Tasks/Tasks"),
-    permissionRequired: permissions.categoryRead,
-    exact: true,
-  },
-  {
-    path: "/myprofile",
-    loader: () => import("src/view/pages/Team/Team"),
-    permissionRequired: permissions.categoryRead,
-    exact: true,
-  },
-  {
-    path: "/withdraw",
-    loader: () => import("src/view/pages/withdraw/Withdraw"),
-    permissionRequired: permissions.categoryRead,
-    exact: true,
-  },
-  {
-    path: "/security",
-    loader: () => import("src/view/pages/Auth/ChangePassword"),
-    permissionRequired: permissions.categoryRead,
-    exact: true,
-  },
-  {
-    path: "/transacation",
-    loader: () => import("src/view/pages/Transactions/Transaction"),
-    permissionRequired: permissions.categoryRead,
-    exact: true,
-  },
-
-  {
-    path: "/transacations",
-    loader: () => import("src/view/pages/Transactions/Transacations"),
-    permissionRequired: permissions.categoryRead,
-    exact: true,
-  },
-
 
   {
     path: "/wallet",
@@ -126,9 +67,89 @@ const screenRoutes = [
     exact: true,
   },
 
+
+      {
+    path: "/Withdraw",
+    loader: () => import("src/view/pages/withdraw/Withdraw"),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+
+
+       {
+    path: "/Withdrawaddress",
+    loader: () => import("src/view/pages/withdraw/WirthdrawAddress"),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+
   {
-    path: "/coin/:id",
-    loader: () => import("src/view/pages/Coin/Coin"),
+    path: "/news",
+    loader: () => import("src/view/pages/News/News"),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+
+  {
+    path: "/notification",
+    loader: () => import("src/view/pages/Notification/Notification"),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+
+
+    {
+    path: "/passwordtype",
+    loader: () => import("src/view/pages/profile/typepassword"),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+  {
+    path: "/p2p",
+    loader: () => import("src/view/pages/p2p/p2p"),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+
+  {
+    path: "/typepassword",
+    loader: () => import("src/view/pages/profile/typepassword"),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+
+  {
+    path: "/profile",
+    loader: () => import("src/view/pages/profile/profile"),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+
+  {
+    path: "/proof",
+    loader: () => import("src/view/pages/proof/proof"),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+
+    {
+    path: "/stacking",
+    loader: () => import("src/view/pages/stacking/stacking"),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+
+  {
+    path: "/securitytips",
+    loader: () => import("src/view/pages/securitytips/securitytips"),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+
+    {
+    path: "/termservice",
+    loader: () => import("src/view/pages/termservice/termservice"),
+    permissionRequired: permissions.categoryRead,
     exact: true,
   },
 ];

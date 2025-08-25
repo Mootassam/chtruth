@@ -117,10 +117,10 @@ function UserTable() {
                     </div>
                   )}
                 </TableColumnHeader>
-                <TableColumnHeader
+                {/* <TableColumnHeader
                   className="text-center"
                   label={i18n('user.fields.avatars')}
-                ></TableColumnHeader>
+                ></TableColumnHeader> */}
                 <TableColumnHeader
                   onSort={doChangeSort}
                   hasRows={hasRows}
@@ -202,7 +202,7 @@ function UserTable() {
                         </label>
                       </div>
                     </th>
-                    <td className="text-center">
+                    {/* <td className="text-center">
                       <Avatar
                         src={
                           row.avatars && row.avatars.length
@@ -211,7 +211,7 @@ function UserTable() {
                         }
                         alt="avatar"
                       />
-                    </td>
+                    </td> */}
                     <td>{row.email}</td>
                     <td>{row.fullName}</td>
                     <td>{row.invitationcode}</td>

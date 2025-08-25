@@ -27,6 +27,7 @@
     "formik": "^2.4.5",
     "html2canvas": "^1.4.1",
     "jquery": "3.5.1",
+    "klinecharts": "^10.0.0-alpha5",
     "lodash": "4.17.20",
     "md5": "2.3.0",
     "moment": "^2.30.1",
