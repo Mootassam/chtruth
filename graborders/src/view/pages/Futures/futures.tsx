@@ -1,6 +1,20 @@
-import React from "react";
+import React, { useState } from "react";
+import FuturesModal from "src/shared/modal/FuturesModal";
 
-function futures() {
+function Futures() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [tradeDirection, setTradeDirection] = useState(null);
+
+  const handleOpenModal = (direction) => {
+    setTradeDirection(direction);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setTradeDirection(null);
+  };
+
   return (
     <div className="container">
       {/* Header Section */}
@@ -25,6 +39,7 @@ function futures() {
           <span>24h Low: $50,920.30</span>
         </div>
       </div>
+      
       {/* Trading View Chart */}
       <div className="chart-container">
         <div className="chart-placeholder">
@@ -40,11 +55,23 @@ function futures() {
           </select>
         </div>
       </div>
-      {/* Action Buttons - Moved from bottom */}
+      
+      {/* Action Buttons */}
       <div className="future-action-buttons">
-        <button className="action-button buy-button">BUY</button>
-        <button className="action-button sell-button">SELL</button>
+        <button 
+          className="action-button buy-button"
+          onClick={() => handleOpenModal('up')}
+        >
+          BUY UP
+        </button>
+        <button 
+          className="action-button sell-button"
+          onClick={() => handleOpenModal('down')}
+        >
+          BUY DOWN
+        </button>
       </div>
+      
       {/* Recent Trades */}
       <div className="section-title">Recent Trades</div>
       <div className="recent-trades">
@@ -104,9 +131,17 @@ function futures() {
           <div className="trade-time">12:44:52</div>
         </div>
       </div>
-
+      
+      {/* Futures Modal */}
+      <FuturesModal 
+        isOpen={isModalOpen} 
+        onClose={handleCloseModal}
+        direction={tradeDirection}
+      />
+      
+     
     </div>
   );
 }
 
-export default futures;
+export default Futures;
