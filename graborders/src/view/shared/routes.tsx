@@ -23,7 +23,7 @@ const privateRoutes = [
   },
   {
     path: "/futures",
-    loader: () => import("src/view/pages/Market/MarketDetail"),
+    loader: () => import("src/view/pages/Futures/futures"),
     permissionRequired: permissions.categoryRead,
     exact: true,
   },
@@ -54,13 +54,18 @@ const screenRoutes = [
   },
 
   {
+    path: "/marketdetail",
+    loader: () => import("src/view/pages/Market/MarketDetail"),
+    permissionRequired: permissions.categoryRead,
+  },
+
+  {
     path: "/language",
     loader: () => import("src/view/pages/Language/Language"),
     permissionRequired: permissions.categoryRead,
   },
 
-
-    {
+  {
     path: "/support",
     loader: () => import("src/view/pages/Support/Support"),
     permissionRequired: permissions.categoryRead,
@@ -116,6 +121,19 @@ const screenRoutes = [
   {
     path: "/passwordtype",
     loader: () => import("src/view/pages/profile/typepassword"),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+  {
+    path: "/loginpassword",
+    loader: () => import("src/view/pages/LoginPassword/LoginPassword"),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+
+  {
+    path: "/withdrawPassword",
+    loader: () => import("src/view/pages/LoginPassword/withdrawpassword"),
     permissionRequired: permissions.categoryRead,
     exact: true,
   },

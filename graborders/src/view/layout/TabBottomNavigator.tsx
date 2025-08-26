@@ -29,7 +29,7 @@ function TabBottomNavigator() {
       name: "Trade",
     },
     {
-      icon: "fas fa-chart-bar",
+      icon: "fas fa-bullhorn nav-icon",
       path: "/futures",
       name: "Futures",
     },

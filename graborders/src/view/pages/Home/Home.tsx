@@ -148,66 +148,7 @@ function Home() {
         ))}
       </div>
       {/* Portfolio Section */}
-      <div className="portfolio-section">
-        <div className="section-header">
-          <div className="section-title">Portfolio</div>
-          <div className="see-all">History</div>
-        </div>
-        {/* Toggle between empty and with funds */}
-        <div className="toggle-container">
-          <div className="toggle-option toggle-active" id="toggle-empty">
-            New User
-          </div>
-          <div className="toggle-option" id="toggle-funded">
-            With Funds
-          </div>
-        </div>
-        <div className="portfolio-empty" id="empty-portfolio">
-          <div className="portfolio-empty-icon">
-            <i className="fas fa-wallet" />
-          </div>
-          <div className="portfolio-empty-title">Your portfolio is empty</div>
-          <div className="portfolio-empty-text">
-            Buy your first crypto and start building your portfolio today
-          </div>
-          <div className="get-started-btn">Get Started</div>
-        </div>
-        <div className="portfolio-chart" id="funded-portfolio">
-          <div className="chart-line" />
-          <div className="chart-bars">
-            <div className="chart-bar" style={{ height: 30 }} />
-            <div className="chart-bar" style={{ height: 50 }} />
-            <div className="chart-bar" style={{ height: 70 }} />
-            <div className="chart-bar" style={{ height: 90 }} />
-            <div className="chart-bar" style={{ height: 60 }} />
-            <div className="chart-bar" style={{ height: 80 }} />
-            <div className="chart-bar" style={{ height: 100 }} />
-          </div>
-          <div className="chart-labels">
-            <span>Mon</span>
-            <span>Tue</span>
-            <span>Wed</span>
-            <span>Thu</span>
-            <span>Fri</span>
-            <span>Sat</span>
-            <span>Sun</span>
-          </div>
-        </div>
-        <div className="portfolio-stats" id="portfolio-stats">
-          <div className="stat">
-            <div className="stat-value">$8,420.75</div>
-            <div className="stat-label">Crypto</div>
-          </div>
-          <div className="stat">
-            <div className="stat-value">$1,235.64</div>
-            <div className="stat-label">NFTs</div>
-          </div>
-          <div className="stat">
-            <div className="stat-value">$1,630.00</div>
-            <div className="stat-label">Earn</div>
-          </div>
-        </div>
-      </div>
+
       {/* Favorites Section */}
       <div className="favorites-header">
         <div className="favorites-title">Popular Cryptocurrencies</div>
@@ -293,45 +234,87 @@ function Home() {
         </div>
       </div>
       {/* News Section */}
-      <div className="news-section">
-        <div className="section-header">
-          <div className="section-title">Crypto News</div>
-          <div className="see-all">See All →</div>
+      <div className="crypto-news-container">
+        {/* News Section Header */}
+        <div className="news-section-header">
+          <div className="news-sections-title">Crypto News</div>
+          <Link to="/news" className="news-see-all remove_blue">See All →</Link>
         </div>
-        <div className="news-item">
-          <div className="news-image">
+        {/* News Items */}
+        <div className="news-item-card">
+          <div className="news-image-placeholder">
             <i
               className="fas fa-newspaper"
               style={{ color: "#F3BA2F", fontSize: 24 }}
             />
           </div>
-          <div className="news-content">
-            <div className="news-title">How to Get Started with Crypto</div>
-            <div className="news-excerpt">
-              A beginner's guide to buying your first cryptocurrency and
-              understanding blockchain technology.
+          <div className="news-content-wrapper">
+            <div className="news-headline">
+              Bitcoin Surges Past $60,000 Amid Institutional Demand
             </div>
-            <div className="news-date">2 hours ago • CryptoGuide</div>
+            <div className="news-summary">
+              Major companies continue to add Bitcoin to their balance sheets,
+              driving prices to new yearly highs.
+            </div>
+            <div className="news-meta-info">2 hours ago • CryptoDaily</div>
           </div>
         </div>
-        <div className="news-item">
-          <div className="news-image">
+        <div className="news-item-card">
+          <div className="news-image-placeholder">
             <i
               className="fas fa-newspaper"
               style={{ color: "#F3BA2F", fontSize: 24 }}
             />
           </div>
-          <div className="news-content">
-            <div className="news-title">
-              5 Security Tips Every Crypto User Should Know
+          <div className="news-content-wrapper">
+            <div className="news-headline">
+              Ethereum 2.0 Upgrade Nears Completion
             </div>
-            <div className="news-excerpt">
-              Protect your digital assets with these essential security
-              practices for cryptocurrency holders.
+            <div className="news-summary">
+              The long-awaited transition to proof-of-stake consensus is
+              scheduled for next month, promising reduced energy consumption.
             </div>
-            <div className="news-date">5 hours ago • SecurityDaily</div>
+            <div className="news-meta-info">5 hours ago • BlockchainNews</div>
           </div>
         </div>
+        <div className="news-item-card">
+          <div className="news-image-placeholder">
+            <i
+              className="fas fa-newspaper"
+              style={{ color: "#F3BA2F", fontSize: 24 }}
+            />
+          </div>
+          <div className="news-content-wrapper">
+            <div className="news-headline">
+              Regulatory Framework for Cryptocurrencies Expected This Year
+            </div>
+            <div className="news-summary">
+              Government officials hint at comprehensive crypto regulations that
+              could bring clarity to the market.
+            </div>
+            <div className="news-meta-info">Yesterday • FinanceTimes</div>
+          </div>
+        </div>
+        <div className="news-item-card">
+          <div className="news-image-placeholder">
+            <i
+              className="fas fa-newspaper"
+              style={{ color: "#F3BA2F", fontSize: 24 }}
+            />
+          </div>
+          <div className="news-content-wrapper">
+            <div className="news-headline">
+              DeFi Projects See Record Growth in User Adoption
+            </div>
+            <div className="news-summary">
+              Decentralized finance platforms have attracted over 4 million new
+              users in the past quarter alone.
+            </div>
+            <div className="news-meta-info">2 days ago • DeFiJournal</div>
+          </div>
+        </div>
+        {/* News Section Footer */}
+       
       </div>
     </div>
   );

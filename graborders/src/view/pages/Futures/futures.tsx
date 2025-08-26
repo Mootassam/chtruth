@@ -1,18 +1,12 @@
 import React from "react";
-import { useHistory } from 'react-router-dom';
 
-function MarketDetail() {
-  const history = useHistory();
-
-  const goBack = () => {
-    history.goBack(); // This will take you back to the previous page
-  };
+function futures() {
   return (
     <div className="container">
       {/* Header Section */}
       <div className="header">
         <div className="header-top">
-          <div className="back-button" onClick={() => goBack()}>
+          <div className="back-button">
             <i className="fas fa-arrow-left" />
           </div>
           <div className="market-info">
@@ -46,8 +40,11 @@ function MarketDetail() {
           </select>
         </div>
       </div>
-
-      
+      {/* Action Buttons - Moved from bottom */}
+      <div className="future-action-buttons">
+        <button className="action-button buy-button">BUY</button>
+        <button className="action-button sell-button">SELL</button>
+      </div>
       {/* Recent Trades */}
       <div className="section-title">Recent Trades</div>
       <div className="recent-trades">
@@ -107,13 +104,9 @@ function MarketDetail() {
           <div className="trade-time">12:44:52</div>
         </div>
       </div>
-      {/* Buy/Sell Buttons */}
-      <div className="action-buttons">
-        <button className="action-button buy-button">BUY</button>
-        <button className="action-button sell-button">SELL</button>
-      </div>
+
     </div>
   );
 }
 
-export default MarketDetail;
+export default futures;
