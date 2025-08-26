@@ -1,7 +1,44 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
+interface QuickActionItem {
+  path: string;
+  icon: string;
+  name: string;
+}
 
 function Home() {
+  const [activeItem, setActiveItem] = useState<string>("/deposit");
+
+  const icons = [
+    {
+      path: "/deposit",
+      icon: "fas fa-chart-line feature-icon",
+      name: "deposit",
+    },
+
+    {
+      path: "/Withdraw",
+      icon: "fas fa-chart-line feature-icon",
+      name: "Withdraw",
+    },
+    {
+      path: "/History",
+      icon: "fas fa-chart-line feature-icon",
+      name: "deposit",
+    },
+    {
+      path: "/Security",
+      icon: "fas fa-chart-line feature-icon",
+      name: "Security",
+    },
+
+    {
+      path: "/Support",
+      icon: "fas fa-chart-line feature-icon",
+      name: "Support",
+    },
+  ];
+
   const buttons = [
     {
       path: "/p2p",
@@ -23,6 +60,38 @@ function Home() {
       path: "/securitytips",
       icon: "fas fa-shield-alt feature-icon",
       name: " Security Tips",
+    },
+  ];
+
+  const handleItemClick = (path: string) => {
+    setActiveItem(path);
+  };
+
+  const quickActions = [
+    {
+      path: "/deposit",
+      icon: "fas fa-wallet",
+      name: "Deposit",
+    },
+    {
+      path: "/withdraw",
+      icon: "fas fa-money-bill-wave",
+      name: "Withdraw",
+    },
+    {
+      path: "/history",
+      icon: "fas fa-history",
+      name: "History",
+    },
+    {
+      path: "/security",
+      icon: "fas fa-shield-alt",
+      name: "Security",
+    },
+    {
+      path: "/support",
+      icon: "fas fa-question-circle",
+      name: "Support",
     },
   ];
 
@@ -50,37 +119,25 @@ function Home() {
       </div>
       {/* Quick Action Buttons */}
       <div className="quick-actions">
-        <div className="action-btn">
-          <div className="action-circle buy">
-            <i className="fas fa-plus action-icon" />
-          </div>
-          <span className="action-text">Buy</span>
-        </div>
-        <div className="action-btn">
-          <div className="action-circle other">
-            <i className="fas fa-download action-icon" />
-          </div>
-          <span className="action-text">Receive</span>
-        </div>
-        <div className="action-btn">
-          <div className="action-circle other">
-            <i className="fas fa-exchange-alt action-icon" />
-          </div>
-          <span className="action-text">Convert</span>
-        </div>
-        <div className="action-btn">
-          <div className="action-circle other">
-            <i className="fas fa-paper-plane action-icon" />
-          </div>
-          <span className="action-text">Send</span>
-        </div>
-        <div className="action-btn">
-          <div className="action-circle other">
-            <i className="fas fa-wallet action-icon" />
-          </div>
-          <span className="action-text">Deposit</span>
-        </div>
+        {quickActions.map((item) => (
+          <Link
+            to={item.path}
+            className="action-btn remove_blue"
+            role="button"
+            aria-label="Deposit cryptocurrency"
+          >
+            <div
+              className={`action-circle ${
+                activeItem === item.path ? "buy" : "other"
+              }`}
+            >
+              <i className={`${item.icon} action-icon`} aria-hidden="true" />
+            </div>
+            <span className="action-text">{item.name}</span>
+          </Link>
+        ))}
       </div>
+
       {/* Feature Shortcuts */}
       <div className="feature-shortcuts">
         {buttons.map((item, index) => (

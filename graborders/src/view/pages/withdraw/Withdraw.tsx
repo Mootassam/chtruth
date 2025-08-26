@@ -1,145 +1,137 @@
-import React from 'react'
+import React from "react";
+import SubHeader from "src/view/shared/Header/SubHeader";
 
 function Withdraw() {
   return (
-    <div className="container">
-  {/* Header Section */}
-  <div className="header">
-    <div className="header-top">
-      <div className="back-button">
-        <i className="fas fa-arrow-left" />
-      </div>
-      <div className="page-title">Withdraw Crypto</div>
-      <div style={{ width: 20 }} /> {/* For spacing */}
-    </div>
-  </div>
-  {/* Currency Selection */}
-  <div className="currency-selection">
-    <div className="section-title">Select Currency</div>
-    <div className="currency-options">
-      <div className="currency-option active" data-currency="btc">
-        <div className="currency-icon btc-color">
-          <i className="fab fa-btc" />
-        </div>
-        <div className="currency-name">Bitcoin</div>
-        <div className="currency-balance">0.2543 BTC</div>
-      </div>
-      <div className="currency-option" data-currency="eth">
-        <div className="currency-icon eth-color">
-          <i className="fab fa-ethereum" />
-        </div>
-        <div className="currency-name">Ethereum</div>
-        <div className="currency-balance">1.842 ETH</div>
-      </div>
-      <div className="currency-option" data-currency="usdt">
-        <div className="currency-icon usdt-color">
-          <i className="fas fa-dollar-sign" />
-        </div>
-        <div className="currency-name">USDT</div>
-        <div className="currency-balance">1250.50 USDT</div>
-      </div>
-    </div>
-  </div>
-  {/* Form Section */}
-  <div className="form-section">
-    {/* Withdrawal Address */}
-    <div className="input-group">
-      <label className="input-label">Withdrawal Address</label>
-      <div className="input-container">
-        <input
-          type="text"
-          className="text-input"
-          id="withdrawal-address"
-          placeholder="Enter wallet address"
-        />
-        <div className="network-address" id="network-info">
-          Network: Bitcoin (BTC)
-        </div>
-      </div>
-    </div>
-    {/* Amount */}
-    <div className="input-group">
-      <label className="input-label">Withdrawal Amount</label>
-      <div className="input-container">
-        <div className="amount-row">
-          <input
-            type="number"
-            className="amount-input"
-            id="amount-input"
-            placeholder={0.0}
-          />
-          <button className="max-button" id="max-button">
-            MAX
-          </button>
-        </div>
-        <div className="available-balance">
-          Available: <span id="available-balance">0.2543 BTC</span>
-        </div>
-      </div>
-    </div>
-    {/* Withdrawal Password */}
-    <div className="input-group">
-      <label className="input-label">Withdrawal Password</label>
-      <div className="input-container">
-        <input
-          type="password"
-          className="text-input"
-          id="withdrawal-password"
-          placeholder="Enter withdrawal password"
-        />
-      </div>
-    </div>
-    {/* Fee Information */}
-    <div className="fee-info">
-      <div className="fee-item">
-        <div className="fee-label">Minimum withdrawal</div>
-        <div className="fee-value" id="min-withdrawal">
-          0.001 BTC
-        </div>
-      </div>
-      <div className="fee-item">
-        <div className="fee-label">Network fee</div>
-        <div className="fee-value" id="network-fee">
-          0.0005 BTC
-        </div>
-      </div>
-      <div className="fee-item">
-        <div className="fee-label">Service fee</div>
-        <div className="fee-value" id="service-fee">
-          0.0001 BTC
-        </div>
-      </div>
-      <div className="fee-item receive-amount">
-        <div className="fee-label">You will receive</div>
-        <div className="fee-value" id="receive-amount">
-          0.0000 BTC
-        </div>
-      </div>
-    </div>
-    {/* Security Notice */}
-    <div className="security-notice">
-      <div className="security-header">
-        <i className="fas fa-shield-alt security-icon" />
-        <div className="security-title">Security Verification</div>
-      </div>
-      <div className="security-text">
-        For your security, withdrawals require password confirmation and may be
-        subject to review. Withdrawals to incorrect addresses cannot be
-        reversed.
-      </div>
-    </div>
-    {/* Withdraw Button */}
-    <button className="withdraw-button" id="withdraw-button" disabled="">
-      Confirm Withdrawal
-    </button>
-  </div>
-  {/* Toast Notification */}
-  <div className="toast" id="toast">
-    Withdrawal address copied!
-  </div>
-</div>
+    <div className="withdrawContainer">
+      {/* Header Section */}
 
-  )
+      <SubHeader title="Withdraw Crypto" />
+      {/* Currency Selection */}
+      <div className="currencySection">
+        <div className="sectionHeading">Select Currency</div>
+        <div className="currencyList">
+          <div className="currencyItem selected" data-currency="btc">
+            <div className="currencyIcon btcColor">
+              <i className="fab fa-btc" />
+            </div>
+            <div className="currencyTitle">Bitcoin</div>
+            <div className="currencyBalance">0.2543 BTC</div>
+          </div>
+          <div className="currencyItem" data-currency="eth">
+            <div className="currencyIcon ethColor">
+              <i className="fab fa-ethereum" />
+            </div>
+            <div className="currencyTitle">Ethereum</div>
+            <div className="currencyBalance">1.842 ETH</div>
+          </div>
+          <div className="currencyItem" data-currency="usdt">
+            <div className="currencyIcon usdtColor">
+              <i className="fas fa-dollar-sign" />
+            </div>
+            <div className="currencyTitle">USDT</div>
+            <div className="currencyBalance">1250.50 USDT</div>
+          </div>
+        </div>
+      </div>
+      {/* Form Section */}
+      <div className="formSection">
+        {/* Withdrawal Address */}
+        <div className="inputField">
+          <label className="inputLabel">Withdrawal Address</label>
+          <div className="inputWrapper">
+            <input
+              type="text"
+              className="textField"
+              id="withdrawalAddress"
+              placeholder="Enter wallet address"
+            />
+            <div className="networkInfo" id="networkDetails">
+              Network: Bitcoin (BTC)
+            </div>
+          </div>
+        </div>
+        {/* Amount */}
+        <div className="inputField">
+          <label className="inputLabel">Withdrawal Amount</label>
+          <div className="inputWrapper">
+            <div className="amountRow">
+              <input
+                className="amountField"
+                id="amountInput"
+                placeholder={0.0}
+              />
+              <button className="maxBtn" id="maxBtn">
+                MAX
+              </button>
+            </div>
+            <div className="balanceText">
+              Available: <span id="availableBalance">0.2543 BTC</span>
+            </div>
+          </div>
+        </div>
+        {/* Withdrawal Password */}
+        <div className="inputField">
+          <label className="inputLabel">Withdrawal Password</label>
+          <div className="inputWrapper">
+            <input
+              type="password"
+              className="textField"
+              id="withdrawalPassword"
+              placeholder="Enter withdrawal password"
+            />
+          </div>
+        </div>
+        {/* Fee Information */}
+        <div className="feeContainer">
+          <div className="feeRow">
+            <div className="feeLabel">Minimum withdrawal</div>
+            <div className="feeValue" id="minWithdrawal">
+              0.001 BTC
+            </div>
+          </div>
+          <div className="feeRow">
+            <div className="feeLabel">Network fee</div>
+            <div className="feeValue" id="networkFee">
+              0.0005 BTC
+            </div>
+          </div>
+          <div className="feeRow">
+            <div className="feeLabel">Service fee</div>
+            <div className="feeValue" id="serviceFee">
+              0.0001 BTC
+            </div>
+          </div>
+          <div className="feeRow receiveAmount">
+            <div className="feeLabel">You will receive</div>
+            <div className="feeValue" id="receiveAmount">
+              0.0000 BTC
+            </div>
+          </div>
+        </div>
+        {/* Security Notice */}
+        <div className="securityNotice">
+          <div className="securityHeader">
+            <i className="fas fa-shield-alt securityIcon" />
+            <div className="securityTitle">Security Verification</div>
+          </div>
+          <div className="securityText">
+            For your security, withdrawals require password confirmation and may
+            be subject to review. Withdrawals to incorrect addresses cannot be
+            reversed.
+          </div>
+        </div>
+        {/* Withdraw Button */}
+        <button className="withdrawBtn" id="withdrawBtn">
+          Confirm Withdrawal
+        </button>
+      </div>
+      {/* Toast Notification */}
+      <div className="toastMsg" id="toastNotification">
+        Withdrawal address copied!
+      </div>
+    </div>
+  );
 }
 
-export default Withdraw
+export default Withdraw;

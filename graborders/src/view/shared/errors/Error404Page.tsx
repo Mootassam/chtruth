@@ -1,54 +1,38 @@
-import React from 'react'
-import './Styles/error.css'
-import { Link } from 'react-router-dom'
-import { i18n } from './../../../i18n';
+import React from "react";
+import "./Styles/error.css";
+import { Link } from "react-router-dom";
+import { i18n } from "./../../../i18n";
 
 function Error404Page() {
   return (
-    <div className="error-container-403">
-      <div className="error-logo-403">
-        <i className="fas fa-coins error-logo-icon-403" />
-        <div className="error-logo-text-403">CryptoWallet</div>
-      </div>
-      <div className="error-content-403">
-        <div className="error-icon-403">
-          <i className="fas fa-exclamation-triangle" />
-        </div>
-        <h1 className="error-title-403">ERROR 404</h1>
-        <p className="error-message-403">{i18n('errors.404')}</p>
-
-        <Link to="/" className="underline">
-          <a href="#" className="error-home-button-403">
-            <i className="fas fa-home" />
-            {i18n('errors.backToHome')} 
-          </a>
-        </Link>
-      </div>
-      <div className="error-crypto-elements-403">
-        <div className="error-crypto-element-403">
-          <div className="error-crypto-icon-403">
-            <i className="fab fa-bitcoin" />
+    <div className="container eroro">
+      <div className="errorContainer">
+        <div className="cryptoAnimation">
+          <div className="cryptoIcon btcIcon">
+            <i className="fab fa-btc" />
           </div>
-          <div className="error-crypto-name-403">Bitcoin</div>
-        </div>
-        <div className="error-crypto-element-403">
-          <div className="error-crypto-icon-403">
+          <div className="cryptoIcon ethIcon">
             <i className="fab fa-ethereum" />
           </div>
-          <div className="error-crypto-name-403">Ethereum</div>
-        </div>
-        <div className="error-crypto-element-403">
-          <div className="error-crypto-icon-403">
-            <i className="fas fa-coins" />
+          <div className="cryptoIcon usdtIcon">
+            <i className="fas fa-dollar-sign" />
           </div>
-          <div className="error-crypto-name-403">Altcoins</div>
         </div>
-      </div>
-      <div className="error-footer-403">
-        <p>© 2023 CryptoWallet. All rights reserved.</p>
+        <div className="errorIcon">
+          <i className="fas fa-exclamation-circle" />
+        </div>
+        <h1 className="errorCode">404</h1>
+        <h2 className="errorTitle">Page Not Found</h2>
+        <p className="errorMessage">
+          The page you're looking for doesn't exist. It might have been moved or
+          you entered the wrong address.
+        </p>
+        <a href="/" className="homeButton">
+          <i className="fas fa-home" /> Go Back Home
+        </a>
       </div>
     </div>
-  )
+  );
 }
 
-export default Error404Page
+export default Error404Page;

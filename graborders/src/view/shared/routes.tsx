@@ -15,33 +15,38 @@ const privateRoutes = [
     exact: true,
   },
 
-
-      {
+  {
     path: "/trade",
     loader: () => import("src/view/pages/Trade/Trade"),
     permissionRequired: permissions.categoryRead,
     exact: true,
   },
-
-
-  
-
-    {
+  {
+    path: "/futures",
+    loader: () => import("src/view/pages/Market/MarketDetail"),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+  {
     path: "/wallets",
     loader: () => import("src/view/pages/wallet/MyWallet"),
     permissionRequired: permissions.categoryRead,
     exact: true,
   },
-    {
+  {
+    path: "/deposit",
+    loader: () => import("src/view/pages/deposit/deposit"),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+  {
     path: "/",
     loader: () => import("src/view/pages/Home/Home"),
     permissionRequired: permissions.categoryRead,
   },
-
 ];
 
 const screenRoutes = [
-
   {
     path: "/invitation",
     loader: () => import("src/view/pages/invitation/invitation"),
@@ -54,7 +59,20 @@ const screenRoutes = [
     permissionRequired: permissions.categoryRead,
   },
 
+
     {
+    path: "/support",
+    loader: () => import("src/view/pages/Support/Support"),
+    permissionRequired: permissions.categoryRead,
+  },
+
+  {
+    path: "/history",
+    loader: () => import("src/view/pages/History/History"),
+    permissionRequired: permissions.categoryRead,
+  },
+
+  {
     path: "/withdrawaddress",
     loader: () => import("src/view/pages/withdraw/WirthdrawAddress"),
     permissionRequired: permissions.categoryRead,
@@ -67,16 +85,14 @@ const screenRoutes = [
     exact: true,
   },
 
-
-      {
+  {
     path: "/Withdraw",
     loader: () => import("src/view/pages/withdraw/Withdraw"),
     permissionRequired: permissions.categoryRead,
     exact: true,
   },
 
-
-       {
+  {
     path: "/Withdrawaddress",
     loader: () => import("src/view/pages/withdraw/WirthdrawAddress"),
     permissionRequired: permissions.categoryRead,
@@ -97,8 +113,7 @@ const screenRoutes = [
     exact: true,
   },
 
-
-    {
+  {
     path: "/passwordtype",
     loader: () => import("src/view/pages/profile/typepassword"),
     permissionRequired: permissions.categoryRead,
@@ -132,7 +147,7 @@ const screenRoutes = [
     exact: true,
   },
 
-    {
+  {
     path: "/stacking",
     loader: () => import("src/view/pages/stacking/stacking"),
     permissionRequired: permissions.categoryRead,
@@ -146,7 +161,7 @@ const screenRoutes = [
     exact: true,
   },
 
-    {
+  {
     path: "/termservice",
     loader: () => import("src/view/pages/termservice/termservice"),
     permissionRequired: permissions.categoryRead,
