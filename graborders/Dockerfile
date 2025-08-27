@@ -1,18 +1,11 @@
-FROM node:18 AS builder
-
-# Install pnpm globally
-RUN npm install -g pnpm
-
+FROM node:14 AS builder
 WORKDIR /app
-COPY package*.json ./
-COPY package-lock.json ./
-
-# Use pnpm instead of npm
-RUN pnpm install --silent
-
-COPY . .
-RUN pnpm run build
+# COPY package*.json ./
+# COPY package-lock.json ./
+# RUN npm install --silent
+# COPY . .
+# RUN npm run build
 
 FROM nginx
 COPY ./nginx.conf /etc/nginx/conf.d/default.conf
-COPY --from=builder /app/dist /usr/share/nginx/html
+# COPY --from=builder  /app/dist /usr/share/nginx/html
