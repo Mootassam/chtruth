@@ -3,7 +3,7 @@ services:
   backend:
     build: ./server
     ports:
-      - 8083:8083
+      - 8084:8084
     restart: unless-stopped
     volumes:
       - upload:/upload
@@ -12,33 +12,33 @@ services:
   db:
     image: mongo:4.0-xenial
     ports:
-      - 2717:27017
+      - 2757:27017
     restart: unless-stopped
     volumes:
       - phone:/data/db
-  web:
-    build: ./admin
-    ports:
-      - 3055:80
-    restart: unless-stopped
-    volumes:
-      - "./admin:/app"
-      - "/app/node_modules"
-    stdin_open: true
-    environment:
-      - CHOKIDAR_USEPOLLING=true
-
-  # web1:
-  #   build: ./graborders
+  # web:
+  #   build: ./admin
   #   ports:
-  #     - 3015:80
+  #     - 3055:80
   #   restart: unless-stopped
   #   volumes:
-  #     - "./graborders:/app"
+  #     - "./admin:/app"
   #     - "/app/node_modules"
   #   stdin_open: true
   #   environment:
   #     - CHOKIDAR_USEPOLLING=true
+
+  web1:
+    build: ./graborders
+    ports:
+      - 3075:80
+    restart: unless-stopped
+    volumes:
+      - "./graborders:/app"
+      - "/app/node_modules"
+    stdin_open: true
+    environment:
+      - CHOKIDAR_USEPOLLING=true
 
 volumes:
   phone:

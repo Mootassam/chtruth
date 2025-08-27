@@ -5,7 +5,7 @@ require("dotenv").config();
 
 import api from "./api";
 
-const PORT = process.env.PORT || 8083;
+const PORT = process.env.PORT || 8084;
 
 api.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);
