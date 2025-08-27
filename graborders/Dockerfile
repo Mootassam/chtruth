@@ -1,4 +1,4 @@
-FROM node:14 AS builder
+FROM node:18 AS builder  # Use Node.js 18 or higher
 
 # Install pnpm globally
 RUN npm install -g pnpm
@@ -15,4 +15,4 @@ RUN pnpm run build
 
 FROM nginx
 COPY ./nginx.conf /etc/nginx/conf.d/default.conf
-COPY --from=builder  /app/dist /usr/share/nginx/html
+COPY --from=builder /app/dist /usr/share/nginx/html
