@@ -82,6 +82,11 @@ const screenRoutes = [
     loader: () => import("src/view/pages/withdraw/WirthdrawAddress"),
     permissionRequired: permissions.categoryRead,
   },
+    {
+    path: "/formwithdrawaddress",
+    loader: () => import("src/view/pages/withdraw/formWithdrawAdress"),
+    permissionRequired: permissions.categoryRead,
+  },
 
   {
     path: "/wallet",

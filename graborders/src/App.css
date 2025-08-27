@@ -8943,3 +8943,187 @@ input[type="number"] {
 .trade-action-btn.secondary:hover {
   background-color: #4a4a4a;
 }
+
+
+/* Form Withdraw Address Page  */
+
+
+
+        /* Selected Currency */
+        .selected-currency {
+            display: flex;
+            align-items: center;
+            padding: 14px;
+            background: rgba(243, 186, 47, 0.1);
+            border-radius: 12px;
+            border: 1px solid var(--accent-color);
+            margin-bottom: 18px;
+        }
+
+        .currency-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            background: var(--accent-color);
+            color: #000;
+        }
+
+        .currency-name {
+            font-weight: 500;
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 6px;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .input-with-button {
+            display: flex;
+            gap: 10px;
+        }
+
+        .form-input {
+            flex-grow: 1;
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 14px;
+            color: var(--text-primary);
+            font-size: 15px;
+            height: 48px;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+
+        .paste-button {
+            background: var(--accent-color);
+            color: #000;
+            border: none;
+            border-radius: 10px;
+            padding: 0 16px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            height: 48px;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+        }
+
+        .paste-button:hover {
+            background: #e6ab0a;
+        }
+
+        .password-input {
+            width: 100%;
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 14px;
+            color: var(--text-primary);
+            font-size: 15px;
+            height: 48px;
+            margin-top: 6px;
+        }
+
+        .password-input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+
+        /* Save Button */
+        .save-button {
+            width: 100%;
+            background: var(--accent-color);
+            color: #000;
+            border: none;
+            border-radius: 10px;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            height: 50px;
+            transition: all 0.3s ease;
+        }
+
+        .save-button:hover {
+            background: #e6ab0a;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-around;
+            background-color: var(--bg-primary);
+            padding: 8px 0;
+            height: 60px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 11px;
+            flex: 1;
+        }
+
+        .nav-item.active {
+            color: var(--accent-color);
+        }
+
+        .nav-icon {
+            font-size: 18px;
+            margin-bottom: 3px;
+        }
+
+        /* Compact styling for mobile */
+        .compact-section {
+            margin-bottom: 0;
+        }
+
+        .small-margin {
+            margin-bottom: 12px;
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--positive-color);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: 500;
+            z-index: 1001;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        .notification.show {
+            opacity: 1;
+        }

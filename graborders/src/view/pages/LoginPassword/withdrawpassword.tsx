@@ -9,7 +9,7 @@ function LoginPassword() {
       <SubHeader title="Withdraw Password" />
       {/* Password Form */}
       <div className="card">
-        <h2 className="card-title">CHANGE LOGIN PASSWORD</h2>
+        <h2 className="card-title">CHANGE WITHDRAW PASSWORD</h2>
         <div className="form-group">
           <label className="form-label">Password</label>
           <div className="password-input-container">

@@ -1,5 +1,6 @@
 import React from 'react'
 import SubHeader from 'src/view/shared/Header/SubHeader'
+import { Link } from 'react-router-dom';
 
 function WirthdrawAddress() {
   return (
@@ -12,9 +13,10 @@ function WirthdrawAddress() {
     <div className="card">
       <h2 className="card-title">CURRENCY TYPE</h2>
       <div className="currency-options">
-        <a
+        <Link to="/formwithdrawaddress"
+        
    
-          className="currency-option"
+          className="currency-option remove_blue"
 
         >
           <div className="currency-icon">
@@ -24,11 +26,12 @@ function WirthdrawAddress() {
           <div className="currency-arrow">
             <i className="fas fa-chevron-right" />
           </div>
-        </a>
-        <a
+        </Link>
+         <Link to="/formwithdrawaddress"
+        
+   
+          className="currency-option remove_blue"
 
-          className="currency-option"
-      
         >
           <div className="currency-icon">
             <i className="fab fa-ethereum" />
@@ -37,11 +40,12 @@ function WirthdrawAddress() {
           <div className="currency-arrow">
             <i className="fas fa-chevron-right" />
           </div>
-        </a>
-        <a
+      </Link>
+        <Link to="/formwithdrawaddress"
+        
+   
+          className="currency-option remove_blue"
 
-          className="currency-option"
- 
         >
           <div className="currency-icon">
             <i className="fas fa-dollar-sign" />
@@ -50,58 +54,11 @@ function WirthdrawAddress() {
           <div className="currency-arrow">
             <i className="fas fa-chevron-right" />
           </div>
-        </a>
+        </Link>
       </div>
     </div>
   </div>
-  {/* Withdrawal Address Page */}
-  <div id="withdrawal-page">
-    <div className="profile-header">
-      <a href="#currency-page" className="back-button">
-        <i className="fas fa-arrow-left" />
-      </a>
-      <h1 className="profile-title">Withdrawal Address</h1>
-    </div>
-    <div className="card">
-      <h2 className="card-title">CURRENCY TYPE</h2>
-      <div className="selected-currency" id="selectedCurrency">
-        <div className="currency-icon">
-          <i className="fab fa-bitcoin" />
-        </div>
-        <div className="currency-name">BTC (Bitcoin)</div>
-      </div>
-    </div>
-    <div className="card">
-      <h2 className="card-title">Please enter the withdrawal address</h2>
-      <div className="divider" />
-      <div className="form-group">
-        <label className="form-label">Withdrawal Address</label>
-        <div className="input-with-button">
-          <input
-            type="text"
-            className="form-input"
-            placeholder="Please enter the withdrawal address"
-            id="addressInput"
-          />
-          <button className="paste-button" >
-            PASTE
-          </button>
-        </div>
-      </div>
-      <div className="form-group">
-        <label className="form-label">Crypto Withdrawal Password</label>
-        <input
-          type="password"
-          className="form-input"
-          placeholder="Enter your withdrawal password"
-          id="passwordInput"
-        />
-      </div>
-      <button className="save-button" >
-        SAVE
-      </button>
-    </div>
-  </div>
+
  
 </div>
 
