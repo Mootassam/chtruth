@@ -1,4 +1,4 @@
-FROM node:14 as builder
+FROM node:14 AS builder
 
 # Install pnpm globally
 RUN npm install -g pnpm
