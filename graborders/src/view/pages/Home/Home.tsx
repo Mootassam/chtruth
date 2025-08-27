@@ -98,25 +98,26 @@ function Home() {
   return (
     <div className="container">
       {/* Header Section */}
-      <div className="mywallet-header">
-        <div className="header-top">
-          <div className="search-icon">
-            <i className="fas fa-search" />
-          </div>
-          <div className="notification-profile">
-            <i className="fas fa-bell header-notification-icon" />
-            <Link to="/profile">
-              <i className="fas fa-user-circle profile-icon" />
-            </Link>
-          </div>
-        </div>
-        <div className="balance-section">
-          <div className="balance zero-balance">$0.00</div>
-          <div className="tags">
-            <span className="rewards-tag">Rewards $0.00</span>
-          </div>
-        </div>
-      </div>
+       <div className="mywallet-header">
+         <div className="header-top">
+           <div className="search-icon">
+             <i className="fas fa-search" />
+           </div>
+           <div className="notification-profile">
+             <i className="fas fa-bell header-notification-icon" />
+             <Link to="/profile">
+             <i className="fas fa-user-circle profile-icon" />
+             </Link>
+           </div>
+         </div>
+         <div className="balance-section">
+           <div className="balance">$11,286.39</div>
+           <div className="tags">
+             <span className="profit-tag">+$172.68 | 1.53%</span>
+             <span className="rewards-tag">Rewards $25.32</span>
+           </div>
+         </div>
+       </div>
       {/* Quick Action Buttons */}
       <div className="quick-actions">
         {quickActions.map((item) => (
