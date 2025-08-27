@@ -1,4 +1,4 @@
-FROM node:18 AS builder  # Use Node.js 18 or higher
+FROM node:18 AS builder
 
 # Install pnpm globally
 RUN npm install -g pnpm
