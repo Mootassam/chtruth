@@ -7795,7 +7795,7 @@
 
   /* Futures Modal */
 
-  .modal-container {
+  /* .modal-container {
       background-color: #2a2a2a;
       border-radius: 12px;
       width: 100%;
@@ -7805,7 +7805,7 @@
       position: fixed;
       z-index: 1000;
       top: 30px;
-  }
+  } */
 
   /* Header Section */
   .modal-header {
@@ -8031,3 +8031,343 @@
   .down-indicator {
       color: #FF6838;
   }
+
+
+  .modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal-container {
+  background-color: #2a2a2a;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 350px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+}
+
+.up-theme {
+  border-top: 4px solid #00C076;
+}
+
+.down-theme {
+  border-top: 4px solid #FF6838;
+}
+
+/* Header Section */
+.modal-header {
+  background-color: #1a1a1a;
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #3a3a3a;
+}
+
+.pair-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pair-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: #F3BA2F;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.pair-icon i {
+  color: #000;
+  font-size: 16px;
+}
+
+.pair-name {
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: #AAAAAA;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 5px;
+}
+
+.close-btn:hover {
+  color: #FFFFFF;
+}
+
+/* Direction Indicator */
+.direction-indicator {
+  padding: 10px 15px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.up-indicator {
+  background-color: rgba(0, 192, 118, 0.2);
+  color: #00C076;
+}
+
+.down-indicator {
+  background-color: rgba(255, 104, 56, 0.2);
+  color: #FF6838;
+}
+
+/* Modal Content */
+.modal-content {
+  padding: 15px;
+}
+
+.section {
+  margin-bottom: 20px;
+}
+
+.section-title {
+  font-size: 14px;
+  color: #AAAAAA;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.options-container {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.option-btn {
+  background-color: #3a3a3a;
+  border: 1px solid #4a4a4a;
+  border-radius: 6px;
+  padding: 8px 12px;
+  color: #FFFFFF;
+  font-size: 14px;
+  cursor: pointer;
+  flex: 1;
+  min-width: 70px;
+  text-align: center;
+  transition: all 0.2s;
+}
+
+.option-btn:hover {
+  background-color: #4a4a4a;
+}
+
+.option-btn.selected {
+  background-color: #00C076;
+  border-color: #00C076;
+  color: #000;
+  font-weight: bold;
+}
+
+.down-theme .option-btn.selected {
+  background-color: #FF6838;
+  border-color: #FF6838;
+}
+
+.amount-control {
+  display: flex;
+  align-items: center;
+  background-color: #3a3a3a;
+  border-radius: 6px;
+  padding: 5px;
+  margin-top: 10px;
+}
+
+.amount-btn {
+  background: none;
+  border: none;
+  color: #AAAAAA;
+  font-size: 20px;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.amount-btn:hover {
+  background-color: #4a4a4a;
+  color: #FFFFFF;
+}
+
+.amount-inputs {
+  flex: 1;
+  background: none;
+  border: none;
+  color: #FFFFFF;
+  font-size: 16px;
+  text-align: center;
+  padding: 10px 0;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+.balance-info {
+  font-size: 14px;
+  color: #AAAAAA;
+  text-align: right;
+  margin-top: 5px;
+}
+
+.profit-info {
+  text-align: center;
+  font-size: 14px;
+  color: #AAAAAA;
+  margin: 20px 0;
+}
+
+.confirm-btn {
+  background-color: #00C076;
+  color: white;
+  display: block;
+  width: 100%;
+  padding: 15px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.confirm-btn:hover:not(:disabled) {
+  background-color: #00a466;
+}
+
+.confirm-btn:disabled {
+  background-color: #3a3a3a;
+  color: #777;
+  cursor: not-allowed;
+}
+
+.down-theme .confirm-btn {
+  background-color: #FF6838;
+}
+
+.down-theme .confirm-btn:hover:not(:disabled) {
+  background-color: #e55a2b;
+}
+
+/* Trade Progress Section */
+.trade-progress-section {
+  padding: 20px;
+  text-align: center;
+}
+
+.progress-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.circular-progress {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 1s linear;
+}
+
+.progress-inner {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  background-color: #2a2a2a;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.progress-time {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.progress-label {
+  font-size: 12px;
+  color: #AAAAAA;
+}
+
+.trade-result {
+  font-size: 16px;
+  font-weight: bold;
+  margin: 15px 0;
+  padding: 10px;
+  border-radius: 6px;
+}
+
+.trade-result.win {
+  background-color: rgba(0, 192, 118, 0.2);
+  color: #00C076;
+}
+
+.trade-result.loss {
+  background-color: rgba(255, 104, 56, 0.2);
+  color: #FF6838;
+}
+
+.trade-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.trade-action-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.trade-action-btn.primary {
+  background-color: #F3BA2F;
+  color: #000;
+}
+
+.trade-action-btn.primary:hover {
+  background-color: #e4ab25;
+}
+
+.trade-action-btn.secondary {
+  background-color: #3a3a3a;
+  color: #FFFFFF;
+}
+
+.trade-action-btn.secondary:hover {
+  background-color: #4a4a4a;
+}
