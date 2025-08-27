@@ -15,6 +15,10 @@ const FuturesModal: React.FC<FuturesModalProps> = ({ isOpen, onClose, direction 
   const [timeLeft, setTimeLeft] = useState<number>(0);
   const [tradeResult, setTradeResult] = useState<'win' | 'loss' | null>(null);
 
+
+
+
+  
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
