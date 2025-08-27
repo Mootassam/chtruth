@@ -1617,321 +1617,357 @@
 
 
   /* Invitation Page  */
-
-  /* Invite Section */
-  .invite-section {
-      background-color: #1A1A1A;
-      border-radius: 12px;
-      padding: 25px;
-      margin-bottom: 20px;
-      text-align: center;
-  }
-
-  .section-title {
-      font-size: 18px;
-      font-weight: bold;
-      color: #F3BA2F;
-      margin-bottom: 15px;
-  }
-
-  .invite-description {
-      color: #AAAAAA;
-      font-size: 14px;
-      line-height: 1.5;
-      margin-bottom: 20px;
-  }
-
-  /* Referral Code */
-  .referral-code-container {
-      background: linear-gradient(145deg, #2A2A2A, #1A1A1A);
-      border-radius: 10px;
-      padding: 15px;
-      margin: 20px 0;
-      position: relative;
-  }
-
-  .referral-label {
-      font-size: 14px;
-      color: #AAAAAA;
-      margin-bottom: 8px;
-  }
-
-  .referral-code {
-      font-size: 22px;
-      font-weight: bold;
-      letter-spacing: 2px;
-      color: #F3BA2F;
-      margin: 10px 0;
-      padding: 10px;
-      background-color: #000000;
-      border-radius: 6px;
-      font-family: monospace;
-  }
-
-  .copy-button {
-      background-color: #F3BA2F;
-      color: #000000;
-      border: none;
-      border-radius: 6px;
-      padding: 10px 20px;
-      font-size: 14px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background-color 0.2s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      margin: 0 auto;
-  }
-
-  .copy-button:hover {
-      background-color: #e0ab29;
-  }
-
-  /* Share Options */
-  .share-options {
-      display: flex;
-      justify-content: center;
-      gap: 15px;
-      margin: 25px 0;
-  }
-
-  .share-option {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      background-color: #2A2A2A;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: background-color 0.2s;
-  }
-
-  .share-option:hover {
-      background-color: #363636;
-  }
-
-  .share-icon {
-      font-size: 20px;
-      color: #F3BA2F;
-  }
-
-  /* Rewards Section */
-  .rewards-section {
-      background-color: #1A1A1A;
-      border-radius: 12px;
-      padding: 25px;
-      margin-bottom: 20px;
-  }
-
-  .rewards-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 15px;
-      margin-top: 15px;
-  }
-
-  .reward-card {
-      background-color: #2A2A2A;
-      border-radius: 10px;
-      padding: 15px;
-      text-align: center;
-  }
-
-  .reward-value {
-      font-size: 24px;
-      font-weight: bold;
-      color: #F3BA2F;
-      margin-bottom: 5px;
-  }
-
-  .reward-label {
-      font-size: 12px;
-      color: #AAAAAA;
-  }
-
-  /* Members Section */
-  .members-section {
-      background-color: #1A1A1A;
-      border-radius: 12px;
-      padding: 25px;
-      margin-bottom: 20px;
-  }
-
-  .members-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-  }
-
-  .view-all {
-      color: #F3BA2F;
-      font-size: 14px;
-      text-decoration: none;
-  }
-
-  .view-all:hover {
-      text-decoration: underline;
-  }
-
-  .members-stats {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 15px;
-      margin-bottom: 20px;
-  }
-
-  .stat-card {
-      background-color: #2A2A2A;
-      border-radius: 10px;
-      padding: 15px;
-      text-align: center;
-  }
-
-  .stat-value {
-      font-size: 24px;
-      font-weight: bold;
-      margin-bottom: 5px;
-  }
-
-  .approved {
-      color: #00C076;
-  }
-
-  .pending {
-      color: #F3BA2F;
-  }
-
-  .stat-label {
-      font-size: 12px;
-      color: #AAAAAA;
-  }
-
-  /* Members List */
-  .members-list {
-      margin-top: 20px;
-  }
-
-  .member-item {
-      display: flex;
-      align-items: center;
-      padding: 12px 0;
-      border-bottom: 1px solid #2A2A2A;
-  }
-
-  .member-item:last-child {
-      border-bottom: none;
-  }
-
-  .member-avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background-color: #2A2A2A;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-right: 12px;
-      color: #F3BA2F;
-  }
-
-  .member-details {
-      flex: 1;
-  }
-
-  .member-name {
-      font-weight: 500;
-      margin-bottom: 4px;
-  }
-
-  .member-date {
-      font-size: 12px;
-      color: #777777;
-  }
-
-  .member-status {
-      font-size: 12px;
-      padding: 4px 8px;
-      border-radius: 4px;
-  }
-
-  .status-approved {
-      background-color: rgba(0, 192, 118, 0.2);
-      color: #00C076;
-  }
-
-  .status-pending {
-      background-color: rgba(243, 186, 47, 0.2);
-      color: #F3BA2F;
-  }
-
-  /* How It Works */
-  .how-it-works {
-      background-color: #1A1A1A;
-      border-radius: 12px;
-      padding: 25px;
-  }
-
-  .steps {
-      margin-top: 15px;
-  }
-
-  .step {
-      display: flex;
-      margin-bottom: 20px;
-  }
-
-  .step-number {
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      background-color: #F3BA2F;
-      color: #000000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      margin-right: 15px;
-      flex-shrink: 0;
-  }
-
-  .step-content {
-      flex: 1;
-  }
-
-  .step-title {
-      font-weight: 500;
-      margin-bottom: 5px;
-  }
-
-  .step-description {
-      font-size: 14px;
-      color: #AAAAAA;
-      line-height: 1.5;
-  }
-
-  /* Toast Notification */
-  .toast {
-      position: fixed;
-      bottom: 80px;
-      left: 50%;
-      transform: translateX(-50%);
-      background-color: #00C076;
-      color: white;
-      padding: 12px 20px;
-      border-radius: 8px;
-      font-size: 14px;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-      z-index: 1000;
-  }
-
-  .toast.show {
-      opacity: 1;
-  }
+        .invite-container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            padding-bottom: 80px;
+        }
+        
+        /* Header Section */
+        .invite-header {
+            background-color: #000000;
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            margin-bottom: 20px;
+        }
+        
+        .invite-header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .invite-back-btn {
+            color: #FFFFFF;
+            font-size: 20px;
+        }
+        
+        .invite-title {
+            font-size: 20px;
+            font-weight: bold;
+        }
+        
+        .invite-placeholder {
+            width: 20px;
+        }
+        
+        /* Invite Section */
+        .invite-earn-section {
+            background-color: #1A1A1A;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .invite-section-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #F3BA2F;
+            margin-bottom: 15px;
+        }
+        
+        .invite-desc {
+            color: #AAAAAA;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+        
+        /* Referral Code */
+        .referral-container {
+            background: linear-gradient(145deg, #2A2A2A, #1A1A1A);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            position: relative;
+        }
+        
+        .referral-text {
+            font-size: 14px;
+            color: #AAAAAA;
+            margin-bottom: 8px;
+        }
+        
+        .referral-code-value {
+            font-size: 22px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            color: #F3BA2F;
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #000000;
+            border-radius: 6px;
+            font-family: monospace;
+        }
+        
+        .referral-copy-btn {
+            background-color: #F3BA2F;
+            color: #000000;
+            border: none;
+            border-radius: 6px;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin: 0 auto;
+        }
+        
+        .referral-copy-btn:hover {
+            background-color: #e0ab29;
+        }
+        
+        /* Share Options */
+        .share-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 25px 0;
+        }
+        
+        .share-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #2A2A2A;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .share-btn:hover {
+            background-color: #363636;
+        }
+        
+        .share-icon-img {
+            font-size: 20px;
+            color: #F3BA2F;
+        }
+        
+        /* Rewards Section */
+        .rewards-container {
+            background-color: #1A1A1A;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+        
+        .rewards-grid-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .reward-item {
+            background-color: #2A2A2A;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .reward-amount {
+            font-size: 24px;
+            font-weight: bold;
+            color: #F3BA2F;
+            margin-bottom: 5px;
+        }
+        
+        .reward-text {
+            font-size: 12px;
+            color: #AAAAAA;
+        }
+        
+        /* Members Section */
+        .members-container {
+            background-color: #1A1A1A;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+        
+        .members-header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .members-view-all {
+            color: #F3BA2F;
+            font-size: 14px;
+            text-decoration: none;
+        }
+        
+        .members-view-all:hover {
+            text-decoration: underline;
+        }
+        
+        .members-stats-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-item {
+            background-color: #2A2A2A;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .stat-approved {
+            color: #00C076;
+        }
+        
+        .stat-pending {
+            color: #F3BA2F;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #AAAAAA;
+        }
+        
+        /* Members List */
+        .members-list-container {
+            margin-top: 20px;
+        }
+        
+        .member-list-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #2A2A2A;
+        }
+        
+        .member-list-item:last-child {
+            border-bottom: none;
+        }
+        
+        .member-avatar-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #2A2A2A;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            color: #F3BA2F;
+        }
+        
+        .member-info {
+            flex: 1;
+        }
+        
+        .member-name-text {
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+        
+        .member-join-date {
+            font-size: 12px;
+            color: #777777;
+        }
+        
+        .member-status-badge {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+        
+        .status-badge-approved {
+            background-color: rgba(0, 192, 118, 0.2);
+            color: #00C076;
+        }
+        
+        .status-badge-pending {
+            background-color: rgba(243, 186, 47, 0.2);
+            color: #F3BA2F;
+        }
+        
+        /* How It Works */
+        .how-it-works-container {
+            background-color: #1A1A1A;
+            border-radius: 12px;
+            padding: 25px;
+        }
+        
+        .steps-container {
+            margin-top: 15px;
+        }
+        
+        .step-item {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        
+        .step-number-circle {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #F3BA2F;
+            color: #000000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        
+        .step-content-text {
+            flex: 1;
+        }
+        
+        .step-title-text {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .step-desc {
+            font-size: 14px;
+            color: #AAAAAA;
+            line-height: 1.5;
+        }
+        
+        /* Toast Notification */
+        .toast-notification {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #00C076;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .toast-notification.show {
+            opacity: 1;
+        }
 
 
   /* Langugae Page */
@@ -7209,8 +7245,238 @@
       color: #F3BA2F;
   }
 
-  /* Withdrawl Page  */
+  /* Withdrawl Address Page  */
 
+/* Card styles */
+        .card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 24px;
+            border: 1px solid var(--border-color);
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--accent-color);
+            margin-bottom: 16px;
+        }
+
+        /* Currency selection */
+        .currency-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .currency-option {
+            display: flex;
+            align-items: center;
+            padding: 13px 10px;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: var(--text-primary);
+            border: 1px solid transparent;
+        }
+
+        .currency-option:hover {
+            background: rgba(243, 186, 47, 0.1);
+            border-color: var(--accent-color);
+        }
+
+        .currency-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            background: var(--accent-color);
+            color: #000;
+        }
+
+        .currency-name {
+            font-weight: 500;
+            flex-grow: 1;
+        }
+
+        .currency-arrow {
+            color: var(--text-secondary);
+        }
+
+        /* Form elements */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .input-with-button {
+            display: flex;
+            gap: 12px;
+        }
+
+        .form-input {
+            flex-grow: 1;
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+            color: var(--text-primary);
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+
+        .form-input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .paste-button {
+            background: var(--accent-color);
+            color: #000;
+            border: none;
+            border-radius: 12px;
+            padding: 0 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .paste-button:hover {
+            background: #e6ab0a;
+        }
+
+        /* Save button */
+        .save-button {
+            width: 100%;
+            background: var(--accent-color);
+            color: #000;
+            border: none;
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .save-button:hover {
+            background: #e6ab0a;
+        }
+
+        /* Page toggle */
+        #currency-page:target ~ #withdrawal-page,
+        #currency-page:not(:target) ~ #withdrawal-page {
+            display: none;
+        }
+
+        #currency-page:target {
+            display: block;
+        }
+
+        /* Selected currency display */
+        .selected-currency {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            background: rgba(243, 186, 47, 0.1);
+            border-radius: 12px;
+            border: 1px solid var(--accent-color);
+        }
+
+        /* Divider */
+        .divider {
+            height: 1px;
+            background: var(--border-color);
+            margin: 20px 0;
+            opacity: 0.5;
+        }
+
+        /* Bottom navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-around;
+            background-color: var(--bg-primary);
+            padding: 8px 0;
+            height: 60px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 11px;
+            flex: 1;
+        }
+
+        .nav-item.active {
+            color: var(--accent-color);
+        }
+
+        .nav-icon {
+            font-size: 18px;
+            margin-bottom: 3px;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 480px) {
+            body {
+                padding: 16px;
+                padding-bottom: 70px;
+            }
+            
+            .card-title {
+                font-size: 16px;
+            }
+            
+            .input-with-button {
+                flex-direction: column;
+            }
+            
+            .paste-button {
+                width: 100%;
+                padding: 12px;
+            }
+        }
+
+        /* Animation for page transitions */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            animation: fadeIn 0.4s ease-out;
+        }
+
+
+  /* Withdrawl Page  */
+   
   .withdrawPage {
       background-color: #000000;
       color: #FFFFFF;

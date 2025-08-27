@@ -13,9 +13,9 @@ function WirthdrawAddress() {
       <h2 className="card-title">CURRENCY TYPE</h2>
       <div className="currency-options">
         <a
-          href="#withdrawal-page"
+   
           className="currency-option"
-          onclick="selectCurrency('BTC')"
+
         >
           <div className="currency-icon">
             <i className="fab fa-bitcoin" />
@@ -26,9 +26,9 @@ function WirthdrawAddress() {
           </div>
         </a>
         <a
-          href="#withdrawal-page"
+
           className="currency-option"
-          onclick="selectCurrency('ETH')"
+      
         >
           <div className="currency-icon">
             <i className="fab fa-ethereum" />
@@ -39,9 +39,9 @@ function WirthdrawAddress() {
           </div>
         </a>
         <a
-          href="#withdrawal-page"
+
           className="currency-option"
-          onclick="selectCurrency('USDT')"
+ 
         >
           <div className="currency-icon">
             <i className="fas fa-dollar-sign" />
@@ -83,7 +83,7 @@ function WirthdrawAddress() {
             placeholder="Please enter the withdrawal address"
             id="addressInput"
           />
-          <button className="paste-button" onclick="pasteAddress()">
+          <button className="paste-button" >
             PASTE
           </button>
         </div>
@@ -97,7 +97,7 @@ function WirthdrawAddress() {
           id="passwordInput"
         />
       </div>
-      <button className="save-button" onclick="saveAddress()">
+      <button className="save-button" >
         SAVE
       </button>
     </div>
