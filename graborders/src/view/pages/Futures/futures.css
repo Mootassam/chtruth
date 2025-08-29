@@ -1,0 +1,129 @@
+.chart-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 400px;
+  background-color: #131722;
+  border-radius: 4px;
+  overflow: hidden;
+  will-change: transform;
+}
+
+.chart-loading-spinner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(19, 23, 34, 0.8);
+  z-index: 10;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  border-top-color: #2196f3;
+  animation: spin 1s ease-in-out infinite;
+}
+
+.loading-text {
+  margin-top: 10px;
+  color: #fff;
+  font-size: 14px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.price-up {
+  color: #26a69a !important;
+  transition: color 0.3s;
+}
+
+.price-down {
+  color: #ef5350 !important;
+  transition: color 0.3s;
+}
+
+.price-flash {
+  animation: flash-animation 0.5s;
+}
+
+@keyframes flash-animation {
+  0% {
+    background-color: transparent;
+  }
+  50% {
+    background-color: rgba(38, 166, 154, 0.2);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+.recent-trades {
+  max-height: 300px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.recent-trades::-webkit-scrollbar {
+  width: 6px;
+}
+
+.recent-trades::-webkit-scrollbar-track {
+  background: #131722;
+}
+
+.recent-trades::-webkit-scrollbar-thumb {
+  background-color: #2a2e39;
+  border-radius: 3px;
+}
+
+.timeframe-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+
+.timeframe-button {
+  padding: 5px 10px;
+  background-color: #2a2e39;
+  border: none;
+  border-radius: 3px;
+  color: #b2b5be;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.2s;
+}
+
+.timeframe-button:hover {
+  background-color: #363a45;
+}
+
+.timeframe-button.active {
+  background-color: #2196f3;
+  color: white;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .chart-container {
+    min-height: 300px;
+  }
+  
+  .timeframe-button {
+    padding: 4px 8px;
+    font-size: 11px;
+  }
+}

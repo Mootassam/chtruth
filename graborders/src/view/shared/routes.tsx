@@ -8,12 +8,7 @@ const privateRoutes = [
     permissionRequired: permissions.categoryRead,
     exact: true,
   },
-  {
-    path: "/market/detail/:id",
-    loader: () => import("src/view/pages/Market/MarketDetail"),
-    permissionRequired: permissions.categoryRead,
-    exact: true,
-  },
+
 
   {
     path: "/trade",
@@ -57,6 +52,13 @@ const screenRoutes = [
     path: "/marketdetail",
     loader: () => import("src/view/pages/Market/MarketDetail"),
     permissionRequired: permissions.categoryRead,
+  },
+
+    {
+    path: "/market/detail/:id",
+    loader: () => import("src/view/pages/Market/MarketDetail"),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
   },
 
   {

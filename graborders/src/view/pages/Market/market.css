@@ -1,0 +1,194 @@
+/* Market Component Styles */
+
+.market-list {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Loading Indicators */
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 300px;
+  color: #888;
+}
+
+.loading-spinner {
+  border: 3px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  border-top: 3px solid #3498db;
+  width: 30px;
+  height: 30px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 15px;
+}
+
+.refresh-indicator {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 10;
+}
+
+.refresh-spinner {
+  border: 2px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  border-top: 2px solid #3498db;
+  width: 20px;
+  height: 20px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Search Bar */
+.search-bar {
+  position: relative;
+  margin-bottom: 15px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 10px 35px 10px 15px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  font-size: 14px;
+}
+
+.clear-search {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: #888;
+  cursor: pointer;
+}
+
+/* Market List Items */
+.market-list-item {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  border-bottom: 1px solid #eee;
+  text-decoration: none;
+  color: inherit;
+  transition: background-color 0.2s;
+}
+
+.market-list-item:hover {
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+.market-list-item.header {
+  font-weight: bold;
+  background-color: #f5f5f5;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+
+.market-list-item .name {
+  flex: 2;
+  display: flex;
+  align-items: center;
+}
+
+.market-list-item .price {
+  flex: 1;
+  text-align: right;
+}
+
+.market-list-item .change {
+  flex: 1;
+  text-align: right;
+}
+
+.market-list-item .volume {
+  flex: 1;
+  text-align: right;
+}
+
+.crypto-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: #f0f0f0;
+  margin-right: 10px;
+  font-weight: bold;
+}
+
+.positive {
+  color: #4caf50;
+}
+
+.negative {
+  color: #f44336;
+}
+
+/* Highlight animation for updated items */
+.highlight-update {
+  animation: highlight 1s ease-out;
+}
+
+@keyframes highlight {
+  0% {
+    background-color: rgba(52, 152, 219, 0.2);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+/* No Results */
+.no-results {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 300px;
+  color: #888;
+}
+
+/* Tabs */
+.market-tabs {
+  display: flex;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #eee;
+}
+
+.market-tabs button {
+  padding: 10px 20px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.market-tabs button.active {
+  border-bottom-color: #3498db;
+  color: #3498db;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .market-list-item .volume {
+    display: none;
+  }
+  
+  .market-list-item .name {
+    flex: 1.5;
+  }
+}
