@@ -9,7 +9,7 @@ const privateRoutes = [
     exact: true,
   },
   {
-    path: "/market/detail",
+    path: "/market/detail/:id",
     loader: () => import("src/view/pages/Market/MarketDetail"),
     permissionRequired: permissions.categoryRead,
     exact: true,

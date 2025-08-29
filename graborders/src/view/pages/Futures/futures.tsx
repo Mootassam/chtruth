@@ -1,12 +1,141 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import CoinListModal from "src/shared/modal/CoinListModal";
 import FuturesModal from "src/shared/modal/FuturesModal";
+
+// Interface for Binance trade data
+interface BinanceTrade {
+  e: string; // Event type
+  E: number; // Event time
+  s: string; // Symbol
+  t: number; // Trade ID
+  p: string; // Price
+  q: string; // Quantity
+  T: number; // Trade time
+  m: boolean; // Is buyer market maker?
+}
+
+// Interface for Binance ticker data
+interface BinanceTicker {
+  e: string; // Event type
+  E: number; // Event time
+  s: string; // Symbol
+  c: string; // Last price
+  o: string; // Open price
+  h: string; // High price
+  l: string; // Low price
+  v: string; // Total traded base asset volume
+  q: string; // Total traded quote asset volume
+  P: string; // Price change percent
+}
 
 function Futures() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [tradeDirection, setTradeDirection] = useState(null);
   const [isCoinModalOpen, setIsCoinModalOpen] = useState(false);
-  const [selectedCoin, setSelectedCoin] = useState(null);
+  const [selectedCoin, setSelectedCoin] = useState("ETHFIUSDT");
+  const [marketPrice, setMarketPrice] = useState("0");
+  const [priceChangePercent, setPriceChangePercent] = useState("0");
+  const [highPrice, setHighPrice] = useState("0");
+  const [lowPrice, setLowPrice] = useState("0");
+  const [volume, setVolume] = useState("0");
+  const [recentTrades, setRecentTrades] = useState<BinanceTrade[]>([]);
+  
+  const tradeWs = useRef<WebSocket | null>(null);
+  const tickerWs = useRef<WebSocket | null>(null);
+
+  // WebSocket connection for ticker data (price, 24h stats)
+  useEffect(() => {
+    if (!selectedCoin) return;
+
+    // Close previous connection if it exists
+    if (tickerWs.current) {
+      tickerWs.current.close();
+    }
+
+    // Connect to ticker stream
+    tickerWs.current = new WebSocket(`wss://stream.binance.com:9443/ws/${selectedCoin.toLowerCase()}@ticker`);
+
+    tickerWs.current.onopen = () => {
+      console.log(`Connected to ${selectedCoin} ticker stream`);
+    };
+
+    tickerWs.current.onmessage = (event: MessageEvent) => {
+      const tickerData: BinanceTicker = JSON.parse(event.data);
+      
+      // Update market data
+      setMarketPrice(tickerData.c);
+      setPriceChangePercent(tickerData.P);
+      setHighPrice(tickerData.h);
+      setLowPrice(tickerData.l);
+      setVolume(tickerData.v);
+
+      // Log real-time data to console
+      console.log('Real-time Ticker Data:', {
+        symbol: tickerData.s,
+        price: tickerData.c,
+        changePercent: tickerData.P + '%',
+        high: tickerData.h,
+        low: tickerData.l,
+        volume: tickerData.v
+      });
+    };
+
+    tickerWs.current.onerror = (error: Event) => {
+      console.error('Ticker WebSocket error:', error);
+    };
+
+    return () => {
+      if (tickerWs.current && tickerWs.current.readyState === WebSocket.OPEN) {
+        tickerWs.current.close();
+      }
+    };
+  }, [selectedCoin]);
+
+  // WebSocket connection for trade data (recent trades)
+  useEffect(() => {
+    if (!selectedCoin) return;
+
+    // Close previous connection if it exists
+    if (tradeWs.current) {
+      tradeWs.current.close();
+    }
+
+    // Connect to trade stream
+    tradeWs.current = new WebSocket(`wss://stream.binance.com:9443/ws/${selectedCoin.toLowerCase()}@trade`);
+
+    tradeWs.current.onopen = () => {
+      console.log(`Connected to ${selectedCoin} trade stream`);
+    };
+
+    tradeWs.current.onmessage = (event: MessageEvent) => {
+      const tradeData: BinanceTrade = JSON.parse(event.data);
+      
+      // Add new trade to recent trades (limit to last 20 trades)
+      setRecentTrades(prevTrades => {
+        const newTrades = [tradeData, ...prevTrades.slice(0, 19)];
+        return newTrades;
+      });
+
+      // Log real-time trade to console
+      console.log('Real-time Trade:', {
+        symbol: tradeData.s,
+        price: tradeData.p,
+        quantity: tradeData.q,
+        time: new Date(tradeData.T).toLocaleTimeString(),
+        isBuyerMaker: tradeData.m
+      });
+    };
+
+    tradeWs.current.onerror = (error: Event) => {
+      console.error('Trade WebSocket error:', error);
+    };
+
+    return () => {
+      if (tradeWs.current && tradeWs.current.readyState === WebSocket.OPEN) {
+        tradeWs.current.close();
+      }
+    };
+  }, [selectedCoin]);
 
   const handleOpenCoinModal = () => {
     setIsCoinModalOpen(true);
@@ -16,11 +145,14 @@ function Futures() {
     setIsCoinModalOpen(false);
   };
 
-  const handleSelectCoin = (coin) => {
+  const handleSelectCoin = (coin: string) => {
     setSelectedCoin(coin);
-    // You can update the UI with the selected coin
+    setIsCoinModalOpen(false);
+    // Reset recent trades when coin changes
+    setRecentTrades([]);
   };
-  const handleOpenModal = (direction) => {
+
+  const handleOpenModal = (direction: string) => {
     setTradeDirection(direction);
     setIsModalOpen(true);
   };
@@ -30,29 +162,51 @@ function Futures() {
     setTradeDirection(null);
   };
 
+  // Format number with commas and fixed decimals
+  const formatNumber = (num: string, decimals: number = 2) => {
+    return Number(num).toLocaleString(undefined, {
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals
+    });
+  };
+
+  // Format volume in billions
+  const formatVolume = (vol: string) => {
+    const volumeNum = Number(vol);
+    if (volumeNum >= 1000000000) {
+      return (volumeNum / 1000000000).toFixed(2) + 'B';
+    } else if (volumeNum >= 1000000) {
+      return (volumeNum / 1000000).toFixed(2) + 'M';
+    } else {
+      return formatNumber(vol, 0);
+    }
+  };
+
   return (
     <div className="container">
       {/* Header Section */}
       <div className="header">
         <div className="header-top">
-          {/* Removed back button and added coin list icon */}
-
           <div className="market-info">
             <div className="market-icon">
               <i className="fab fa-btc" />
             </div>
-            <div className="market-name">BTC/USDT</div>
-            <div className="market-change">+2.31%</div>
+            <div className="market-name">{selectedCoin}</div>
+            <div className="market-change" style={{ 
+              color: priceChangePercent.startsWith('-') ? '#FF6838' : '#00C076' 
+            }}>
+              {priceChangePercent}%
+            </div>
           </div>
           <div className="additional-actions" onClick={handleOpenCoinModal}>
             <i className="fas fa-filter" />
           </div>
         </div>
-        <div className="market-price">$51,825.10</div>
+        <div className="market-price">${formatNumber(marketPrice)}</div>
         <div className="market-stats">
-          <span>24h High: $52,120.40</span>
-          <span>24h Vol: 42.5B USDT</span>
-          <span>24h Low: $50,920.30</span>
+          <span>24h High: ${formatNumber(highPrice)}</span>
+          <span>24h Vol: {formatVolume(volume)} {selectedCoin.replace('USDT', '')}</span>
+          <span>24h Low: ${formatNumber(lowPrice)}</span>
         </div>
       </div>
 
@@ -60,14 +214,16 @@ function Futures() {
       <div className="chart-container">
         <div className="chart-placeholder">
           <i className="fas fa-chart-line" />
-          <span>Trading View Chart</span>
+          <span>Live {selectedCoin} Chart</span>
+          <small>Real-time data from Binance</small>
         </div>
         <div className="chart-controls">
           <select className="chart-timeframe">
+            <option>1m</option>
+            <option>5m</option>
             <option>1h</option>
             <option>4h</option>
             <option>1d</option>
-            <option>1w</option>
           </select>
         </div>
       </div>
@@ -89,63 +245,32 @@ function Futures() {
       </div>
 
       {/* Recent Trades */}
-      <div className="section-title">Recent Trades</div>
+      <div className="section-title">Recent Trades (Live)</div>
       <div className="recent-trades">
         <div className="trades-header">
           <span>Price (USDT)</span>
-          <span>Amount (BTC)</span>
+          <span>Amount</span>
           <span>Time</span>
         </div>
-        <div className="trade-row buy-trade">
-          <div className="trade-price">51,825.50</div>
-          <div className="trade-amount">0.124</div>
-          <div className="trade-time">12:45:23</div>
-        </div>
-        <div className="trade-row buy-trade">
-          <div className="trade-price">51,825.20</div>
-          <div className="trade-amount">0.543</div>
-          <div className="trade-time">12:45:21</div>
-        </div>
-        <div className="trade-row sell-trade">
-          <div className="trade-price">51,824.80</div>
-          <div className="trade-amount">1.234</div>
-          <div className="trade-time">12:45:18</div>
-        </div>
-        <div className="trade-row buy-trade">
-          <div className="trade-price">51,825.10</div>
-          <div className="trade-amount">0.876</div>
-          <div className="trade-time">12:45:15</div>
-        </div>
-        <div className="trade-row sell-trade">
-          <div className="trade-price">51,823.90</div>
-          <div className="trade-amount">0.453</div>
-          <div className="trade-time">12:45:10</div>
-        </div>
-        <div className="trade-row buy-trade">
-          <div className="trade-price">51,824.50</div>
-          <div className="trade-amount">0.321</div>
-          <div className="trade-time">12:45:05</div>
-        </div>
-        <div className="trade-row sell-trade">
-          <div className="trade-price">51,823.20</div>
-          <div className="trade-amount">0.765</div>
-          <div className="trade-time">12:45:01</div>
-        </div>
-        <div className="trade-row buy-trade">
-          <div className="trade-price">51,824.00</div>
-          <div className="trade-amount">0.432</div>
-          <div className="trade-time">12:44:58</div>
-        </div>
-        <div className="trade-row sell-trade">
-          <div className="trade-price">51,822.50</div>
-          <div className="trade-amount">1.123</div>
-          <div className="trade-time">12:44:55</div>
-        </div>
-        <div className="trade-row buy-trade">
-          <div className="trade-price">51,823.10</div>
-          <div className="trade-amount">0.654</div>
-          <div className="trade-time">12:44:52</div>
-        </div>
+        {recentTrades.map((trade, index) => (
+          <div 
+            key={`${trade.t}-${index}`} 
+            className={`trade-row ${trade.m ? 'sell-trade' : 'buy-trade'}`}
+          >
+            <div className="trade-price">{formatNumber(trade.p)}</div>
+            <div className="trade-amount">{Number(trade.q).toFixed(4)}</div>
+            <div className="trade-time">
+              {new Date(trade.T).toLocaleTimeString()}
+            </div>
+          </div>
+        ))}
+        {recentTrades.length === 0 && (
+          <div className="trade-row">
+            <div className="trade-price" style={{ textAlign: 'center', width: '100%' }}>
+              Waiting for trades...
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Futures Modal */}
@@ -153,12 +278,15 @@ function Futures() {
         isOpen={isModalOpen}
         onClose={handleCloseModal}
         direction={tradeDirection}
+        currentPrice={marketPrice}
+        symbol={selectedCoin}
       />
 
       <CoinListModal
         isOpen={isCoinModalOpen}
         onClose={handleCloseCoinModal}
         onSelectCoin={handleSelectCoin}
+        currentCoin={selectedCoin}
       />
 
       <style>{`
@@ -233,8 +361,8 @@ function Futures() {
         }
         
         .market-change {
-          color: #00C076;
           font-size: 14px;
+          font-weight: bold;
         }
         
         .market-price {
@@ -248,6 +376,12 @@ function Futures() {
           justify-content: space-between;
           font-size: 12px;
           color: #AAAAAA;
+          flex-wrap: wrap;
+        }
+        
+        .market-stats span {
+          margin-right: 10px;
+          margin-bottom: 5px;
         }
         
         /* Trading View Chart */
@@ -267,11 +401,17 @@ function Futures() {
           align-items: center;
           height: 100%;
           color: #777;
+          text-align: center;
         }
         
         .chart-placeholder i {
           font-size: 50px;
           margin-bottom: 15px;
+        }
+        
+        .chart-placeholder small {
+          margin-top: 5px;
+          font-size: 12px;
         }
         
         .chart-controls {
@@ -321,6 +461,8 @@ function Futures() {
         /* Recent Trades */
         .recent-trades {
           margin: 15px;
+          max-height: 300px;
+          overflow-y: auto;
         }
         
         .trades-header {
@@ -329,6 +471,11 @@ function Futures() {
           margin-bottom: 10px;
           font-size: 12px;
           color: #777;
+          position: sticky;
+          top: 0;
+          background-color: #000;
+          padding: 5px 0;
+          z-index: 10;
         }
         
         .trade-row {
@@ -352,6 +499,7 @@ function Futures() {
           flex: 1;
           text-align: right;
           color: #777;
+          font-size: 11px;
         }
         
         .buy-trade .trade-price {
