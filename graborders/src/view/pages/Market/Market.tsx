@@ -93,7 +93,7 @@ const VirtualizedList = React.memo(({ items, renderItem, itemHeight, containerHe
   return (
     <div
       ref={containerRef}
-      style={{ height: containerHeight, overflow: "auto" ,  scrollbarWidth: "none"}}
+      style={{ height: containerHeight, overflow: "auto" }}
       onScroll={handleScroll}
     >
       <div style={{ height: totalHeight, position: "relative" }}>
@@ -639,7 +639,7 @@ function Market() {
         }
         
         .market-headers {
-          margin-bottom: 20px;
+          // margin-bottom: 20px;
         }
         
         .market-page-title {

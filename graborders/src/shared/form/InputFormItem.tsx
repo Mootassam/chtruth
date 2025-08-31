@@ -1,8 +1,8 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { useFormContext } from 'react-hook-form';
-import FormErrors from './FormErrors';
-import Message from 'src/view/shared/message';
+import React from "react";
+import PropTypes from "prop-types";
+import { useFormContext } from "react-hook-form";
+import FormErrors from "./FormErrors";
+import Message from "src/view/shared/message";
 
 export function InputFormItem(props) {
   const {
@@ -18,7 +18,7 @@ export function InputFormItem(props) {
     externalErrorMessage,
     disabled,
     endAdornment,
-    className
+    className,
   } = props;
 
   const {
@@ -27,72 +27,63 @@ export function InputFormItem(props) {
     formState: { touched, isSubmitted },
   } = useFormContext();
 
-
-  if(  externalErrorMessage) {
-    Message.error(  externalErrorMessage,)
+  if (externalErrorMessage) {
+    Message.error(externalErrorMessage);
   }
   const errorMessage = FormErrors.errorMessage(
     name,
     errors,
     touched,
-    isSubmitted,  
+    isSubmitted
   );
 
   return (
-    <div className="form-group">
-      <div className={endAdornment ? 'input-group' : ''}>
+    <div className="input-group">
+    
         {Boolean(label) && (
           <label
-            className={`col-form-label ${
-              required ? 'required' : null
-            }`}
+            className={`input-label ${required ? "required" : null}`}
             htmlFor={name}
           >
             {label}
           </label>
         )}
         {description}
-        <input
-         className={`${props.className} ${
-          errorMessage ? '__danger' : ''
-        }`}
-          id={name}
-          name={name}
-          type={type}
-          ref={register}
-          onChange={(event) => {
-            props.onChange &&
-              props.onChange(event.target.value);
-          }}
-          onBlur={(event) => {
-            props.onBlur && props.onBlur(event);
-          }}
-          placeholder={placeholder || undefined}
-          autoFocus={autoFocus || undefined}
-          autoComplete={autoComplete || undefined}
-          disabled={disabled}
-        
-        />
+        <div className="input-container">
+          <input
+            className={`${props.className} ${
+              errorMessage ? "__danger" : ""
+            }`}
+            id={name}
+            name={name}
+            type={type}
+            ref={register}
+            onChange={(event) => {
+              props.onChange && props.onChange(event.target.value);
+            }}
+            onBlur={(event) => {
+              props.onBlur && props.onBlur(event);
+            }}
+            placeholder={placeholder || undefined}
+            autoFocus={autoFocus || undefined}
+            autoComplete={autoComplete || undefined}
+            disabled={disabled}
+          />
+        </div>
         {endAdornment && (
           <div className="input-group-append">
-            <span className="input-group-text">
-              {endAdornment}
-            </span>
+            <span className="input-group-text">{endAdornment}</span>
           </div>
         )}
-      </div>
+    
       <div className="invalid-feedback">{errorMessage}</div>
-      {Boolean(hint) && (
-        <small className="form-text text-muted">
-          {hint}
-        </small>
-      )}
+      {Boolean(hint) && <small className="form-text text-muted">{hint}</small>}
     </div>
   );
 }
 
 InputFormItem.defaultProps = {
-  type: 'text',
+  type: "text",
   required: false,
 };
 
@@ -111,7 +102,7 @@ InputFormItem.propTypes = {
   externalErrorMessage: PropTypes.string,
   endAdornment: PropTypes.any,
   onChange: PropTypes.any,
-  className : PropTypes.string,
+  className: PropTypes.string,
 };
 
 export default InputFormItem;

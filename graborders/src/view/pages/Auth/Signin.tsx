@@ -10,13 +10,6 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import InputFormItem from "src/shared/form/InputFormItem";
 import selectors from "src/modules/auth/authSelectors";
 import ButtonIcon from "src/shared/ButtonIcon";
-import styled, { createGlobalStyle } from "styled-components";
-const GlobalStyle = createGlobalStyle`
-  body {
-    background-image: #1c1d21 !important;
-  height:100dvh;
-  }
-`;
 
 const schema = yup.object().shape({
   email: yupFormSchemas.string(i18n("user.fields.username"), {
@@ -54,54 +47,76 @@ function Signin() {
     dispatch(actions.doSigninWithEmailAndPassword(email, password, rememberMe));
   };
   return (
-    <>
-    <GlobalStyle/> 
-    <div className="auth__page">
-      <div className="auth__header">
-
-<div className="signin__logo">
-        <h1 className="auth__title"> Welcome Back!</h1>
-        <span className="auth__description">
-          You have been missed for long time
-        </span>
-        </div>
+    <div className="container">
+      {/* Header Section */}
+      <div className="header">
+        <div className="page-title">LOGIN</div>
       </div>
       <FormProvider {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
-          <div className="auth__form">
-            <div className="form__authgroup">
-              <InputFormItem
-                type="text"
-                name="email"
-                placeholder={i18n("user.fields.username")}
-                className="auth__input"
-                externalErrorMessage={externalErrorMessage}
-              />
+        <div className="form-section">
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <div className="auth__form">
+              <div className="form__authgroup">
+                <InputFormItem
+                  type="text"
+                  name="email"
+                  placeholder={i18n("user.fields.username")}
+                  className="text-input "
+                  externalErrorMessage={externalErrorMessage}
+                />
+              </div>
+              <div className="form__authgroup">
+                <InputFormItem
+                  type="text"
+                  name="password"
+                  placeholder={i18n("user.fields.password")}
+                  className="text-input "
+                />
+              </div>
             </div>
-            <div className="form__authgroup">
-              <InputFormItem
-                type="text"
-                name="password"
-                placeholder={i18n("user.fields.password")}
-                className="auth__input"
-              />
-            </div>
-          </div>
 
-          <div className="auth__bottom">
-            <button className="auth__button" disabled={loading} type="submit">
-              <ButtonIcon loading={loading} />
-              <span>Login</span>
-            </button>
-            <Link to="/auth/signup" className="remove__ligne">
-              <span className="auth__link">Don't have an account?</span>
-              <label htmlFor="" className="register__now">Register Now</label>
-            </Link>
-          </div>
-        </form>
+            <div className="auth__bottom">
+              <button className="login-button" disabled={loading} type="submit">
+                <ButtonIcon loading={loading} />
+                <span>Login</span>
+              </button>
+            </div>
+          </form>
+        </div>
       </FormProvider>
+      <div className="footer-links">
+        <a href="#" className="footer-link">
+          FORGOT PASSWORD?
+        </a>
+        <a href="#" className="footer-link">
+          SIGN UP
+        </a>
+      </div>
+      {/* Divider */}
+      <div className="divider">
+        <div className="divider-line" />
+        <div className="divider-text">or continue with</div>
+        <div className="divider-line" />
+      </div>
+      {/* Social Login */}
+      {/* App Promotion */}
+      <div className="app-promotion">
+        <div className="promo-title">Trade Anywhere</div>
+        <div className="promo-text">
+          Download our app for the best mobile experience
+        </div>
+        <div className="app-badges">
+          <div className="app-badge">
+            <i className="fab fa-apple" />
+            <span>App Store</span>
+          </div>
+          <div className="app-badge">
+            <i className="fab fa-google-play" />
+            <span>Play Store</span>
+          </div>
+        </div>
+      </div>
     </div>
-    </>
   );
 }
 
