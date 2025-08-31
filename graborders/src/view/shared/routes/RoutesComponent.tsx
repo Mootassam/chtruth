@@ -9,6 +9,7 @@ import authSelectors from "src/modules/auth/authSelectors";
 import ProgressBar from "src/view/shared/ProgressBar";
 import { Route, Switch } from "react-router-dom";
 import EmptyPermissionsRoute from "src/view/shared/routes/EmptyPermissionsRoute";
+import NavRoute from "./NavRoute";
 
 function RoutesComponent() {
   const isInitialMount = useRef(true);
@@ -47,6 +48,16 @@ function RoutesComponent() {
         />
       ))}
 
+      {routes.navRoutes.map((route) => (
+        <NavRoute
+          exact
+          key={route.path}
+          path={route.path}
+          component={lazyRouter({ loader: route.loader })}
+          currentUser={currentUser}
+          currentTenant={currentTenant}
+        />
+      ))}
       {routes.emptyPermissionsRoutes.map((route) => (
         <EmptyPermissionsRoute
           key={route.path}
@@ -58,7 +69,7 @@ function RoutesComponent() {
             loader: route.loader,
           })}
         />
-      ))} 
+      ))}
       {routes.privateRoutes.map((route) => (
         <PrivateRoute
           exact

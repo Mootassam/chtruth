@@ -1,14 +1,38 @@
+import path from "path";
 import Permissions from "src/security/permissions";
 const permissions = Permissions.values;
 
 const privateRoutes = [
+  {
+    path: "/",
+    loader: () => import("src/view/pages/Home/Home"),
+  },
+
+  {
+    path: "/market",
+    loader: () => import("src/view/pages/Market/Market"),
+  },
+
+  {
+    path: "/support",
+    loader: () => import("src/view/pages/Support/Support"),
+  },
+  {
+    path: "/market/detail/:id",
+    loader: () => import("src/view/pages/Market/MarketDetail"),
+  },
+
+  {
+    path: "/",
+    loader: () => import("src/view/pages/Home/Home"),
+  },
+
   {
     path: "/market",
     loader: () => import("src/view/pages/Market/Market"),
     permissionRequired: permissions.categoryRead,
     exact: true,
   },
-
 
   {
     path: "/trade",
@@ -34,11 +58,6 @@ const privateRoutes = [
     permissionRequired: permissions.categoryRead,
     exact: true,
   },
-  {
-    path: "/",
-    loader: () => import("src/view/pages/Home/Home"),
-    permissionRequired: permissions.categoryRead,
-  },
 ];
 
 const screenRoutes = [
@@ -49,27 +68,8 @@ const screenRoutes = [
   },
 
   {
-    path: "/marketdetail",
-    loader: () => import("src/view/pages/Market/MarketDetail"),
-    permissionRequired: permissions.categoryRead,
-  },
-
-    {
-    path: "/market/detail/:id",
-    loader: () => import("src/view/pages/Market/MarketDetail"),
-    permissionRequired: permissions.categoryRead,
-    exact: true,
-  },
-
-  {
     path: "/language",
     loader: () => import("src/view/pages/Language/Language"),
-    permissionRequired: permissions.categoryRead,
-  },
-
-  {
-    path: "/support",
-    loader: () => import("src/view/pages/Support/Support"),
     permissionRequired: permissions.categoryRead,
   },
 
@@ -84,7 +84,7 @@ const screenRoutes = [
     loader: () => import("src/view/pages/withdraw/WirthdrawAddress"),
     permissionRequired: permissions.categoryRead,
   },
-    {
+  {
     path: "/formwithdrawaddress",
     loader: () => import("src/view/pages/withdraw/formWithdrawAdress"),
     permissionRequired: permissions.categoryRead,
@@ -107,13 +107,6 @@ const screenRoutes = [
   {
     path: "/Withdrawaddress",
     loader: () => import("src/view/pages/withdraw/WirthdrawAddress"),
-    permissionRequired: permissions.categoryRead,
-    exact: true,
-  },
-
-  {
-    path: "/news",
-    loader: () => import("src/view/pages/News/News"),
     permissionRequired: permissions.categoryRead,
     exact: true,
   },
@@ -224,10 +217,38 @@ const emptyPermissionsRoutes = [
     loader: () => import("src/view/pages/Auth/EmptyPermissionsPage"),
   },
 ].filter(Boolean);
+
+const navRoutes = [
+  {
+    path: "/",
+    loader: () => import("src/view/pages/Home/Home"),
+  },
+
+  {
+    path: "/market",
+    loader: () => import("src/view/pages/Market/Market"),
+  },
+
+  {
+    path: "/support",
+    loader: () => import("src/view/pages/Support/Support"),
+  },
+  {
+    path: "/market/detail/:id",
+    loader: () => import("src/view/pages/Market/MarketDetail"),
+    exact: true,
+  },
+
+  {
+    path: "/news",
+    loader: () => import("src/view/pages/News/News"),
+  },
+].filter(Boolean);
 export default {
   privateRoutes,
   publicRoutes,
   simpleRoutes,
   screenRoutes,
+  navRoutes,
   emptyPermissionsRoutes,
 };

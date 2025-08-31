@@ -10,6 +10,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import InputFormItem from "src/shared/form/InputFormItem";
 import selectors from "src/modules/auth/authSelectors";
 import ButtonIcon from "src/shared/ButtonIcon";
+import { useHistory } from "react-router-dom";
 
 const schema = yup.object().shape({
   email: yupFormSchemas.string(i18n("user.fields.username"), {
@@ -46,12 +47,25 @@ function Signin() {
   const onSubmit = ({ email, password, rememberMe }) => {
     dispatch(actions.doSigninWithEmailAndPassword(email, password, rememberMe));
   };
+
+  const history = useHistory();
+
+  const goBack = () => {
+    history.goBack(); // This will take you back to the previous page
+  };
   return (
     <div className="container">
       {/* Header Section */}
-      <div className="header">
+      <div className="header" style={{ display: "flex" }}>
+        <div className="back-button" onClick={() => goBack()}>
+          <i className="fas fa-arrow-left" />
+        </div>
         <div className="page-title">LOGIN</div>
+        <div className="language-icon">
+          <i className="fas fa-globe" />
+        </div>
       </div>
+
       <FormProvider {...form}>
         <div className="form-section">
           <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -60,6 +74,7 @@ function Signin() {
                 <InputFormItem
                   type="text"
                   name="email"
+                  label={"Email/Phone Number"}
                   placeholder={i18n("user.fields.username")}
                   className="text-input "
                   externalErrorMessage={externalErrorMessage}
@@ -70,7 +85,8 @@ function Signin() {
                   type="text"
                   name="password"
                   placeholder={i18n("user.fields.password")}
-                  className="text-input "
+                  className="text-input"
+                  label={"Password"}
                 />
               </div>
             </div>

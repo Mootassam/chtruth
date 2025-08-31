@@ -1,7 +1,16 @@
 import React from "react";
 import SubHeader from "src/view/shared/Header/SubHeader";
-import {Link} from 'react-router-dom'
+import { Link } from "react-router-dom";
+import authActions from "src/modules/auth/authActions";
+import { useDispatch, useSelector } from "react-redux";
+import authSelectors from "src/modules/auth/authSelectors";
 function profile() {
+  const dispatch = useDispatch();
+  const currentUser = useSelector(authSelectors.selectCurrentUser);
+
+  const doSignout = () => {
+    dispatch(authActions.doSignout());
+  };
   const list = [
     {
       icon: "fas fa-globe",
@@ -38,12 +47,6 @@ function profile() {
       path: "/approval",
       name: "MSB Approval",
     },
-    {
-      icon: "fas fa-sign-out-alt",
-      path: "/logout",
-      name: "Log Out",
-      className: "logout",
-    },
   ];
 
   return (
@@ -66,16 +69,16 @@ function profile() {
           <div className="profile-section-title">ACCOUNT INFO</div>
           <div className="profile-info-item">
             <div className="profile-info-label">Email</div>
-            <div className="profile-info-value">rayabusiness22@gmail.com</div>
+            <div className="profile-info-value">{currentUser.email}</div>
           </div>
           <div className="profile-info-item">
             <div className="profile-info-label">Credit Score</div>
-            <div className="profile-info-value">100</div>
+            <div className="profile-info-value">{currentUser.score}</div>
           </div>
           <div className="profile-info-item">
             <div className="profile-info-label">Invitation Code</div>
             <div className="profile-info-value">
-              <span className="profile-invite-code">s2YFmV</span>
+              <span className="profile-invite-code">{currentUser.invitationcode}</span>
             </div>
           </div>
         </div>
@@ -96,8 +99,7 @@ function profile() {
               <i className="fas fa-shield-alt" />
             </div>
             <div className="profile-badge-info">
-              <div className="profile-badge-title">
-Address Verification</div>
+              <div className="profile-badge-title">Address Verification</div>
               <div className="profile-badge-desc">Completed</div>
             </div>
           </div>
@@ -108,19 +110,30 @@ Address Verification</div>
           <ul className="profile-settings-list">
             {list.map((item) => (
               <Link to={item.path} className="remove_blue">
-              <li className="profile-settings-item">
-                <div className="profile-settings-info">
-                  <div className="profile-settings-icon">
-                    <i className={item.icon} />
+                <li className="profile-settings-item">
+                  <div className="profile-settings-info">
+                    <div className="profile-settings-icon">
+                      <i className={item.icon} />
+                    </div>
+                    <div className="profile-settings-name">{item.name}</div>
                   </div>
-                  <div className="profile-settings-name">{item.name}</div>
-                </div>
-                <div className="profile-settings-arrow">
-                  <i className="fas fa-chevron-right" />
-                </div>
-              </li>
+                  <div className="profile-settings-arrow">
+                    <i className="fas fa-chevron-right" />
+                  </div>
+                </li>
               </Link>
             ))}
+            <li className="profile-settings-item" onClick={() => doSignout()}>
+              <div className="profile-settings-info">
+                <div className="profile-settings-icon">
+                  <i className="fas fa-sign-out-alt" />
+                </div>
+                <div className="profile-settings-name">logout</div>
+              </div>
+              <div className="profile-settings-arrow">
+                <i className="fas fa-chevron-right" />
+              </div>
+            </li>
           </ul>
         </div>
       </div>
