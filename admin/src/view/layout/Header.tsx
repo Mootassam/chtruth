@@ -61,8 +61,12 @@ function Header(props) {
 
       <div className='right__section'>
         <div className="quick_actions">
-          <div className="action">
+                <div className="action">
             
+            <span>KYC(02)</span>
+          </div>
+          <div className="action">
+
             <span>Recharges(50)</span>
           </div>
              <div className="action">

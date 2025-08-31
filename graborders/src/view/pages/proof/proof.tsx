@@ -9,6 +9,7 @@ function proof() {
       <div className="back-button">
         <i className="fas fa-arrow-left" />
       </div>
+
       <div className="page-title">Identity Verification</div>
       <div className="placeholder" />
     </div>
@@ -19,7 +20,7 @@ function proof() {
   </div>
   {/* Form Section */}
   <div className="form-section">
-    <div className="section-title">Document Information</div>
+    <div className="proof-section-title">Document Information</div>
     {/* Document Type */}
     <div className="input-group">
       <label className="input-label">
@@ -43,7 +44,7 @@ function proof() {
     {/* Personal Information */}
     <div className="input-group">
       <label className="input-label">
-        First Name <span className="required">*</span>
+        Full Name <span className="required">*</span>
       </label>
       <div className="input-container">
         <input
@@ -53,26 +54,8 @@ function proof() {
         />
       </div>
     </div>
-    <div className="input-group">
-      <label className="input-label">
-        Last Name <span className="required">*</span>
-      </label>
-      <div className="input-container">
-        <input
-          type="text"
-          className="text-input"
-          placeholder="Enter your last name"
-        />
-      </div>
-    </div>
-    <div className="input-group">
-      <label className="input-label">
-        Date of Birth <span className="required">*</span>
-      </label>
-      <div className="input-container">
-        <input type="date" className="text-input" />
-      </div>
-    </div>
+
+
     <div className="input-group">
       <label className="input-label">
         Address <span className="required">*</span>
@@ -85,23 +68,7 @@ function proof() {
         />
       </div>
     </div>
-    <div className="input-group">
-      <label className="input-label">
-        Country <span className="required">*</span>
-      </label>
-      <div className="input-container">
-        <select className="select-input">
-          <option value="">Select your country</option>
-          <option value="us">United States</option>
-          <option value="uk">United Kingdom</option>
-          <option value="ca">Canada</option>
-          <option value="au">Australia</option>
-          <option value="de">Germany</option>
-          <option value="fr">France</option>
-          <option value="jp">Japan</option>
-        </select>
-      </div>
-    </div>
+
     <div className="input-group">
       <label className="input-label">
         Document Number <span className="required">*</span>
@@ -114,18 +81,11 @@ function proof() {
         />
       </div>
     </div>
-    <div className="input-group">
-      <label className="input-label">
-        Expiration Date <span className="required">*</span>
-      </label>
-      <div className="input-container">
-        <input type="date" className="text-input" />
-      </div>
-    </div>
+
   </div>
   {/* Document Upload Section */}
   <div className="form-section">
-    <div className="section-title">Document Upload</div>
+    <div className="proof-section-title">Document Upload</div>
     {/* Front of ID */}
     <div className="file-upload">
       <label className="input-label">
@@ -138,13 +98,6 @@ function proof() {
         <div className="upload-text">Upload front side of your document</div>
         <div className="upload-subtext">JPG, PNG or PDF, max 5MB</div>
         <input type="file" style={{ display: "none" }} accept="image/*,.pdf" />
-      </div>
-      <div className="upload-preview">
-        <div className="preview-item">
-          <div className="preview-placeholder">
-            <i className="fas fa-id-card" />
-          </div>
-        </div>
       </div>
     </div>
     {/* Back of ID */}
@@ -160,13 +113,7 @@ function proof() {
         <div className="upload-subtext">JPG, PNG or PDF, max 5MB</div>
         <input type="file" style={{ display: "none" }} accept="image/*,.pdf" />
       </div>
-      <div className="upload-preview">
-        <div className="preview-item">
-          <div className="preview-placeholder">
-            <i className="fas fa-id-card" />
-          </div>
-        </div>
-      </div>
+  
     </div>
     {/* Selfie with Document */}
     <div className="file-upload">
@@ -183,13 +130,7 @@ function proof() {
         </div>
         <input type="file" style={{ display: "none" }} accept="image/*" />
       </div>
-      <div className="upload-preview">
-        <div className="preview-item">
-          <div className="preview-placeholder">
-            <i className="fas fa-user" />
-          </div>
-        </div>
-      </div>
+ 
     </div>
   </div>
   {/* Security Note */}

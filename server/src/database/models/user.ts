@@ -17,8 +17,6 @@ export default (database) => {
       refcode: { type: String, default:"ECL25306510" },
       phoneNumber: { type: String, maxlength: 24 },
       gender: { type: String, maxlength: 24 },
-      passportPhoto: [FileSchema],
-      passportDocument: [FileSchema],
       withdrawPassword: {
         type: String,
       },
@@ -67,20 +65,6 @@ export default (database) => {
       invitationcode: {
         type: String,
         default:"ECL25306510"
-      },
-
-      vip: {
-        type: Schema.Types.ObjectId,
-        ref: "vip",
-      },
-
-      product: {
-        type: Schema.Types.ObjectId,
-        ref: "product",
-      },
-
-      itemNumber: {
-        type: Number,
       },
 
       email: {
