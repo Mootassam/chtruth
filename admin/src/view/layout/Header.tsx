@@ -59,7 +59,20 @@ function Header(props) {
         <i className="fas fa-bars" />
       </button>
 
-      <div>
+      <div className='right__section'>
+        <div className="quick_actions">
+          <div className="action">
+            
+            <span>Recharges(50)</span>
+          </div>
+             <div className="action">
+            <span>Withdraw Funds(50)</span>
+          </div>
+             <div className="action">
+            <span>Futures(50)</span>
+          </div>
+        </div>
+
         <span className="i18n-select">
           <I18nSelect />
         </span>

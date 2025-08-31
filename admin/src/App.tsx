@@ -9,6 +9,7 @@ import jQuery from 'jquery';
 import 'bootstrap/dist/js/bootstrap';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
+
 (window as any).$ = (window as any).jQuery = jQuery;
 
 const store = configureStore();

@@ -10,20 +10,25 @@ import MenuWrapper from 'src/view/layout/styles/MenuWrapper';
 import menus from 'src/view/menus';
 import selectors from 'src/modules/auth/authSelectors';
 
-function Menu(props) {
+// Define TypeScript interfaces for menu items
+interface MenuItem {
+  id: string;
+  path?: string;
+  exact?: boolean;
+  icon?: string;
+  label: string;
+  className?: string;
+  permissionRequired: any;
+  type?: string;
+}
+
+function Menu(props: { url: string }) {
   const dispatch = useDispatch();
 
   const logoUrl = useSelector(selectors.selectLogoUrl);
-
-  const currentTenant = useSelector(
-    authSelectors.selectCurrentTenant,
-  );
-  const currentUser = useSelector(
-    authSelectors.selectCurrentUser,
-  );
-  const menuVisible = useSelector(
-    layoutSelectors.selectMenuVisible,
-  );
+  const currentTenant = useSelector(authSelectors.selectCurrentTenant);
+  const currentUser = useSelector(authSelectors.selectCurrentUser);
+  const menuVisible = useSelector(layoutSelectors.selectMenuVisible);
 
   const permissionChecker = new PermissionChecker(
     currentTenant,
@@ -42,27 +47,69 @@ function Menu(props) {
     window.addEventListener('resize', toggleMenuOnResize);
 
     return () => {
-      window.removeEventListener(
-        'resize',
-        toggleMenuOnResize,
-      );
+      window.removeEventListener('resize', toggleMenuOnResize);
     };
   }, [dispatch]);
 
   const selectedKeys = () => {
     const url = props.url;
-    var token = url.split('/').slice(0, 2),
-      res = token.join('/');
-    return res;
+    const token = url.split('/').slice(0, 2);
+    return token.join('/');
   };
-  const match = (permission) => {
+
+  const match = (permission: any) => {
     return permissionChecker.match(permission);
   };
 
-  const lockedForCurrentPlan = (permission) => {
-    return permissionChecker.lockedForCurrentPlan(
-      permission,
-    );
+  const lockedForCurrentPlan = (permission: any) => {
+    return permissionChecker.lockedForCurrentPlan(permission);
+  };
+
+  // Group menu items by section
+  const renderMenuItems = () => {
+    const items: JSX.Element[] = [];
+
+    menus
+      .filter((menu: MenuItem) => match(menu.permissionRequired))
+      .forEach((menu: MenuItem, index: number) => {
+        // Render header if it's a new section
+        if (menu.type === 'header') {
+          items.push(
+            <li key={`header-${menu.id}`} className="sidebar-section-header">
+              {menu.label}
+            </li>
+          );
+        } else {
+          // Render regular menu item
+          items.push(
+            <li key={index} className={menu.className || "sidebar-menu-item"}>
+              <Link to={menu.path || '#'}>
+                <i className={`sidebar-icon ${menu.icon}`}></i>
+                <span className="sidebar-label">{menu.label}</span>
+              </Link>
+            </li>
+          );
+        }
+      });
+
+    return items;
+  };
+
+  // Render locked menu items
+  const renderLockedMenuItems = () => {
+    return menus
+      .filter((menu: MenuItem) => lockedForCurrentPlan(menu.permissionRequired))
+      .map((menu: MenuItem, index: number) => (
+        <li
+          key={`locked-${index}`}
+          className="sidebar-menu-item locked"
+        >
+          <div className="sidebar-item-content">
+            <i className={`sidebar-icon ${menu.icon}`}></i>
+            <span className="sidebar-label">{menu.label}</span>
+          </div>
+        </li>
+      ));
   };
 
   return (
@@ -71,62 +118,24 @@ function Menu(props) {
         display: menuVisible ? 'block' : 'none',
       }}
     >
-      <div className="menu-nav border-right">
-        <div className="menu-logo">
+      <div className="sidebar-container">
+        <div className="sidebar-logo">
           <Link to="/">
             {logoUrl ? (
               <img
                 src={logoUrl}
                 width="164px"
                 alt={i18n('app.title')}
-                style={{ verticalAlign: 'middle' }}
+                className="logo-image"
               />
             ) : (
-              <>{i18n('app.title')}</>
+              <span className="logo-text">{i18n('app.title')}</span>
             )}
           </Link>
         </div>
-        <ul className="menu-ul">
-          {menus
-            .filter((menu) =>
-              match(menu.permissionRequired),
-            )
-            .map((menu, index) => (
-              <li
-                key={index + 'item'}
-                className={menu.className}
-              >
-                <Link to={menu.path} key={index}>
-                  <i className={`${menu.icon}`}></i>
-                  <span>{menu.label}</span>
-                </Link>
-              </li>
-            ))}
-
-          {menus
-            .filter((menu) =>
-              lockedForCurrentPlan(menu.permissionRequired),
-            )
-            .map((menu, index) => (
-              <li
-                key={index}
-                className={`menu-li text-nowrap`}
-                style={{
-                  cursor: 'auto',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  opacity: 0.5,
-                }}
-              >
-                <div className="menu-li-locked">
-                  <i
-                    className={`menu-icon ${menu.icon}`}
-                  ></i>
-                  <span>{menu.label}</span>
-                </div>
-              </li>
-            ))}
+        <ul className="sidebar-menu-list">
+          {renderMenuItems()}
+          {renderLockedMenuItems()}
         </ul>
       </div>
     </MenuWrapper>

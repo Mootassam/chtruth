@@ -1,50 +1,156 @@
 import Permissions from 'src/security/permissions';
 import { i18n } from 'src/i18n';
-import config from 'src/config';
 
 const permissions = Permissions.values;
 
 export default [
+  // Home
   {
-    id: '0',
+    id: 'home',
+    path: '/',
+    exact: true,
+    icon: 'fas fa-home',
+    label: i18n('dashboard.home'),
+    className: 'menu-li side-menue',
+    permissionRequired: null, // No permission required for home
+  },
+
+  // Users Section
+  {
+    id: 'users-header',
+    type: 'header',
+    label: i18n('dashboard.users'),
+    permissionRequired: permissions.userRead,
+  },
+  {
+    id: 'user-management',
     path: '/user',
     exact: true,
     icon: 'fas fa-users',
-    label: i18n('dashboard.menu'),
-    className: 'menu-li side-menue',
+    label: i18n('dashboard.userManagement'),
+    className: 'menu-li side-menue sub-item',
+    permissionRequired: permissions.userRead,
+  },
+  {
+    id: 'kyc',
+    path: '/kyc',
+    exact: true,
+    icon: 'fas fa-id-card',
+    label: i18n('dashboard.kyc'),
+    className: 'menu-li side-menue sub-item',
     permissionRequired: permissions.userRead,
   },
 
-
+  // Money Management Section
   {
-    id: '0',
-    path: '/category',
+    id: 'money-header',
+    type: 'header',
+    label: i18n('dashboard.moneyManagement'),
+    permissionRequired: permissions.categoryRead,
+  },
+  {
+    id: 'recharge-orders',
+    path: '/recharge-orders',
     exact: true,
-    icon: 'fab fa-whatsapp',
-    label: i18n('dashboard.check'),
-    className: 'menu-li side-menue',
+    icon: 'fas fa-credit-card',
+    label: i18n('dashboard.rechargeOrders'),
+    className: 'menu-li side-menue sub-item',
+    permissionRequired: permissions.categoryRead,
+  },
+  {
+    id: 'withdrawal-management',
+    path: '/withdrawal-management',
+    exact: true,
+    icon: 'fas fa-money-check-alt',
+    label: i18n('dashboard.withdrawalManagement'),
+    className: 'menu-li side-menue sub-item',
+    permissionRequired: permissions.categoryRead,
+  },
+  {
+    id: 'balance-editor',
+    path: '/balance-editor',
+    exact: true,
+    icon: 'fas fa-edit',
+    label: i18n('dashboard.balanceEditor'),
+    className: 'menu-li side-menue sub-item',
     permissionRequired: permissions.categoryRead,
   },
 
- 
+  // Transaction Management Section
   {
-    id: '0',
-    path: '/record',
+    id: 'transaction-header',
+    type: 'header',
+    label: i18n('dashboard.transactionManagement'),
+    permissionRequired: permissions.categoryRead,
+  },
+  {
+    id: 'trading',
+    path: '/trading',
     exact: true,
-    icon: 'fas fa-clipboard',
-    label: i18n('dashboard.record'),
-    className: 'menu-li side-menue',
+    icon: 'fas fa-chart-line',
+    label: i18n('dashboard.trading'),
+    className: 'menu-li side-menue sub-item',
+    permissionRequired: permissions.categoryRead,
+  },
+  {
+    id: 'spot',
+    path: '/spot',
+    exact: true,
+    icon: 'fas fa-coins',
+    label: i18n('dashboard.spot'),
+    className: 'menu-li side-menue sub-item',
+    permissionRequired: permissions.categoryRead,
+  },
+  {
+    id: 'futures',
+    path: '/futures',
+    exact: true,
+    icon: 'fas fa-forward',
+    label: i18n('dashboard.futures'),
+    className: 'menu-li side-menue sub-item',
+    permissionRequired: permissions.categoryRead,
+  },
+  {
+    id: 'wallet-monitor',
+    path: '/wallet-monitor',
+    exact: true,
+    icon: 'fas fa-wallet',
+    label: i18n('dashboard.walletMonitor'),
+    className: 'menu-li side-menue sub-item',
     permissionRequired: permissions.categoryRead,
   },
 
+  // Operation Related Section
   {
-    id: '0',
-    path: '/transaction',
-    exact: true,
-    icon: 'fas fa-exchange-alt active',
-    label: i18n('dashboard.transaction'),
-    className: 'menu-li side-menue',
+    id: 'operation-header',
+    type: 'header',
+    label: i18n('dashboard.operationRelated'),
     permissionRequired: permissions.categoryRead,
   },
- 
+  {
+    id: 'user-messages',
+    path: '/user-messages',
+    exact: true,
+    icon: 'fas fa-envelope',
+    label: i18n('dashboard.userMessages'),
+    className: 'menu-li side-menue sub-item',
+    permissionRequired: permissions.categoryRead,
+  },
+
+  // Mining Financial Management Section
+  {
+    id: 'mining-header',
+    type: 'header',
+    label: i18n('dashboard.miningFinancialManagement'),
+    permissionRequired: permissions.categoryRead,
+  },
+  {
+    id: 'mining-project',
+    path: '/mining-project',
+    exact: true,
+    icon: 'fas fa-digging',
+    label: i18n('dashboard.miningProject'),
+    className: 'menu-li side-menue sub-item',
+    permissionRequired: permissions.categoryRead,
+  },
 ].filter(Boolean);

@@ -11,6 +11,8 @@
       --border-color: #333333;
   }
 
+
+
   * {
       margin: 0;
       padding: 0;
@@ -9141,231 +9143,231 @@
   /* Login Page */
 
 
-   .back-button {
-            color: #AAAAAA;
-            font-size: 18px;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            transition: background-color 0.2s;
-        }
-        
-        .back-button:hover {
-            background-color: #1A1A1A;
-        }
-        
-        .page-title {
-            font-size: 22px;
-            font-weight: bold;
-            text-align: center;
-            flex: 1;
-        }
-        
-        .language-icon {
-            color: #AAAAAA;
-            font-size: 18px;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            transition: background-color 0.2s;
-        }
-        
-        .language-icon:hover {
-            background-color: #1A1A1A;
-        }
-        
-        /* Form Section */
-        .form-section {
-            background-color: #1A1A1A;
-            border-radius: 12px;
-            padding: 25px 20px;
-            margin-bottom: 25px;
-        }
-        
-        .input-group {
-            margin-bottom: 20px;
-        }
-        
-        .input-label {
-            display: block;
-            font-size: 14px;
-            color: #AAAAAA;
-            margin-bottom: 8px;
-            padding-left: 5px;
-        }
-        
-        .input-container {
-            background-color: #2A2A2A;
-            border-radius: 8px;
-            padding: 14px 16px;
-            display: flex;
-            align-items: center;
-            transition: all 0.2s;
-        }
-        
-        .input-container:focus-within {
-            outline: 1px solid #F3BA2F;
-        }
-        
-        .text-input {
-            flex: 1;
-            background: transparent;
-            border: none;
-            color: #FFFFFF;
-            font-size: 16px;
-            outline: none;
-        }
-        
-        .text-input::placeholder {
-            color: #777777;
-        }
-        
-        .toggle-password {
-            color: #777777;
-            cursor: pointer;
-            font-size: 18px;
-            padding: 5px;
-            transition: color 0.2s;
-        }
-        
-        .toggle-password:hover {
-            color: #AAAAAA;
-        }
-        
-        /* Login Button */
-        .login-button {
-            width: 100%;
-            background-color: #F3BA2F;
-            color: #000000;
-            border: none;
-            border-radius: 8px;
-            padding: 16px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 10px;
-            transition: background-color 0.2s;
-        }
-        
-        .login-button:hover {
-            background-color: #e0ab29;
-        }
-        
-        /* Footer Links */
-        .footer-links {
-            display: flex;
-            justify-content: space-between;
-            padding: 0 10px;
-        }
-        
-        .footer-link {
-            color: #F3BA2F;
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 500;
-            padding: 8px 5px;
-            transition: opacity 0.2s;
-        }
-        
-        .footer-link:hover {
-            opacity: 0.8;
-        }
-        
-        /* Divider */
-        .divider {
-            display: flex;
-            align-items: center;
-            margin: 30px 0;
-            padding: 0 10px;
-        }
-        
-        .divider-line {
-            flex: 1;
-            height: 1px;
-            background-color: #2A2A2A;
-        }
-        
-        .divider-text {
-            padding: 0 15px;
-            color: #777777;
-            font-size: 14px;
-        }
-        
-        /* Social Login */
-        .social-login {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-        
-        .social-button {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background-color: #2A2A2A;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-        
-        .social-button:hover {
-            background-color: #363636;
-        }
-        
-        .social-icon {
-            font-size: 20px;
-            color: #F3BA2F;
-        }
-        
-        /* App Promotion */
-        .app-promotion {
-            text-align: center;
-            margin-top: 40px;
-            padding: 20px;
-            background-color: #1A1A1A;
-            border-radius: 12px;
-        }
-        
-        .promo-title {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 15px;
-            color: #F3BA2F;
-        }
-        
-        .promo-text {
-            font-size: 14px;
-            color: #AAAAAA;
-            margin-bottom: 20px;
-        }
-        
-        .app-badges {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-        }
-        
-        .app-badge {
-            background-color: #2A2A2A;
-            padding: 10px 15px;
-            border-radius: 8px;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-        
-        .app-badge:hover {
-            background-color: #363636;
-        }
+  .back-button {
+      color: #AAAAAA;
+      font-size: 18px;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: background-color 0.2s;
+  }
+
+  .back-button:hover {
+      background-color: #1A1A1A;
+  }
+
+  .page-title {
+      font-size: 22px;
+      font-weight: bold;
+      text-align: center;
+      flex: 1;
+  }
+
+  .language-icon {
+      color: #AAAAAA;
+      font-size: 18px;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: background-color 0.2s;
+  }
+
+  .language-icon:hover {
+      background-color: #1A1A1A;
+  }
+
+  /* Form Section */
+  .form-section {
+      background-color: #1A1A1A;
+      border-radius: 12px;
+      padding: 25px 20px;
+      margin-bottom: 25px;
+  }
+
+  .input-group {
+      margin-bottom: 20px;
+  }
+
+  .input-label {
+      display: block;
+      font-size: 14px;
+      color: #AAAAAA;
+      margin-bottom: 8px;
+      padding-left: 5px;
+  }
+
+  .input-container {
+      background-color: #2A2A2A;
+      border-radius: 8px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      transition: all 0.2s;
+  }
+
+  .input-container:focus-within {
+      outline: 1px solid #F3BA2F;
+  }
+
+  .text-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: #FFFFFF;
+      font-size: 16px;
+      outline: none;
+  }
+
+  .text-input::placeholder {
+      color: #777777;
+  }
+
+  .toggle-password {
+      color: #777777;
+      cursor: pointer;
+      font-size: 18px;
+      padding: 5px;
+      transition: color 0.2s;
+  }
+
+  .toggle-password:hover {
+      color: #AAAAAA;
+  }
+
+  /* Login Button */
+  .login-button {
+      width: 100%;
+      background-color: #F3BA2F;
+      color: #000000;
+      border: none;
+      border-radius: 8px;
+      padding: 16px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background-color 0.2s;
+  }
+
+  .login-button:hover {
+      background-color: #e0ab29;
+  }
+
+  /* Footer Links */
+  .footer-links {
+      display: flex;
+      justify-content: space-between;
+      padding: 0 10px;
+  }
+
+  .footer-link {
+      color: #F3BA2F;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      padding: 8px 5px;
+      transition: opacity 0.2s;
+  }
+
+  .footer-link:hover {
+      opacity: 0.8;
+  }
+
+  /* Divider */
+  .divider {
+      display: flex;
+      align-items: center;
+      margin: 30px 0;
+      padding: 0 10px;
+  }
+
+  .divider-line {
+      flex: 1;
+      height: 1px;
+      background-color: #2A2A2A;
+  }
+
+  .divider-text {
+      padding: 0 15px;
+      color: #777777;
+      font-size: 14px;
+  }
+
+  /* Social Login */
+  .social-login {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 30px;
+  }
+
+  .social-button {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background-color: #2A2A2A;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background-color 0.2s;
+  }
+
+  .social-button:hover {
+      background-color: #363636;
+  }
+
+  .social-icon {
+      font-size: 20px;
+      color: #F3BA2F;
+  }
+
+  /* App Promotion */
+  .app-promotion {
+      text-align: center;
+      margin-top: 40px;
+      padding: 20px;
+      background-color: #1A1A1A;
+      border-radius: 12px;
+  }
+
+  .promo-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 15px;
+      color: #F3BA2F;
+  }
+
+  .promo-text {
+      font-size: 14px;
+      color: #AAAAAA;
+      margin-bottom: 20px;
+  }
+
+  .app-badges {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+  }
+
+  .app-badge {
+      background-color: #2A2A2A;
+      padding: 10px 15px;
+      border-radius: 8px;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+  }
+
+  .app-badge:hover {
+      background-color: #363636;
+  }
