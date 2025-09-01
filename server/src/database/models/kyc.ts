@@ -26,13 +26,11 @@ export default (database) => {
       idnumer: {
         type: String,
       },
-      commission: {
-        type: String,
-      },
+    
       front: [FileSchema],
       back: [FileSchema],
       selfie: [FileSchema],
-      statuus: {
+      status: {
         type: Boolean,
         default: false,
       },

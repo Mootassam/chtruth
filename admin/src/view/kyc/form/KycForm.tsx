@@ -1,5 +1,3 @@
-
-
 import React, { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { i18n } from 'src/i18n';
@@ -10,50 +8,47 @@ import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import InputFormItem from 'src/view/shared/form/items/InputFormItem';
 import InputNumberFormItem from 'src/view/shared/form/items/InputNumberFormItem';
+
 import ImagesFormItem from 'src/view/shared/form/items/ImagesFormItem';
 import Storage from 'src/security/storage';
-import VipAutocompleteFormItem from 'src/view/vip/autocomplete/VipAutocompleteFormItem';
-import SwitchFormItem from 'src/view/shared/form/items/SwitchFormItem';
+import UserAutocompleteFormItem from 'src/view/user/autocomplete/UserAutocompleteFormItem';
 
 const schema = yup.object().shape({
-  vip: yupFormSchemas.relationToOne(
-    i18n('entities.product.fields.vip'),
+  user: yupFormSchemas.relationToOne(
+    i18n('entities.vip.fields.title'),
     {
       required: true,
     },
   ),
-  title: yupFormSchemas.string(
-    i18n('entities.product.fields.title'),
+  Documenttype: yupFormSchemas.string(
+    i18n('Documenttype'),
     {
       required: true,
     },
   ),
-  amount: yupFormSchemas.integer(
-    i18n('entities.product.fields.amount'),
-    {
-      required: true,
-    },
-  ),
-  commission: yupFormSchemas.string(
-    i18n('entities.product.fields.commission'),
-    {required: true,},
-  ),
-  photo: yupFormSchemas.images(
-    i18n('entities.product.fields.photo'),
-    {},
-  ),
+  realname: yupFormSchemas.string(i18n('realname'), {
+    required: true,
+  }),
+  idnumer: yupFormSchemas.string(i18n('idnumer'), {}),
+  front: yupFormSchemas.images(i18n('front'), {}),
+  back: yupFormSchemas.images(i18n('back'), {}),
+
+  selfie: yupFormSchemas.images(i18n('selfie'), {}),
+  status: yupFormSchemas.boolean(i18n('status'), {}),
 });
 
-function ProductForm(props) {
+function KycForm(props) {
   const [initialValues] = useState(() => {
     const record = props.record || {};
     return {
-      title: record.title,
-      amount: record.amount,
-      commission: record.commission,
-      vip: record.vip || [],
-      photo: record.photo,
-      combo: record.combo,
+      user: record.user,
+      Documenttype: record.Documenttype,
+      realname: record.realname,
+      idnumer: record.idnumer,
+      front: record.photo || [],
+      back: record.photo || [],
+      selfie: record.photo || [],
+      status: false,
     };
   });
 
@@ -79,66 +74,75 @@ function ProductForm(props) {
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <div className="row">
             <div className="col-lg-7 col-md-8 col-12">
-              <VipAutocompleteFormItem
-                name="vip"
-                label={i18n('entities.product.fields.vip')}
+              <UserAutocompleteFormItem
+                name="user"
+                label={i18n('entities.user.fields.title')}
                 required={true}
-                showCreate={!props.modal}
+                autoFocus
               />
             </div>
             <div className="col-lg-7 col-md-8 col-12">
               <InputFormItem
-                name="title"
-                label={i18n(
-                  'entities.product.fields.title',
-                )}
+                name="Documenttype"
+                label={i18n('entities.vip.fields.Documenttype')}
                 required={true}
                 autoFocus
               />
             </div>
 
             <div className="col-lg-7 col-md-8 col-12">
-              <InputNumberFormItem
-                name="amount"
-                label={i18n('entities.product.fields.amount')}
+              <InputFormItem
+                name="realname"
+                label={i18n('entities.vip.fields.realname')}
                 required={true}
+                autoFocus
               />
             </div>
 
             <div className="col-lg-7 col-md-8 col-12">
-              <InputNumberFormItem
-                name="commission"
-                label={i18n(
-                  'entities.product.fields.commission',
-                )}
+              <InputFormItem
+                name="idnumer"
+                label={i18n('entities.vip.fields.idnumer')}
                 required={true}
+                autoFocus
               />
             </div>
             <div className="col-lg-7 col-md-8 col-12">
               <ImagesFormItem
-                name="photo"
+                name="front"
                 label={i18n(
                   'entities.paymentsettings.fields.photo',
                 )}
                 required={false}
-                storage={
-                  Storage.values.categoryPhoto
-                }
+                storage={Storage.values.categoryPhoto}
                 max={undefined}
               />
             </div>
 
-             <div className="col-lg-7 col-md-8 col-12">
-              <SwitchFormItem
-                name="combo"
+            <div className="col-lg-7 col-md-8 col-12">
+              <ImagesFormItem
+                name="back"
                 label={i18n(
-                  'entities.product.fields.combo',
+                  'entities.paymentsettings.fields.photo',
                 )}
+                required={false}
+                storage={Storage.values.categoryPhoto}
+                max={undefined}
+              />
+            </div>
+
+            <div className="col-lg-7 col-md-8 col-12">
+              <ImagesFormItem
+                name="selfie"
+                label={i18n(
+                  'entities.paymentsettings.fields.photo',
+                )}
+                required={false}
+                storage={Storage.values.categoryPhoto}
+                max={undefined}
               />
             </div>
           </div>
-
-
 
           <div className="form-buttons">
             <button
@@ -184,4 +188,4 @@ function ProductForm(props) {
   );
 }
 
-export default ProductForm;
+export default KycForm;

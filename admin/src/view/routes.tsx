@@ -216,40 +216,82 @@ const privateRoutes = [
     exact: true,
   },
 
-  // vip routes
+
+
+
+  // Kyc routes
 
   {
-    path: '/vip',
-    loader: () => import('src/view/vip/list/VipListPage'),
+    path: '/kyc',
+    loader: () => import('src/view/kyc/list/KycListPage'),
     permissionRequired: permissions.categoryRead,
     exact: true,
   },
 
+
   {
-    path: '/vip/new',
-    loader: () => import('src/view/vip/form/VipFormPage'),
+    path: '/kyc/new',
+    loader: () => import('src/view/kyc/form/KycFormPage'),
     permissionRequired: permissions.categoryRead,
     exact: true,
   },
   {
-    path: '/vip/importer',
+    path: '/kyc/importer',
     loader: () =>
-      import('src/view/vip/importer/VipImporterPage'),
+      import('src/view/kyc/importer/KycImporterPage'),
     permissionRequired: permissions.categoryRead,
     exact: true,
   },
   {
-    path: '/vip/:id/edit',
-    loader: () => import('src/view/vip/form/VipFormPage'),
+    path: '/kyc/:id/edit',
+    loader: () => import('src/view/kyc/form/KycFormPage'),
     permissionRequired: permissions.categoryRead,
     exact: true,
   },
   {
-    path: '/vip/:id',
-    loader: () => import('src/view/vip/view/VipViewPage'),
+    path: '/kyc/:id',
+    loader: () => import('src/view/kyc/view/KycViewPage'),
     permissionRequired: permissions.categoryRead,
     exact: true,
   },
+
+
+  // kyc routes
+
+  {
+    path: '/kyc',
+    loader: () => import('src/view/kyc/list/KycListPage'),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+
+
+  {
+    path: '/kyc/new',
+    loader: () => import('src/view/kyc/form/KycFormPage'),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+  {
+    path: '/kyc/importer',
+    loader: () =>
+      import('src/view/kyc/importer/KycImporterPage'),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+  {
+    path: '/kyc/:id/edit',
+    loader: () => import('src/view/kyc/form/KycFormPage'),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+  {
+    path: '/kyc/:id',
+    loader: () => import('src/view/kyc/view/KycViewPage'),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+
 
   //  coupons routes
 

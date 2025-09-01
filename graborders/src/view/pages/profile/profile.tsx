@@ -60,7 +60,7 @@ function profile() {
             <i className="fas fa-user" />
           </div>
           <div className="profile-profile-info">
-            <div className="profile-profile-name">Raya Business</div>
+            <div className="profile-profile-name">{currentUser.fullName}</div>
             <div className="profile-profile-status">VERIFIED</div>
           </div>
         </div>
