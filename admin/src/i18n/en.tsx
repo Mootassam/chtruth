@@ -64,11 +64,11 @@ const en = {
         product: 'product',
         number: 'record Number',
         status: 'status',
-        coins :'coins',
-        time :"Time",
-        amount:"amount",
-        percent:"Percentage", 
-        price : "Coin Price"
+        coins: 'coins',
+        time: 'Time',
+        amount: 'amount',
+        percent: 'Percentage',
+        price: 'Coin Price',
       },
       list: {
         title: 'List of records',
@@ -100,25 +100,21 @@ const en = {
       },
     },
 
-
-    
-  kyc: {
+    kyc: {
       menu: 'Vip',
       list: {
         title: 'List of Kyc',
       },
       fields: {
-id:"ID",
-useraccount:"User Account",
-documenttype:"Document type",
-realname:"Real name", 
-idnumber:"ID Number", 
-frontofcertificate:"Front of certificate",
-backofcertificate:"Back of certificate",
-status:"Status"
-
+        id: 'ID',
+        useraccount: 'User Account',
+        documenttype: 'Document type',
+        realname: 'Real name',
+        idnumber: 'ID Number',
+        frontofcertificate: 'Front of certificate',
+        backofcertificate: 'Back of certificate',
+        status: 'Status',
       },
-   
 
       new: {
         title: 'Add New Vip',
@@ -142,7 +138,6 @@ status:"Status"
         success: 'Vip successfully deleted',
       },
     },
-
 
     vip: {
       menu: 'Vip',
@@ -1745,7 +1740,7 @@ status:"Status"
         title: 'Edit Product',
       },
       fields: {
-        combo:"Combo",
+        combo: 'Combo',
         vip: 'vip',
         title: 'Product Name',
         amount: 'Product Price',
@@ -2672,19 +2667,19 @@ status:"Status"
 
   user: {
     fields: {
-      currentrecord:"Tasks Done",
-      freezeblance:"Freeze Balance",
+      currentrecord: 'Tasks Done',
+      freezeblance: 'Freeze Balance',
       id: 'Id',
-      tasksDone : 'tasksDone',
+      tasksDone: 'tasksDone',
       avatars: 'Avatar',
       email: 'Email',
-      username : 'Username',
-      refcode: "refcode",
-      score: "Score",
-      grab:"Grab",
-      withdraw:"Withdraw",
-      invitationcode:"My code",
-      withdrawPassword:'withdraw Password',
+      username: 'Username',
+      refcode: 'refcode',
+      score: 'Score',
+      grab: 'Grab',
+      withdraw: 'Withdraw',
+      invitationcode: 'My code',
+      withdrawPassword: 'withdraw Password',
       emails: 'Email(s)',
       fullName: 'Name',
       itemNumber: 'itemNumber',
@@ -2921,24 +2916,24 @@ status:"Status"
   },
 
   dashboard: {
-
-    home: "Home",
-    users: "Users",
-    userManagement: "User Management",
-    kyc: "KYC",
-    moneyManagement: "Money Management",
-    rechargeOrders: "Recharge Orders",
-    withdrawalManagement: "Withdrawal Management",
-    balanceEditor: "Balance Editor",
-    transactionManagement: "Transaction Management",
-    trading: "Trading",
-    spot: "SPOT",
-    futures: "Futures",
-    walletMonitor: "Wallet Monitor",
-    operationRelated: "Operation Related",
-    userMessages: "User Messages",
-    miningFinancialManagement: "Mining Financial Management",
-    miningProject: "Mining Project",
+    home: 'Home',
+    users: 'Users',
+    userManagement: 'User Management',
+    kyc: 'KYC',
+    moneyManagement: 'Money Management',
+    rechargeOrders: 'Recharge Orders',
+    withdrawalManagement: 'Withdrawal Management',
+    balanceEditor: 'Balance Editor',
+    transactionManagement: 'Transaction Management',
+    trading: 'Trading',
+    spot: 'SPOT',
+    futures: 'Futures',
+    walletMonitor: 'Wallet Monitor',
+    operationRelated: 'Operation Related',
+    userMessages: 'User Messages',
+    miningFinancialManagement:
+      'Mining Financial Management',
+    miningProject: 'Mining Project',
     valider: 'validate',
     file: 'No file selected',
     typecsv: 'Invalid file type. Please select a CSV file.',

@@ -153,7 +153,7 @@ class KycRepository {
       .skip(skip)
       .limit(limitEscaped)
       .sort(sort)
-      .populate("members");
+      .populate("user");
 
     const count = await Kyc(options.database).countDocuments(criteria);
 

@@ -12,6 +12,7 @@ import ConfirmModal from 'src/view/shared/modals/ConfirmModal';
 import Spinner from 'src/view/shared/Spinner';
 import TableWrapper from 'src/view/shared/styles/TableWrapper';
 import Pagination from 'src/view/shared/table/Pagination';
+import UserListItem from 'src/view/user/list/UserListItem';
 // import actionsForm from 'src/modules/kyc/form/kycFormActions';
 
 function CouponsListTable(props) {
@@ -245,8 +246,10 @@ function CouponsListTable(props) {
                   <td>{row.id}</td>
 
                   <td style={{ textAlign: 'left' }}>
-                    {row.realname}
+                                      <UserListItem value={row.user} />
+                  
                   </td>
+                  
                   <td style={{ textAlign: 'right' }}>
                     {' '}
                     {row.Documenttype}

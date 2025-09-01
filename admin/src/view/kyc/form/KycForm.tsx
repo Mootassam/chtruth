@@ -41,7 +41,7 @@ function KycForm(props) {
   const [initialValues] = useState(() => {
     const record = props.record || {};
     return {
-      user: record.user,
+           user  : record.user  || [],
       Documenttype: record.Documenttype,
       realname: record.realname,
       idnumer: record.idnumer,

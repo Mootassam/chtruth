@@ -19,17 +19,16 @@ function CouponsListPage(props) {
       /> */}
 
       <ContentWrapper>
-          
-      <Container fluid={true}>
+        <Container fluid={true}>
           <Row>
             <Col xs={9}>
-        <PageTitle>
-          {i18n('entities.kyc.list.title')}
-        </PageTitle>
-        </Col>
+              <PageTitle>
+                {i18n('entities.kyc.list.title')}
+              </PageTitle>
+            </Col>
             <Col md="auto">
-        <KycListToolbar />
-        </Col>
+              <KycListToolbar />
+            </Col>
           </Row>
         </Container>
         <KycListFilter />
