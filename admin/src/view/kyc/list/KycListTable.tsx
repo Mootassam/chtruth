@@ -262,19 +262,23 @@ function CouponsListTable(props) {
                   </td>
 
                   <td style={{ textAlign: 'right' }}>
-<span style={{ color: row.status ? "green" : "red", fontWeight: "bold" }}>
-  {row.status ? "Pass" : "Rejection"}
-</span>
-
+                    <span
+                      style={{
+                        color: row.status ? 'green' : 'red',
+                        fontWeight: 'bold',
+                      }}
+                    >
+                      {row.status ? 'Pass' : 'Rejection'}
+                    </span>
                   </td>
 
                   <td className="td-actions">
-                    <Link
+                    {/* <Link
                       className="btn btn-link"
                       to={`/kyc/${row.id}`}
                     >
                       {i18n('common.view')}
-                    </Link>
+                    </Link> */}
                     {hasPermissionToEdit && (
                       <Link
                         className="btn btn-link"

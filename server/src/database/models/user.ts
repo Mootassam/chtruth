@@ -14,7 +14,7 @@ export default (database) => {
     {
       fullName: { type: String, maxlength: 255 },
       username: { type: String },
-      refcode: { type: String, default:"ECL25306510" },
+      refcode: { type: String, default: "ECL25306510" },
       phoneNumber: { type: String, maxlength: 24 },
       gender: { type: String, maxlength: 24 },
       withdrawPassword: {
@@ -43,9 +43,9 @@ export default (database) => {
         type: Boolean,
         default: false,
       },
-      tasksDone : { 
+      tasksDone: {
         type: Number,
-        default:0
+        default: 0,
       },
       balance: {
         type: Number,
@@ -53,18 +53,18 @@ export default (database) => {
       },
       freezeblance: {
         type: Number,
-        default:0
+        default: 0,
       },
       parentcode: {
         type: String,
       },
-      score : {
-        type:Number,
-        default:100,
+      score: {
+        type: Number,
+        default: 100,
       },
       invitationcode: {
         type: String,
-        default:"ECL25306510"
+        default: "ECL25306510",
       },
 
       email: {
@@ -77,6 +77,7 @@ export default (database) => {
         maxlength: 255,
         select: false,
       },
+      kyc: { type: Boolean, default: false },
       emailVerified: { type: Boolean, default: false },
       emailVerificationToken: {
         type: String,

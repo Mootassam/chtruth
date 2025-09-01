@@ -3871,6 +3871,73 @@
 
   /* Profile Page  */
 
+
+/* Profile Alert */
+ /* Verification Alert */
+        .verification-alert {
+            background: linear-gradient(145deg, #2A1A1A, #3A2A2A);
+            border: 1px solid #FF6838;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        
+        .alert-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: #2A2A2A;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            color: #FF6838;
+            font-size: 24px;
+            border: 2px solid #FF6838;
+        }
+        
+        .alert-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #FF6838;
+        }
+        
+        .alert-desc {
+            font-size: 14px;
+            color: #CCCCCC;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+        
+        .verify-now-button {
+            background-color: #F3BA2F;
+            color: #000000;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+        }
+        
+        .verify-now-button:hover {
+            background-color: #e0ab25;
+        }
+
+          .profile-not-status {
+            background-color: #FF6838;
+            color: #FFFFFF;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            display: inline-block;
+        }
+
   /* Profile Header */
 
 
@@ -4049,12 +4116,13 @@
   .profile-settings-item {
       display: flex;
       justify-content: space-between;
+      align-items: center;
       padding: 15px 0;
       border-bottom: 1px solid #2A2A2A;
   }
 
   .profile-settings-item:last-child {
-      border-bottom: none;
+      /* border-bottom: none; */
   }
 
   .profile-settings-info {

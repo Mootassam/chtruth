@@ -1,12 +1,18 @@
 import React from 'react'
+import { useHistory } from "react-router-dom";
 
 function proof() {
+    const history = useHistory();
+  
+    const goBack = () => {
+      history.goBack(); // This will take you back to the previous page
+    };
   return (
 <div className="container">
   {/* Header Section */}
   <div className="header">
     <div className="header-content">
-      <div className="back-button">
+      <div className="back-button" onClick={() => goBack()}>
         <i className="fas fa-arrow-left" />
       </div>
 
