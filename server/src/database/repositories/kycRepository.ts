@@ -95,7 +95,7 @@ class KycRepository {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
 
     let record = await MongooseRepository.wrapWithSessionIfExists(
-      Kyc(options.database).findById(id).populate("members"),
+      Kyc(options.database).findById(id).populate("user"),
       options
     );
 

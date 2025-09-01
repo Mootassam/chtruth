@@ -146,24 +146,20 @@ function CouponsListTable(props) {
                 hasRows={hasRows}
                 sorter={sorter}
                 name={'levelLimit'}
-                label={i18n(
-                  'entities.kyc.fields.realname',
-                )}
+                label={i18n('entities.kyc.fields.realname')}
                 align="right"
               />
 
-               <TableColumnHeader
+              <TableColumnHeader
                 onSort={doChangeSort}
                 hasRows={hasRows}
                 sorter={sorter}
                 name={'levelLimit'}
-                label={i18n(
-                  'entities.kyc.fields.idnumber',
-                )}
+                label={i18n('entities.kyc.fields.idnumber')}
                 align="right"
               />
 
-                    <TableColumnHeader
+              <TableColumnHeader
                 onSort={doChangeSort}
                 hasRows={hasRows}
                 sorter={sorter}
@@ -174,7 +170,7 @@ function CouponsListTable(props) {
                 align="right"
               />
 
-                   <TableColumnHeader
+              <TableColumnHeader
                 onSort={doChangeSort}
                 hasRows={hasRows}
                 sorter={sorter}
@@ -185,19 +181,14 @@ function CouponsListTable(props) {
                 align="right"
               />
 
-                    <TableColumnHeader
+              <TableColumnHeader
                 onSort={doChangeSort}
                 hasRows={hasRows}
                 sorter={sorter}
                 name={'levelLimit'}
-                label={i18n(
-                  'entities.kyc.fields.status',
-                )}
+                label={i18n('entities.kyc.fields.status')}
                 align="right"
               />
-
-
-
 
               <TableColumnHeader className="th-actions" />
             </tr>
@@ -246,10 +237,9 @@ function CouponsListTable(props) {
                   <td>{row.id}</td>
 
                   <td style={{ textAlign: 'left' }}>
-                                      <UserListItem value={row.user} />
-                  
+                    <UserListItem value={row.user} />
                   </td>
-                  
+
                   <td style={{ textAlign: 'right' }}>
                     {' '}
                     {row.Documenttype}
@@ -259,20 +249,23 @@ function CouponsListTable(props) {
                     {row.realname}
                   </td>
 
-                      <td style={{ textAlign: 'right' }}>
+                  <td style={{ textAlign: 'right' }}>
                     {row.idnumer}
                   </td>
-                  
-                      <td style={{ textAlign: 'right' }}>
+
+                  <td style={{ textAlign: 'right' }}>
                     {'Front of Certificate'}
                   </td>
-                  
-                      <td style={{ textAlign: 'right' }}>
-                            {'Back of Certificate'}
+
+                  <td style={{ textAlign: 'right' }}>
+                    {'Back of Certificate'}
                   </td>
-                  
-                      <td style={{ textAlign: 'right' }}>
-                    {row.status}
+
+                  <td style={{ textAlign: 'right' }}>
+<span style={{ color: row.status ? "green" : "red", fontWeight: "bold" }}>
+  {row.status ? "Pass" : "Rejection"}
+</span>
+
                   </td>
 
                   <td className="td-actions">

@@ -41,14 +41,14 @@ function KycForm(props) {
   const [initialValues] = useState(() => {
     const record = props.record || {};
     return {
-           user  : record.user  || [],
+      user  : record.user  || [],
       Documenttype: record.Documenttype,
       realname: record.realname,
       idnumer: record.idnumer,
-      front: record.photo || [],
-      back: record.photo || [],
-      selfie: record.photo || [],
-      status: false,
+      front: record.front || [],
+      back: record.back || [],
+      selfie: record.selfie || [],
+      status: record.status,
     };
   });
 
@@ -118,6 +118,8 @@ function KycForm(props) {
                 max={undefined}
               />
             </div>
+
+            
 
             <div className="col-lg-7 col-md-8 col-12">
               <ImagesFormItem
