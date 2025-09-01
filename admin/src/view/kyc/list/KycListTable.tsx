@@ -119,7 +119,7 @@ function CouponsListTable(props) {
                 hasRows={hasRows}
                 sorter={sorter}
                 name={'title'}
-                label={i18n('entities.vip.fields.title')}
+                label={i18n('entities.kyc.fields.id')}
               />
               <TableColumnHeader
                 onSort={doChangeSort}
@@ -127,7 +127,7 @@ function CouponsListTable(props) {
                 sorter={sorter}
                 name={'type'}
                 label={i18n(
-                  'entities.vip.fields.dailyorder',
+                  'entities.kyc.fields.useraccount',
                 )}
               />
               <TableColumnHeader
@@ -136,7 +136,7 @@ function CouponsListTable(props) {
                 sorter={sorter}
                 name={'noOfTimes'}
                 label={i18n(
-                  'entities.vip.fields.commissionrate',
+                  'entities.kyc.fields.documenttype',
                 )}
                 align="right"
               />
@@ -146,10 +146,57 @@ function CouponsListTable(props) {
                 sorter={sorter}
                 name={'levelLimit'}
                 label={i18n(
-                  'entities.vip.fields.levelLimit',
+                  'entities.kyc.fields.realname',
                 )}
                 align="right"
               />
+
+               <TableColumnHeader
+                onSort={doChangeSort}
+                hasRows={hasRows}
+                sorter={sorter}
+                name={'levelLimit'}
+                label={i18n(
+                  'entities.kyc.fields.idnumber',
+                )}
+                align="right"
+              />
+
+                    <TableColumnHeader
+                onSort={doChangeSort}
+                hasRows={hasRows}
+                sorter={sorter}
+                name={'levelLimit'}
+                label={i18n(
+                  'entities.kyc.fields.frontofcertificate',
+                )}
+                align="right"
+              />
+
+                   <TableColumnHeader
+                onSort={doChangeSort}
+                hasRows={hasRows}
+                sorter={sorter}
+                name={'levelLimit'}
+                label={i18n(
+                  'entities.kyc.fields.backofcertificate',
+                )}
+                align="right"
+              />
+
+                    <TableColumnHeader
+                onSort={doChangeSort}
+                hasRows={hasRows}
+                sorter={sorter}
+                name={'levelLimit'}
+                label={i18n(
+                  'entities.kyc.fields.status',
+                )}
+                align="right"
+              />
+
+
+
 
               <TableColumnHeader className="th-actions" />
             </tr>
@@ -195,18 +242,34 @@ function CouponsListTable(props) {
                       </label>
                     </div>
                   </th>
-                  <td>{row.realname}</td>
+                  <td>{row.id}</td>
 
                   <td style={{ textAlign: 'left' }}>
-                    {row.dailyorder}
+                    {row.realname}
                   </td>
                   <td style={{ textAlign: 'right' }}>
                     {' '}
-                    {row.comisionrate}
+                    {row.Documenttype}
                   </td>
 
                   <td style={{ textAlign: 'right' }}>
-                    {row.levellimit}
+                    {row.realname}
+                  </td>
+
+                      <td style={{ textAlign: 'right' }}>
+                    {row.idnumer}
+                  </td>
+                  
+                      <td style={{ textAlign: 'right' }}>
+                    {'Front of Certificate'}
+                  </td>
+                  
+                      <td style={{ textAlign: 'right' }}>
+                            {'Back of Certificate'}
+                  </td>
+                  
+                      <td style={{ textAlign: 'right' }}>
+                    {row.status}
                   </td>
 
                   <td className="td-actions">
