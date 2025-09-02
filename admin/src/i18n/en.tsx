@@ -106,6 +106,7 @@ const en = {
         title: 'List of Kyc',
       },
       fields: {
+        
         id: 'ID',
         useraccount: 'User Account',
         documenttype: 'Document type',

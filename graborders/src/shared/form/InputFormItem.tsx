@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 import { useFormContext } from "react-hook-form";
 import FormErrors from "./FormErrors";
@@ -21,6 +21,8 @@ export function InputFormItem(props) {
     className,
   } = props;
 
+  const [showPassword, setShowPassword] = useState(false);
+  
   const {
     register,
     errors,
@@ -30,6 +32,7 @@ export function InputFormItem(props) {
   if (externalErrorMessage) {
     Message.error(externalErrorMessage);
   }
+  
   const errorMessage = FormErrors.errorMessage(
     name,
     errors,
@@ -37,44 +40,69 @@ export function InputFormItem(props) {
     isSubmitted
   );
 
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
+  // Determine the input type based on whether it's a password and if we should show it
+  const inputType = type === "password" && showPassword ? "text" : type;
+
   return (
     <div className="input-group">
-    
-        {Boolean(label) && (
-          <label
-            className={`input-label ${required ? "required" : null}`}
-            htmlFor={name}
+      {Boolean(label) && (
+        <label
+          className={`input-label ${required ? "required" : null}`}
+          htmlFor={name}
+        >
+          {label}
+        </label>
+      )}
+      {description}
+      <div className="input-container" style={className === "captcha-input" ? { padding: 0 } : {}}>
+        <input
+          className={`${props.className} ${
+            errorMessage ? "__danger" : ""
+          }`}
+          id={name}
+          name={name}
+          type={inputType}
+          ref={register}
+          onChange={(event) => {
+            props.onChange && props.onChange(event.target.value);
+          }}
+          onBlur={(event) => {
+            props.onBlur && props.onBlur(event);
+          }}
+          placeholder={placeholder || undefined}
+          autoFocus={autoFocus || undefined}
+          autoComplete={autoComplete || undefined}
+          disabled={disabled}
+          style={type === "password" ? { paddingRight: "40px" } : {}}
+        />
+        
+        {/* Eye icon for password fields */}
+        {type === "password" && (
+          <div 
+            className="toggle-password" 
+            onClick={togglePasswordVisibility}
+            style={{
+              position: "absolute",
+              right: "12px",
+              top: "50%",
+              transform: "translateY(-50%)",
+              cursor: "pointer",
+              color: "#888"
+            }}
           >
-            {label}
-          </label>
-        )}
-        {description}
-        <div className="input-container">
-          <input
-            className={`${props.className} ${
-              errorMessage ? "__danger" : ""
-            }`}
-            id={name}
-            name={name}
-            type={type}
-            ref={register}
-            onChange={(event) => {
-              props.onChange && props.onChange(event.target.value);
-            }}
-            onBlur={(event) => {
-              props.onBlur && props.onBlur(event);
-            }}
-            placeholder={placeholder || undefined}
-            autoFocus={autoFocus || undefined}
-            autoComplete={autoComplete || undefined}
-            disabled={disabled}
-          />
-        </div>
-        {endAdornment && (
-          <div className="input-group-append">
-            <span className="input-group-text">{endAdornment}</span>
+            <i className={showPassword ? "far fa-eye-slash" : "far fa-eye"} />
           </div>
         )}
+      </div>
+      {endAdornment && (
+        <div className="input-group-append">
+          <span className="input-group-text">{endAdornment}</span>
+        </div>
+      )}
     
       <div className="invalid-feedback">{errorMessage}</div>
       {Boolean(hint) && <small className="form-text text-muted">{hint}</small>}

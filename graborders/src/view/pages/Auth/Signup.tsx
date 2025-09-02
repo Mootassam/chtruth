@@ -1,32 +1,27 @@
-import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import React, { useCallback, useEffect, useState } from "react";
+import { Link, useHistory } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import actions from "src/modules/auth/authActions";
 import { FormProvider, useForm } from "react-hook-form";
-import * as yup from "yup";
-import yupFormSchemas from "src/modules/shared/yup/yupFormSchemas";
-import { i18n } from "../../../i18n";
 import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+
+// Local imports
+import actions from "src/modules/auth/authActions";
+import { i18n } from "../../../i18n";
+import yupFormSchemas from "src/modules/shared/yup/yupFormSchemas";
 import InputFormItem from "src/shared/form/InputFormItem";
 import selectors from "src/modules/auth/authSelectors";
 import ButtonIcon from "src/shared/ButtonIcon";
 
-import styled, { createGlobalStyle } from "styled-components";
-const GlobalStyle = createGlobalStyle`
-  body {
-    background-image: #1c1d21 !important;
-  height:100dvh;
-  }
-`;
+// Validation schema
 const schema = yup.object().shape({
   email: yupFormSchemas.string(i18n("user.fields.username"), {
     required: true,
   }),
-
   password: yupFormSchemas.string(i18n("user.fields.password"), {
     required: true,
+    min: 8,
   }),
-
   newPasswordConfirmation: yupFormSchemas
     .string(i18n("user.fields.newPasswordConfirmation"), {
       required: true,
@@ -34,141 +29,188 @@ const schema = yup.object().shape({
     .oneOf([yup.ref("password"), null], i18n("auth.passwordChange.mustMatch")),
   phoneNumber: yupFormSchemas.string(i18n("user.fields.phoneNumber"), {
     required: true,
+    matches: {
+      regex: /^[+]?[(]?[0-9]{1,4}[)]?[-\s./0-9]*$/,
+      message: i18n("user.validations.phoneNumber"),
+    },
   }),
-  withdrawPassword: yupFormSchemas.string(
-    i18n("user.fields.withdrawPassword"),
-    {
-      required: true,
-    }
-  ),
   invitationcode: yupFormSchemas.string(i18n("user.fields.invitationcode"), {
     required: true,
   }),
-
-  rememberMe: yupFormSchemas.boolean(i18n("user.fields.rememberMe")),
+  captcha: yupFormSchemas.string(i18n("user.fields.captcha"), {
+    required: true,
+  }),
 });
 
 function Signup() {
   const dispatch = useDispatch();
-
+  const history = useHistory();
   const loading = useSelector(selectors.selectLoading);
-
-  const [initialValues] = useState({
-    email: "",
-    password: "",
-    phoneNumber: "",
-    withdrawPassword: "",
-    invitationcode: "",
-    rememberMe: true,
-  });
-
-  useEffect(() => {
-    dispatch(actions.doClearErrorMessage());
-  }, [dispatch]);
+  const errorMessage = useSelector(selectors.selectErrorMessage);
+  const [showPassword, setShowPassword] = useState(false);
+  const [captchaText, setCaptchaText] = useState("A7B3C9");
 
   const form = useForm({
     resolver: yupResolver(schema),
     mode: "onSubmit",
-    defaultValues: initialValues,
+    defaultValues: {
+      email: "",
+      password: "",
+      newPasswordConfirmation: "",
+      phoneNumber: "",
+      invitationcode: "",
+      captcha: "",
+    },
   });
 
-  const externalErrorMessage = useSelector(selectors.selectErrorMessage);
+  // Clear error message on component mount
+  useEffect(() => {
+    dispatch(actions.doClearErrorMessage());
+  }, [dispatch]);
 
-  const onSubmit = ({
-    email,
-    password,
-    phoneNumber,
-    withdrawPassword,
-    invitationcode,
-  }) => {
+  // Generate new captcha
+  const refreshCaptcha = useCallback(() => {
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let newCaptcha = "";
+    for (let i = 0; i < 6; i++) {
+      newCaptcha += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    setCaptchaText(newCaptcha);
+  }, []);
+
+  const onSubmit = useCallback((data) => {
+    const { email, password, phoneNumber, invitationcode } = data;
     dispatch(
       actions.doRegisterEmailAndPassword(
         email,
         password,
         phoneNumber,
-        withdrawPassword,
+        "", // withdrawPassword
         invitationcode
       )
     );
-  };
+  }, [dispatch]);
+
+  const goBack = useCallback(() => {
+    history.goBack();
+  }, [history]);
+
+  const togglePasswordVisibility = useCallback(() => {
+    setShowPassword(!showPassword);
+  }, [showPassword]);
+
   return (
-    <>
-      <GlobalStyle />
-      <div className="auth__page">
+    <div className="container" >
+      {/* Header Section */}
+      <div className="header"  style={{display: 'flex'}}>
+        <div className="back-button" onClick={goBack} style={{ cursor: "pointer" }}>
+          <i className="fas fa-arrow-left" />
+        </div>
+        <div className="page-title" >SIGN UP</div>
+        <div className="language-icon" style={{ cursor: "pointer" }}>
+          <i className="fas fa-globe" />
+        </div>
+      </div>
 
-
-        <div className="auth__header">
-
-<h1 className="auth__title"> Create Account!</h1>
-<span className="auth__description">
-Create an account so you can explore all the existing jobs
-</span>
-</div>
-        <FormProvider {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="__position__relative"
-          >
-            <div className="auth__form __">
+      {/* Form Section */}
+      <FormProvider {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="form-section">
+         
               <InputFormItem
-                type="text"
+                type="email"
                 name="email"
-                placeholder={i18n("user.fields.username")}
-                className="auth__input"
-                externalErrorMessage={externalErrorMessage}
+                placeholder="Enter your email"
+                className="text-input"
+                externalErrorMessage={errorMessage}
+                autoComplete="email"
+                label="Email"
               />
+       
 
+      
               <InputFormItem
-                type="text"
+                type="tel"
                 name="phoneNumber"
-                placeholder={i18n("user.fields.phoneNumber")}
-                className="auth__input"
+                placeholder="Enter your phone number"
+                className="text-input"
+                autoComplete="tel"
+                label="Phone Number"
               />
+       
 
-              <InputFormItem
-                type="password"
-                name="withdrawPassword"
-                placeholder={i18n("user.fields.withdrawPassword")}
-                className="auth__input"
-              />
+          {/* Graphical Captcha */}
+         
+            <label className="input-label" >
+              Graphical Captcha
+            </label>
+            <div className="captcha-container" >
+              <div className="captcha-display">
+                <div className="captcha-text" >
+                  {captchaText}
+                </div>
+              </div>
+              <div className="captcha-controls" >
+                <div className="refresh-captcha" onClick={refreshCaptcha} >
+                  <i className="fas fa-sync-alt" />
+                  <span>Refresh</span>
+                </div>
+                <InputFormItem
+                  type="text"
+                  name="captcha"
+                  placeholder="Enter code"
+                  className="captcha-input"
+              
+                />
+              </div>
+            </div>
+       
 
+
+          
               <InputFormItem
-                type="password"
+                type={showPassword ? "text" : "password"}
                 name="password"
-                placeholder={i18n("user.fields.password")}
-                className="auth__input"
-              />
-
-              <InputFormItem
-                type="password"
-                name="newPasswordConfirmation"
+                placeholder="Create a password"
+                className="text-input"
                 autoComplete="new-password"
-                placeholder={i18n("user.fields.confirmPassword")}
-                className="auth__input"
+                label={"Password"}
               />
+          
+        
 
+        
               <InputFormItem
                 type="text"
                 name="invitationcode"
-                placeholder={i18n("user.fields.invitationcode")}
-                className="auth__input"
-                externalErrorMessage={externalErrorMessage}
-              />
-            </div>
+                placeholder="Enter invitation code"
+                className="text-input"
+                externalErrorMessage={errorMessage}
+                label="Invitation Code"              />
+       
 
-            <div className="auth__bottom">
-              <button className="auth__button" disabled={loading} type="submit">
-                <ButtonIcon loading={loading} />
-                <span>Sign up</span>
-              </button>
-              <Link to="/auth/signin" className="remove__ligne">
-                <span className="auth__link">Already have an account</span>
-              </Link>
-            </div>
-          </form>
-        </FormProvider>
+          <button 
+            className="signup-button" 
+            disabled={loading} 
+            type="submit"
+          >
+            <ButtonIcon loading={loading} />
+            <span>CREATE ACCOUNT</span>
+          </button>
+        </form>
+      </FormProvider>
+
+      {/* Footer Links */}
+      <div className="footer-links" style={{ textAlign: "center", margin: "20px 0" }}>
+        <Link to="/auth/signin" className="footer-link" >
+          Already have an account? Log in
+        </Link>
       </div>
-    </>
+
+      {/* Terms */}
+      <div className="terms">
+        By creating an account, you agree to our <a href="#" >Terms of Service</a> and <a href="#" >Privacy Policy</a>
+      </div>
+    </div>
   );
 }
 

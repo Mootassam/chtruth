@@ -104,9 +104,9 @@ function Signin() {
         <a href="#" className="footer-link">
           FORGOT PASSWORD?
         </a>
-        <a href="#" className="footer-link">
+        <Link to="/auth/signup" className="footer-link">
           SIGN UP
-        </a>
+        </Link>
       </div>
       {/* Divider */}
       <div className="divider">

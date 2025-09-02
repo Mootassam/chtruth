@@ -1,5 +1,6 @@
 import React from 'react'
 import { useHistory } from "react-router-dom";
+import ImagesUploader from 'src/view/shared/uploaders/ImagesUploader';
 
 function proof() {
     const history = useHistory();
@@ -93,6 +94,7 @@ function proof() {
   <div className="form-section">
     <div className="proof-section-title">Document Upload</div>
     {/* Front of ID */}
+
     <div className="file-upload">
       <label className="input-label">
         Front of Document <span className="required">*</span>
@@ -107,6 +109,7 @@ function proof() {
       </div>
     </div>
     {/* Back of ID */}
+    
     <div className="file-upload">
       <label className="input-label">
         Back of Document <span className="required">*</span>

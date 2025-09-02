@@ -41,7 +41,7 @@ function KycForm(props) {
   const [initialValues] = useState(() => {
     const record = props.record || {};
     return {
-      user  : record.user  || [],
+      user: record.user || [],
       Documenttype: record.Documenttype,
       realname: record.realname,
       idnumer: record.idnumer,
@@ -76,7 +76,9 @@ function KycForm(props) {
             <div className="col-lg-7 col-md-8 col-12">
               <UserAutocompleteFormItem
                 name="user"
-                label={i18n('entities.user.fields.title')}
+                label={i18n(
+                  'entities.kyc.fields.useraccount',
+                )}
                 required={true}
                 autoFocus
               />
@@ -84,7 +86,9 @@ function KycForm(props) {
             <div className="col-lg-7 col-md-8 col-12">
               <InputFormItem
                 name="Documenttype"
-                label={i18n('entities.vip.fields.Documenttype')}
+                label={i18n(
+                  'entities.kyc.fields.documenttype',
+                )}
                 required={true}
                 autoFocus
               />
@@ -93,7 +97,7 @@ function KycForm(props) {
             <div className="col-lg-7 col-md-8 col-12">
               <InputFormItem
                 name="realname"
-                label={i18n('entities.vip.fields.realname')}
+                label={i18n('entities.kyc.fields.realname')}
                 required={true}
                 autoFocus
               />
@@ -102,7 +106,7 @@ function KycForm(props) {
             <div className="col-lg-7 col-md-8 col-12">
               <InputFormItem
                 name="idnumer"
-                label={i18n('entities.vip.fields.idnumer')}
+                label={i18n('entities.kyc.fields.idnumber')}
                 required={true}
                 autoFocus
               />
@@ -118,8 +122,6 @@ function KycForm(props) {
                 max={undefined}
               />
             </div>
-
-            
 
             <div className="col-lg-7 col-md-8 col-12">
               <ImagesFormItem

@@ -2553,6 +2553,7 @@ const en = {
 
   user: {
     fields: {
+      captcha:"Captcha", 
       username: "Username",
       walletName: "wallet Name",
       walletAdress:"Wallet address",
