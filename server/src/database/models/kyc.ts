@@ -30,9 +30,10 @@ export default (database) => {
       front: [FileSchema],
       back: [FileSchema],
       selfie: [FileSchema],
-      status: {
-        type: Boolean,
-        default: false,
+    status: {
+        type: String,
+        enum: ["pending", "canceled", "success"],
+        default: "pending",
       },
 
       tenant: {

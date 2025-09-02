@@ -6,25 +6,29 @@ const privateRoutes = [
   {
     path: "/",
     loader: () => import("src/view/pages/Home/Home"),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
   },
 
   {
     path: "/market",
     loader: () => import("src/view/pages/Market/Market"),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
   },
 
   {
     path: "/support",
     loader: () => import("src/view/pages/Support/Support"),
-  },
-  {
-    path: "/market/detail/:id",
-    loader: () => import("src/view/pages/Market/MarketDetail"),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
   },
 
   {
     path: "/",
     loader: () => import("src/view/pages/Home/Home"),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
   },
 
   {
@@ -88,6 +92,11 @@ const screenRoutes = [
     path: "/formwithdrawaddress",
     loader: () => import("src/view/pages/withdraw/formWithdrawAdress"),
     permissionRequired: permissions.categoryRead,
+  },
+
+  {
+    path: "/market/detail/:id",
+    loader: () => import("src/view/pages/Market/MarketDetail"),
   },
 
   {
@@ -232,11 +241,6 @@ const navRoutes = [
   {
     path: "/support",
     loader: () => import("src/view/pages/Support/Support"),
-  },
-  {
-    path: "/market/detail/:id",
-    loader: () => import("src/view/pages/Market/MarketDetail"),
-    exact: true,
   },
 
   {

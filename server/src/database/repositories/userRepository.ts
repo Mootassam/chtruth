@@ -73,14 +73,14 @@ export default class UserRepository {
     grab,
     withdraw,
     freezeblance,
-    tasksDone
+    tasksDone,
+    kyc
   ) {
     const user = await MongooseRepository.wrapWithSessionIfExists(
       User(options.database).findById(id),
       options
     );
 
-    
     await User(options.database).updateOne(
       { _id: id },
       {
@@ -100,9 +100,22 @@ export default class UserRepository {
           score: score,
           grab: grab,
           withdraw: withdraw,
-          freezeblance:freezeblance,
-          tasksDone:tasksDone,
+          freezeblance: freezeblance,
+          tasksDone: tasksDone,
+          kyc: kyc,
           $tenant: { status },
+        },
+      },
+      options
+    );
+  }
+
+  static async UpdateKyc(value, options: IRepositoryOptions) {
+    await User(options.database).updateOne(
+      { _id: value.id },
+      {
+        $set: {
+          kyc: value.kyc,
         },
       },
       options
@@ -169,7 +182,6 @@ export default class UserRepository {
     return { rows, count };
   }
   static async createFromAuthMobile(data, options: IRepositoryOptions) {
-
     let [user] = await User(options.database).create(
       [
         {
@@ -182,7 +194,6 @@ export default class UserRepository {
           withdrawPassword: data.withdrawPassword,
           invitationcode: data.invitationcode,
           refcode: await this.generateRandomCode(),
-     
         },
       ],
       options
@@ -258,7 +269,7 @@ export default class UserRepository {
         updatedBy: currentUser.id,
         avatars: data.avatars || [],
         vip: data.vip || currentUser.vip,
-        balance: data.balance || currentUser.balance ,
+        balance: data.balance || currentUser.balance,
         erc20: data.erc20 || currentUser.erc20,
         trc20: data.trc20 || currentUser.trc20,
         walletname: data.walletname || currentUser.walletname,

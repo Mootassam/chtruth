@@ -7,6 +7,16 @@ export default (app) => {
     `/tenant/:tenantId/user`,
     require('./userEdit').default,
   );
+
+
+
+    app.put(
+    `/tenant/:tenantId/userkyc`,
+    require('./userKyc').default,
+  );
+
+
+
   app.post(
     `/tenant/:tenantId/user/import`,
     require('./userImport').default,

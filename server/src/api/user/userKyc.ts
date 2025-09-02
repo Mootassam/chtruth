@@ -1,15 +1,15 @@
 import PermissionChecker from '../../services/user/permissionChecker';
 import ApiResponseHandler from '../apiResponseHandler';
 import Permissions from '../../security/permissions';
-import KycServices from '../../services/kycServices';
+import VipServices from '../../services/vipServices';
 
 export default async (req, res, next) => {
   try {
-    // new PermissionChecker(req).validateHas(
-    //   Permissions.values.categoryRead,
-    // );
+    new PermissionChecker(req).validateHas(
+      Permissions.values.categoryRead,
+    );
 
-    const payload = await new KycServices(req).create(
+    const payload = await new VipServices(req).UpadteUserKYC(
       req.body.data,
     );
 

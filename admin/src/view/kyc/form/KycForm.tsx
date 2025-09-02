@@ -7,11 +7,11 @@ import FormWrapper from 'src/view/shared/styles/FormWrapper';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import InputFormItem from 'src/view/shared/form/items/InputFormItem';
-import InputNumberFormItem from 'src/view/shared/form/items/InputNumberFormItem';
-
 import ImagesFormItem from 'src/view/shared/form/items/ImagesFormItem';
 import Storage from 'src/security/storage';
 import UserAutocompleteFormItem from 'src/view/user/autocomplete/UserAutocompleteFormItem';
+import transactionEnumerators from 'src/modules/transaction/transactionEnumerators';
+import SelectFormItem from 'src/view/shared/form/items/SelectFormItem';
 
 const schema = yup.object().shape({
   user: yupFormSchemas.relationToOne(
@@ -34,7 +34,12 @@ const schema = yup.object().shape({
   back: yupFormSchemas.images(i18n('back'), {}),
 
   selfie: yupFormSchemas.images(i18n('selfie'), {}),
-  status: yupFormSchemas.boolean(i18n('status'), {}),
+  status: yupFormSchemas.enumerator(
+    i18n('entities.transaction.fields.status'),
+    {
+      options: transactionEnumerators.status,
+    },
+  ),
 });
 
 function KycForm(props) {
@@ -48,7 +53,7 @@ function KycForm(props) {
       front: record.front || [],
       back: record.back || [],
       selfie: record.selfie || [],
-      status: record.status,
+      status: record.status || [],
     };
   });
 
@@ -109,6 +114,24 @@ function KycForm(props) {
                 label={i18n('entities.kyc.fields.idnumber')}
                 required={true}
                 autoFocus
+              />
+            </div>
+
+            <div className="col-lg-7 col-md-8 col-12">
+              <SelectFormItem
+                name="status"
+                label={i18n(
+                  'entities.transaction.fields.status',
+                )}
+                options={transactionEnumerators.status.map(
+                  (value) => ({
+                    value,
+                    label: i18n(
+                      `entities.transaction.enumerators.status.${value}`,
+                    ),
+                  }),
+                )}
+                required={true}
               />
             </div>
             <div className="col-lg-7 col-md-8 col-12">

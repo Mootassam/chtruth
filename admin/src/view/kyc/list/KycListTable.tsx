@@ -14,7 +14,8 @@ import TableWrapper from 'src/view/shared/styles/TableWrapper';
 import Pagination from 'src/view/shared/table/Pagination';
 import UserListItem from 'src/view/user/list/UserListItem';
 // import actionsForm from 'src/modules/kyc/form/kycFormActions';
-
+import kycActions from 'src/modules/kyc/form/kycFormActions'
+import userAction from 'src/modules/user/form/userFormActions';
 function CouponsListTable(props) {
   const [recordIdToDestroy, setRecordIdToDestroy] =
     useState(null);
@@ -53,6 +54,23 @@ function CouponsListTable(props) {
 
   const doCloseDestroyConfirmModal = () => {
     setRecordIdToDestroy(null);
+  };
+
+  const onSubmit = (id , values, user) => {
+    const data = { 
+      user : user,
+      status: values
+    }
+   
+    
+    const item = { 
+      kyc : values ==="success" ? true : false  , 
+      id :user
+    }
+    dispatch(kycActions.doUpdate(id ,data));
+    dispatch(userAction.edituserkyc(item))
+
+ 
   };
 
   const doChangeSort = (field) => {
@@ -261,16 +279,52 @@ function CouponsListTable(props) {
                     {'Back of Certificate'}
                   </td>
 
-                  <td style={{ textAlign: 'right' }}>
-                    <span
-                      style={{
-                        color: row.status ? 'green' : 'red',
-                        fontWeight: 'bold',
-                      }}
-                    >
-                      {row.status ? 'Pass' : 'Rejection'}
-                    </span>
-                  </td>
+                <td style={{ textAlign: 'right' }}>
+  {row.status === "pending" ? (
+    <>
+      <button
+        style={{
+          backgroundColor: "green",
+          color: "white",
+          fontWeight: "bold",
+          padding: "5px 10px",
+          marginRight: "8px",
+          border: "none",
+          borderRadius: "5px",
+          cursor: "pointer",
+        }}
+
+        onClick={()=> onSubmit(row.id,'success' , row.user.id)}
+      >
+        Pass
+      </button>
+      <button
+        style={{
+          backgroundColor: "red",
+          color: "white",
+          fontWeight: "bold",
+          padding: "5px 10px",
+          border: "none",
+          borderRadius: "5px",
+          cursor: "pointer",
+        }}
+                onClick={()=> onSubmit(row.id,'canceled',row.user.id)}
+
+      >
+        Rejection
+      </button>
+    </>
+  ) : (
+    <span
+      style={{
+        color: row.status === "success" ? "green" : "red",
+        fontWeight: "bold",
+      }}
+    >
+      {row.status}
+    </span>
+  )}
+</td>
 
                   <td className="td-actions">
                     {/* <Link

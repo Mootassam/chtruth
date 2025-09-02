@@ -143,7 +143,7 @@ class Permissions {
       },
       categoryRead: {
         id: "categoryRead",
-        allowedRoles: [roles.admin, roles.member],
+        allowedRoles: [roles.admin, roles.member, roles.agent],
         allowedPlans: [plans.free, plans.growth, plans.enterprise],
         allowedStorage: [storage.categoryPhoto],
       },
