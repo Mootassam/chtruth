@@ -1,9 +1,9 @@
 import vipService from 'src/modules/kyc/kycService';
 import selectors from 'src/modules/kyc/list/kycListSelectors';
-import { i18n } from 'src/i18n';
+import { i18n } from '../../../i18n';
 import exporterFields from 'src/modules/kyc/list/kycListExporterFields';
 import Errors from 'src/modules/shared/error/errors';
-import Exporter from 'src/modules/shared/exporter/exporter';
+// import Exporter from 'src/modules/shared/exporter/exporter';
 
 const prefix = 'VIP_LIST';
 
@@ -70,10 +70,10 @@ const vipListActions = {
         null,
       );
 
-      new Exporter(
-        exporterFields,
-        i18n('entities.vip.exporterFileName'),
-      ).transformAndExportAsExcelFile(response.rows);
+      // new Exporter(
+      //   exporterFields,
+      //   i18n('entities.vip.exporterFileName'),
+      // ).transformAndExportAsExcelFile(response.rows);
 
       dispatch({
         type: vipListActions.EXPORT_SUCCESS,

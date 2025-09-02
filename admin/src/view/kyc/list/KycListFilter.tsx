@@ -12,29 +12,30 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import FilterPreview from 'src/view/shared/filter/FilterPreview';
 import filterRenders from 'src/modules/shared/filter/filterRenders';
 import InputFormItem from 'src/view/shared/form/items/InputFormItem';
+import UserAutocompleteFormItem from 'src/view/user/autocomplete/UserAutocompleteFormItem';
 
 
 const schema = yup.object().shape({
-  title: yupFilterSchemas.string(
-    i18n('entities.vip.fields.title'),
+  user: yupFilterSchemas.relationToOne(
+    i18n('entities.transaction.fields.user'),
   ),
-  levellimit: yupFilterSchemas.decimal(
-    i18n('entities.vip.fields.levelLimit'),
+  idnumber: yupFilterSchemas.decimal(
+    i18n('entities.kyc.fields.idnumber'),
   ),
  });
 
 const emptyValues = {
-  title: null,
+user: null,
   levellimit: null,
 };
 
 const previewRenders = {
-  title: {
-    label: i18n('entities.vip.fields.title'),
-    render: filterRenders.generic(),
+ user: {
+    label: i18n('entities.transaction.fields.user'),
+    render: filterRenders.relationToOne(),
   },
-  levellimit: {
-    label: i18n('entities.vip.fields.levelLimit'),
+  idnumer: {
+    label: i18n('entities.kyc.fields.idnumer'),
     render: filterRenders.decimal(),
   },
 
@@ -106,19 +107,19 @@ function CouponsListFilter(props) {
             <form onSubmit={form.handleSubmit(onSubmit)}>
               <div className="row">
                 <div className="col-lg-6 col-12">
-                  <InputFormItem
-                    name="title"
+                     <UserAutocompleteFormItem
+                    name="user"
                     label={i18n(
-                      'entities.vip.fields.title',
+                      'entities.transaction.fields.user',
                     )}
                   />
                 </div>
            
                 <div className="col-lg-6 col-12">
                   <InputFormItem
-                    name="levellimit"
+                    name="idnumber"
                     label={i18n(
-                      'entities.vip.fields.levelLimit',
+                      'entities.kyc.fields.idnumber',
                     )}
                   />
                 </div>

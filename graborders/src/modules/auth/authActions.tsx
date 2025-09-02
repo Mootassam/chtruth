@@ -6,6 +6,7 @@ import { getHistory } from "src/modules/store";
 import  AuthToken from "src/modules/auth/authToken";
 import AuthCurrentTenant from "src/modules/auth/authCurrentTenant";
 import selectors from "src/modules/auth/authSelectors";
+import kycService from "../kyc/kycService";
 
 const prefix = "AUTH";
 
@@ -100,12 +101,15 @@ const authActions = {
         dispatch({ type: authActions.AUTH_START });
 
         let currentUser = null;
+        let kycIsActive = null
 
         const token = await service.signinWithEmailAndPassword(email, password);
 
        await AuthToken.set(token, true);
 
         currentUser = await service.fetchMe();
+
+        
         dispatch({
           type: authActions.AUTH_SUCCESS,
           payload: {

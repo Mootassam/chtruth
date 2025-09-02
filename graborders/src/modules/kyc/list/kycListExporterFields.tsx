@@ -1,5 +1,5 @@
-import { i18n } from 'src/i18n';
-import exporterRenders from 'src/modules/shared/exporter/exporterRenders';
+import { i18n } from '../../../i18n';
+// import exporterRenders from 'src/modules/shared/exporter/exporterRenders';
 
 export default [
   {
@@ -17,7 +17,6 @@ export default [
   {
     name: 'discount',
     label: i18n('entities.vip.fields.discount'),
-    render: exporterRenders.decimal(),
   },
   {
     name: 'noOfTimes',
@@ -34,11 +33,9 @@ export default [
   {
     name: 'createdAt',
     label: i18n('entities.vip.fields.createdAt'),
-    render: exporterRenders.datetime(),
   },
   {
     name: 'updatedAt',
     label: i18n('entities.vip.fields.updatedAt'),
-    render: exporterRenders.datetime(),
   },
 ];

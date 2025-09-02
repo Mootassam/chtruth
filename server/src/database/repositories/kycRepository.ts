@@ -125,19 +125,16 @@ class KycRepository {
         });
       }
 
-      if (filter.title) {
+       if (filter.user) {
         criteriaAnd.push({
-          title: {
-            $regex: MongooseQueryUtils.escapeRegExp(filter.title),
-            $options: "i",
-          },
+          user: filter.user,
         });
       }
 
-      if (filter.levellimit) {
+      if (filter.idnumer) {
         criteriaAnd.push({
-          levellimit: {
-            $regex: MongooseQueryUtils.escapeRegExp(filter.levellimit),
+          idnumer: {
+            $regex: MongooseQueryUtils.escapeRegExp(filter.idnumer),
             $options: "i",
           },
         });

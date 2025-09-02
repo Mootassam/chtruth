@@ -6,13 +6,16 @@ import KycServices from '../../services/kycServices';
 
 export default async (req, res, next) => {
   try {
-    new PermissionChecker(req).validateHas(
-      Permissions.values.categoryRead,
-    );
+    // new PermissionChecker(req).validateHas(
+    //   Permissions.values.categoryRead,
+    // );
 
     const payload = await new KycServices(req).findById(
       req.params.id,
     );
+
+
+    
 
     await ApiResponseHandler.success(req, res, payload);
   } catch (error) {

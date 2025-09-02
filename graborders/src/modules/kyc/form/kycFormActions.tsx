@@ -45,7 +45,7 @@ const vipFormActions = {
         type: vipFormActions.INIT_ERROR,
       });
 
-      getHistory().push('/kyc');
+      getHistory().push('/profile');
     }
   },
 
@@ -65,7 +65,7 @@ const vipFormActions = {
         i18n('entities.vip.create.success'),
       );
 
-      getHistory().push('/kyc');
+      getHistory().push('/profile');
     } catch (error) {
       Errors.handle(error);
 
@@ -91,7 +91,7 @@ const vipFormActions = {
         i18n('entities.vip.update.success'),
       );
 
-      getHistory().push('/kyc');
+      getHistory().push('/profile');
     } catch (error) {
       Errors.handle(error);
 

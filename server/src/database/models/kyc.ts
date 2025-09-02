@@ -26,11 +26,11 @@ export default (database) => {
       idnumer: {
         type: String,
       },
-    
+
       front: [FileSchema],
       back: [FileSchema],
       selfie: [FileSchema],
-    status: {
+      status: {
         type: String,
         enum: ["pending", "canceled", "success"],
         default: "pending",

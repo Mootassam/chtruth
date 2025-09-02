@@ -1,17 +1,29 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import SubHeader from "src/view/shared/Header/SubHeader";
 import authActions from "src/modules/auth/authActions";
 import authSelectors from "src/modules/auth/authSelectors";
+import kycSelectors from "src/modules/kyc/list/kycListSelectors";
 
+import actions from "src/modules/kyc/list/kycListActions";
 function Profile() {
   const dispatch = useDispatch();
   const currentUser = useSelector(authSelectors.selectCurrentUser);
+  const selectRows = useSelector(kycSelectors.selectRows);
+const loading = useSelector(kycSelectors.selectLoading)
+  useEffect(() => {
+    const values = {
+      user: currentUser,
+    };
+    dispatch(actions.doFetch(values, values));
+  }, [dispatch]);
 
   const handleSignout = () => {
     dispatch(authActions.doSignout());
   };
+
+
 
   const menuItems = useMemo(() => {
     const baseItems = [
@@ -59,16 +71,16 @@ function Profile() {
       },
     ];
 
-    return baseItems.map(item => ({
+    return baseItems.map((item) => ({
       ...item,
       disabled: item.requiresKyc && !currentUser?.kyc,
     }));
   }, [currentUser?.kyc]);
 
-  const renderMenuItem = (item: typeof menuItems[0]) => {
+  const renderMenuItem = (item: (typeof menuItems)[0]) => {
     if (item.disabled) {
       return (
-        <li className="profile-settings-item disabled" key={item.name+'1'}>
+        <li className="profile-settings-item disabled" key={item.name + "1"}>
           <div className="profile-settings-info">
             <div className="profile-settings-icon">
               <i className={item.icon} />
@@ -102,9 +114,19 @@ function Profile() {
   return (
     <div className="profile_container">
       <SubHeader title="Profile" />
-      
+
       <div className="container-profile">
-        {!currentUser?.kyc && (
+
+{loading && <h2>Loding ... </h2>}
+        {selectRows[0]?.status ==="pending" ? 
+          <div className="verification-status">
+            <div className="status-icon">
+                <i className="fas fa-clock"></i>
+            </div>
+            <div className="status-title">Verification Pending</div>
+            <div className="status-desc">Your account verification is in progress. This usually takes 1-3 business days.</div>
+        </div>
+        : !currentUser?.kyc && (
           <div className="verification-alert">
             <div className="alert-icon">
               <i className="fas fa-exclamation-triangle" />
@@ -125,7 +147,13 @@ function Profile() {
           </div>
           <div className="profile-profile-info">
             <div className="profile-profile-name">{currentUser?.fullName}</div>
-            <div className={currentUser?.kyc ? "profile-profile-status" : "profile-not-status"}>
+            <div
+              className={
+                currentUser?.kyc
+                  ? "profile-profile-status"
+                  : "profile-not-status"
+              }
+            >
               {currentUser?.kyc ? "VERIFIED" : "UNVERIFIED"}
             </div>
           </div>
@@ -145,8 +173,7 @@ function Profile() {
             <div className="profile-info-label">Invitation Code </div>
             <div className="profile-info-value">
               <span className="profile-invite-code">
-                {currentUser?.kyc ?
-                currentUser?.invitationcode : "******"}
+                {currentUser?.kyc ? currentUser?.invitationcode : "******"}
               </span>
             </div>
           </div>
@@ -199,7 +226,7 @@ function Profile() {
           <div className="profile-section-title">Settings</div>
           <ul className="profile-settings-list">
             {menuItems.map(renderMenuItem)}
-            <li className="profile-settings-item" onClick={handleSignout} >
+            <li className="profile-settings-item" onClick={handleSignout}>
               <div className="profile-settings-info">
                 <div className="profile-settings-icon">
                   <i className="fas fa-sign-out-alt" />
