@@ -7231,7 +7231,7 @@
   .market-item {
       display: flex;
       justify-content: space-between;
-      padding: 15px 0;
+      padding: 15px;
       border-bottom: 1px solid #2A2A2A;
   }
 

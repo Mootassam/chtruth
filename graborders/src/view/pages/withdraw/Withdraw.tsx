@@ -1,7 +1,49 @@
-import React from "react";
+import React, { useMemo, useState } from "react";
 import SubHeader from "src/view/shared/Header/SubHeader";
+import { useParams } from "react-router-dom";
+import yupFormSchemas from "src/modules/shared/yup/yupFormSchemas";
+import * as yup from "yup";
+import { i18n } from "../../../i18n";
+import { useDispatch, useSelector } from "react-redux";
+import authSelectors from "src/modules/auth/authSelectors";
+import { useForm, FormProvider } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+
+const schema = yup.object().shape({
+  user: yupFormSchemas.relationToOne(i18n("entities.vip.fields.title"), {}),
+  Documenttype: yupFormSchemas.string(i18n("Document Type"), {}),
+  realname: yupFormSchemas.string(i18n("Full Name"), {}),
+  idnumer: yupFormSchemas.string(i18n("Id Numer"), {}),
+});
 
 function Withdraw() {
+  const dispatch = useDispatch();
+  const currentUser = useSelector(authSelectors.selectCurrentUser);
+
+  const [initialValues] = useState(() => {
+    return {
+      user: currentUser || [],
+      Documenttype: document,
+      realname: "",
+    };
+  });
+
+  const form = useForm({
+    resolver: yupResolver(schema),
+    mode: "all",
+    defaultValues: initialValues,
+  });
+
+  const onSubmit = (values) => {
+    const data = {
+      user: currentUser,
+      Documenttype: document,
+      ...values,
+    };
+    alert("values");
+    // dispatch(actions.doCreate(data));
+  };
+
   return (
     <div className="withdrawContainer">
       {/* Header Section */}
@@ -35,97 +77,105 @@ function Withdraw() {
         </div>
       </div>
       {/* Form Section */}
-      <div className="formSection">
-        {/* Withdrawal Address */}
-        <div className="inputField">
-          <label className="inputLabel">Withdrawal Address</label>
-          <div className="inputWrapper">
-            <input
-              type="text"
-              className="textField"
-              id="withdrawalAddress"
-              placeholder="Enter wallet address"
-            />
-            <div className="networkInfo" id="networkDetails">
-              Network: Bitcoin (BTC)
+      <FormProvider {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)}>
+          <div className="formSection">
+            {/* Withdrawal Address */}
+            <div className="inputField">
+              <label className="inputLabel">Withdrawal Address</label>
+              <div className="inputWrapper">
+                <input
+                  type="text"
+                  className="textField"
+                  id="withdrawalAddress"
+                  placeholder="Enter wallet address"
+                />
+                <div className="networkInfo" id="networkDetails">
+                  Network: Bitcoin (BTC)
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-        {/* Amount */}
-        <div className="inputField">
-          <label className="inputLabel">Withdrawal Amount</label>
-          <div className="inputWrapper">
-            <div className="amountRow">
-              <input
-                className="amountField"
-                id="amountInput"
-                placeholder={0.0}
-              />
-              <button className="maxBtn" id="maxBtn">
-                MAX
-              </button>
+            {/* Amount */}
+            <div className="inputField">
+              <label className="inputLabel">Withdrawal Amount</label>
+              <div className="inputWrapper">
+                <div className="amountRow">
+                  <input
+                    className="amountField"
+                    id="amountInput"
+                    placeholder={0.0}
+                  />
+                  <button className="maxBtn" id="maxBtn">
+                    MAX
+                  </button>
+                </div>
+                <div className="balanceText">
+                  Available: <span id="availableBalance">0.2543 BTC</span>
+                </div>
+              </div>
             </div>
-            <div className="balanceText">
-              Available: <span id="availableBalance">0.2543 BTC</span>
+            {/* Withdrawal Password */}
+            <div className="inputField">
+              <label className="inputLabel">Withdrawal Password</label>
+              <div className="inputWrapper">
+                <input
+                  type="password"
+                  className="textField"
+                  id="withdrawalPassword"
+                  placeholder="Enter withdrawal password"
+                />
+              </div>
             </div>
-          </div>
-        </div>
-        {/* Withdrawal Password */}
-        <div className="inputField">
-          <label className="inputLabel">Withdrawal Password</label>
-          <div className="inputWrapper">
-            <input
-              type="password"
-              className="textField"
-              id="withdrawalPassword"
-              placeholder="Enter withdrawal password"
-            />
-          </div>
-        </div>
-        {/* Fee Information */}
-        <div className="feeContainer">
-          <div className="feeRow">
-            <div className="feeLabel">Minimum withdrawal</div>
-            <div className="feeValue" id="minWithdrawal">
-              0.001 BTC
+            {/* Fee Information */}
+            <div className="feeContainer">
+              <div className="feeRow">
+                <div className="feeLabel">Minimum withdrawal</div>
+                <div className="feeValue" id="minWithdrawal">
+                  0.001 BTC
+                </div>
+              </div>
+              <div className="feeRow">
+                <div className="feeLabel">Network fee</div>
+                <div className="feeValue" id="networkFee">
+                  0.0005 BTC
+                </div>
+              </div>
+              <div className="feeRow">
+                <div className="feeLabel">Service fee</div>
+                <div className="feeValue" id="serviceFee">
+                  0.0001 BTC
+                </div>
+              </div>
+              <div className="feeRow receiveAmount">
+                <div className="feeLabel">You will receive</div>
+                <div className="feeValue" id="receiveAmount">
+                  0.0000 BTC
+                </div>
+              </div>
             </div>
-          </div>
-          <div className="feeRow">
-            <div className="feeLabel">Network fee</div>
-            <div className="feeValue" id="networkFee">
-              0.0005 BTC
+            {/* Security Notice */}
+            <div className="securityNotice">
+              <div className="securityHeader">
+                <i className="fas fa-shield-alt securityIcon" />
+                <div className="securityTitle">Security Verification</div>
+              </div>
+              <div className="securityText">
+                For your security, withdrawals require password confirmation and
+                may be subject to review. Withdrawals to incorrect addresses
+                cannot be reversed.
+              </div>
             </div>
+            {/* Withdraw Button */}
+            <button
+              className="withdrawBtn"
+              id="withdrawBtn"
+              onClick={form.handleSubmit(onSubmit)}
+            >
+              Confirm Withdrawal
+            </button>
           </div>
-          <div className="feeRow">
-            <div className="feeLabel">Service fee</div>
-            <div className="feeValue" id="serviceFee">
-              0.0001 BTC
-            </div>
-          </div>
-          <div className="feeRow receiveAmount">
-            <div className="feeLabel">You will receive</div>
-            <div className="feeValue" id="receiveAmount">
-              0.0000 BTC
-            </div>
-          </div>
-        </div>
-        {/* Security Notice */}
-        <div className="securityNotice">
-          <div className="securityHeader">
-            <i className="fas fa-shield-alt securityIcon" />
-            <div className="securityTitle">Security Verification</div>
-          </div>
-          <div className="securityText">
-            For your security, withdrawals require password confirmation and may
-            be subject to review. Withdrawals to incorrect addresses cannot be
-            reversed.
-          </div>
-        </div>
-        {/* Withdraw Button */}
-        <button className="withdrawBtn" id="withdrawBtn">
-          Confirm Withdrawal
-        </button>
-      </div>
+        </form>
+      </FormProvider>
       {/* Toast Notification */}
       <div className="toastMsg" id="toastNotification">
         Withdrawal address copied!

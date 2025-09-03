@@ -1,12 +1,24 @@
-import React, { useState } from "react";
+import React, { useState ,useEffect } from "react";
+import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
+import NewsActions from 'src/modules/product/list/productListActions'
 interface QuickActionItem {
   path: string;
   icon: string;
   name: string;
 }
 
+
+
 function Home() {
+const dispatch = useDispatch()
+
+
+  useEffect(() => {
+  
+  
+
+}, []);
   const [activeItem, setActiveItem] = useState<string>("/deposit");
 
   const icons = [

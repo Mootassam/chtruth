@@ -89,7 +89,7 @@ const screenRoutes = [
     permissionRequired: permissions.categoryRead,
   },
   {
-    path: "/formwithdrawaddress",
+    path: "/formwithdrawaddress/:id",
     loader: () => import("src/view/pages/withdraw/formWithdrawAdress"),
     permissionRequired: permissions.categoryRead,
   },
