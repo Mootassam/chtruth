@@ -2927,6 +2927,7 @@
       gap: 15px;
       background-color: #000;
       border-top: 1px solid #2A2A2A;
+      z-index: 1000;
   }
 
   .action-button {

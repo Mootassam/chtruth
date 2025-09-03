@@ -1,5 +1,7 @@
-import React, { useState, useEffect, useRef } from "react";
-import { useHistory ,useParams} from 'react-router-dom';
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import { useHistory, useParams } from "react-router-dom";
+import { init } from "klinecharts";
+import axios from "axios";
 
 // Interface for Binance trade data
 interface BinanceTrade {
@@ -27,108 +29,143 @@ interface BinanceTicker {
   P: string; // Price change percent
 }
 
+// Dark theme configuration
+const darkTheme = {
+  grid: {
+    horizontal: {
+      color: "#2A2A2A",
+    },
+    vertical: {
+      color: "#2A2A2A",
+    },
+  },
+  candle: {
+    priceMark: {
+      high: {
+        color: "#DDD",
+      },
+      low: {
+        color: "#DDD",
+      },
+      last: {
+        upColor: "#00C076",
+        downColor: "#FF6838",
+        noChangeColor: "#AAAAAA",
+      },
+    },
+    tooltip: {
+      rect: {
+        color: "#1E1E1F",
+        borderColor: "#3A3A3A",
+      },
+      text: {
+        color: "#DDD",
+      },
+    },
+    bar: {
+      upColor: "#00C076",
+      downColor: "#FF6838",
+      noChangeColor: "#AAAAAA",
+    },
+  },
+  indicator: {
+    bars: [
+      {
+        color: "#00C076",
+        borderColor: "#00C076",
+      },
+    ],
+    line: {
+      size: 2,
+      colors: ["#FF9600", "#9D65C9", "#2196F3", "#E11F1C", "#0CB1C1"],
+    },
+    lastValueMark: {
+      text: {
+        color: "#DDD",
+      },
+    },
+    tooltip: {
+      rect: {
+        color: "#1E1E1F",
+        borderColor: "#3A3A3A",
+      },
+      text: {
+        color: "#DDD",
+      },
+    },
+  },
+  xAxis: {
+    axisLine: {
+      color: "#3A3A3A",
+    },
+    tickLine: {
+      color: "#3A3A3A",
+    },
+    tickText: {
+      color: "#7E7E7E",
+    },
+  },
+  yAxis: {
+    axisLine: {
+      color: "#3A3A3A",
+    },
+    tickLine: {
+      color: "#3A3A3A",
+    },
+    tickText: {
+      color: "#7E7E7E",
+    },
+  },
+  separator: {
+    color: "#2A2A2A",
+  },
+  crosshair: {
+    horizontal: {
+      line: {
+        color: "#3A3A3A",
+      },
+      text: {
+        color: "#DDD",
+      },
+    },
+    vertical: {
+      line: {
+        color: "#3A3A3A",
+      },
+      text: {
+        color: "#DDD",
+      },
+    },
+  },
+};
+
 function MarketDetail() {
   const history = useHistory();
-  const [marketPrice, setMarketPrice] = useState("51825.10");
-  const [priceChangePercent, setPriceChangePercent] = useState("2.31");
-  const [highPrice, setHighPrice] = useState("52120.40");
-  const [lowPrice, setLowPrice] = useState("50920.30");
-  const [volume, setVolume] = useState("42.5");
+  const { id } = useParams<{ id: string }>();
+
+  const [marketPrice, setMarketPrice] = useState("0");
+  const [priceChangePercent, setPriceChangePercent] = useState("0");
+  const [highPrice, setHighPrice] = useState("0");
+  const [lowPrice, setLowPrice] = useState("0");
+  const [volume, setVolume] = useState("0");
   const [recentTrades, setRecentTrades] = useState<BinanceTrade[]>([]);
-    const { id } = useParams<{ id: string }>();
+  const [timeframe, setTimeframe] = useState("1m");
+  const [isLoading, setIsLoading] = useState(true);
+  const [selectedCoin, setSelectedCoin] = useState(id || "BTCUSDT");
 
   const tradeWs = useRef<WebSocket | null>(null);
   const tickerWs = useRef<WebSocket | null>(null);
-
-  // WebSocket connection for ticker data (price, 24h stats)
-  useEffect(() => {
-    // Connect to ticker stream for BTCUSDT
-    tickerWs.current = new WebSocket(`wss://stream.binance.com:9443/ws/${id.toLowerCase()}@ticker`);
-
-    tickerWs.current.onopen = () => {
-      console.log(`Connected to BTCUSDT ticker stream`);
-    };
-
-    tickerWs.current.onmessage = (event: MessageEvent) => {
-      const tickerData: BinanceTicker = JSON.parse(event.data);
-      
-      // Update market data
-      setMarketPrice(tickerData.c);
-      setPriceChangePercent(tickerData.P);
-      setHighPrice(tickerData.h);
-      setLowPrice(tickerData.l);
-      setVolume(tickerData.v);
-
-      // Log real-time data to console
-      console.log('Real-time Ticker Data:', {
-        symbol: tickerData.s,
-        price: tickerData.c,
-        changePercent: tickerData.P + '%',
-        high: tickerData.h,
-        low: tickerData.l,
-        volume: tickerData.v
-      });
-    };
-
-    tickerWs.current.onerror = (error: Event) => {
-      console.error('Ticker WebSocket error:', error);
-    };
-
-    return () => {
-      if (tickerWs.current && tickerWs.current.readyState === WebSocket.OPEN) {
-        tickerWs.current.close();
-      }
-    };
-  }, []);
-
-  // WebSocket connection for trade data (recent trades)
-  useEffect(() => {
-    // Connect to trade stream for BTCUSDT
-    tradeWs.current = new WebSocket(`wss://stream.binance.com:9443/ws/btcusdt@trade`);
-
-    tradeWs.current.onopen = () => {
-      console.log(`Connected to BTCUSDT trade stream`);
-    };
-
-    tradeWs.current.onmessage = (event: MessageEvent) => {
-      const tradeData: BinanceTrade = JSON.parse(event.data);
-      
-      // Add new trade to recent trades (limit to last 20 trades)
-      setRecentTrades(prevTrades => {
-        const newTrades = [tradeData, ...prevTrades.slice(0, 19)];
-        return newTrades;
-      });
-
-      // Log real-time trade to console
-      console.log('Real-time Trade:', {
-        symbol: tradeData.s,
-        price: tradeData.p,
-        quantity: tradeData.q,
-        time: new Date(tradeData.T).toLocaleTimeString(),
-        isBuyerMaker: tradeData.m
-      });
-    };
-
-    tradeWs.current.onerror = (error: Event) => {
-      console.error('Trade WebSocket error:', error);
-    };
-
-    return () => {
-      if (tradeWs.current && tradeWs.current.readyState === WebSocket.OPEN) {
-        tradeWs.current.close();
-      }
-    };
-  }, []);
-
-  const goBack = () => {
-    history.goBack();
-  };
+  const klineWs = useRef<WebSocket | null>(null);
+  const chartContainerRef = useRef<HTMLDivElement>(null);
+  const chartInstanceRef = useRef<any>(null);
+  const lastKlineRef = useRef<any>(null);
+  const autoRefreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // Format number with commas and fixed decimals
   const formatNumber = (num: string, decimals: number = 2) => {
     return Number(num).toLocaleString(undefined, {
       minimumFractionDigits: decimals,
-      maximumFractionDigits: decimals
+      maximumFractionDigits: decimals,
     });
   };
 
@@ -136,12 +173,343 @@ function MarketDetail() {
   const formatVolume = (vol: string) => {
     const volumeNum = Number(vol);
     if (volumeNum >= 1000000000) {
-      return (volumeNum / 1000000000).toFixed(2) + 'B';
+      return (volumeNum / 1000000000).toFixed(2) + "B";
     } else if (volumeNum >= 1000000) {
-      return (volumeNum / 1000000).toFixed(2) + 'M';
+      return (volumeNum / 1000000).toFixed(2) + "M";
     } else {
       return formatNumber(vol, 0);
     }
+  };
+
+  // Initialize chart
+  const initializeChart = useCallback(() => {
+    if (!chartContainerRef.current) return;
+
+    // Clear previous chart if it exists
+    if (chartInstanceRef.current) {
+      chartContainerRef.current.innerHTML = "";
+    }
+
+    // Initialize the chart with auto-resize option and real-time updates
+    chartInstanceRef.current = init(chartContainerRef.current, {
+      autoResize: true,
+      animation: {
+        duration: 200,
+        easing: "linear",
+      },
+      realTime: {
+        enabled: true,
+        interval: 1000,
+      },
+    });
+
+    // Apply dark theme
+    // chartInstanceRef.current.setStyle(darkTheme);
+
+    // Set symbol
+    chartInstanceRef.current.setSymbol({ ticker: selectedCoin });
+
+    // Set period based on timeframe
+    const periodMap: Record<string, { span: number; type: string }> = {
+      "1m": { span: 1, type: "minute" },
+      "5m": { span: 5, type: "minute" },
+      "15m": { span: 15, type: "minute" },
+      "30m": { span: 30, type: "minute" },
+      "1h": { span: 1, type: "hour" },
+      "4h": { span: 4, type: "hour" },
+      "1d": { span: 1, type: "day" },
+      "1w": { span: 1, type: "week" },
+      "1M": { span: 1, type: "month" },
+    };
+
+    const period = periodMap[timeframe] || { span: 1, type: "minute" };
+    chartInstanceRef.current.setPeriod(period);
+  }, [selectedCoin, timeframe]);
+
+  // Load historical data
+  const loadHistoricalData = useCallback(async () => {
+    if (!selectedCoin || !timeframe || !chartInstanceRef.current) return;
+
+    setIsLoading(true);
+    chartInstanceRef.current.setDataLoader({
+      getBars: ({ callback }: { callback: (data: any) => void }) => {
+        axios(
+          `https://api.binance.com/api/v3/klines?symbol=${selectedCoin}&interval=${timeframe}&limit=100`
+        )
+          .then((dataList) => {
+            const formattedData = dataList.data.map((kline: any[]) => ({
+              timestamp: kline[0],
+              open: parseFloat(kline[1]),
+              high: parseFloat(kline[2]),
+              low: parseFloat(kline[3]),
+              close: parseFloat(kline[4]),
+              volume: parseFloat(kline[5]),
+              turnover: parseFloat(kline[7]),
+            }));
+            callback(formattedData);
+            setIsLoading(false);
+          })
+          .catch((error) => {
+            console.error("Error loading chart data:", error);
+            setIsLoading(false);
+          });
+      },
+    });
+  }, [selectedCoin, timeframe]);
+
+  // WebSocket connection for ticker data (price, 24h stats)
+  useEffect(() => {
+    if (!selectedCoin) return;
+
+    const connectTickerWebSocket = () => {
+      // Close previous connection if it exists
+      if (tickerWs.current) {
+        tickerWs.current.close();
+      }
+
+      // Connect to ticker stream
+      tickerWs.current = new WebSocket(
+        `wss://stream.binance.com:9443/ws/${selectedCoin.toLowerCase()}@ticker`
+      );
+
+      tickerWs.current.onopen = () => {
+        console.log(`Connected to ${selectedCoin} ticker stream`);
+      };
+
+      tickerWs.current.onmessage = (event: MessageEvent) => {
+        const tickerData: BinanceTicker = JSON.parse(event.data);
+
+        // Update market data
+        setMarketPrice(tickerData.c);
+        setPriceChangePercent(tickerData.P);
+        setHighPrice(tickerData.h);
+        setLowPrice(tickerData.l);
+        setVolume(tickerData.v);
+      };
+
+      tickerWs.current.onerror = (error: Event) => {
+        console.error("Ticker WebSocket error:", error);
+      };
+
+      tickerWs.current.onclose = (event: CloseEvent) => {
+        console.log("Ticker WebSocket closed, attempting to reconnect...");
+
+        // Auto-reconnect after a short delay
+        setTimeout(() => {
+          if (selectedCoin) {
+            console.log("Attempting to reconnect ticker WebSocket...");
+            connectTickerWebSocket();
+          }
+        }, 2000);
+      };
+    };
+
+    connectTickerWebSocket();
+
+    return () => {
+      if (tickerWs.current && tickerWs.current.readyState === WebSocket.OPEN) {
+        tickerWs.current.close();
+      }
+    };
+  }, [selectedCoin]);
+
+  // WebSocket connection for trade data (recent trades)
+  useEffect(() => {
+    if (!selectedCoin) return;
+
+    const connectTradeWebSocket = () => {
+      // Close previous connection if it exists
+      if (tradeWs.current) {
+        tradeWs.current.close();
+      }
+
+      // Connect to trade stream
+      tradeWs.current = new WebSocket(
+        `wss://stream.binance.com:9443/ws/${selectedCoin.toLowerCase()}@trade`
+      );
+
+      tradeWs.current.onopen = () => {
+        console.log(`Connected to ${selectedCoin} trade stream`);
+      };
+
+      tradeWs.current.onmessage = (event: MessageEvent) => {
+        const tradeData: BinanceTrade = JSON.parse(event.data);
+
+        // Add new trade to recent trades (limit to last 20 trades)
+        setRecentTrades((prevTrades) => {
+          const newTrades = [tradeData, ...prevTrades.slice(0, 19)];
+          return newTrades;
+        });
+      };
+
+      tradeWs.current.onerror = (error: Event) => {
+        console.error("Trade WebSocket error:", error);
+      };
+
+      tradeWs.current.onclose = (event: CloseEvent) => {
+        console.log("Trade WebSocket closed, attempting to reconnect...");
+
+        // Auto-reconnect after a short delay
+        setTimeout(() => {
+          if (selectedCoin) {
+            console.log("Attempting to reconnect trade WebSocket...");
+            connectTradeWebSocket();
+          }
+        }, 2000);
+      };
+    };
+
+    connectTradeWebSocket();
+
+    return () => {
+      if (tradeWs.current && tradeWs.current.readyState === WebSocket.OPEN) {
+        tradeWs.current.close();
+      }
+    };
+  }, [selectedCoin]);
+
+  // WebSocket connection for kline data (real-time chart updates only)
+  useEffect(() => {
+    if (!selectedCoin || !chartInstanceRef.current) return;
+
+    const connectKlineWebSocket = () => {
+      // Close previous connection if it exists
+      if (klineWs.current) {
+        klineWs.current.close();
+      }
+
+      // Always use 1m as the default interval for real-time updates
+      const streamInterval = "1m";
+
+      klineWs.current = new WebSocket(
+        `wss://stream.binance.com:9443/ws/${selectedCoin.toLowerCase()}@kline_${streamInterval}`
+      );
+
+      klineWs.current.onopen = () => {
+        console.log(
+          `Connected to ${selectedCoin} kline stream (${streamInterval})`
+        );
+      };
+
+      klineWs.current.onmessage = (event: MessageEvent) => {
+        try {
+          const data = JSON.parse(event.data);
+
+          // Check if we have kline data
+          if (data.e === "kline") {
+            const kline = data.k;
+
+            // Convert to chart format
+            const chartKline = {
+              timestamp: kline.t,
+              open: parseFloat(kline.o),
+              high: parseFloat(kline.h),
+              low: parseFloat(kline.l),
+              close: parseFloat(kline.c),
+              volume: parseFloat(kline.v),
+              turnover: parseFloat(kline.q),
+            };
+
+            // Store the last kline data for reference
+            lastKlineRef.current = chartKline;
+
+            // Update chart with new kline data
+            if (chartInstanceRef.current) {
+              chartInstanceRef.current.updateData(chartKline);
+
+              // Force a visual refresh of the chart
+              if (chartInstanceRef.current.getWidth()) {
+                const currentWidth = chartInstanceRef.current.getWidth();
+                chartInstanceRef.current.resize(currentWidth - 1);
+                setTimeout(() => {
+                  if (chartInstanceRef.current) {
+                    chartInstanceRef.current.resize(currentWidth);
+                  }
+                }, 10);
+              }
+            }
+          }
+        } catch (error) {
+          console.error("Error processing kline data:", error);
+        }
+      };
+
+      klineWs.current.onerror = (error: Event) => {
+        console.error("Kline WebSocket error:", error);
+      };
+
+      klineWs.current.onclose = (event: CloseEvent) => {
+        console.log("Kline WebSocket closed, attempting to reconnect...");
+
+        // Auto-reconnect after a short delay
+        setTimeout(() => {
+          if (selectedCoin) {
+            console.log("Attempting to reconnect kline WebSocket...");
+            connectKlineWebSocket();
+          }
+        }, 2000);
+      };
+    };
+
+    connectKlineWebSocket();
+
+    return () => {
+      if (klineWs.current && klineWs.current.readyState === WebSocket.OPEN) {
+        klineWs.current.close();
+      }
+    };
+  }, [selectedCoin]);
+
+  // Function to refresh chart data
+  const refreshChartData = useCallback(() => {
+    if (chartInstanceRef.current && selectedCoin) {
+      // Force chart to refresh by triggering a resize event
+      const currentWidth = chartInstanceRef.current.getWidth();
+      if (currentWidth) {
+        chartInstanceRef.current.resize(currentWidth);
+      }
+
+      // If we have last kline data, update it again to ensure real-time display
+      if (lastKlineRef.current) {
+        chartInstanceRef.current.updateData(lastKlineRef.current);
+      }
+    }
+  }, [selectedCoin]);
+
+  // Initialize chart and load data when component mounts or coin/timeframe changes
+  useEffect(() => {
+    if (id) {
+      setSelectedCoin(id);
+    }
+
+    initializeChart();
+    loadHistoricalData();
+
+    // Set up auto-refresh interval (every 1 second)
+    if (autoRefreshIntervalRef.current) {
+      clearInterval(autoRefreshIntervalRef.current);
+    }
+
+    autoRefreshIntervalRef.current = setInterval(() => {
+      refreshChartData();
+    }, 1000);
+
+    return () => {
+      // Clean up WebSocket connections and interval
+      if (autoRefreshIntervalRef.current)
+        clearInterval(autoRefreshIntervalRef.current);
+      if (tradeWs.current) tradeWs.current.close();
+      if (tickerWs.current) tickerWs.current.close();
+      if (klineWs.current) klineWs.current.close();
+    };
+  }, [initializeChart, loadHistoricalData, refreshChartData, id]);
+
+  const goBack = () => {
+    history.goBack();
+  };
+
+  const handleTimeframeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setTimeframe(e.target.value);
   };
 
   return (
@@ -154,12 +522,24 @@ function MarketDetail() {
           </div>
           <div className="market-info">
             <div className="market-icon">
-              <i className="fab fa-btc" />
+              <img
+                src={`https://images.weserv.nl/?url=https://bin.bnbstatic.com/static/assets/logos/${
+                  selectedCoin.split("/")[0]
+                }.png`}
+                style={{ width: 20, height: 20 }}
+                alt={selectedCoin}
+                loading="lazy"
+              />
             </div>
-            <div className="market-name">BTC/USDT</div>
-            <div className="market-change" style={{ 
-              color: priceChangePercent.startsWith('-') ? '#FF6838' : '#00C076' 
-            }}>
+            <div className="market-name">{selectedCoin}</div>
+            <div
+              className="market-change"
+              style={{
+                color: priceChangePercent.startsWith("-")
+                  ? "#FF6838"
+                  : "#00C076",
+              }}
+            >
               {priceChangePercent}%
             </div>
           </div>
@@ -168,41 +548,59 @@ function MarketDetail() {
         <div className="market-price">${formatNumber(marketPrice)}</div>
         <div className="market-stats">
           <span>24h High: ${formatNumber(highPrice)}</span>
-          <span>24h Vol: {formatVolume(volume)} USDT</span>
+          <span>
+            24h Vol: {formatVolume(volume)} {selectedCoin.replace("USDT", "")}
+          </span>
           <span>24h Low: ${formatNumber(lowPrice)}</span>
         </div>
       </div>
 
       {/* Trading View Chart */}
       <div className="chart-container">
-        <div className="chart-placeholder">
-          <i className="fas fa-chart-line" />
-          <span>Live BTC/USDT Chart</span>
-          <small>Real-time data from Binance</small>
-        </div>
+        {isLoading && (
+          <div className="chart-loading">
+            <i className="fas fa-spinner fa-spin" />
+            <div>Loading chart data...</div>
+          </div>
+        )}
+        <div ref={chartContainerRef} className="chart-placeholder" />
         <div className="chart-controls">
-          <select className="chart-timeframe">
-            <option>1h</option>
-            <option>4h</option>
-            <option>1d</option>
-            <option>1w</option>
+          <select
+            className="chart-timeframe"
+            value={timeframe}
+            onChange={handleTimeframeChange}
+          >
+            <option value="1m">1m</option>
+            <option value="5m">5m</option>
+            <option value="15m">15m</option>
+            <option value="30m">30m</option>
+            <option value="1h">1h</option>
+            <option value="4h">4h</option>
+            <option value="1d">1d</option>
+            <option value="1w">1w</option>
+            <option value="1M">1M</option>
           </select>
         </div>
       </div>
 
-      
+      {/* Action Buttons */}
+      <div className="action-buttons">
+        <button className="action-button buy-button">BUY</button>
+        <button className="action-button sell-button">SELL</button>
+      </div>
+
       {/* Recent Trades */}
       <div className="section-title">Recent Trades (Live)</div>
       <div className="recent-trades">
         <div className="trades-header">
           <span>Price (USDT)</span>
-          <span>Amount (BTC)</span>
+          <span>Amount</span>
           <span>Time</span>
         </div>
         {recentTrades.map((trade, index) => (
-          <div 
-            key={`${trade.t}-${index}`} 
-            className={`trade-row ${trade.m ? 'sell-trade' : 'buy-trade'}`}
+          <div
+            key={`${trade.t}-${index}`}
+            className={`trade-row ${trade.m ? "sell-trade" : "buy-trade"}`}
           >
             <div className="trade-price">{formatNumber(trade.p)}</div>
             <div className="trade-amount">{Number(trade.q).toFixed(4)}</div>
@@ -212,31 +610,242 @@ function MarketDetail() {
           </div>
         ))}
         {recentTrades.length === 0 && (
-          <>
-            <div className="trade-row buy-trade">
-              <div className="trade-price">51,825.50</div>
-              <div className="trade-amount">0.124</div>
-              <div className="trade-time">12:45:23</div>
+          <div className="trade-row">
+            <div
+              className="trade-price"
+              style={{ textAlign: "center", width: "100%" }}
+            >
+              Waiting for trades...
             </div>
-            <div className="trade-row buy-trade">
-              <div className="trade-price">51,825.20</div>
-              <div className="trade-amount">0.543</div>
-              <div className="trade-time">12:45:21</div>
-            </div>
-            <div className="trade-row sell-trade">
-              <div className="trade-price">51,824.80</div>
-              <div className="trade-amount">1.234</div>
-              <div className="trade-time">12:45:18</div>
-            </div>
-          </>
+          </div>
         )}
       </div>
-      
-      {/* Buy/Sell Buttons */}
-      <div className="action-buttons">
-        <button className="action-button buy-button">BUY</button>
-        <button className="action-button sell-button">SELL</button>
-      </div>
+
+      <style>{`
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .container {
+          max-width: 400px;
+          margin: 0 auto;
+          padding-bottom: 70px;
+          background-color: #000000;
+          color: #FFFFFF;
+          min-height: 100vh;
+        }
+        
+        /* Header Section */
+        .header {
+          background-color: #000000;
+          padding: 20px 15px 15px;
+          position: sticky;
+          top: 0;
+          z-index: 100;
+        }
+        
+        .header-top {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 15px;
+        }
+        
+        .back-button {
+          color: #AAAAAA;
+          font-size: 20px;
+          cursor: pointer;
+        }
+        
+        .market-info {
+          display: flex;
+          align-items: center;
+        }
+        
+        .market-icon {
+          width: 30px;
+          height: 30px;
+          border-radius: 50%;
+          background-color: #F3BA2F;
+          margin-right: 10px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+        
+        .market-icon i {
+          color: #000;
+        }
+        
+        .market-name {
+          font-weight: bold;
+          font-size: 18px;
+          margin-right: 10px;
+        }
+        
+        .market-change {
+          font-size: 14px;
+          font-weight: bold;
+        }
+        
+        .market-price {
+          font-size: 24px;
+          font-weight: bold;
+          margin-bottom: 5px;
+        }
+        
+        .market-stats {
+          display: flex;
+          justify-content: space-between;
+          font-size: 12px;
+          color: #AAAAAA;
+          flex-wrap: wrap;
+        }
+        
+        .market-stats span {
+          margin-right: 10px;
+          margin-bottom: 5px;
+        }
+        
+        /* Trading View Chart */
+        .chart-container {
+          height: 480px;
+          background-color: #1A1A1A;
+          margin: 15px;
+          border-radius: 12px;
+          position: relative;
+          overflow: hidden;
+        }
+        
+        .chart-placeholder {
+          width: 100%;
+          height: 100%;
+        }
+        
+        .chart-loading {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          background-color: rgba(0, 0, 0, 0.7);
+          z-index: 10;
+          color: #777;
+        }
+        
+        .chart-controls {
+          position: absolute;
+          bottom: 10px;
+          right: 10px;
+          display: flex;
+          gap: 5px;
+          z-index: 5;
+        }
+        
+        .chart-timeframe {
+          background-color: #2A2A2A;
+          color: #AAAAAA;
+          border: none;
+          border-radius: 4px;
+          padding: 4px 8px;
+          font-size: 12px;
+        }
+        
+        /* Action Buttons */
+        .action-buttons {
+          display: flex;
+          gap: 15px;
+          // margin: 15px;
+        }
+        
+        .action-button {
+          flex: 1;
+          padding: 13px;
+          border: none;
+          border-radius: 8px;
+          font-size: 16px;
+          font-weight: bold;
+          cursor: pointer;
+        }
+        
+        .buy-button {
+          background-color: #00C076;
+          color: white;
+        }
+        
+        .sell-button {
+          background-color: #FF6838;
+          color: white;
+        }
+        
+        /* Recent Trades */
+        .recent-trades {
+          margin: 15px;
+          max-height: 300px;
+          overflow-y: auto;
+        }
+        
+        .trades-header {
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 10px;
+          font-size: 12px;
+          color: #777;
+          position: sticky;
+          top: 0;
+          background-color: #000;
+          padding: 5px 0;
+          z-index: 10;
+        }
+        
+        .trade-row {
+          display: flex;
+          justify-content: space-between;
+          padding: 8px 0;
+          font-size: 13px;
+          border-bottom: 1px solid #2A2A2A;
+        }
+        
+        .trade-price {
+          flex: 1;
+        }
+        
+        .trade-amount {
+          flex: 1;
+          text-align: right;
+        }
+        
+        .trade-time {
+          flex: 1;
+          text-align: right;
+          color: #777;
+          font-size: 11px;
+        }
+        
+        .buy-trade .trade-price {
+          color: #00C076;
+        }
+        
+        .sell-trade .trade-price {
+          color: #FF6838;
+        }
+        
+        /* Section Titles */
+        .section-title {
+          font-size: 16px;
+          font-weight: bold;
+          margin: 20px 15px 15px;
+          padding-bottom: 10px;
+          border-bottom: 1px solid #2A2A2A;
+        }
+      `}</style>
     </div>
   );
 }
