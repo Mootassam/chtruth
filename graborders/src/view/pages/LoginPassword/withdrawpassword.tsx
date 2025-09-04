@@ -8,12 +8,15 @@ import { useDispatch, useSelector } from "react-redux";
 import authSelectors from "src/modules/auth/authSelectors";
 import { useForm, FormProvider } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import FieldFormItem from "src/shared/form/fieldFormItem";
 
 const schema = yup.object().shape({
-  user: yupFormSchemas.relationToOne(i18n("entities.vip.fields.title"), {}),
-  Documenttype: yupFormSchemas.string(i18n("Document Type"), {}),
-  realname: yupFormSchemas.string(i18n("Full Name"), {}),
-  idnumer: yupFormSchemas.string(i18n("Id Numer"), {}),
+  password: yupFormSchemas.string(i18n("user.fields.oldPassword"), {
+    required: true,
+  }),
+  newPassword: yupFormSchemas.string(i18n("user.fields.newPassword"), {
+    required: true,
+  }),
 });
 function LoginPassword() {
   const dispatch = useDispatch();
@@ -21,9 +24,8 @@ function LoginPassword() {
 
   const [initialValues] = useState(() => {
     return {
-      user: currentUser || [],
-      Documenttype: document,
-      realname: "",
+     password: "",
+    newPassword: "",
     };
   });
 
@@ -53,32 +55,28 @@ function LoginPassword() {
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <div className="card">
             <h2 className="card-title">CHANGE WITHDRAW PASSWORD</h2>
-            <div className="form-group">
-              <label className="form-label">Password</label>
-              <div className="password-input-container">
-                <input
-                  type="password"
-                  className="form-input"
-                  placeholder="Enter your current password"
-                />
-                <button className="toggle-password" type="button">
-                  <i className="fas fa-eye" />
-                </button>
-              </div>
-            </div>
-            <div className="form-group">
-              <label className="form-label">Confirm Password</label>
-              <div className="password-input-container">
-                <input
-                  type="password"
-                  className="form-input"
-                  placeholder="Confirm your new password"
-                />
-                <button className="toggle-password" type="button">
-                  <i className="fas fa-eye" />
-                </button>
-              </div>
-            </div>
+
+            <FieldFormItem
+              name="password"
+              type="password"
+              label="Password"
+              className="form-input"
+              className1="form-group"
+              className2="form-label"
+              className3="password-input-container"
+              placeholder="Enter your current password"
+            />
+
+            <FieldFormItem
+              name="newPassword"
+              type="password"
+              label="Confirm Password"
+              className="form-input"
+              className1="form-group"
+              className2="form-label"
+              className3="password-input-container"
+              placeholder="Confirm your new password"
+            />
             <button
               className="save-button"
               onClick={form.handleSubmit(onSubmit)}
