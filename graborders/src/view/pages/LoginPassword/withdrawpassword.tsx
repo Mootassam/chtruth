@@ -59,18 +59,18 @@ function LoginPassword() {
             <FieldFormItem
               name="password"
               type="password"
-              label="Password"
+              label="Current Password"
               className="form-input"
               className1="form-group"
               className2="form-label"
               className3="password-input-container"
-              placeholder="Enter your current password"
+              placeholder="Enter your Old password"
             />
 
             <FieldFormItem
               name="newPassword"
               type="password"
-              label="Confirm Password"
+              label="New Password"
               className="form-input"
               className1="form-group"
               className2="form-label"
