@@ -19,6 +19,22 @@ const FILTER_OPTIONS = [
   { key: "toncoin", coin: 11419, label: "TonCoin" },
 ];
 
+// Loading placeholder component
+const NewsPlaceholder = () => (
+  <div className="news-placeholder">
+    {[...Array(5)].map((_, index) => (
+      <div key={index} className="news-item-placeholder">
+        <div className="placeholder-image shimmer"></div>
+        <div className="placeholder-content">
+          <div className="placeholder-line shimmer" style={{width: '80%', height: '16px', marginBottom: '8px'}}></div>
+          <div className="placeholder-line shimmer" style={{width: '60%', height: '14px', marginBottom: '12px'}}></div>
+          <div className="placeholder-line shimmer" style={{width: '40%', height: '12px'}}></div>
+        </div>
+      </div>
+    ))}
+  </div>
+);
+
 function News() {
   const dispatch = useDispatch();
   const [newselected, setNewSelected] = useState("news");
@@ -69,8 +85,85 @@ function News() {
       {/* News List */}
       <div className="news-list">
         <div className="news-section-title">Latest News</div>
-        <SingleItem topic={selectNews} loading={selectloadingNews} />
+        
+        {/* Show loading placeholders while data is loading */}
+        {selectloadingNews ? (
+          <NewsPlaceholder />
+        ) : (
+          <SingleItem topic={selectNews} loading={selectloadingNews} />
+        )}
       </div>
+      
+      <style>{`
+        /* Shimmer animation for loading placeholders */
+        @keyframes shimmer {
+          0% {
+            background-position: -468px 0;
+          }
+          100% {
+            background-position: 468px 0;
+          }
+        }
+        
+        .shimmer {
+          animation-duration: 1.5s;
+          animation-fill-mode: forwards;
+          animation-iteration-count: infinite;
+          animation-name: shimmer;
+          animation-timing-function: linear;
+          background: #2A2A2A;
+          background: #2A2A2A
+          background-size: 800px 104px;
+          position: relative;
+        }
+        
+        .news-placeholder {
+          margin-top: 16px;
+        }
+        
+        .news-item-placeholder {
+          display: flex;
+          margin-bottom: 20px;
+          padding: 16px;
+          background: #1A1A1A;
+          border-radius: 8px;
+          box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .placeholder-image {
+          width: 80px;
+          height: 80px;
+          border-radius: 8px;
+          margin-right: 16px;
+          flex-shrink: 0;
+        }
+        
+        .placeholder-content {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+        }
+        
+        .placeholder-line {
+          border-radius: 4px;
+          margin-bottom: 8px;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+          .news-item-placeholder {
+            flex-direction: column;
+          }
+          
+          .placeholder-image {
+            width: 100%;
+            height: 160px;
+            margin-right: 0;
+            margin-bottom: 12px;
+          }
+        }
+      `}</style>
     </div>
   );
 }
