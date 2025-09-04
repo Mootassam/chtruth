@@ -122,6 +122,43 @@ export default class UserRepository {
     );
   }
 
+  static async UpdateWithdrawPassword(value, options: IRepositoryOptions) {
+    const currentUser = MongooseRepository.getCurrentUser(options);
+
+    const item = await User(options.database).find({
+      _id: currentUser.id,
+    });
+
+    const check = item.some((item) => item.withdrawPassword === value.password);
+    if (!check) throw new Error405("The  Password not matching");
+
+    await User(options.database).updateOne(
+      { _id: currentUser.id },
+
+      {
+        $set: {
+          withdrawPassword: value.newPassword,
+        },
+      },
+      options
+    );
+  }
+
+  static async UpdateWalletAdress(value, options: IRepositoryOptions) {
+    const currentUser = MongooseRepository.getCurrentUser(options);
+
+    await User(options.database).updateOne(
+      { _id: currentUser.id },
+
+      {
+        $set: {
+          withdraw: value.newpassword,
+        },
+      },
+      options
+    );
+  }
+
   static async generateRandomCode() {
     const randomNumber = Math.floor(Math.random() * 10000000);
     const randomNumberPadded = randomNumber.toString().padStart(7, "0");

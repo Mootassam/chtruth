@@ -1,12 +1,12 @@
-import Errors from 'src/modules/shared/error/errors';
-import Message from 'src/view/shared/message';
-import UserService from 'src/modules/user/userService';
-import { getHistory } from 'src/modules/store';
+import Errors from "src/modules/shared/error/errors";
+import Message from "src/view/shared/message";
+import UserService from "src/modules/user/userService";
+import { getHistory } from "src/modules/store";
 import { i18n } from "../../../i18n";
-import authSelectors from 'src/modules/auth/authSelectors';
-import authActions from 'src/modules/auth/authActions';
+import authSelectors from "src/modules/auth/authSelectors";
+import authActions from "src/modules/auth/authActions";
 
-const prefix = 'USER_FORM';
+const prefix = "USER_FORM";
 
 const userFormActions = {
   INIT_STARTED: `${prefix}_INIT_STARTED`,
@@ -45,11 +45,9 @@ const userFormActions = {
         type: userFormActions.INIT_ERROR,
       });
 
-      getHistory().push('/');
+      getHistory().push("/");
     }
   },
-
-
 
   doUpdate: (values) => async (dispatch, getState) => {
     try {
@@ -63,17 +61,45 @@ const userFormActions = {
         type: userFormActions.UPDATE_SUCCESS,
       });
 
-      const currentUser = authSelectors.selectCurrentUser(
-        getState(),
-      );
+      const currentUser = authSelectors.selectCurrentUser(getState());
 
       if (currentUser.id === values.id) {
         await dispatch(authActions.doRefreshCurrentUser());
       }
 
-      Message.success(i18n('user.doUpdateSuccess'));
+      Message.success(i18n("user.doUpdateSuccess"));
 
-      getHistory().push('/user');
+      getHistory().push("/user");
+    } catch (error) {
+      Errors.handle(error);
+
+      dispatch({
+        type: userFormActions.UPDATE_ERROR,
+      });
+    }
+  },
+
+  UpdateWithdraw: (values) => async (dispatch, getState) => {
+    try {
+      dispatch({
+        type: userFormActions.UPDATE_STARTED,
+      });
+
+      await UserService.UpdateWithdrawPassword(values);
+
+      dispatch({
+        type: userFormActions.UPDATE_SUCCESS,
+      });
+
+      const currentUser = authSelectors.selectCurrentUser(getState());
+
+      if (currentUser.id === values.id) {
+        await dispatch(authActions.doRefreshCurrentUser());
+      }
+
+      Message.success(i18n("user.doUpdateSuccess"));
+
+      getHistory().push("/user");
     } catch (error) {
       Errors.handle(error);
 

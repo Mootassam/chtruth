@@ -16,6 +16,13 @@ export default (app) => {
   );
 
 
+      app.put(
+    `/tenant/:tenantId/UpdateWithdrawPassword`,
+    require('./UpdateWithdrawPassword').default,
+  );
+
+
+
 
   app.post(
     `/tenant/:tenantId/user/import`,

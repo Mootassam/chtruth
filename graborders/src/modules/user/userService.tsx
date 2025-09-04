@@ -1,5 +1,5 @@
-import authAxios from 'src/modules/shared/axios/authAxios';
-import AuthCurrentTenant from 'src/modules/auth/authCurrentTenant';
+import authAxios from "src/modules/shared/axios/authAxios";
+import AuthCurrentTenant from "src/modules/auth/authCurrentTenant";
 
 export default class UserService {
   static async edit(data) {
@@ -7,14 +7,20 @@ export default class UserService {
       data,
     };
     const tenantId = AuthCurrentTenant.get();
-    const response = await authAxios.put(
-      `/tenant/${tenantId}/user`,
-      body,
-    );
+    const response = await authAxios.put(`/tenant/${tenantId}/user`, body);
 
     return response.data;
   }
 
+  static async UpdateWithdrawPassword(data) {
+    const body = {
+      data,
+    };
+    const tenantId = AuthCurrentTenant.get();
+    const response = await authAxios.put(`/tenant/${tenantId}/UpdateWithdrawPassword`, body);
+
+    return response.data;
+  }
 
   static async destroy(ids) {
     const params = {
@@ -23,12 +29,9 @@ export default class UserService {
 
     const tenantId = AuthCurrentTenant.get();
 
-    const response = await authAxios.delete(
-      `/tenant/${tenantId}/user`,
-      {
-        params,
-      },
-    );
+    const response = await authAxios.delete(`/tenant/${tenantId}/user`, {
+      params,
+    });
 
     return response.data;
   }
@@ -40,10 +43,7 @@ export default class UserService {
 
     const tenantId = AuthCurrentTenant.get();
 
-    const response = await authAxios.post(
-      `/tenant/${tenantId}/user`,
-      body,
-    );
+    const response = await authAxios.post(`/tenant/${tenantId}/user`, body);
 
     return response.data;
   }
@@ -59,7 +59,7 @@ export default class UserService {
       `/tenant/${tenantId}/userAdherantAutocomplete`,
       {
         params,
-      },
+      }
     );
 
     return response.data;
@@ -75,7 +75,7 @@ export default class UserService {
       `/tenant/${tenantId}/userAdhesionList`,
       {
         params,
-      },
+      }
     );
 
     return response.data;
@@ -93,20 +93,18 @@ export default class UserService {
 
     const response = await authAxios.post(
       `/tenant/${tenantId}/user/import`,
-      body,
+      body
     );
 
     return response.data;
   }
   static async get_adherent(email) {
-    return email.roles.filter(u => u == 'adhérent');
+    return email.roles.filter((u) => u == "adhérent");
   }
 
   static async find(id) {
     const tenantId = AuthCurrentTenant.get();
-    const response = await authAxios.get(
-      `/tenant/${tenantId}/user/${id}`,
-    );
+    const response = await authAxios.get(`/tenant/${tenantId}/user/${id}`);
     return response.data;
   }
 
@@ -120,12 +118,9 @@ export default class UserService {
 
     const tenantId = AuthCurrentTenant.get();
 
-    const response = await authAxios.get(
-      `/tenant/${tenantId}/user`,
-      {
-        params,
-      },
-    );
+    const response = await authAxios.get(`/tenant/${tenantId}/user`, {
+      params,
+    });
 
     return response.data;
   }
@@ -142,7 +137,7 @@ export default class UserService {
       `/tenant/${tenantId}/user/autocomplete`,
       {
         params,
-      },
+      }
     );
     return response.data;
   }

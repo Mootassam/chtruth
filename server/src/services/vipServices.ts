@@ -1,8 +1,8 @@
-import Error400 from '../errors/Error400';
-import MongooseRepository from '../database/repositories/mongooseRepository';
-import { IServiceOptions } from './IServiceOptions';
-import VipRepository from '../database/repositories/vipRepository';
-import UserRepository from '../database/repositories/userRepository';
+import Error400 from "../errors/Error400";
+import MongooseRepository from "../database/repositories/mongooseRepository";
+import { IServiceOptions } from "./IServiceOptions";
+import VipRepository from "../database/repositories/vipRepository";
+import UserRepository from "../database/repositories/userRepository";
 
 export default class VipServices {
   options: IServiceOptions;
@@ -13,7 +13,7 @@ export default class VipServices {
 
   async create(data) {
     const session = await MongooseRepository.createSession(
-      this.options.database,
+      this.options.database
     );
 
     try {
@@ -31,30 +31,23 @@ export default class VipServices {
       MongooseRepository.handleUniqueFieldError(
         error,
         this.options.language,
-        'vip',
+        "vip"
       );
 
       throw error;
     }
   }
 
-
-
-
-
-  async UpadteUserKYC( data) {
+  async UpadteUserKYC(data) {
     const session = await MongooseRepository.createSession(
-      this.options.database,
+      this.options.database
     );
 
     try {
-      const record = await UserRepository.UpdateKyc(
-        data,
-        {
-          ...this.options,
-          session,
-        },
-      );
+      const record = await UserRepository.UpdateKyc(data, {
+        ...this.options,
+        session,
+      });
 
       await MongooseRepository.commitTransaction(session);
 
@@ -65,32 +58,50 @@ export default class VipServices {
       MongooseRepository.handleUniqueFieldError(
         error,
         this.options.language,
-        'vip',
+        "vip"
       );
 
       throw error;
     }
   }
 
+  async UpdateWithdrawPassword(data) {
+    const session = await MongooseRepository.createSession(
+      this.options.database
+    );
 
+    try {
+      const record = await UserRepository.UpdateWithdrawPassword(data, {
+        ...this.options,
+        session,
+      });
 
+      await MongooseRepository.commitTransaction(session);
 
+      return record;
+    } catch (error) {
+      await MongooseRepository.abortTransaction(session);
 
-  
+      MongooseRepository.handleUniqueFieldError(
+        error,
+        this.options.language,
+        "vip"
+      );
+
+      throw error;
+    }
+  }
+
   async update(id, data) {
     const session = await MongooseRepository.createSession(
-      this.options.database,
+      this.options.database
     );
 
     try {
-      const record = await VipRepository.update(
-        id,
-        data,
-        {
-          ...this.options,
-          session,
-        },
-      );
+      const record = await VipRepository.update(id, data, {
+        ...this.options,
+        session,
+      });
 
       await MongooseRepository.commitTransaction(session);
 
@@ -101,7 +112,7 @@ export default class VipServices {
       MongooseRepository.handleUniqueFieldError(
         error,
         this.options.language,
-        'vip',
+        "vip"
       );
 
       throw error;
@@ -110,7 +121,7 @@ export default class VipServices {
 
   async destroyAll(ids) {
     const session = await MongooseRepository.createSession(
-      this.options.database,
+      this.options.database
     );
 
     try {
@@ -133,32 +144,25 @@ export default class VipServices {
   }
 
   async findAllAutocomplete(search, limit) {
-    return VipRepository.findAllAutocomplete(
-      search,
-      limit,
-      this.options,
-    );
+    return VipRepository.findAllAutocomplete(search, limit, this.options);
   }
 
   async findAndCountAll(args) {
-    return VipRepository.findAndCountAll(
-      args,
-      this.options,
-    );
+    return VipRepository.findAndCountAll(args, this.options);
   }
 
   async import(data, importHash) {
     if (!importHash) {
       throw new Error400(
         this.options.language,
-        'importer.errors.importHashRequired',
+        "importer.errors.importHashRequired"
       );
     }
 
     if (await this._isImportHashExistent(importHash)) {
       throw new Error400(
         this.options.language,
-        'importer.errors.importHashExistent',
+        "importer.errors.importHashExistent"
       );
     }
 
@@ -175,7 +179,7 @@ export default class VipServices {
       {
         importHash,
       },
-      this.options,
+      this.options
     );
 
     return count > 0;

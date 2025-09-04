@@ -1,8 +1,8 @@
-import assert from 'assert';
-import Error403 from '../../errors/Error403';
-import Plans from '../../security/plans';
-import Permissions from '../../security/permissions';
-import EmailSender from '../emailSender';
+import assert from "assert";
+import Error403 from "../../errors/Error403";
+import Plans from "../../security/plans";
+import Permissions from "../../security/permissions";
+import EmailSender from "../emailSender";
 
 const plans = Plans.values;
 
@@ -22,7 +22,7 @@ export default class PermissionChecker {
 
   /**
    * Validates if the user has a specific permission
-   * and throws a Error403 if it doesn't.   
+   * and throws a Error403 if it doesn't.
    */
   validateHas(permission) {
     if (!this.has(permission)) {
@@ -34,7 +34,7 @@ export default class PermissionChecker {
    * Checks if the user has a specific permission.
    */
   has(permission) {
-    assert(permission, 'permission is required');
+    assert(permission, "permission is required");
 
     if (!this.isEmailVerified) {
       return false;
@@ -61,7 +61,7 @@ export default class PermissionChecker {
    * Validates if the user has access to a storage.
    */
   hasStorage(storageId: string) {
-    assert(storageId, 'storageId is required');
+    assert(storageId, "storageId is required");
     return this.allowedStorageIds().includes(storageId);
   }
 
@@ -70,9 +70,7 @@ export default class PermissionChecker {
    */
   hasRolePermission(permission) {
     return this.currentUserRolesIds.some((role) =>
-      permission.allowedRoles.some(
-        (allowedRole) => allowedRole === role,
-      ),
+      permission.allowedRoles.some((allowedRole) => allowedRole === role)
     );
   }
 
@@ -80,11 +78,9 @@ export default class PermissionChecker {
    * Checks if the current company plan allows the permission.
    */
   hasPlanPermission(permission) {
-    assert(permission, 'permission is required');
+    assert(permission, "permission is required");
 
-    return permission.allowedPlans.includes(
-      this.currentTenantPlan,
-    );
+    return permission.allowedPlans.includes(this.currentTenantPlan);
   }
 
   get isEmailVerified() {
@@ -106,13 +102,9 @@ export default class PermissionChecker {
     }
 
     const tenant = this.currentUser.tenants
-      .filter(
-        (tenantUser) => tenantUser.status === 'active',
-      )
+      .filter((tenantUser) => tenantUser.status === "active")
       .find((tenantUser) => {
-        return (
-          tenantUser.tenant.id === this.currentTenant.id
-        );
+        return tenantUser.tenant.id === this.currentTenant.id;
       });
 
     if (!tenant) {
@@ -143,9 +135,7 @@ export default class PermissionChecker {
     Permissions.asArray.forEach((permission) => {
       if (this.has(permission)) {
         allowedStorageIds = allowedStorageIds.concat(
-          (permission.allowedStorage || []).map(
-            (storage) => storage.id,
-          ),
+          (permission.allowedStorage || []).map((storage) => storage.id)
         );
       }
     });

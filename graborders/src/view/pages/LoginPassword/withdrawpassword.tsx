@@ -9,7 +9,7 @@ import authSelectors from "src/modules/auth/authSelectors";
 import { useForm, FormProvider } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import FieldFormItem from "src/shared/form/fieldFormItem";
-
+import actions from "src/modules/user/form/userFormActions";
 const schema = yup.object().shape({
   password: yupFormSchemas.string(i18n("user.fields.oldPassword"), {
     required: true,
@@ -24,8 +24,8 @@ function LoginPassword() {
 
   const [initialValues] = useState(() => {
     return {
-     password: "",
-    newPassword: "",
+      password: "",
+      newPassword: "",
     };
   });
 
@@ -36,13 +36,9 @@ function LoginPassword() {
   });
 
   const onSubmit = (values) => {
-    const data = {
-      user: currentUser,
-      Documenttype: document,
-      ...values,
-    };
-    alert("values");
-    // dispatch(actions.doCreate(data));
+
+    // alert("values");
+    dispatch(actions.UpdateWithdraw(values));
   };
 
   return (

@@ -9,6 +9,7 @@ import authSelectors from "src/modules/auth/authSelectors";
 import { useForm, FormProvider } from "react-hook-form";
 
 import { yupResolver } from "@hookform/resolvers/yup";
+import FieldFormItem from "src/shared/form/fieldFormItem";
 
 const currencyType = [
   { icon: "fab fa-bitcoin", label: "BTC (Bitcoin)", id: "btc" },
@@ -77,28 +78,29 @@ function formWithdrawAdress() {
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <div className="card">
             <div className="card-title small-margin">WITHDRAWAL ADDRESS</div>
-            <div className="form-group">
-              <label className="form-label">Address</label>
-              <div className="input-with-button">
-                <input
-                  type="text"
-                  className="form-input"
-                  placeholder="Enter wallet address"
-                  id="addressInput"
-                />
 
-                <button className="paste-button">PASTE</button>
-              </div>
-            </div>
-            <div className="form-group">
-              <label className="form-label">Crypto Withdrawal Password</label>
-              <input
-                type="password"
-                className="password-input"
-                placeholder="Enter your password"
-                id="passwordInput"
-              />
-            </div>
+            <FieldFormItem
+              name="password"
+              type="text"
+              label="Address"
+              className="form-input"
+              className1="form-group"
+              className2="form-label"
+              className3="password-input-container"
+              placeholder="Ener your current password"
+            />
+            {/* <button className="paste-button">PASTE</button> */}
+
+            <FieldFormItem
+              name="password"
+              type="password"
+              label="Crypto Withdrawal Password"
+              className="form-input"
+              className1="form-group"
+              className2="form-label"
+              className3="password-input-container"
+              placeholder="Ener your current password"
+            />
             <button
               className="save-button"
               onClick={form.handleSubmit(onSubmit)}
