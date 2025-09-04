@@ -8,40 +8,42 @@ import { useDispatch, useSelector } from "react-redux";
 import authSelectors from "src/modules/auth/authSelectors";
 import { useForm, FormProvider } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import actions from "src/modules/auth/authActions";
 
 const schema = yup.object().shape({
-  user: yupFormSchemas.relationToOne(i18n("entities.vip.fields.title"), {}),
-  Documenttype: yupFormSchemas.string(i18n("Document Type"), {}),
-  realname: yupFormSchemas.string(i18n("Full Name"), {}),
-  idnumer: yupFormSchemas.string(i18n("Id Numer"), {}),
+  oldPassword: yupFormSchemas.string(i18n("user.fields.oldPassword"), {
+    required: true,
+  }),
+  newPassword: yupFormSchemas.string(i18n("user.fields.newPassword"), {
+    required: true,
+  }),
+  newPasswordConfirmation: yupFormSchemas
+    .string(i18n("user.fields.newPasswordConfirmation"), {
+      required: true,
+    })
+    .oneOf(
+      [yup.ref("newPassword"), null],
+      i18n("auth.passwordChange.mustMatch")
+    ),
 });
 
 function LoginPassword() {
   const dispatch = useDispatch();
   const currentUser = useSelector(authSelectors.selectCurrentUser);
 
-  const [initialValues] = useState(() => {
-    return {
-      user: currentUser || [],
-      Documenttype: document,
-      realname: "",
-    };
-  });
+  const [initialValues] = useState(() => ({
+    oldPassword: "",
+    newPassword: "",
+    newPasswordConfirmation: "",
+  }));
 
   const form = useForm({
     resolver: yupResolver(schema),
     mode: "all",
     defaultValues: initialValues,
   });
-
   const onSubmit = (values) => {
-    const data = {
-      user: currentUser,
-      Documenttype: document,
-      ...values,
-    };
-    alert("values");
-    // dispatch(actions.doCreate(data));
+    dispatch(actions.doChangePassword(values.oldPassword, values.newPassword));
   };
 
   return (
@@ -92,8 +94,12 @@ function LoginPassword() {
                 </button>
               </div>
             </div>
-            <button className="save-button"             onClick={form.handleSubmit(onSubmit)}
->SAVE CHANGES</button>
+            <button
+              className="save-button"
+              onClick={form.handleSubmit(onSubmit)}
+            >
+              SAVE CHANGES
+            </button>
             <p className="warning-message">
               For the safety of your funds, withdrawals are not allowed within
               24 hours after the login password has been changed.

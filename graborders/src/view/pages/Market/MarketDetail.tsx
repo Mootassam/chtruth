@@ -524,9 +524,9 @@ function MarketDetail() {
             <div className="market-icon">
               <img
                 src={`https://images.weserv.nl/?url=https://bin.bnbstatic.com/static/assets/logos/${
-                  selectedCoin.split("/")[0]
+                  selectedCoin.split("USDT")[0]
                 }.png`}
-                style={{ width: 20, height: 20 }}
+                style={{ width: 30, height: 30 }}
                 alt={selectedCoin}
                 loading="lazy"
               />

@@ -3154,11 +3154,12 @@
       border-radius: 8px;
       margin-bottom: 15px;
       background-color: #2A2A2A;
-      height: 180px;
+      height: 200px;
       display: flex;
       align-items: center;
       justify-content: center;
       color: #777777;
+      object-fit: cover;
   }
 
   .news-footer {

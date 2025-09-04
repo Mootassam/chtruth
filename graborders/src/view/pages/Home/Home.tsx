@@ -1,24 +1,30 @@
-import React, { useState ,useEffect } from "react";
-import { useDispatch } from "react-redux";
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import NewsActions from 'src/modules/product/list/productListActions'
+import productListSelectors from "src/modules/product/list/productListSelectors";
+import productListActions from "src/modules/product/list/productListActions";
+import selector from "src/modules/product/list/productListSelectors";
+import News from "./News";
+
 interface QuickActionItem {
   path: string;
   icon: string;
   name: string;
 }
 
-
-
 function Home() {
-const dispatch = useDispatch()
-
+  const dispatch = useDispatch();
+  const [coincategory, setCoinCategory] = useState("");
+  const [response, setResponse] = useState([]);
+  const record = useSelector(selector.selectRows);
+  const loading = useSelector(selector.selectLoading);
+  const [coins, setCoins] = useState();
+  const selectNews = useSelector(productListSelectors.selectNews);
+  const selectloadingNews = useSelector(productListSelectors.selectloadingNews);
 
   useEffect(() => {
-  
-  
-
-}, []);
+    dispatch(productListActions.doFindNews(1));
+  }, []);
   const [activeItem, setActiveItem] = useState<string>("/deposit");
 
   const icons = [
@@ -110,26 +116,26 @@ const dispatch = useDispatch()
   return (
     <div className="container">
       {/* Header Section */}
-       <div className="mywallet-header">
-         <div className="header-top">
-           <div className="search-icon">
-             <i className="fas fa-search" />
-           </div>
-           <div className="notification-profile">
-             <i className="fas fa-bell header-notification-icon" />
-             <Link to="/profile">
-             <i className="fas fa-user-circle profile-icon" />
-             </Link>
-           </div>
-         </div>
-         <div className="balance-section">
-           <div className="balance">$11,286.39</div>
-           <div className="tags">
-             <span className="profit-tag">+$172.68 | 1.53%</span>
-             <span className="rewards-tag">Rewards $25.32</span>
-           </div>
-         </div>
-       </div>
+      <div className="mywallet-header">
+        <div className="header-top">
+          <div className="search-icon">
+            <i className="fas fa-search" />
+          </div>
+          <div className="notification-profile">
+            <i className="fas fa-bell header-notification-icon" />
+            <Link to="/profile">
+              <i className="fas fa-user-circle profile-icon" />
+            </Link>
+          </div>
+        </div>
+        <div className="balance-section">
+          <div className="balance">$11,286.39</div>
+          <div className="tags">
+            <span className="profit-tag">+$172.68 | 1.53%</span>
+            <span className="rewards-tag">Rewards $25.32</span>
+          </div>
+        </div>
+      </div>
       {/* Quick Action Buttons */}
       <div className="quick-actions">
         {quickActions.map((item) => (
@@ -247,88 +253,7 @@ const dispatch = useDispatch()
         </div>
       </div>
       {/* News Section */}
-      <div className="crypto-news-container">
-        {/* News Section Header */}
-        <div className="news-section-header">
-          <div className="news-sections-title">Crypto News</div>
-          <Link to="/news" className="news-see-all remove_blue">See All →</Link>
-        </div>
-        {/* News Items */}
-        <div className="news-item-card">
-          <div className="news-image-placeholder">
-            <i
-              className="fas fa-newspaper"
-              style={{ color: "#F3BA2F", fontSize: 24 }}
-            />
-          </div>
-          <div className="news-content-wrapper">
-            <div className="news-headline">
-              Bitcoin Surges Past $60,000 Amid Institutional Demand
-            </div>
-            <div className="news-summary">
-              Major companies continue to add Bitcoin to their balance sheets,
-              driving prices to new yearly highs.
-            </div>
-            <div className="news-meta-info">2 hours ago • CryptoDaily</div>
-          </div>
-        </div>
-        <div className="news-item-card">
-          <div className="news-image-placeholder">
-            <i
-              className="fas fa-newspaper"
-              style={{ color: "#F3BA2F", fontSize: 24 }}
-            />
-          </div>
-          <div className="news-content-wrapper">
-            <div className="news-headline">
-              Ethereum 2.0 Upgrade Nears Completion
-            </div>
-            <div className="news-summary">
-              The long-awaited transition to proof-of-stake consensus is
-              scheduled for next month, promising reduced energy consumption.
-            </div>
-            <div className="news-meta-info">5 hours ago • BlockchainNews</div>
-          </div>
-        </div>
-        <div className="news-item-card">
-          <div className="news-image-placeholder">
-            <i
-              className="fas fa-newspaper"
-              style={{ color: "#F3BA2F", fontSize: 24 }}
-            />
-          </div>
-          <div className="news-content-wrapper">
-            <div className="news-headline">
-              Regulatory Framework for Cryptocurrencies Expected This Year
-            </div>
-            <div className="news-summary">
-              Government officials hint at comprehensive crypto regulations that
-              could bring clarity to the market.
-            </div>
-            <div className="news-meta-info">Yesterday • FinanceTimes</div>
-          </div>
-        </div>
-        <div className="news-item-card">
-          <div className="news-image-placeholder">
-            <i
-              className="fas fa-newspaper"
-              style={{ color: "#F3BA2F", fontSize: 24 }}
-            />
-          </div>
-          <div className="news-content-wrapper">
-            <div className="news-headline">
-              DeFi Projects See Record Growth in User Adoption
-            </div>
-            <div className="news-summary">
-              Decentralized finance platforms have attracted over 4 million new
-              users in the past quarter alone.
-            </div>
-            <div className="news-meta-info">2 days ago • DeFiJournal</div>
-          </div>
-        </div>
-        {/* News Section Footer */}
-       
-      </div>
+      <News topic={selectNews} loading={selectloadingNews} />
     </div>
   );
 }
