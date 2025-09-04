@@ -28,119 +28,9 @@ interface BinanceTicker {
   P: string; // Price change percent
 }
 
-// Dark theme configuration
-const darkTheme = {
-  grid: {
-    horizontal: {
-      color: '#2A2A2A'
-    },
-    vertical: {
-      color: '#2A2A2A'
-    }
-  },
-  candle: {
-    priceMark: {
-      high: {
-        color: '#DDD'
-      },
-      low: {
-        color: '#DDD'
-      },
-      last: {
-        upColor: '#00C076',
-        downColor: '#FF6838',
-        noChangeColor: '#AAAAAA'
-      }
-    },
-    tooltip: {
-      rect: {
-        color: '#1E1E1F',
-        borderColor: '#3A3A3A'
-      },
-      text: {
-        color: '#DDD'
-      }
-    },
-    bar: {
-      upColor: '#00C076',
-      downColor: '#FF6838',
-      noChangeColor: '#AAAAAA'
-    }
-  },
-  indicator: {
-    bars: [
-      {
-        color: '#00C076',
-        borderColor: '#00C076'
-      }
-    ],
-    line: {
-      size: 2,
-      colors: ['#FF9600', '#9D65C9', '#2196F3', '#E11F1C', '#0CB1C1']
-    },
-    lastValueMark: {
-      text: {
-        color: '#DDD'
-      }
-    },
-    tooltip: {
-      rect: {
-        color: '#1E1E1F',
-        borderColor: '#3A3A3A'
-      },
-      text: {
-        color: '#DDD'
-      }
-    }
-  },
-  xAxis: {
-    axisLine: {
-      color: '#3A3A3A'
-    },
-    tickLine: {
-      color: '#3A3A3A'
-    },
-    tickText: {
-      color: '#7E7E7E'
-    }
-  },
-  yAxis: {
-    axisLine: {
-      color: '#3A3A3A'
-    },
-    tickLine: {
-      color: '#3A3A3A'
-    },
-    tickText: {
-      color: '#7E7E7E'
-    }
-  },
-  separator: {
-    color: '#2A2A2A'
-  },
-  crosshair: {
-    horizontal: {
-      line: {
-        color: '#3A3A3A'
-      },
-      text: {
-        color: '#DDD'
-      }
-    },
-    vertical: {
-      line: {
-        color: '#3A3A3A'
-      },
-      text: {
-        color: '#DDD'
-      }
-    }
-  }
-};
-
 function Futures() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [tradeDirection, setTradeDirection] = useState(null);
+  const [tradeDirection, setTradeDirection] = useState<any>(null);
   const [isCoinModalOpen, setIsCoinModalOpen] = useState(false);
   const [selectedCoin, setSelectedCoin] = useState("BTCUSDT");
   const [marketPrice, setMarketPrice] = useState("0");
@@ -149,7 +39,6 @@ function Futures() {
   const [lowPrice, setLowPrice] = useState("0");
   const [volume, setVolume] = useState("0");
   const [recentTrades, setRecentTrades] = useState<BinanceTrade[]>([]);
-  // Default timeframe is set to 1m for the chart
   const [timeframe, setTimeframe] = useState("1m");
   const [isLoading, setIsLoading] = useState(true);
   
@@ -189,28 +78,20 @@ function Futures() {
       chartContainerRef.current.innerHTML = '';
     }
     
-    // Initialize the chart with auto-resize option and real-time updates
-    chartInstanceRef.current = init(chartContainerRef.current, {
-      autoResize: true,
-      // Add animation for smoother transitions
-      animation: {
-        duration: 200,
-        easing: 'linear'
-      },
-      // Enable real-time mode for continuous updates
-      realTime: {
-        enabled: true,
-        interval: 1000  // Update every second
-      }
-    });
-    
-    // Apply dark theme
-    // chartInstanceRef.current.setStyle(darkTheme);
+    // Initialize the chart
+    chartInstanceRef.current = init(chartContainerRef.current);
     
     // Set symbol
     chartInstanceRef.current.setSymbol({ ticker: selectedCoin });
+  }, []);
+
+  // Load historical data
+  const loadHistoricalData = useCallback(async () => {
+    if (!selectedCoin || !timeframe || !chartInstanceRef.current) return;
     
-    // Set period based on timeframe - always use 1m for real-time updates
+    setIsLoading(true);
+    
+    // Set period based on timeframe
     const periodMap: Record<string, { span: number, type: string }> = {
       '1m': { span: 1, type: 'minute' },
       '5m': { span: 5, type: 'minute' },
@@ -225,35 +106,28 @@ function Futures() {
     
     const period = periodMap[timeframe] || { span: 1, type: 'minute' };
     chartInstanceRef.current.setPeriod(period);
-  }, []);
-
-  // Load historical data
-  const loadHistoricalData = useCallback(async () => {
-    if (!selectedCoin || !timeframe || !chartInstanceRef.current) return;
     
-    setIsLoading(true);
-    chartInstanceRef.current.setDataLoader({
-      getBars: ({ callback }: { callback: (data: any) => void }) => {
-        axios(`https://api.binance.com/api/v3/klines?symbol=${selectedCoin}&interval=${timeframe}&limit=100`)
-          .then(dataList => {
-            const formattedData = dataList.data.map((kline: any[]) => ({
-              timestamp: kline[0],
-              open: parseFloat(kline[1]),
-              high: parseFloat(kline[2]),
-              low: parseFloat(kline[3]),
-              close: parseFloat(kline[4]),
-              volume: parseFloat(kline[5]),
-              turnover: parseFloat(kline[7])
-            }));
-            callback(formattedData);
-            setIsLoading(false);
-          })
-          .catch(error => {
-            console.error('Error loading chart data:', error);
-            setIsLoading(false);
-          });
-      }
-    });
+    // Load historical data
+    axios(`https://api.binance.com/api/v3/klines?symbol=${selectedCoin}&interval=${timeframe}&limit=100`)
+      .then(dataList => {
+        const formattedData = dataList.data.map((kline: any[]) => ({
+          timestamp: kline[0],
+          open: parseFloat(kline[1]),
+          high: parseFloat(kline[2]),
+          low: parseFloat(kline[3]),
+          close: parseFloat(kline[4]),
+          volume: parseFloat(kline[5]),
+          turnover: parseFloat(kline[7])
+        }));
+        
+        // Apply data to chart - using the correct method
+        chartInstanceRef.current.applyNewData(formattedData);
+        setIsLoading(false);
+      })
+      .catch(error => {
+        console.error('Error loading chart data:', error);
+        setIsLoading(false);
+      });
   }, [selectedCoin, timeframe]);
 
   // WebSocket connection for ticker data (price, 24h stats)
@@ -276,7 +150,7 @@ function Futures() {
       tickerWs.current.onmessage = (event: MessageEvent) => {
         const tickerData: BinanceTicker = JSON.parse(event.data);
         
-        // Update market data - this is now the primary source for price updates
+        // Update market data
         setMarketPrice(tickerData.c);
         setPriceChangePercent(tickerData.P);
         setHighPrice(tickerData.h);
@@ -297,7 +171,7 @@ function Futures() {
             console.log('Attempting to reconnect ticker WebSocket...');
             connectTickerWebSocket();
           }
-        }, 2000); // 2-second reconnection delay
+        }, 2000);
       };
     };
 
@@ -350,7 +224,7 @@ function Futures() {
             console.log('Attempting to reconnect trade WebSocket...');
             connectTradeWebSocket();
           }
-        }, 2000); // 2-second reconnection delay
+        }, 2000);
       };
     };
 
@@ -363,7 +237,7 @@ function Futures() {
     };
   }, [selectedCoin]);
 
-  // WebSocket connection for kline data (real-time chart updates only)
+  // WebSocket connection for kline data (real-time chart updates)
   useEffect(() => {
     if (!selectedCoin || !chartInstanceRef.current) return;
 
@@ -373,8 +247,7 @@ function Futures() {
         klineWs.current.close();
       }
 
-      // Always use 1m as the default interval for real-time updates
-      // This ensures the chart updates automatically regardless of the selected timeframe
+      // Always use 1m for real-time updates
       const streamInterval = '1m';
       
       klineWs.current = new WebSocket(
@@ -409,20 +282,7 @@ function Futures() {
             
             // Update chart with new kline data
             if (chartInstanceRef.current) {
-              // Direct update of the chart data
               chartInstanceRef.current.updateData(chartKline);
-              
-              // Force a visual refresh of the chart
-              if ( chartInstanceRef.current.getWidth()) {
-                const currentWidth = chartInstanceRef.current.getWidth();
-                // This trick forces the chart to redraw without changing the data loader
-                chartInstanceRef.current.resize(currentWidth - 1);
-                setTimeout(() => {
-                  if (chartInstanceRef.current) {
-                    chartInstanceRef.current.resize(currentWidth);
-                  }
-                }, 10);
-              }
             }
           }
         } catch (error) {
@@ -443,7 +303,7 @@ function Futures() {
             console.log('Attempting to reconnect kline WebSocket...');
             connectKlineWebSocket();
           }
-        }, 2000); // 2-second reconnection delay
+        }, 2000);
       };
     };
 
@@ -454,60 +314,20 @@ function Futures() {
         klineWs.current.close();
       }
     };
-  }, [selectedCoin]); // Remove timeframe dependency to prevent reconnection when timeframe changes
-
-  // Auto-refresh and WebSocket check interval references
-  const autoRefreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  
-  // Function to refresh chart data
-  const refreshChartData = useCallback(() => {
-    if (chartInstanceRef.current && selectedCoin) {
-      // Force chart to refresh by triggering a resize event
-      const currentWidth = chartInstanceRef.current.getWidth();
-      if (currentWidth) {
-        chartInstanceRef.current.resize(currentWidth);
-      }
-      
-      // If we have last kline data, update it again to ensure real-time display
-      if (lastKlineRef.current) {
-        chartInstanceRef.current.updateData(lastKlineRef.current);
-      }
-    }
   }, [selectedCoin]);
-  
-  // Initialize chart and load data when component mounts or coin/timeframe changes
+
+  // Initialize chart when component mounts
   useEffect(() => {
     initializeChart();
-    loadHistoricalData();
-    
-    // Set up an interval to check WebSocket connections and reconnect if needed
+  }, [initializeChart]);
 
-    
-    // Set up auto-refresh interval (every 1 second)
-    if (autoRefreshIntervalRef.current) {
-      clearInterval(autoRefreshIntervalRef.current);
+  // Load historical data when selectedCoin or timeframe changes
+  useEffect(() => {
+    if (chartInstanceRef.current) {
+      loadHistoricalData();
     }
-    
-    autoRefreshIntervalRef.current = setInterval(() => {
-      refreshChartData();
-    }, 1000);
-    
-    return () => {
-      // Clean up WebSocket connections and interval
-      // wsCheckInterval was not defined, removing this line since setInterval cleanup is handled elsewhere
-      if (autoRefreshIntervalRef.current) clearInterval(autoRefreshIntervalRef.current);
-      if (tradeWs.current) tradeWs.current.close();
-      if (tickerWs.current) tickerWs.current.close();
-      if (klineWs.current) klineWs.current.close();
-    };
-  }, [initializeChart, loadHistoricalData, refreshChartData]);
+  }, [selectedCoin, timeframe, loadHistoricalData]);
 
-
-
-
-
-
-  
   const handleOpenCoinModal = () => {
     setIsCoinModalOpen(true);
   };
@@ -765,7 +585,7 @@ function Futures() {
         
         .chart-timeframe {
           background-color: #2A2A2A;
-          color: '#AAAAAA';
+          color: #AAAAAA;
           border: none;
           border-radius: 4px;
           padding: 4px 8px;

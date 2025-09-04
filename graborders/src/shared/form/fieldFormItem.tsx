@@ -4,7 +4,7 @@ import { useFormContext } from "react-hook-form";
 import FormErrors from "./FormErrors";
 import Message from "src/view/shared/message";
 
-export function InputFormItem(props) {
+export function FieldFormItem(props) {
   const {
     label,
     description,
@@ -62,7 +62,7 @@ export function InputFormItem(props) {
       )}
       {description}
       <div
-        className="input-container"
+        className={className3}
         style={className === "captcha-input" ? { padding: 0 } : {}}
       >
         <input
@@ -81,25 +81,13 @@ export function InputFormItem(props) {
           autoFocus={autoFocus || undefined}
           autoComplete={autoComplete || undefined}
           disabled={disabled}
-          style={type === "password" ? { paddingRight: "40px" } : {}}
         />
 
         {/* Eye icon for password fields */}
-        {type === "password" && (
-          <div
-            className="toggle-password"
-            onClick={togglePasswordVisibility}
-            style={{
-              position: "absolute",
-              right: "12px",
-              top: "50%",
-              transform: "translateY(-50%)",
-              cursor: "pointer",
-              color: "#888",
-            }}
-          >
-            <i className={showPassword ? "far fa-eye-slash" : "far fa-eye"} />
-          </div>
+        {inputType === "password" && (
+          <button className="toggle-password" type="button">
+            <i className="fas fa-eye" />
+          </button>
         )}
       </div>
       {endAdornment && (
@@ -114,12 +102,12 @@ export function InputFormItem(props) {
   );
 }
 
-InputFormItem.defaultProps = {
+FieldFormItem.defaultProps = {
   type: "text",
   required: false,
 };
 
-InputFormItem.propTypes = {
+FieldFormItem.propTypes = {
   name: PropTypes.string.isRequired,
   required: PropTypes.bool,
   type: PropTypes.string,
@@ -135,6 +123,9 @@ InputFormItem.propTypes = {
   endAdornment: PropTypes.any,
   onChange: PropTypes.any,
   className: PropTypes.string,
+  className1: PropTypes.string,
+  className2: PropTypes.string,
+  className3: PropTypes.string,
 };
 
-export default InputFormItem;
+export default FieldFormItem;
