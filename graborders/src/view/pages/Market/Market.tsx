@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { Link } from "react-router-dom";
-import "./market.css"; // Import CSS styles
 
 // Interface for Binance ticker data
 interface BinanceTicker {
@@ -33,6 +32,35 @@ interface CryptoData {
 // Cache key for local storage
 const CRYPTO_CACHE_KEY = 'crypto_market_data_cache';
 const CACHE_EXPIRY_TIME = 5 * 60 * 1000; // 5 minutes in milliseconds
+
+// Predefined popular symbols to reduce initial load
+const POPULAR_SYMBOLS = [
+  'BTCUSDT', 'ETHUSDT', 'BNBUSDT', 'ADAUSDT', 'XRPUSDT', 
+  'SOLUSDT', 'DOTUSDT', 'DOGEUSDT', 'AVAXUSDT', 'MATICUSDT',
+  'LTCUSDT', 'LINKUSDT', 'ATOMUSDT', 'UNIUSDT', 'XLMUSDT'
+];
+
+// Loading placeholder component
+const MarketPlaceholder = () => (
+  <div className="market-placeholder">
+    {[...Array(10)].map((_, index) => (
+      <div key={index} className="market-item-placeholder">
+        <div className="crypto-info-placeholder">
+          <div className="crypto-icon-placeholder shimmer"></div>
+          <div className="crypto-details-placeholder">
+            <div className="placeholder-line shimmer" style={{width: '60%', height: '16px', marginBottom: '8px'}}></div>
+            <div className="placeholder-line shimmer" style={{width: '40%', height: '12px'}}></div>
+          </div>
+        </div>
+        <div className="price-info-placeholder">
+          <div className="placeholder-line shimmer" style={{width: '70px', height: '16px', marginBottom: '8px'}}></div>
+          <div className="placeholder-line shimmer" style={{width: '50px', height: '12px'}}></div>
+        </div>
+        <div className="chart-placeholder shimmer"></div>
+      </div>
+    ))}
+  </div>
+);
 
 // Optimized virtualization component with windowing
 const VirtualizedList = React.memo(({ items, renderItem, itemHeight, containerHeight }) => {
@@ -142,13 +170,6 @@ const useDebounce = (value, delay) => {
 
   return debouncedValue;
 };
-
-// Predefined popular symbols to reduce initial load
-const POPULAR_SYMBOLS = [
-  'BTCUSDT', 'ETHUSDT', 'BNBUSDT', 'ADAUSDT', 'XRPUSDT', 
-  'SOLUSDT', 'DOTUSDT', 'DOGEUSDT', 'AVAXUSDT', 'MATICUSDT',
-  'LTCUSDT', 'LINKUSDT', 'ATOMUSDT', 'UNIUSDT', 'XLMUSDT'
-];
 
 // Helper function to load cached data
 const loadCachedData = () => {
@@ -548,25 +569,6 @@ function Market() {
     </div>
   ), []);
 
-  // Memoize the loading indicator for better performance
-  const loadingIndicator = useMemo(() => (
-    <div className="loading">
-      <i className="fas fa-spinner fa-spin" style={{ fontSize: "24px", marginBottom: "10px" }} />
-      <div>Loading market data...</div>
-    </div>
-  ), []);
-
-  // Memoize the empty results indicator
-  const noResultsIndicator = useMemo(() => (
-    <div className="no-results">
-      <i
-        className="fas fa-search"
-        style={{ fontSize: "24px", marginBottom: "10px" }}
-      />
-      <div>No cryptocurrencies found</div>
-    </div>
-  ), []);
-
   return (
     <div className="container">
       {/* Header Section */}
@@ -608,7 +610,7 @@ function Market() {
       
       <div className="market-list">
         {isLoading && Object.keys(cryptoData).length === 0 ? (
-          loadingIndicator
+          <MarketPlaceholder />
         ) : filteredCrypto.length > 0 ? (
           <>
             <VirtualizedList
@@ -617,18 +619,88 @@ function Market() {
               itemHeight={80}
               containerHeight={500}
             />
-            {isLoading && (
-              <div className="refresh-indicator">
-                <div className="refresh-spinner"></div>
-              </div>
-            )}
           </>
         ) : (
-          noResultsIndicator
+          <div className="no-results">
+            <i
+              className="fas fa-search"
+              style={{ fontSize: "24px", marginBottom: "10px" }}
+            />
+            <div>No cryptocurrencies found</div>
+          </div>
         )}
       </div>
 
       <style>{`
+        /* Shimmer animation for loading placeholders */
+        @keyframes shimmer {
+          0% {
+            background-position: -468px 0;
+          }
+          100% {
+            background-position: 468px 0;
+          }
+        }
+        
+        .shimmer {
+          animation-duration: 1.5s;
+          animation-fill-mode: forwards;
+          animation-iteration-count: infinite;
+          animation-name: shimmer;
+          animation-timing-function: linear;
+          background: #2A2A2A;
+          background: linear-gradient(to right, #2A2A2A 8%, #333333 18%, #2A2A2A 33%);
+          background-size: 800px 104px;
+          position: relative;
+          border-radius: 4px;
+        }
+        
+        .market-placeholder {
+          margin-top: 16px;
+        }
+        
+        .market-item-placeholder {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 15px 0;
+          border-bottom: 1px solid #2A2A2A;
+        }
+        
+        .crypto-info-placeholder {
+          display: flex;
+          align-items: center;
+          flex: 1;
+        }
+        
+        .crypto-icon-placeholder {
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          margin-right: 12px;
+        }
+        
+        .crypto-details-placeholder {
+          flex: 1;
+        }
+        
+        .price-info-placeholder {
+          text-align: right;
+          margin-right: 15px;
+          flex: 1;
+        }
+        
+        .chart-placeholder {
+          width: 18px;
+          height: 18px;
+          border-radius: 4px;
+        }
+        
+        .placeholder-line {
+          border-radius: 4px;
+          margin-bottom: 8px;
+        }
+        
         .container {
           max-width: 400px;
           margin: 0 auto;
@@ -639,7 +711,7 @@ function Market() {
         }
         
         .market-headers {
-          // margin-bottom: 20px;
+          margin-bottom: 20px;
         }
         
         .market-page-title {
@@ -772,7 +844,7 @@ function Market() {
           font-size: 18px;
         }
         
-        .no-results, .loading {
+        .no-results {
           text-align: center;
           padding: 40px 0;
           color: #777;

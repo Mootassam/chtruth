@@ -10,7 +10,7 @@ export default async (req, res, next) => {
     // );
 
     const payload = await new ProductServices(req).findNews(
-      req.params.id,
+      req.body.data,
     );
 
     await ApiResponseHandler.success(req, res, payload);

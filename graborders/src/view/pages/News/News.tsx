@@ -50,13 +50,23 @@ function News() {
   // Memoized event handler to prevent unnecessary re-renders of filter buttons
   const handleFilterClick = useCallback((item, coin) => {
     setNewSelected(item);
-    dispatch(productListActions.doFindNews(coin));
+        const data ={ 
+      id : coin, 
+      page : 1 , 
+      size:30
+    }
+    dispatch(productListActions.doFindNews(data));
   }, [dispatch]);
 
   // Memoized fetch function with useCallback
   const fetchCoins = useCallback(() => {
     dispatch(productListActions.doFetch());
-    dispatch(productListActions.doFindNews(1));
+        const data ={ 
+      id : 1, 
+      page : 1 , 
+      size:30
+    }
+    dispatch(productListActions.doFindNews(data));
   }, [dispatch]);
 
   // Fetch data on component mount

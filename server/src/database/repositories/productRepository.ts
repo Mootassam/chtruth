@@ -151,7 +151,7 @@ class ProductRepository {
     return rows;
   }
 
-  static async FindNews(id, options: IRepositoryOptions) {
+  static async FindNews(id, page, size,  options: IRepositoryOptions) {
 
     let data
     if(parseInt(id) === 0) {
@@ -159,8 +159,8 @@ class ProductRepository {
         language: "en",
         mode: "LATEST",
         newsTypes: ["NEWS", "ALEXANDRIA"],
-        page: 1,
-        size: 30,
+        page: page,
+        size: size,
       };
   } else { 
     data = {
@@ -168,8 +168,8 @@ class ProductRepository {
       language: "en",
       mode: "LATEST",
       newsTypes: ["NEWS", "ALEXANDRIA"],
-      page: 1,
-      size: 30,
+      page: page,
+      size: size,
     };
   }
     const response = await axios.post(

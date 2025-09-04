@@ -1,10 +1,22 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import productListSelectors from "src/modules/product/list/productListSelectors";
 import productListActions from "src/modules/product/list/productListActions";
 import selector from "src/modules/product/list/productListSelectors";
 import News from "./News";
+
+// Add interface for cryptocurrency data
+interface CryptoData {
+  symbol: string;
+  name: string;
+  price: string;
+  change: string;
+  changePercent: string;
+  volume: string;
+  volumeFormatted: string;
+  isPositive: boolean;
+}
 
 interface QuickActionItem {
   path: string;
@@ -21,10 +33,95 @@ function Home() {
   const [coins, setCoins] = useState();
   const selectNews = useSelector(productListSelectors.selectNews);
   const selectloadingNews = useSelector(productListSelectors.selectloadingNews);
+  
+  // State for real-time crypto data
+  const [cryptoData, setCryptoData] = useState<{ [key: string]: CryptoData }>({});
+  const ws = useRef<WebSocket | null>(null);
 
   useEffect(() => {
-    dispatch(productListActions.doFindNews(1));
+    const data = { 
+      id: 1, 
+      page: 1, 
+      size: 5
+    };
+    dispatch(productListActions.doFindNews(data));
   }, []);
+
+  // WebSocket connection for real-time data
+  useEffect(() => {
+    // Top 4 cryptocurrencies by market cap
+    const topSymbols = ['BTCUSDT', 'ETHUSDT', 'BNBUSDT', 'SOLUSDT'];
+    
+    // Setup WebSocket for real-time updates
+    const streams = topSymbols.map(symbol => `${symbol.toLowerCase()}@ticker`).join('/');
+    ws.current = new WebSocket(`wss://stream.binance.com:9443/stream?streams=${streams}`);
+    
+    ws.current.onopen = () => {
+      console.log("Connected to Binance for top cryptocurrencies");
+    };
+    
+    ws.current.onmessage = (event: MessageEvent) => {
+      try {
+        const response = JSON.parse(event.data);
+        const data = response.data;
+        
+        if (data && data.s) {
+          const symbol = data.s;
+          const isPositive = !data.P.startsWith("-");
+          const changePercent = Math.abs(Number(data.P)).toFixed(2);
+          
+          // Format volume
+          const volumeNum = Number(data.v);
+          let volumeFormatted = volumeNum.toFixed(0);
+          if (volumeNum >= 1000000000) {
+            volumeFormatted = (volumeNum / 1000000000).toFixed(1) + "B";
+          } else if (volumeNum >= 1000000) {
+            volumeFormatted = (volumeNum / 1000000).toFixed(1) + "M";
+          }
+          
+          setCryptoData(prev => ({
+            ...prev,
+            [symbol]: {
+              symbol,
+              name: `${symbol.replace("USDT", "")}/USDT`,
+              price: Number(data.c).toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: Number(data.c) < 1 ? 6 : 4,
+              }),
+              change: data.p,
+              changePercent: changePercent,
+              volume: data.v,
+              volumeFormatted: volumeFormatted,
+              isPositive: isPositive
+            }
+          }));
+        }
+      } catch (error) {
+        console.error("Error parsing WebSocket message:", error);
+      }
+    };
+    
+    ws.current.onerror = (error: Event) => {
+      console.error("Home WebSocket error:", error);
+    };
+    
+    ws.current.onclose = () => {
+      console.log("Home connection closed");
+      // Try to reconnect after a delay
+      setTimeout(() => {
+        if (ws.current === null) {
+          // Reconnect logic if needed
+        }
+      }, 5000);
+    };
+    
+    return () => {
+      if (ws.current && ws.current.readyState === WebSocket.OPEN) {
+        ws.current.close();
+      }
+    };
+  }, []);
+
   const [activeItem, setActiveItem] = useState<string>("/deposit");
 
   const icons = [
@@ -113,6 +210,14 @@ function Home() {
     },
   ];
 
+  // Define the top 4 cryptocurrencies we want to display
+  const topCryptos = [
+    { symbol: "BTCUSDT", icon: "fab fa-btc", color: "#000", bgColor: "#F3BA2F" },
+    { symbol: "ETHUSDT", icon: "fab fa-ethereum", color: "#fff", bgColor: "#627EEA" },
+    { symbol: "BNBUSDT", icon: "fas fa-coins", color: "#000", bgColor: "#F3BA2F" },
+    { symbol: "SOLUSDT", icon: "fas fa-sun", color: "#000", bgColor: "#00FFA3" }
+  ];
+
   return (
     <div className="container">
       {/* Header Section */}
@@ -171,89 +276,61 @@ function Home() {
       {/* Favorites Section */}
       <div className="favorites-header">
         <div className="favorites-title">Popular Cryptocurrencies</div>
-        <div className="see-all">See all →</div>
+        <Link to="/market" className="see-all remove_blue">See all →</Link>
       </div>
-      {/* Market List */}
+      {/* Market List with Real-time Data */}
       <div className="market-list">
-        {/* BTC */}
-        <div className="market-item">
-          <div className="crypto-info">
-            <div className="crypto-icon btc">
-              <i className="fab fa-btc" style={{ color: "#000" }} />
+        {topCryptos.map((crypto) => {
+          const data = cryptoData[crypto.symbol];
+          const displayName = crypto.symbol.replace("USDT", "/USDT");
+          
+          return (
+            <div key={crypto.symbol} className="market-item">
+              <div className="crypto-info">
+                <div 
+                  className="crypto-icon" 
+                  style={{ backgroundColor: crypto.bgColor }}
+                >
+                  <img
+                  src={`https://images.weserv.nl/?url=https://bin.bnbstatic.com/static/assets/logos/${
+              displayName?.split("/")[0]
+            }.png`}
+                    className={crypto.icon} 
+                   style={{width:30}}
+                  />
+                </div>
+                <div>
+                  <div className="crypto-name">{displayName}</div>
+                  <div className="crypto-volume">
+                    Vol: {data ? data.volumeFormatted : "Loading..."}
+                  </div>
+                </div>
+              </div>
+              <div className="price-info">
+                <div className="price">
+                  {data ? `$${data.price}` : "Loading..."}
+                </div>
+                <div 
+                  className={`change ${data ? (data.isPositive ? "positive" : "negative") : ""}`}
+                >
+                  {data ? `${data.isPositive ? "+" : ""}${data.changePercent}%` : "Loading..."}
+                </div>
+              </div>
+              <div className="chart">
+                <i 
+                  className="fas fa-chart-line" 
+                  style={{ color: data ? (data.isPositive ? "#00C076" : "#FF6838") : "#AAAAAA" }} 
+                />
+              </div>
             </div>
-            <div>
-              <div className="crypto-name">BTC/USDT</div>
-              <div className="crypto-volume">Vol: 42.5B</div>
-            </div>
-          </div>
-          <div className="price-info">
-            <div className="price">$51,825.10</div>
-            <div className="change">+1.46%</div>
-          </div>
-          <div className="chart">
-            <i className="fas fa-chart-line" style={{ color: "#00C076" }} />
-          </div>
-        </div>
-        {/* BNB */}
-        <div className="market-item">
-          <div className="crypto-info">
-            <div className="crypto-icon bnb">
-              <i className="fas fa-coins" style={{ color: "#000" }} />
-            </div>
-            <div>
-              <div className="crypto-name">BNB/USDT</div>
-              <div className="crypto-volume">Vol: 1.2B</div>
-            </div>
-          </div>
-          <div className="price-info">
-            <div className="price">$351.95</div>
-            <div className="change">+0.16%</div>
-          </div>
-          <div className="chart">
-            <i className="fas fa-chart-line" style={{ color: "#00C076" }} />
-          </div>
-        </div>
-        {/* ETH */}
-        <div className="market-item">
-          <div className="crypto-info">
-            <div className="crypto-icon eth">
-              <i className="fab fa-ethereum" style={{ color: "#fff" }} />
-            </div>
-            <div>
-              <div className="crypto-name">ETH/USDT</div>
-              <div className="crypto-volume">Vol: 18.3B</div>
-            </div>
-          </div>
-          <div className="price-info">
-            <div className="price">$2,825.75</div>
-            <div className="change">+2.31%</div>
-          </div>
-          <div className="chart">
-            <i className="fas fa-chart-line" style={{ color: "#00C076" }} />
-          </div>
-        </div>
-        {/* SOL */}
-        <div className="market-item">
-          <div className="crypto-info">
-            <div className="crypto-icon sol">
-              <i className="fas fa-sun" style={{ color: "#000" }} />
-            </div>
-            <div>
-              <div className="crypto-name">SOL/USDT</div>
-              <div className="crypto-volume">Vol: 3.7B</div>
-            </div>
-          </div>
-          <div className="price-info">
-            <div className="price">$128.42</div>
-            <div className="change">+5.12%</div>
-          </div>
-          <div className="chart">
-            <i className="fas fa-chart-line" style={{ color: "#00C076" }} />
-          </div>
-        </div>
+          );
+        })}
       </div>
       {/* News Section */}
       <News topic={selectNews} loading={selectloadingNews} />
+
+    
+
     </div>
   );
 }

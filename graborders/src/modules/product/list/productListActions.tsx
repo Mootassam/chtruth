@@ -83,13 +83,13 @@ const productListActions = {
     },
 
     doFindNews:
-    (id) =>
+    (data ,next?) =>
     async (dispatch, getState) => {
       try {
         dispatch({
           type: productListActions.NEWS_STARTED,
         });
-        const response = await ProductService.findNews(id);
+        const response = await ProductService.findNews(data);
 
         dispatch({
           type: productListActions.NEWS_SUCCESS,
