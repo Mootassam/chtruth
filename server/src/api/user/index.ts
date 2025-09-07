@@ -22,6 +22,11 @@ export default (app) => {
   );
 
 
+      app.put(
+    `/tenant/:tenantId/UpdateWallet`,
+    require('./UpdateWalletAdress').default,
+  );
+
 
 
   app.post(

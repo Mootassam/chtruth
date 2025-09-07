@@ -29,12 +29,12 @@ export default (database) => {
       usernamewallet: {
         type: String,
       },
-      erc20: {
-        type: String,
+      wallet: {
+        tether: { address: "" },
+        btc: { address: "" },
+        eth: { adress: "" },
       },
-      trc20: {
-        type: String,
-      },
+
       grab: {
         type: Boolean,
         default: false,

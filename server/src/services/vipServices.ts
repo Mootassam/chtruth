@@ -92,6 +92,33 @@ export default class VipServices {
     }
   }
 
+  async UpdateWallet(data) {
+    const session = await MongooseRepository.createSession(
+      this.options.database
+    );
+
+    try {
+      const record = await UserRepository.updateWalletAddress(data, {
+        ...this.options,
+        session,
+      });
+
+      await MongooseRepository.commitTransaction(session);
+
+      return record;
+    } catch (error) {
+      await MongooseRepository.abortTransaction(session);
+
+      MongooseRepository.handleUniqueFieldError(
+        error,
+        this.options.language,
+        "vip"
+      );
+
+      throw error;
+    }
+  }
+
   async update(id, data) {
     const session = await MongooseRepository.createSession(
       this.options.database

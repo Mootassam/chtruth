@@ -10,18 +10,20 @@ import { useForm, FormProvider } from "react-hook-form";
 
 import { yupResolver } from "@hookform/resolvers/yup";
 import FieldFormItem from "src/shared/form/fieldFormItem";
-
+import actions from "src/modules/user/form/userFormActions";
 const currencyType = [
   { icon: "fab fa-bitcoin", label: "BTC (Bitcoin)", id: "btc" },
   { icon: "fab fa-ethereum", label: "ETH (Ethereum)", id: "eth" },
-  { icon: "fas fa-chevron-right", label: "USDT (Tether)", id: "usdt" },
+  { icon: "fas fa-chevron-right", label: "USDT (Tether)", id: "tether" },
 ];
 
 const schema = yup.object().shape({
-  user: yupFormSchemas.relationToOne(i18n("entities.vip.fields.title"), {}),
-  Documenttype: yupFormSchemas.string(i18n("Document Type"), {}),
-  realname: yupFormSchemas.string(i18n("Full Name"), {}),
-  idnumer: yupFormSchemas.string(i18n("Id Numer"), {}),
+  address: yupFormSchemas.string(i18n("user.fields.address"), {
+    required: true,
+  }),
+  password: yupFormSchemas.string(i18n("user.fields.password"), {
+    required: true,
+  }),
 });
 
 function formWithdrawAdress() {
@@ -30,11 +32,12 @@ function formWithdrawAdress() {
   const dispatch = useDispatch();
   const currentUser = useSelector(authSelectors.selectCurrentUser);
 
-  const [initialValues] = useState(() => {
+  const [initialValues] = useState(() => 
+  {
     return {
-      user: currentUser || [],
-      Documenttype: document,
-      realname: "",
+      currency: selected,
+      address: "",
+      password: "",
     };
   });
 
@@ -45,13 +48,8 @@ function formWithdrawAdress() {
   });
 
   const onSubmit = (values) => {
-    const data = {
-      user: currentUser,
-      Documenttype: document,
-      ...values,
-    };
-    alert("values");
-    // dispatch(actions.doCreate(data));
+    
+    dispatch(actions.UpdateWalletAdress(values));
   };
 
   return (
@@ -80,7 +78,7 @@ function formWithdrawAdress() {
             <div className="card-title small-margin">WITHDRAWAL ADDRESS</div>
 
             <FieldFormItem
-              name="password"
+              name="address"
               type="text"
               label="Address"
               className="form-input"

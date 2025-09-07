@@ -17,7 +17,23 @@ export default class UserService {
       data,
     };
     const tenantId = AuthCurrentTenant.get();
-    const response = await authAxios.put(`/tenant/${tenantId}/UpdateWithdrawPassword`, body);
+    const response = await authAxios.put(
+      `/tenant/${tenantId}/UpdateWithdrawPassword`,
+      body
+    );
+
+    return response.data;
+  }
+
+  static async UpdateWalletAdress(data) {
+    const body = {
+      data,
+    };
+    const tenantId = AuthCurrentTenant.get();
+    const response = await authAxios.put(
+      `/tenant/${tenantId}/UpdateWallet`,
+      body
+    );
 
     return response.data;
   }

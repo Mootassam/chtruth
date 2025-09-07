@@ -10,15 +10,13 @@ import RecordRepository from "./recordRepository";
 import axios from "axios";
 
 class ProductRepository {
-
-
   static apiClient = axios.create({
-    baseURL: 'https://api.coinranking.com/v2/', // Base URL for all requests
+    baseURL: "https://api.coinranking.com/v2/", // Base URL for all requests
     headers: {
-      'x-access-token': 'coinranking0019013025c860964f4f33e1621dd13b42aae05e00f7dc9b', // Add your access token here
+      "x-access-token":
+        "coinranking0019013025c860964f4f33e1621dd13b42aae05e00f7dc9b", // Add your access token here
     },
   });
-
 
   static async create(data, options: IRepositoryOptions) {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
@@ -136,9 +134,6 @@ class ProductRepository {
     return rows;
   }
 
-
-
-
   static async findTopCoins(
     { filter, limit = 6, offset = 0 }, // Default limit of 50 items
     options: IRepositoryOptions
@@ -151,10 +146,9 @@ class ProductRepository {
     return rows;
   }
 
-  static async FindNews(id, page, size,  options: IRepositoryOptions) {
-
-    let data
-    if(parseInt(id) === 0) {
+  static async FindNews(id, page, size, options: IRepositoryOptions) {
+    let data;
+    if (parseInt(id) === 0) {
       data = {
         language: "en",
         mode: "LATEST",
@@ -162,18 +156,30 @@ class ProductRepository {
         page: page,
         size: size,
       };
-  } else { 
-    data = {
-      coins: [id],
-      language: "en",
-      mode: "LATEST",
-      newsTypes: ["NEWS", "ALEXANDRIA"],
-      page: page,
-      size: size,
-    };
-  }
+    } else {
+      data = {
+        coins: [id],
+        language: "en",
+        mode: "LATEST",
+        newsTypes: ["NEWS", "ALEXANDRIA"],
+        page: page,
+        size: size,
+      };
+    }
     const response = await axios.post(
       `https://api.coinmarketcap.com/aggr/v4/content/user`,
+      data
+    );
+    let rows = response.data;
+    return rows;
+  }
+
+  // News Details
+  static async NewsDetail(id, options: IRepositoryOptions) {
+    let data;
+
+    const response = await axios.get(
+      `https://coinmarketcap.com/academy/_next/data/nD9fmJNJDqGlUB4iXiXJq/en/article/${id}.json?slug=${id}`,
       data
     );
     let rows = response.data;

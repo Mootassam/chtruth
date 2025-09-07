@@ -28,9 +28,30 @@ interface BinanceTicker {
   P: string; // Price change percent
 }
 
+// Interface for Order data
+interface Order {
+  id: number;
+  pair: string;
+  direction: string;
+  status: string;
+  investment: number;
+  openPrice: number;
+  openTime: string;
+  leverage: number;
+  pnl?: number;
+  closePrice?: number;
+  closeTime?: string;
+  currentPrice?: number;
+  stopLoss?: number;
+  takeProfit?: number;
+  orderType: string;
+  margin: number;
+  fee: number;
+}
+
 function Futures() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [tradeDirection, setTradeDirection] = useState<any>(null);
+  const [tradeDirection, setTradeDirection] = useState<string | null>(null);
   const [isCoinModalOpen, setIsCoinModalOpen] = useState(false);
   const [selectedCoin, setSelectedCoin] = useState("BTCUSDT");
   const [marketPrice, setMarketPrice] = useState("0");
@@ -41,6 +62,9 @@ function Futures() {
   const [recentTrades, setRecentTrades] = useState<BinanceTrade[]>([]);
   const [timeframe, setTimeframe] = useState("1m");
   const [isLoading, setIsLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<'openOrders' | 'recentOrders'>('openOrders');
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
   
   const tradeWs = useRef<WebSocket | null>(null);
   const tickerWs = useRef<WebSocket | null>(null);
@@ -48,6 +72,113 @@ function Futures() {
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const chartInstanceRef = useRef<any>(null);
   const lastKlineRef = useRef<any>(null);
+
+  // Mock data for open orders
+  const [openOrders, setOpenOrders] = useState<Order[]>([
+    {
+      id: 3,
+      pair: "ETH/USDT",
+      direction: "BUY UP",
+      status: "Open",
+      investment: 450.00,
+      openPrice: 3450.25,
+      openTime: "08/23 09:12:34",
+      leverage: 15,
+      pnl: 18.30,
+      currentPrice: 3468.55,
+      stopLoss: 3420.00,
+      takeProfit: 3500.00,
+      orderType: "Market",
+      margin: 30.00,
+      fee: 2.25
+    },
+    {
+      id: 4,
+      pair: "SOL/USDT",
+      direction: "BUY DOWN",
+      status: "Open",
+      investment: 250.00,
+      openPrice: 102.75,
+      openTime: "08/23 10:45:21",
+      leverage: 12,
+      pnl: -5.25,
+      currentPrice: 97.50,
+      stopLoss: 105.00,
+      takeProfit: 95.00,
+      orderType: "Limit",
+      margin: 20.83,
+      fee: 1.25
+    },
+    {
+      id: 5,
+      pair: "BTC/USDT",
+      direction: "BUY UP",
+      status: "Open",
+      investment: 1200.00,
+      openPrice: 65820.50,
+      openTime: "08/24 11:23:45",
+      leverage: 10,
+      pnl: 245.60,
+      currentPrice: 66066.10,
+      stopLoss: 65000.00,
+      takeProfit: 67000.00,
+      orderType: "Market",
+      margin: 120.00,
+      fee: 6.00
+    }
+  ]);
+
+  // Mock data for recent orders
+  const [recentOrders, setRecentOrders] = useState<Order[]>([
+    {
+      id: 1,
+      pair: "BTC/USDT",
+      direction: "BUY DOWN",
+      status: "Closed",
+      investment: 300.00,
+      openPrice: 65983,
+      openTime: "08/22 07:47:23",
+      leverage: 10,
+      pnl: -24.50,
+      closePrice: 65958.50,
+      closeTime: "08/22 08:15:42",
+      orderType: "Market",
+      margin: 30.00,
+      fee: 1.50
+    },
+    {
+      id: 2,
+      pair: "BTC/USDT",
+      direction: "BUY UP",
+      status: "Closed",
+      investment: 600.00,
+      openPrice: 65881,
+      openTime: "08/22 07:39:57",
+      leverage: 20,
+      pnl: 132.75,
+      closePrice: 65913.75,
+      closeTime: "08/22 08:22:18",
+      orderType: "Market",
+      margin: 30.00,
+      fee: 3.00
+    },
+    {
+      id: 6,
+      pair: "ADA/USDT",
+      direction: "BUY UP",
+      status: "Closed",
+      investment: 500.00,
+      openPrice: 0.4550,
+      openTime: "08/23 14:30:12",
+      leverage: 15,
+      pnl: 32.50,
+      closePrice: 0.4582,
+      closeTime: "08/23 15:45:33",
+      orderType: "Limit",
+      margin: 33.33,
+      fee: 2.50
+    }
+  ]);
 
   // Format number with commas and fixed decimals
   const formatNumber = (num: string, decimals: number = 2) => {
@@ -78,20 +209,25 @@ function Futures() {
       chartContainerRef.current.innerHTML = '';
     }
     
-    // Initialize the chart
-    chartInstanceRef.current = init(chartContainerRef.current);
+    // Initialize the chart with auto-resize option and real-time updates
+    chartInstanceRef.current = init(chartContainerRef.current, {
+      autoResize: true,
+      // Add animation for smoother transitions
+      animation: {
+        duration: 200,
+        easing: 'linear'
+      },
+      // Enable real-time mode for continuous updates
+      realTime: {
+        enabled: true,
+        interval: 1000  // Update every second
+      }
+    });
     
     // Set symbol
     chartInstanceRef.current.setSymbol({ ticker: selectedCoin });
-  }, []);
-
-  // Load historical data
-  const loadHistoricalData = useCallback(async () => {
-    if (!selectedCoin || !timeframe || !chartInstanceRef.current) return;
     
-    setIsLoading(true);
-    
-    // Set period based on timeframe
+    // Set period based on timeframe - always use 1m for real-time updates
     const periodMap: Record<string, { span: number, type: string }> = {
       '1m': { span: 1, type: 'minute' },
       '5m': { span: 5, type: 'minute' },
@@ -106,28 +242,35 @@ function Futures() {
     
     const period = periodMap[timeframe] || { span: 1, type: 'minute' };
     chartInstanceRef.current.setPeriod(period);
+  }, []);
+
+  // Load historical data
+  const loadHistoricalData = useCallback(async () => {
+    if (!selectedCoin || !timeframe || !chartInstanceRef.current) return;
     
-    // Load historical data
-    axios(`https://api.binance.com/api/v3/klines?symbol=${selectedCoin}&interval=${timeframe}&limit=100`)
-      .then(dataList => {
-        const formattedData = dataList.data.map((kline: any[]) => ({
-          timestamp: kline[0],
-          open: parseFloat(kline[1]),
-          high: parseFloat(kline[2]),
-          low: parseFloat(kline[3]),
-          close: parseFloat(kline[4]),
-          volume: parseFloat(kline[5]),
-          turnover: parseFloat(kline[7])
-        }));
-        
-        // Apply data to chart - using the correct method
-        chartInstanceRef.current.applyNewData(formattedData);
-        setIsLoading(false);
-      })
-      .catch(error => {
-        console.error('Error loading chart data:', error);
-        setIsLoading(false);
-      });
+    setIsLoading(true);
+    chartInstanceRef.current.setDataLoader({
+      getBars: ({ callback }: { callback: (data: any) => void }) => {
+        axios(`https://api.binance.com/api/v3/klines?symbol=${selectedCoin}&interval=${timeframe}&limit=100`)
+          .then(dataList => {
+            const formattedData = dataList.data.map((kline: any[]) => ({
+              timestamp: kline[0],
+              open: parseFloat(kline[1]),
+              high: parseFloat(kline[2]),
+              low: parseFloat(kline[3]),
+              close: parseFloat(kline[4]),
+              volume: parseFloat(kline[5]),
+              turnover: parseFloat(kline[7])
+            }));
+            callback(formattedData);
+            setIsLoading(false);
+          })
+          .catch(error => {
+            console.error('Error loading chart data:', error);
+            setIsLoading(false);
+          });
+      }
+    });
   }, [selectedCoin, timeframe]);
 
   // WebSocket connection for ticker data (price, 24h stats)
@@ -150,7 +293,7 @@ function Futures() {
       tickerWs.current.onmessage = (event: MessageEvent) => {
         const tickerData: BinanceTicker = JSON.parse(event.data);
         
-        // Update market data
+        // Update market data - this is now the primary source for price updates
         setMarketPrice(tickerData.c);
         setPriceChangePercent(tickerData.P);
         setHighPrice(tickerData.h);
@@ -171,7 +314,7 @@ function Futures() {
             console.log('Attempting to reconnect ticker WebSocket...');
             connectTickerWebSocket();
           }
-        }, 2000);
+        }, 2000); // 2-second reconnection delay
       };
     };
 
@@ -224,7 +367,7 @@ function Futures() {
             console.log('Attempting to reconnect trade WebSocket...');
             connectTradeWebSocket();
           }
-        }, 2000);
+        }, 2000); // 2-second reconnection delay
       };
     };
 
@@ -237,7 +380,7 @@ function Futures() {
     };
   }, [selectedCoin]);
 
-  // WebSocket connection for kline data (real-time chart updates)
+  // WebSocket connection for kline data (real-time chart updates only)
   useEffect(() => {
     if (!selectedCoin || !chartInstanceRef.current) return;
 
@@ -247,7 +390,8 @@ function Futures() {
         klineWs.current.close();
       }
 
-      // Always use 1m for real-time updates
+      // Always use 1m as the default interval for real-time updates
+      // This ensures the chart updates automatically regardless of the selected timeframe
       const streamInterval = '1m';
       
       klineWs.current = new WebSocket(
@@ -282,7 +426,20 @@ function Futures() {
             
             // Update chart with new kline data
             if (chartInstanceRef.current) {
+              // Direct update of the chart data
               chartInstanceRef.current.updateData(chartKline);
+              
+              // Force a visual refresh of the chart
+              if ( chartInstanceRef.current.getWidth()) {
+                const currentWidth = chartInstanceRef.current.getWidth();
+                // This trick forces the chart to redraw without changing the data loader
+                chartInstanceRef.current.resize(currentWidth - 1);
+                setTimeout(() => {
+                  if (chartInstanceRef.current) {
+                    chartInstanceRef.current.resize(currentWidth);
+                  }
+                }, 10);
+              }
             }
           }
         } catch (error) {
@@ -303,7 +460,7 @@ function Futures() {
             console.log('Attempting to reconnect kline WebSocket...');
             connectKlineWebSocket();
           }
-        }, 2000);
+        }, 2000); // 2-second reconnection delay
       };
     };
 
@@ -314,19 +471,49 @@ function Futures() {
         klineWs.current.close();
       }
     };
-  }, [selectedCoin]);
+  }, [selectedCoin]); // Remove timeframe dependency to prevent reconnection when timeframe changes
 
-  // Initialize chart when component mounts
+  // Auto-refresh and WebSocket check interval references
+  const autoRefreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  
+  // Function to refresh chart data
+  const refreshChartData = useCallback(() => {
+    if (chartInstanceRef.current && selectedCoin) {
+      // Force chart to refresh by triggering a resize event
+      const currentWidth = chartInstanceRef.current.getWidth();
+      if (currentWidth) {
+        chartInstanceRef.current.resize(currentWidth);
+      }
+      
+      // If we have last kline data, update it again to ensure real-time display
+      if (lastKlineRef.current) {
+        chartInstanceRef.current.updateData(lastKlineRef.current);
+      }
+    }
+  }, [selectedCoin]);
+  
+  // Initialize chart and load data when component mounts or coin/timeframe changes
   useEffect(() => {
     initializeChart();
-  }, [initializeChart]);
-
-  // Load historical data when selectedCoin or timeframe changes
-  useEffect(() => {
-    if (chartInstanceRef.current) {
-      loadHistoricalData();
+    loadHistoricalData();
+    
+    // Set up auto-refresh interval (every 1 second)
+    if (autoRefreshIntervalRef.current) {
+      clearInterval(autoRefreshIntervalRef.current);
     }
-  }, [selectedCoin, timeframe, loadHistoricalData]);
+    
+    autoRefreshIntervalRef.current = setInterval(() => {
+      refreshChartData();
+    }, 1000);
+    
+    return () => {
+      // Clean up WebSocket connections and interval
+      if (autoRefreshIntervalRef.current) clearInterval(autoRefreshIntervalRef.current);
+      if (tradeWs.current) tradeWs.current.close();
+      if (tickerWs.current) tickerWs.current.close();
+      if (klineWs.current) klineWs.current.close();
+    };
+  }, [initializeChart, loadHistoricalData, refreshChartData]);
 
   const handleOpenCoinModal = () => {
     setIsCoinModalOpen(true);
@@ -355,6 +542,21 @@ function Futures() {
 
   const handleTimeframeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setTimeframe(e.target.value);
+  };
+
+  const handleOpenOrderModal = (order: Order) => {
+    setSelectedOrder(order);
+    setIsOrderModalOpen(true);
+  };
+
+  const handleCloseOrderModal = () => {
+    setIsOrderModalOpen(false);
+    setSelectedOrder(null);
+  };
+
+  const handleCloseOrder = (orderId: number) => {
+    setOpenOrders(prev => prev.filter(order => order.id !== orderId));
+    setIsOrderModalOpen(false);
   };
 
   return (
@@ -432,34 +634,232 @@ function Futures() {
         </button>
       </div>
 
-      {/* Recent Trades */}
-      <div className="section-title">Recent Trades (Live)</div>
-      <div className="recent-trades">
-        <div className="trades-header">
-          <span>Price (USDT)</span>
-          <span>Amount</span>
-          <span>Time</span>
+      {/* Tabs for Recent Trades/Open Orders/Recent Orders */}
+      <div className="section-tabs">
+     
+        <div 
+          className={`tab ${activeTab === 'openOrders' ? 'active' : ''}`}
+          onClick={() => setActiveTab('openOrders')}
+        >
+          Open Orders ({openOrders.length})
         </div>
-        {recentTrades.map((trade, index) => (
-          <div 
-            key={`${trade.t}-${index}`} 
-            className={`trade-row ${trade.m ? 'sell-trade' : 'buy-trade'}`}
-          >
-            <div className="trade-price">{formatNumber(trade.p)}</div>
-            <div className="trade-amount">{Number(trade.q).toFixed(4)}</div>
-            <div className="trade-time">
-              {new Date(trade.T).toLocaleTimeString()}
-            </div>
-          </div>
-        ))}
-        {recentTrades.length === 0 && (
-          <div className="trade-row">
-            <div className="trade-price" style={{ textAlign: 'center', width: '100%' }}>
-              Waiting for trades...
-            </div>
-          </div>
-        )}
+        <div 
+          className={`tab ${activeTab === 'recentOrders' ? 'active' : ''}`}
+          onClick={() => setActiveTab('recentOrders')}
+        >
+          Recent Orders ({recentOrders.length})
+        </div>
       </div>
+
+    
+
+      {/* Open Orders */}
+      {activeTab === 'openOrders' && (
+        <div className="orders-container">
+          {openOrders.map((order) => (
+            <div key={order.id} className="order-card" onClick={() => handleOpenOrderModal(order)}>
+              <div className="order-header">
+                <div className="order-pair">{order.pair}</div>
+                <div className={`order-direction ${order.direction === 'BUY UP' ? 'buy' : 'sell'}`}>
+                  {order.direction}
+                </div>
+              </div>
+              <div className="order-status open">● {order.status}</div>
+              <div className="order-details">
+                <div className="order-row">
+                  <span className="order-label">Investment:</span>
+                  <span className="order-value">${order.investment.toFixed(2)}</span>
+                </div>
+                <div className="order-row">
+                  <span className="order-label">Open Price:</span>
+                  <span className="order-value">{formatNumber(order.openPrice.toString(), order.openPrice > 1000 ? 0 : 2)}</span>
+                </div>
+                <div className="order-row">
+                  <span className="order-label">Current Price:</span>
+                  <span className="order-value">{formatNumber(order.currentPrice?.toString() || '0', order.openPrice > 1000 ? 0 : 2)}</span>
+                </div>
+                <div className="order-row">
+                  <span className="order-label">P/L:</span>
+                  <span className={`order-value ${(order.pnl || 0) >= 0 ? 'buy' : 'sell'}`}>
+                    ${order.pnl?.toFixed(2)}
+                  </span>
+                </div>
+              </div>
+            </div>
+          ))}
+          {openOrders.length === 0 && (
+            <div className="no-orders">
+              <i className="fas fa-folder-open" />
+              <div>No open orders</div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Recent Orders */}
+      {activeTab === 'recentOrders' && (
+        <div className="orders-container">
+          {recentOrders.map((order) => (
+            <div key={order.id} className="order-card" onClick={() => handleOpenOrderModal(order)}>
+              <div className="order-header">
+                <div className="order-pair">{order.pair}</div>
+                <div className={`order-direction ${order.direction === 'BUY UP' ? 'buy' : 'sell'}`}>
+                  {order.direction}
+                </div>
+              </div>
+              <div className="order-status closed">● {order.status}</div>
+              <div className="order-details">
+                <div className="order-row">
+                  <span className="order-label">Investment:</span>
+                  <span className="order-value">${order.investment.toFixed(2)}</span>
+                </div>
+                <div className="order-row">
+                  <span className="order-label">Open Price:</span>
+                  <span className="order-value">{formatNumber(order.openPrice.toString(), order.openPrice > 1000 ? 0 : 2)}</span>
+                </div>
+                <div className="order-row">
+                  <span className="order-label">Close Price:</span>
+                  <span className="order-value">{formatNumber(order.closePrice?.toString() || '0', order.openPrice > 1000 ? 0 : 2)}</span>
+                </div>
+                <div className="order-row">
+                  <span className="order-label">P/L:</span>
+                  <span className={`order-value ${(order.pnl || 0) >= 0 ? 'buy' : 'sell'}`}>
+                    ${order.pnl?.toFixed(2)}
+                  </span>
+                </div>
+              </div>
+            </div>
+          ))}
+          {recentOrders.length === 0 && (
+            <div className="no-orders">
+              <i className="fas fa-file-invoice" />
+              <div>No recent orders</div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Order Detail Modal */}
+      {isOrderModalOpen && selectedOrder && (
+        <div className="modal-overlay" onClick={handleCloseOrderModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>Order Details</h2>
+              <button className="modal-close" onClick={handleCloseOrderModal}>
+                <i className="fas fa-times" />
+              </button>
+            </div>
+            <div className="modal-body">
+              <div className="order-detail-section">
+                <div className="detail-header">
+                  <span className="detail-pair">{selectedOrder.pair}</span>
+                  <span className={`detail-direction ${selectedOrder.direction === 'BUY UP' ? 'buy' : 'sell'}`}>
+                    {selectedOrder.direction}
+                  </span>
+                </div>
+                <div className={`detail-status ${selectedOrder.status.toLowerCase()}`}>
+                  ● {selectedOrder.status}
+                </div>
+              </div>
+
+              <div className="order-detail-section">
+                <h3>Order Information</h3>
+                <div className="detail-row">
+                  <span className="detail-label">Order Type:</span>
+                  <span className="detail-value">{selectedOrder.orderType}</span>
+                </div>
+                <div className="detail-row">
+                  <span className="detail-label">Investment:</span>
+                  <span className="detail-value">${selectedOrder.investment.toFixed(2)}</span>
+                </div>
+                <div className="detail-row">
+                  <span className="detail-label">Leverage:</span>
+                  <span className="detail-value">{selectedOrder.leverage}x</span>
+                </div>
+                <div className="detail-row">
+                  <span className="detail-label">Margin:</span>
+                  <span className="detail-value">${selectedOrder.margin.toFixed(2)}</span>
+                </div>
+                <div className="detail-row">
+                  <span className="detail-label">Fee:</span>
+                  <span className="detail-value">${selectedOrder.fee.toFixed(2)}</span>
+                </div>
+              </div>
+
+              <div className="order-detail-section">
+                <h3>Price Information</h3>
+                <div className="detail-row">
+                  <span className="detail-label">Open Price:</span>
+                  <span className="detail-value">{formatNumber(selectedOrder.openPrice.toString(), selectedOrder.openPrice > 1000 ? 0 : 2)}</span>
+                </div>
+                {selectedOrder.currentPrice && (
+                  <div className="detail-row">
+                    <span className="detail-label">Current Price:</span>
+                    <span className="detail-value">{formatNumber(selectedOrder.currentPrice.toString(), selectedOrder.openPrice > 1000 ? 0 : 2)}</span>
+                  </div>
+                )}
+                {selectedOrder.closePrice && (
+                  <div className="detail-row">
+                    <span className="detail-label">Close Price:</span>
+                    <span className="detail-value">{formatNumber(selectedOrder.closePrice.toString(), selectedOrder.openPrice > 1000 ? 0 : 2)}</span>
+                  </div>
+                )}
+                <div className="detail-row">
+                  <span className="detail-label">P/L:</span>
+                  <span className={`detail-value ${(selectedOrder.pnl || 0) >= 0 ? 'profit' : 'loss'}`}>
+                    ${selectedOrder.pnl?.toFixed(2)}
+                  </span>
+                </div>
+              </div>
+
+              <div className="order-detail-section">
+                <h3>Time Information</h3>
+                <div className="detail-row">
+                  <span className="detail-label">Open Time:</span>
+                  <span className="detail-value">{selectedOrder.openTime}</span>
+                </div>
+                {selectedOrder.closeTime && (
+                  <div className="detail-row">
+                    <span className="detail-label">Close Time:</span>
+                    <span className="detail-value">{selectedOrder.closeTime}</span>
+                  </div>
+                )}
+              </div>
+
+              {selectedOrder.status === "Open" && (
+                <div className="order-detail-section">
+                  <h3>Risk Management</h3>
+                  {selectedOrder.stopLoss && (
+                    <div className="detail-row">
+                      <span className="detail-label">Stop Loss:</span>
+                      <span className="detail-value">{formatNumber(selectedOrder.stopLoss.toString(), selectedOrder.openPrice > 1000 ? 0 : 2)}</span>
+                    </div>
+                  )}
+                  {selectedOrder.takeProfit && (
+                    <div className="detail-row">
+                      <span className="detail-label">Take Profit:</span>
+                      <span className="detail-value">{formatNumber(selectedOrder.takeProfit.toString(), selectedOrder.openPrice > 1000 ? 0 : 2)}</span>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+            <div className="modal-footer">
+              {selectedOrder.status === "Open" && (
+                <button 
+                  className="close-order-button"
+                  onClick={() => handleCloseOrder(selectedOrder.id)}
+                >
+                  Close Order
+                </button>
+              )}
+              <button className="modal-button" onClick={handleCloseOrderModal}>
+                Done
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <style>{`
         * {
@@ -544,6 +944,12 @@ function Futures() {
           margin-bottom: 5px;
         }
         
+        .additional-actions {
+          color: #AAAAAA;
+          font-size: 20px;
+          cursor: pointer;
+        }
+        
         /* Trading View Chart */
         .chart-container {
           height: 480px;
@@ -619,6 +1025,38 @@ function Futures() {
           color: white;
         }
         
+        /* Section Tabs */
+        .section-tabs {
+          display: flex;
+          margin: 15px 15px 0;
+          border-bottom: 1px solid #2A2A2A;
+        }
+        
+        .tab {
+          padding: 10px 15px;
+          cursor: pointer;
+          color: #777;
+          font-size: 14px;
+          position: relative;
+          flex: 1;
+          text-align: center;
+        }
+        
+        .tab.active {
+          color: #FFFFFF;
+          font-weight: bold;
+        }
+        
+        .tab.active::after {
+          content: '';
+          position: absolute;
+          bottom: -1px;
+          left: 0;
+          right: 0;
+          height: 2px;
+          background-color: #00C076;
+        }
+        
         /* Recent Trades */
         .recent-trades {
           margin: 15px;
@@ -671,19 +1109,260 @@ function Futures() {
           color: #FF6838;
         }
         
-        /* Section Titles */
-        .section-title {
-          font-size: 16px;
+        /* Orders Container */
+        .orders-container {
+          margin: 15px;
+        }
+        
+        .order-card {
+          background-color: #1A1A1A;
+          border-radius: 8px;
+          padding: 15px;
+          margin-bottom: 15px;
+          cursor: pointer;
+          transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .order-card:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .order-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 8px;
+        }
+        
+        .order-pair {
           font-weight: bold;
-          margin: 20px 15px 15px;
-          padding-bottom: 10px;
+          font-size: 16px;
+        }
+        
+        .order-direction {
+          font-size: 12px;
+          padding: 4px 8px;
+          border-radius: 4px;
+          font-weight: bold;
+        }
+        
+        .order-direction.buy {
+          background-color: rgba(0, 192, 118, 0.2);
+          color: #00C076;
+        }
+        
+        .order-direction.sell {
+          background-color: rgba(255, 104, 56, 0.2);
+          color: #FF6838;
+        }
+        
+        .order-status {
+          font-size: 12px;
+          margin-bottom: 12px;
+        }
+        
+        .order-status.open {
+          color: #00C076;
+        }
+        
+        .order-status.closed {
+          color: #777;
+        }
+        
+        .order-details {
+          border-top: 1px solid #2A2A2A;
+          padding-top: 12px;
+        }
+        
+        .order-row {
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 8px;
+          font-size: 13px;
+        }
+        
+        .order-label {
+          color: #AAAAAA;
+        }
+        
+        .order-value {
+          font-weight: 500;
+        }
+        
+        .order-value.buy {
+          color: #00C076;
+        }
+        
+        .order-value.sell {
+          color: #FF6838;
+        }
+        
+        .no-orders {
+          text-align: center;
+          padding: 30px 0;
+          color: #777;
+        }
+        
+        .no-orders i {
+          font-size: 24px;
+          margin-bottom: 10px;
+          opacity: 0.5;
+        }
+        
+        /* Modal Styles */
+        .modal-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background-color: rgba(0, 0, 0, 0.8);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          z-index: 1000;
+          padding: 20px;
+        }
+        
+        .modal-content {
+          background-color: #1A1A1A;
+          border-radius: 12px;
+          width: 100%;
+          max-width: 400px;
+          max-height: 80vh;
+          overflow-y: auto;
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .modal-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 20px;
           border-bottom: 1px solid #2A2A2A;
         }
         
-        .additional-actions {
+        .modal-header h2 {
+          font-size: 18px;
+          font-weight: bold;
+        }
+        
+        .modal-close {
+          background: none;
+          border: none;
           color: #AAAAAA;
           font-size: 20px;
           cursor: pointer;
+        }
+        
+        .modal-body {
+          padding: 20px;
+        }
+        
+        .modal-footer {
+          display: flex;
+          justify-content: flex-end;
+          padding: 20px;
+          border-top: 1px solid #2A2A2A;
+          gap: 10px;
+        }
+        
+        .modal-button {
+          background-color: #2A2A2A;
+          color: white;
+          border: none;
+          border-radius: 6px;
+          padding: 10px 20px;
+          cursor: pointer;
+          font-weight: bold;
+        }
+        
+        .close-order-button {
+          background-color: #FF6838;
+          color: white;
+          border: none;
+          border-radius: 6px;
+          padding: 10px 20px;
+          cursor: pointer;
+          font-weight: bold;
+        }
+        
+        .order-detail-section {
+          margin-bottom: 20px;
+        }
+        
+        .order-detail-section h3 {
+          font-size: 14px;
+          color: #AAAAAA;
+          margin-bottom: 12px;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+        
+        .detail-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 10px;
+        }
+        
+        .detail-pair {
+          font-weight: bold;
+          font-size: 18px;
+        }
+        
+        .detail-direction {
+          font-size: 14px;
+          padding: 4px 8px;
+          border-radius: 4px;
+          font-weight: bold;
+        }
+        
+        .detail-direction.buy {
+          background-color: rgba(0, 192, 118, 0.2);
+          color: #00C076;
+        }
+        
+        .detail-direction.sell {
+          background-color: rgba(255, 104, 56, 0.2);
+          color: #FF6838;
+        }
+        
+        .detail-status {
+          font-size: 14px;
+          margin-bottom: 15px;
+        }
+        
+        .detail-status.open {
+          color: #00C076;
+        }
+        
+        .detail-status.closed {
+          color: #777;
+        }
+        
+        .detail-row {
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 10px;
+          font-size: 14px;
+        }
+        
+        .detail-label {
+          color: #AAAAAA;
+        }
+        
+        .detail-value {
+          font-weight: 500;
+        }
+        
+        .detail-value.profit {
+          color: #00C076;
+        }
+        
+        .detail-value.loss {
+          color: #FF6838;
         }
       `}</style>
     </div>

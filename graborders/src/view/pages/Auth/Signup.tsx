@@ -13,42 +13,47 @@ import InputFormItem from "src/shared/form/InputFormItem";
 import selectors from "src/modules/auth/authSelectors";
 import ButtonIcon from "src/shared/ButtonIcon";
 
-// Validation schema
-const schema = yup.object().shape({
-  email: yupFormSchemas.string(i18n("user.fields.username"), {
-    required: true,
-  }),
-  password: yupFormSchemas.string(i18n("user.fields.password"), {
-    required: true,
-    min: 8,
-  }),
-  newPasswordConfirmation: yupFormSchemas
-    .string(i18n("user.fields.newPasswordConfirmation"), {
-      required: true,
-    })
-    .oneOf([yup.ref("password"), null], i18n("auth.passwordChange.mustMatch")),
-  phoneNumber: yupFormSchemas.string(i18n("user.fields.phoneNumber"), {
-    required: true,
-    matches: {
-      regex: /^[+]?[(]?[0-9]{1,4}[)]?[-\s./0-9]*$/,
-      message: i18n("user.validations.phoneNumber"),
-    },
-  }),
-  invitationcode: yupFormSchemas.string(i18n("user.fields.invitationcode"), {
-    required: true,
-  }),
-  captcha: yupFormSchemas.string(i18n("user.fields.captcha"), {
-    required: true,
-  }),
-});
-
 function Signup() {
   const dispatch = useDispatch();
   const history = useHistory();
   const loading = useSelector(selectors.selectLoading);
   const errorMessage = useSelector(selectors.selectErrorMessage);
   const [showPassword, setShowPassword] = useState(false);
-  const [captchaText, setCaptchaText] = useState("A7B3C9");
+  const [captchaText, setCaptchaText] = useState("");
+
+  // Generate initial captcha on component mount
+  useEffect(() => {
+    refreshCaptcha();
+  }, []);
+
+  // Validation schema
+  const schema = yup.object().shape({
+    email: yupFormSchemas.string(i18n("user.fields.username"), {
+      required: true,
+    }),
+    password: yupFormSchemas.string(i18n("user.fields.password"), {
+      required: true,
+      min: 8,
+    }),
+    newPasswordConfirmation: yupFormSchemas
+      .string(i18n("user.fields.newPasswordConfirmation"), {
+        required: true,
+      })
+      .oneOf([yup.ref("password"), null], i18n("auth.passwordChange.mustMatch")),
+    phoneNumber: yupFormSchemas.string(i18n("user.fields.phoneNumber"), {
+      required: true,
+ 
+    }),
+    invitationcode: yupFormSchemas.string(i18n("user.fields.invitationcode"), {
+      required: true,
+    }),
+    captcha: yup
+      .string()
+      .required(i18n("user.fields.captcha"))
+      .test('captcha-match', 'Captcha does not match', function(value) {
+        return value === captchaText;
+      }),
+  });
 
   const form = useForm({
     resolver: yupResolver(schema),
@@ -76,9 +81,13 @@ function Signup() {
       newCaptcha += chars.charAt(Math.floor(Math.random() * chars.length));
     }
     setCaptchaText(newCaptcha);
-  }, []);
+    // Clear captcha field when refreshing
+    form.setValue("captcha", "");
+    form.clearErrors("captcha");
+  }, [form]);
 
   const onSubmit = useCallback((data) => {
+    // Captcha validation is already handled by yup schema
     const { email, password, phoneNumber, invitationcode } = data;
     dispatch(
       actions.doRegisterEmailAndPassword(
@@ -100,13 +109,13 @@ function Signup() {
   }, [showPassword]);
 
   return (
-    <div className="container" >
+    <div className="container">
       {/* Header Section */}
-      <div className="header"  style={{display: 'flex'}}>
+      <div className="header" style={{display: 'flex'}}>
         <div className="back-button" onClick={goBack} style={{ cursor: "pointer" }}>
           <i className="fas fa-arrow-left" />
         </div>
-        <div className="page-title" >SIGN UP</div>
+        <div className="page-title">SIGN UP</div>
         <div className="language-icon" style={{ cursor: "pointer" }}>
           <i className="fas fa-globe" />
         </div>
@@ -115,78 +124,75 @@ function Signup() {
       {/* Form Section */}
       <FormProvider {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="form-section">
-         
-              <InputFormItem
-                type="email"
-                name="email"
-                placeholder="Enter your email"
-                className="text-input"
-                externalErrorMessage={errorMessage}
-                autoComplete="email"
-                label="Email"
-              />
-       
+          <InputFormItem
+            type="email"
+            name="email"
+            placeholder="Enter your email"
+            className="text-input"
+            externalErrorMessage={errorMessage}
+            autoComplete="email"
+            label="Email"
+          />
 
-      
-              <InputFormItem
-                type="tel"
-                name="phoneNumber"
-                placeholder="Enter your phone number"
-                className="text-input"
-                autoComplete="tel"
-                label="Phone Number"
-              />
-       
+          <InputFormItem
+            type="tel"
+            name="phoneNumber"
+            placeholder="Enter your phone number"
+            className="text-input"
+            autoComplete="tel"
+            label="Phone Number"
+          />
 
           {/* Graphical Captcha */}
-         
-            <label className="input-label" >
-              Graphical Captcha
-            </label>
-            <div className="captcha-container" >
-              <div className="captcha-display">
-                <div className="captcha-text" >
-                  {captchaText}
-                </div>
-              </div>
-              <div className="captcha-controls" >
-                <div className="refresh-captcha" onClick={refreshCaptcha} >
-                  <i className="fas fa-sync-alt" />
-                  <span>Refresh</span>
-                </div>
-                <InputFormItem
-                  type="text"
-                  name="captcha"
-                  placeholder="Enter code"
-                  className="captcha-input"
-              
-                />
+          <label className="input-label">
+            Graphical Captcha
+          </label>
+          <div className="captcha-container">
+            <div className="captcha-display">
+              <div className="captcha-text">
+                {captchaText}
               </div>
             </div>
-       
-
-
-          
-              <InputFormItem
-                type={showPassword ? "text" : "password"}
-                name="password"
-                placeholder="Create a password"
-                className="text-input"
-                autoComplete="new-password"
-                label={"Password"}
-              />
-          
-        
-
-        
+            <div className="captcha-controls">
+              <div className="refresh-captcha" onClick={refreshCaptcha}>
+                <i className="fas fa-sync-alt" />
+                <span>Refresh</span>
+              </div>
               <InputFormItem
                 type="text"
-                name="invitationcode"
-                placeholder="Enter invitation code"
-                className="text-input"
-                externalErrorMessage={errorMessage}
-                label="Invitation Code"              />
-       
+                name="captcha"
+                placeholder="Enter code"
+                className="captcha-input"
+              />
+            </div>
+          </div>
+
+          <InputFormItem
+            type={showPassword ? "text" : "password"}
+            name="password"
+            placeholder="Create a password"
+            className="text-input"
+            autoComplete="new-password"
+            label="Password"
+          />
+
+          <InputFormItem
+            type="password"
+            name="newPasswordConfirmation"
+            placeholder="Confirm your password"
+            className="text-input"
+            autoComplete="new-password"
+            label="Confirm Password"
+          />
+
+          <InputFormItem
+            type="text"
+            name="invitationcode"
+            placeholder="Enter invitation code"
+            className="text-input"
+            externalErrorMessage={errorMessage}
+            label="Invitation Code"
+          />
 
           <button 
             className="signup-button" 
@@ -201,14 +207,14 @@ function Signup() {
 
       {/* Footer Links */}
       <div className="footer-links" style={{ textAlign: "center", margin: "20px 0" }}>
-        <Link to="/auth/signin" className="footer-link" >
+        <Link to="/auth/signin" className="footer-link">
           Already have an account? Log in
         </Link>
       </div>
 
       {/* Terms */}
       <div className="terms">
-        By creating an account, you agree to our <a href="#" >Terms of Service</a> and <a href="#" >Privacy Policy</a>
+        By creating an account, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
       </div>
     </div>
   );

@@ -15,7 +15,7 @@ function WirthdrawAddress() {
       icon: "fab fa-ethereum",
     },
     {
-      path: "/formwithdrawaddress/usdt",
+      path: "/formwithdrawaddress/tether",
       label: "USDT (Tether)",
       icon: "fas fa-chevron-right",
     },

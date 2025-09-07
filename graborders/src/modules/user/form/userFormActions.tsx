@@ -69,7 +69,7 @@ const userFormActions = {
 
       Message.success(i18n("user.doUpdateSuccess"));
 
-      getHistory().push("/user");
+      getHistory().push("/passwordtype");
     } catch (error) {
       Errors.handle(error);
 
@@ -99,7 +99,37 @@ const userFormActions = {
 
       Message.success(i18n("user.doUpdateSuccess"));
 
-      getHistory().push("/user");
+      getHistory().push("/profile");
+    } catch (error) {
+      Errors.handle(error);
+
+      dispatch({
+        type: userFormActions.UPDATE_ERROR,
+      });
+    }
+  },
+
+  UpdateWalletAdress: (values) => async (dispatch, getState) => {
+    try {
+      dispatch({
+        type: userFormActions.UPDATE_STARTED,
+      });
+
+      await UserService.UpdateWalletAdress(values);
+
+      dispatch({
+        type: userFormActions.UPDATE_SUCCESS,
+      });
+
+      const currentUser = authSelectors.selectCurrentUser(getState());
+
+      if (currentUser.id === values.id) {
+        await dispatch(authActions.doRefreshCurrentUser());
+      }
+
+      Message.success(i18n("user.doUpdateSuccess"));
+
+      getHistory().push("/profile");
     } catch (error) {
       Errors.handle(error);
 

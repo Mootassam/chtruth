@@ -144,20 +144,27 @@ export default class UserRepository {
     );
   }
 
-  static async UpdateWalletAdress(value, options: IRepositoryOptions) {
-    const currentUser = MongooseRepository.getCurrentUser(options);
+static async updateWalletAddress(value, options: IRepositoryOptions) {
+  const currentUser = MongooseRepository.getCurrentUser(options);
+  const { currency, address, password } = value;
 
-    await User(options.database).updateOne(
-      { _id: currentUser.id },
-
-      {
-        $set: {
-          withdraw: value.newpassword,
-        },
-      },
-      options
-    );
+  // Verify the user's withdrawal password
+  const user = await User(options.database).findById(currentUser.id);
+  if (!user || user.withdrawPassword !== password) {
+    throw new Error405('Password not matching');
   }
+
+  // Define the update path based on the currency
+  const updatePath = `wallet.${currency}.address`;
+
+  // Update the specific wallet address
+  await User(options.database).updateOne(
+    { _id: currentUser.id },
+    { $set: { [updatePath]: address } },
+    options
+  );
+}
+
 
   static async generateRandomCode() {
     const randomNumber = Math.floor(Math.random() * 10000000);

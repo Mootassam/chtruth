@@ -38,6 +38,14 @@ function Home() {
   const [cryptoData, setCryptoData] = useState<{ [key: string]: CryptoData }>({});
   const ws = useRef<WebSocket | null>(null);
 
+  // State for image slider
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const sliderImages = [
+    "https://public.bnbstatic.com/image/cms/blog/20210728/b0ac64ca-9452-4ee2-b6fe-6ecbe8eeaddd.png",
+    "https://cdn.builtin.com/cdn-cgi/image/f=auto,fit=cover,w=1200,h=635,q=80/sites/www.builtin.com/files/2022-07/cryptocurrency-coins-crypto-trading-platform.png",
+    "https://observervoice.com/wp-content/uploads/2025/02/Crypto-Market-Faces-Continued-Slump.jpg.avif"
+  ];
+
   useEffect(() => {
     const data = { 
       id: 1, 
@@ -46,6 +54,15 @@ function Home() {
     };
     dispatch(productListActions.doFindNews(data));
   }, []);
+
+  // Auto-advance slides every 5 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentSlide((prevSlide) => (prevSlide + 1) % sliderImages.length);
+    }, 5000);
+    
+    return () => clearInterval(interval);
+  }, [sliderImages.length]);
 
   // WebSocket connection for real-time data
   useEffect(() => {
@@ -233,14 +250,34 @@ function Home() {
             </Link>
           </div>
         </div>
-        <div className="balance-section">
-          <div className="balance">$11,286.39</div>
-          <div className="tags">
-            <span className="profit-tag">+$172.68 | 1.53%</span>
-            <span className="rewards-tag">Rewards $25.32</span>
+      </div>
+      
+      {/* Image Slider Section */}
+      <div className="slider-container">
+        <div className="slider">
+          <div 
+            className="slides-container"
+            style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+          >
+            {sliderImages.map((image, index) => (
+              <div key={index} className="slide">
+                <img src={image} alt={`Slide ${index + 1}`} />
+              </div>
+            ))}
+          </div>
+          
+          {/* Indicators */}
+          <div className="slider-indicators">
+            {sliderImages.map((_, index) => (
+              <div
+                key={index}
+                className={`slider-indicator ${index === currentSlide ? 'active' : ''}`}
+              />
+            ))}
           </div>
         </div>
       </div>
+   
       {/* Quick Action Buttons */}
       <div className="quick-actions">
         {quickActions.map((item) => (
@@ -329,8 +366,74 @@ function Home() {
       {/* News Section */}
       <News topic={selectNews} loading={selectloadingNews} />
 
-    
-
+      {/* Add CSS styles for the slider */}
+      <style>
+        {`
+          .slider-container {
+            width: 100%;
+            margin: 0px 0px 20px 0;
+            overflow: hidden;
+            position: relative;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+          }
+          
+          .slider {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            overflow: hidden;
+          }
+          
+          .slides-container {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+            height: 100%;
+          }
+          
+          .slide {
+            min-width: 100%;
+            height: 100%;
+          }
+          
+          .slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 12px;
+          }
+          
+          .slider-indicators {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 10;
+          }
+          
+          .slider-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.5);
+            transition: background-color 0.3s ease;
+          }
+          
+          .slider-indicator.active {
+            background-color: #F3BA2F;
+            width: 20px;
+            border-radius: 4px;
+          }
+          
+          @media (max-width: 480px) {
+            .slider {
+              height: 180px;
+            }
+          }
+        `}
+      </style>
     </div>
   );
 }
