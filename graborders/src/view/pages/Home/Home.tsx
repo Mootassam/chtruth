@@ -240,15 +240,8 @@ function Home() {
       {/* Header Section */}
       <div className="mywallet-header">
         <div className="header-top">
-          <div className="search-icon">
-            <i className="fas fa-search" />
-          </div>
-          <div className="notification-profile">
-            <i className="fas fa-bell header-notification-icon" />
-            <Link to="/profile">
-              <i className="fas fa-user-circle profile-icon" />
-            </Link>
-          </div>
+  
+         
         </div>
       </div>
       

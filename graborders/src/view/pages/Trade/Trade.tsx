@@ -243,7 +243,7 @@ function Trade() {
         <div className="trade-header-top">
           <div className="trade-page-title">SPOT</div>
           <div className="settings-icon">
-            <i className="fas fa-cog" />
+            {/* <i className="fas fa-cog" /> */}
           </div>
         </div>
         <div className="market-info">
