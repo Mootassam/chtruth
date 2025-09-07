@@ -926,8 +926,7 @@ function Futures() {
           flex: 1;
           padding: 13px;
           border: none;
-          border-radius: 8px;
-          font-size: 16px;
+          font-size: 13px;
           font-weight: bold;
           cursor: pointer;
         }
