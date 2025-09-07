@@ -453,6 +453,7 @@ const Market: React.FC = () => {
         .market-list {
           overflow-y: auto;
           margin-bottom: 40px;
+ 
         }
         
         .market-item {

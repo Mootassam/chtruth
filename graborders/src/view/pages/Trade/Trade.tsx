@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import CoinListModal from "src/shared/modal/CoinListModal";
+import { Link } from "react-router-dom";
 
+// Main Trade Component
 function Trade() {
   const [selectedCoin, setSelectedCoin] = useState("BTCUSDT");
   const [marketPrice, setMarketPrice] = useState("51248.06");
@@ -12,11 +14,62 @@ function Trade() {
   const [activeTab, setActiveTab] = useState("buy");
   const [orderBook, setOrderBook] = useState({
     asks: [],
-    bids: []
+    bids: [],
   });
+  const [isLoading, setIsLoading] = useState(true);
+  const [openOrders, setOpenOrders] = useState([
+    {
+      id: 1,
+      pair: "BTC/USDT",
+      action: "BUY",
+      date: "08/23",
+      time: "02:20:08",
+      status: "COMPLETED",
+      orderPrice: "117065.0000",
+      orderAmount: "0.000901",
+      filled: "100%",
+      total: "105.48",
+      type: "LIMIT",
+    },
+    {
+      id: 2,
+      pair: "ETH/USDT",
+      action: "SELL",
+      date: "08/24",
+      time: "14:35:22",
+      status: "PENDING",
+      orderPrice: "2850.50",
+      orderAmount: "1.25",
+      filled: "35%",
+      total: "3563.13",
+      type: "LIMIT",
+    },
+    {
+      id: 3,
+      pair: "SOL/USDT",
+      action: "BUY",
+      date: "08/24",
+      time: "09:15:47",
+      status: "PARTIALLY FILLED",
+      orderPrice: "102.75",
+      orderAmount: "15.50",
+      filled: "75%",
+      total: "1194.56",
+      type: "MARKET",
+    },
+  ]);
 
   const tickerWs = useRef(null);
   const depthWs = useRef(null);
+
+  // Simulate loading delay
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1500);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   // Format number with commas
   const formatNumber = (num, decimals = 2) => {
@@ -69,19 +122,19 @@ function Trade() {
 
     depthWs.current.onmessage = (event) => {
       const data = JSON.parse(event.data);
-      
+
       // Process asks (sell orders)
-      const asks = data.asks.slice(0, 5).map(ask => ({
+      const asks = data.asks.slice(0, 5).map((ask) => ({
         price: ask[0],
-        amount: ask[1]
+        amount: ask[1],
       }));
-      
+
       // Process bids (buy orders)
-      const bids = data.bids.slice(0, 5).map(bid => ({
+      const bids = data.bids.slice(0, 5).map((bid) => ({
         price: bid[0],
-        amount: bid[1]
+        amount: bid[1],
       }));
-      
+
       setOrderBook({ asks, bids });
     };
 
@@ -95,8 +148,8 @@ function Trade() {
   // Calculate max amount for depth visualization
   const calculateMaxAmount = () => {
     const allAmounts = [
-      ...orderBook.asks.map(item => parseFloat(item.amount)),
-      ...orderBook.bids.map(item => parseFloat(item.amount))
+      ...orderBook.asks.map((item) => parseFloat(item.amount)),
+      ...orderBook.bids.map((item) => parseFloat(item.amount)),
     ];
     return Math.max(...allAmounts, 1); // Ensure at least 1 to avoid division by zero
   };
@@ -114,6 +167,12 @@ function Trade() {
   const handleSelectCoin = (coin) => {
     setSelectedCoin(coin);
     setIsCoinModalOpen(false);
+    setIsLoading(true);
+
+    // Simulate loading when changing coin
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
   };
 
   const handlePriceChange = (e) => {
@@ -140,7 +199,7 @@ function Trade() {
   };
 
   const handleIncrementQuantity = () => {
-    setQuantity((prevQty) => 
+    setQuantity((prevQty) =>
       prevQty ? (parseFloat(prevQty) + 0.001).toFixed(3) : "0.001"
     );
   };
@@ -153,15 +212,32 @@ function Trade() {
 
   const handlePlaceOrder = () => {
     // In a real app, this would send the order to an exchange
-    alert(`Placing ${activeTab.toUpperCase()} order: ${quantity} ${selectedCoin.replace("USDT", "")} at $${price}`);
+    alert(
+      `Placing ${activeTab.toUpperCase()} order: ${quantity} ${selectedCoin.replace(
+        "USDT",
+        ""
+      )} at $${price}`
+    );
   };
 
   const handleOrderBookClick = (clickPrice) => {
     setPrice(clickPrice);
   };
 
+  const handleCancelOrder = (orderId) => {
+    setOpenOrders(openOrders.filter((order) => order.id !== orderId));
+  };
+
   return (
     <div className="container">
+      {/* Loading Overlay */}
+      {/* {isLoading && (
+        <div className="loading-overlay">
+          <div className="loading-spinner"></div>
+          <div className="loading-text">Loading market data...</div>
+        </div>
+      )} */}
+
       {/* Header Section */}
       <div className="trade-header">
         <div className="trade-header-top">
@@ -171,16 +247,31 @@ function Trade() {
           </div>
         </div>
         <div className="market-info">
-          <div className="market-name">{selectedCoin.replace("USDT", "/USDT")}</div>
+          {isLoading ? (
+            <div className="skeleton-loading skeleton-market-name"></div>
+          ) : (
+            <div className="market-name">
+              {selectedCoin.replace("USDT", "/USDT")}
+            </div>
+          )}
           <div className="coin-select-icon" onClick={handleOpenCoinModal}>
             <i className="fas fa-chevron-down" />
           </div>
-          <div 
-            className="market-change"
-            style={{ color: priceChangePercent.startsWith("-") ? "#FF6838" : "#00C076" }}
-          >
-            {priceChangePercent.startsWith("-") ? "" : "+"}{priceChangePercent}%
-          </div>
+          {isLoading ? (
+            <div className="skeleton-loading skeleton-price-change"></div>
+          ) : (
+            <div
+              className="market-change"
+              style={{
+                color: priceChangePercent.startsWith("-")
+                  ? "#FF6838"
+                  : "#00C076",
+              }}
+            >
+              {priceChangePercent.startsWith("-") ? "" : "+"}
+              {priceChangePercent}%
+            </div>
+          )}
         </div>
       </div>
 
@@ -192,152 +283,324 @@ function Trade() {
           <div className="trade-form">
             {/* Buy/Sell Tabs */}
             <div className="buy-sell-tabs">
-              <div 
-                className={`buy-tab ${activeTab === "buy" ? "active" : ""}`}
-                onClick={() => setActiveTab("buy")}
-              >
-                BUY
-              </div>
-              <div 
-                className={`sell-tab ${activeTab === "sell" ? "active" : ""}`}
-                onClick={() => setActiveTab("sell")}
-              >
-                SELL
-              </div>
+              {isLoading ? (
+                <div className="skeleton-loading skeleton-tab"></div>
+              ) : (
+                <>
+                  <div
+                    className={`buy-tab ${activeTab === "buy" ? "active" : ""}`}
+                    onClick={() => setActiveTab("buy")}
+                  >
+                    BUY
+                  </div>
+                  <div
+                    className={`sell-tab ${
+                      activeTab === "sell" ? "active" : ""
+                    }`}
+                    onClick={() => setActiveTab("sell")}
+                  >
+                    SELL
+                  </div>
+                </>
+              )}
             </div>
-            
+
             {/* Order Type */}
             <div className="order-type">
               <div className="order-type-label">Order Type</div>
-              <select 
-                className="order-type-select"
-                value={orderType}
-                onChange={(e) => setOrderType(e.target.value)}
-              >
-                <option>LIMIT</option>
-                <option>MARKET</option>
-                <option>STOP-LIMIT</option>
-              </select>
+              {isLoading ? (
+                <div className="skeleton-loading skeleton-input"></div>
+              ) : (
+                <select
+                  className="order-type-select"
+                  value={orderType}
+                  onChange={(e) => setOrderType(e.target.value)}
+                >
+                  <option>LIMIT</option>
+                  <option>MARKET</option>
+                  <option>STOP-LIMIT</option>
+                </select>
+              )}
             </div>
-            
+
             {/* Price Input */}
             <div className="input-group">
               <div className="input-label">Price (USDT)</div>
-              <div className="input-with-buttons">
-                <input 
-                  className="value-input" 
-                  value={price} 
-                  onChange={handlePriceChange}
-                />
-                <div className="value-buttons">
-                  <button className="value-button" onClick={handleIncrementPrice}>+</button>
-                  <button className="value-button" onClick={handleDecrementPrice}>-</button>
+              {isLoading ? (
+                <div className="skeleton-loading skeleton-input"></div>
+              ) : (
+                <div className="input-with-buttons">
+                  <input
+                    className="value-input"
+                    value={price}
+                    onChange={handlePriceChange}
+                  />
+                  <div className="value-buttons">
+                    <button
+                      className="value-button"
+                      onClick={handleIncrementPrice}
+                    >
+                      +
+                    </button>
+                    <button
+                      className="value-button"
+                      onClick={handleDecrementPrice}
+                    >
+                      -
+                    </button>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
-            
+
             {/* Quantity Input */}
             <div className="input-group">
-              <div className="input-label">Amount ({selectedCoin.replace("USDT", "")})</div>
-              <div className="input-with-buttons">
-                <input 
-                  className="value-input" 
-                  value={quantity} 
-                  onChange={handleQuantityChange}
-                  placeholder="0.0" 
-                />
-                <div className="value-buttons">
-                  <button className="value-button" onClick={handleIncrementQuantity}>+</button>
-                  <button className="value-button" onClick={handleDecrementQuantity}>-</button>
-                </div>
+              <div className="input-label">
+                Amount ({selectedCoin.replace("USDT", "")})
               </div>
+              {isLoading ? (
+                <div className="skeleton-loading skeleton-input"></div>
+              ) : (
+                <div className="input-with-buttons">
+                  <input
+                    className="value-input"
+                    value={quantity}
+                    onChange={handleQuantityChange}
+                    placeholder="0.0"
+                  />
+                  <div className="value-buttons">
+                    <button
+                      className="value-button"
+                      onClick={handleIncrementQuantity}
+                    >
+                      +
+                    </button>
+                    <button
+                      className="value-button"
+                      onClick={handleDecrementQuantity}
+                    >
+                      -
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
-            
+
             {/* Amount Display */}
-            <div className="amount-display">{calculateTotal()} USDT</div>
-            
+            {isLoading ? (
+              <div className="skeleton-loading skeleton-input"></div>
+            ) : (
+              <div className="amount-display">{calculateTotal()} USDT</div>
+            )}
+
             {/* Balance Info */}
-            <div className="balance-info">Available: 5,230.50 USDT</div>
-            
+            {isLoading ? (
+              <div className="skeleton-loading skeleton-balance"></div>
+            ) : (
+              <div className="balance-info">Available: 5,230.50 USDT</div>
+            )}
+
             {/* Action Button */}
-            <button 
-              className={`action-button ${activeTab === "buy" ? "buy-button" : "sell-button"}`}
-              onClick={handlePlaceOrder}
-            >
-              {activeTab === "buy" ? "BUY" : "SELL"} {selectedCoin.replace("USDT", "")}
-            </button>
+            {isLoading ? (
+              <div className="skeleton-loading skeleton-button"></div>
+            ) : (
+              <button
+                className={`action-button ${
+                  activeTab === "buy" ? "buy-button" : "sell-button"
+                }`}
+                onClick={handlePlaceOrder}
+              >
+                {activeTab === "buy" ? "BUY" : "SELL"}{" "}
+                {selectedCoin.replace("USDT", "")}
+              </button>
+            )}
           </div>
-          
+
           {/* Order Book */}
           <div className="order-book">
             <div className="order-book-header">
               <span>Price (USDT)</span>
               <span>Amount ({selectedCoin.replace("USDT", "")})</span>
             </div>
-            
-            {/* Asks (Sell Orders) */}
-            {orderBook.asks.map((ask, index) => {
-              const amount = parseFloat(ask.amount);
-              const widthPercentage = (amount / maxAmount) * 100;
-              
-              return (
-                <div 
-                  key={index} 
-                  className="order-book-row ask-row"
-                  onClick={() => handleOrderBookClick(ask.price)}
-                >
-                  <div 
-                    className="depth-bar ask-depth"
-                    style={{ width: `${widthPercentage}%` }}
-                  />
-                  <div className="order-price">{formatNumber(ask.price)}</div>
-                  <div className="order-amount">{formatNumber(ask.amount, 4)}</div>
+
+            {isLoading ? (
+              <>
+                {[...Array(5)].map((_, index) => (
+                  <div
+                    key={index}
+                    className="skeleton-loading skeleton-order-book"
+                  ></div>
+                ))}
+                <div className="skeleton-loading skeleton-current-price"></div>
+                {[...Array(5)].map((_, index) => (
+                  <div
+                    key={index}
+                    className="skeleton-loading skeleton-order-book"
+                  ></div>
+                ))}
+              </>
+            ) : (
+              <>
+                {/* Asks (Sell Orders) */}
+                {orderBook.asks.map((ask, index) => {
+                  const amount = parseFloat(ask.amount);
+                  const widthPercentage = (amount / maxAmount) * 100;
+
+                  return (
+                    <div
+                      key={index}
+                      className="order-book-row ask-row"
+                      onClick={() => handleOrderBookClick(ask.price)}
+                    >
+                      <div
+                        className="depth-bar ask-depth"
+                        style={{ width: `${widthPercentage}%` }}
+                      />
+                      <div className="order-price">
+                        {formatNumber(ask.price)}
+                      </div>
+                      <div className="order-amount">
+                        {formatNumber(ask.amount, 4)}
+                      </div>
+                    </div>
+                  );
+                })}
+
+                {/* Current Price */}
+                <div className="order-book-row current-price-row">
+                  <div className="current-price">
+                    ${formatNumber(marketPrice)}
+                  </div>
                 </div>
-              );
-            })}
-            
-            {/* Current Price */}
-            <div className="order-book-row current-price-row">
-              <div className="current-price">${formatNumber(marketPrice)}</div>
-            </div>
-            
-            {/* Bids (Buy Orders) */}
-            {orderBook.bids.map((bid, index) => {
-              const amount = parseFloat(bid.amount);
-              const widthPercentage = (amount / maxAmount) * 100;
-              
-              return (
-                <div 
-                  key={index} 
-                  className="order-book-row bid-row"
-                  onClick={() => handleOrderBookClick(bid.price)}
-                >
-                  <div 
-                    className="depth-bar bid-depth"
-                    style={{ width: `${widthPercentage}%` }}
-                  />
-                  <div className="order-price">{formatNumber(bid.price)}</div>
-                  <div className="order-amount">{formatNumber(bid.amount, 4)}</div>
-                </div>
-              );
-            })}
+
+                {/* Bids (Buy Orders) */}
+                {orderBook.bids.map((bid, index) => {
+                  const amount = parseFloat(bid.amount);
+                  const widthPercentage = (amount / maxAmount) * 100;
+
+                  return (
+                    <div
+                      key={index}
+                      className="order-book-row bid-row"
+                      onClick={() => handleOrderBookClick(bid.price)}
+                    >
+                      <div
+                        className="depth-bar bid-depth"
+                        style={{ width: `${widthPercentage}%` }}
+                      />
+                      <div className="order-price">
+                        {formatNumber(bid.price)}
+                      </div>
+                      <div className="order-amount">
+                        {formatNumber(bid.amount, 4)}
+                      </div>
+                    </div>
+                  );
+                })}
+              </>
+            )}
           </div>
         </div>
-        
+
         {/* Open Orders */}
         <div className="open-orders">
           <div className="open-orders-header">
             <div className="open-orders-title">OPEN ORDERS</div>
-            <div className="orders-list-icon">
-              <i className="fas fa-list" />
+            <div className="orders-filter">
+              <Link to="/ordersPage" className="remove_blue">
+                <i className="fas fa-list" />
+              </Link>
             </div>
           </div>
-          <div className="empty-orders">
-            <div className="empty-icon">
-              <i className="fas fa-city" />
+
+          {openOrders.length > 0 ? (
+            <div className="orders-list">
+              {openOrders.map((order) => (
+                <div key={order.id} className="order-item">
+                  <div className="order-main-info">
+                    <div className="order-pair-action">
+                      <span className="order-pair">{order.pair}</span>
+                      <span
+                        className={`order-action ${order.action.toLowerCase()}`}
+                      >
+                        {order.action}
+                      </span>
+                      <span className="order-type-badge">{order.type}</span>
+                    </div>
+                    <div className="order-date">
+                      {order.date}{" "}
+                      <span className="order-time">{order.time}</span>
+                    </div>
+                  </div>
+
+                  <div className="order-details">
+                    <div className="order-detail">
+                      <span className="detail-label">Status</span>
+                      <span
+                        className={`order-status ${order.status
+                          .replace(/\s+/g, "-")
+                          .toLowerCase()}`}
+                      >
+                        {order.status}
+                      </span>
+                    </div>
+
+                    <div className="order-detail">
+                      <span className="detail-label">Filled</span>
+                      <span className="order-filled">{order.filled}</span>
+                    </div>
+
+                    <div className="order-detail">
+                      <span className="detail-label">Price</span>
+                      <span className="order-price-value">
+                        {formatNumber(order.orderPrice, 4)} USDT
+                      </span>
+                    </div>
+
+                    <div className="order-detail">
+                      <span className="detail-label">Amount</span>
+                      <span className="order-amount-value">
+                        {order.orderAmount} {order.pair.split("/")[0]}
+                      </span>
+                    </div>
+
+                    <div className="order-detail">
+                      <span className="detail-label">Total</span>
+                      <span className="order-total">
+                        {formatNumber(order.total)} USDT
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="order-actions">
+                    {order.status === "PENDING" ||
+                    order.status === "PARTIALLY FILLED" ? (
+                      <button
+                        className="cancel-order-btn"
+                        onClick={() => handleCancelOrder(order.id)}
+                      >
+                        Cancel
+                      </button>
+                    ) : (
+                      <div className="completed-indicator">
+                        <i className="fas fa-check-circle"></i>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
             </div>
-            <div className="empty-text">No open orders yet</div>
-          </div>
+          ) : (
+            <div className="empty-orders">
+              <div className="empty-icon">
+                <i className="fas fa-clipboard-list"></i>
+              </div>
+              <div className="empty-text">No open orders yet</div>
+              <div className="empty-subtext">
+                Your open orders will appear here
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -350,6 +613,13 @@ function Trade() {
 
       <style>{`
         /* Trade Header Section */
+        .container {
+          background-color: #000000;
+          color: #FFFFFF;
+          min-height: 100vh;
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+        }
+        
         .trade-header {
           background-color: #000000;
           padding: 10px 12px;
@@ -408,21 +678,21 @@ function Trade() {
         /* Trading Layout */
         .trading-layout {
           display: grid;
-              grid-template-columns: repeat(2 , 1fr);
+          grid-template-columns: repeat(2, 1fr);
           gap: 10px;
           margin-bottom: 12px;
         }
 
         .trade-form {
-          flex: 1;
           // background-color: #1A1A1A;
-          border-radius: 6px;
+          // border-radius: 6px;
+          // padding: 12px;
         }
 
         .order-book {
-          flex: 1;
           // background-color: #1A1A1A;
-          border-radius: 6px;
+          // border-radius: 6px;
+          // padding: 12px;
           overflow-y: auto;
           position: relative;
         }
@@ -673,7 +943,7 @@ function Trade() {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          margin-bottom: 10px;
+          margin-bottom: 15px;
         }
 
         .open-orders-title {
@@ -682,24 +952,376 @@ function Trade() {
           color: #F3BA2F;
         }
 
-        .orders-list-icon {
-          color: #F3BA2F;
-          font-size: 16px;
+        .orders-filter {
+          display: flex;
+          background-color: #2A2A2A;
+          border-radius: 4px;
+          padding: 2px;
+          font-size: 11px;
+        }
+
+        .orders-filter span {
+          padding: 4px 8px;
           cursor: pointer;
+          border-radius: 3px;
+        }
+
+        .orders-filter span.active {
+          background-color: #F3BA2F;
+          color: #000;
+        }
+
+        .order-item {
+          background-color: #2A2A2A;
+          border-radius: 6px;
+          padding: 12px;
+          margin-bottom: 10px;
+          position: relative;
+        }
+
+        .order-main-info {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 10px;
+        }
+
+        .order-pair-action {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+
+        .order-pair {
+          font-weight: bold;
+          font-size: 13px;
+        }
+
+        .order-action {
+          font-size: 11px;
+          padding: 2px 6px;
+          border-radius: 3px;
+          font-weight: bold;
+        }
+
+        .order-action.buy {
+          background-color: rgba(0, 192, 118, 0.2);
+          color: #00C076;
+        }
+
+        .order-action.sell {
+          background-color: rgba(255, 104, 56, 0.2);
+          color: #FF6838;
+        }
+
+        .order-type-badge {
+          font-size: 10px;
+          color: #AAAAAA;
+          background-color: #1A1A1A;
+          padding: 2px 5px;
+          border-radius: 3px;
+        }
+
+        .order-date {
+          font-size: 11px;
+          color: #AAAAAA;
+        }
+
+        .order-time {
+          color: #777;
+        }
+
+        .order-details {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 8px;
+          margin-bottom: 12px;
+        }
+
+        .order-detail {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+
+        .detail-label {
+          font-size: 11px;
+          color: #AAAAAA;
+        }
+
+        .order-status {
+          font-size: 11px;
+          font-weight: bold;
+        }
+
+        .order-status.completed {
+          color: #00C076;
+        }
+
+        .order-status.pending {
+          color: #F3BA2F;
+        }
+
+        .order-status.partially-filled {
+          color: #FF6838;
+        }
+
+        .order-filled {
+          font-size: 11px;
+          font-weight: bold;
+          color: #F3BA2F;
+        }
+
+        .order-price-value, .order-amount-value, .order-total {
+          font-size: 11px;
+          font-weight: bold;
+        }
+
+        .order-actions {
+          display: flex;
+          justify-content: flex-end;
+        }
+
+        .cancel-order-btn {
+          background-color: #FF6838;
+          color: white;
+          border: none;
+          padding: 6px 12px;
+          border-radius: 4px;
+          font-size: 11px;
+          cursor: pointer;
+          transition: background-color 0.2s;
+        }
+
+        .cancel-order-btn:hover {
+          background-color: #e04444;
+        }
+
+        .completed-indicator {
+          color: #00C076;
+          font-size: 14px;
         }
 
         .empty-orders {
           text-align: center;
-          padding: 50px 0;
+          padding: 40px 0;
         }
 
         .empty-icon {
-          font-size: 28px;
+          font-size: 32px;
           color: #2A2A2A;
-          margin-bottom: 8px;
+          margin-bottom: 10px;
         }
 
         .empty-text {
+          color: #AAAAAA;
+          font-size: 14px;
+          margin-bottom: 5px;
+        }
+
+        .empty-subtext {
+          color: #777;
+          font-size: 12px;
+        }
+
+        /* Loading Overlay Styles */
+        .loading-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background-color: rgba(0, 0, 0, 0.7);
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          z-index: 1000;
+        }
+        
+        .loading-spinner {
+          width: 50px;
+          height: 50px;
+          border: 5px solid #2A2A2A;
+          border-top: 5px solid #F3BA2F;
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+          margin-bottom: 15px;
+        }
+        
+        .loading-text {
+          color: #FFFFFF;
+          font-size: 16px;
+          font-weight: 500;
+        }
+        
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+        
+        /* Skeleton Loading for Content */
+        .skeleton-loading {
+          background: linear-gradient(90deg, #2A2A2A 25%, #333 50%, #2A2A2A 75%);
+          background-size: 200% 100%;
+          animation: loading 1.5s infinite;
+          border-radius: 4px;
+        }
+        
+        @keyframes loading {
+          0% { background-position: 200% 0; }
+          100% { background-position: -200% 0; }
+        }
+        
+        /* Skeleton elements for initial load */
+        .skeleton-market-name {
+          width: 100px;
+          height: 16px;
+          margin-right: 8px;
+        }
+        
+        .skeleton-price-change {
+          width: 50px;
+          height: 16px;
+        }
+        
+        .skeleton-tab {
+          width: 100%;
+          height: 36px;
+        }
+        
+        .skeleton-input {
+          width: 100%;
+          height: 40px;
+          margin-bottom: 12px;
+        }
+        
+        .skeleton-balance {
+          width: 100%;
+          height: 14px;
+          margin-bottom: 12px;
+        }
+        
+        .skeleton-button {
+          width: 100%;
+          height: 42px;
+        }
+        
+        .skeleton-order-book {
+          height: 20px;
+          margin-bottom: 5px;
+        }
+        
+        .skeleton-current-price {
+          height: 30px;
+          margin: 8px 0;
+        }
+
+        /* Coin Selection Modal */
+        .modal-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background-color: rgba(0, 0, 0, 0.7);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          z-index: 1000;
+        }
+        
+        .coin-modal {
+          background-color: #1A1A1A;
+          border-radius: 8px;
+          width: 320px;
+          max-width: 90%;
+          max-height: 80vh;
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+        }
+        
+        .modal-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 16px;
+          border-bottom: 1px solid #2A2A2A;
+        }
+        
+        .modal-header h3 {
+          margin: 0;
+          font-size: 18px;
+          color: #F3BA2F;
+        }
+        
+        .close-button {
+          background: none;
+          border: none;
+          color: #AAAAAA;
+          font-size: 24px;
+          cursor: pointer;
+        }
+        
+        .search-container {
+          padding: 12px 16px;
+          border-bottom: 1px solid #2A2A2A;
+        }
+        
+        .coin-search {
+          width: 100%;
+          padding: 10px 12px;
+          background-color: #2A2A2A;
+          border: none;
+          border-radius: 4px;
+          color: #FFFFFF;
+          font-size: 14px;
+        }
+        
+        .coin-search:focus {
+          outline: 1px solid #F3BA2F;
+        }
+        
+        .modal-content {
+          flex: 1;
+          overflow-y: auto;
+        }
+        
+        .coin-list {
+          padding: 8px 0;
+        }
+        
+        .coin-item {
+          display: flex;
+          align-items: center;
+          padding: 12px 16px;
+          cursor: pointer;
+          transition: background-color 0.2s;
+        }
+        
+        .coin-item:hover {
+          background-color: #2A2A2A;
+        }
+        
+        .coin-icon {
+          font-size: 20px;
+          margin-right: 12px;
+          width: 30px;
+          text-align: center;
+        }
+        
+        .coin-info {
+          flex: 1;
+        }
+        
+        .coin-symbol {
+          font-weight: bold;
+          font-size: 14px;
+          margin-bottom: 2px;
+        }
+        
+        .coin-name {
           color: #AAAAAA;
           font-size: 12px;
         }

@@ -316,7 +316,7 @@ function Home() {
         <Link to="/market" className="see-all remove_blue">See all →</Link>
       </div>
       {/* Market List with Real-time Data */}
-      <div className="market-list">
+      <div className="market-list" style={{padding: '0 15px'}}>
         {topCryptos.map((crypto) => {
           const data = cryptoData[crypto.symbol];
           const displayName = crypto.symbol.replace("USDT", "/USDT");

@@ -10,6 +10,10 @@ const privateRoutes = [
     exact: true,
   },
 
+
+
+  
+
   {
     path: "/market",
     loader: () => import("src/view/pages/Market/Market"),
@@ -70,7 +74,12 @@ const screenRoutes = [
     loader: () => import("src/view/pages/invitation/invitation"),
     permissionRequired: permissions.categoryRead,
   },
-
+ {
+    path: "/ordersPage",
+    loader: () => import("src/view/pages/Order/OrdersPage"),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
   {
     path: "/language",
     loader: () => import("src/view/pages/Language/Language"),
