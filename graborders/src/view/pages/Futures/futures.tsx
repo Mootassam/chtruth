@@ -55,6 +55,7 @@ function Futures() {
   const [isOrdersLoading, setIsOrdersLoading] = useState(true);
 
   const tickerWs = useRef<WebSocket | null>(null);
+  const currentCoinRef = useRef(selectedCoin); // Keep track of current coin
 
   // Mock data for open orders
   const [openOrders, setOpenOrders] = useState<Order[]>([]);
@@ -87,15 +88,15 @@ function Futures() {
     const fetchInitialData = async () => {
       try {
         setIsLoading(true);
-        const tickerResponse = await fetch(
+        const response = await fetch(
           `https://api.binance.com/api/v3/ticker/24hr?symbol=${selectedCoin}`
         );
         
-        if (!tickerResponse.ok) {
+        if (!response.ok) {
           throw new Error('Failed to fetch ticker data');
         }
         
-        const tickerData = await tickerResponse.json();
+        const tickerData = await response.json();
         
         // Set initial data from REST API
         setMarketPrice(tickerData.lastPrice);
@@ -118,6 +119,9 @@ function Futures() {
   useEffect(() => {
     if (!selectedCoin) return;
 
+    // Update the current coin reference
+    currentCoinRef.current = selectedCoin;
+
     const connectTickerWebSocket = () => {
       // Close previous connection if it exists
       if (tickerWs.current) {
@@ -135,13 +139,15 @@ function Futures() {
 
       tickerWs.current.onmessage = (event: MessageEvent) => {
         const tickerData: BinanceTicker = JSON.parse(event.data);
-
-        // Update market data
-        setMarketPrice(tickerData.c);
-        setPriceChangePercent(tickerData.P);
-        setHighPrice(tickerData.h);
-        setLowPrice(tickerData.l);
-        setVolume(tickerData.v);
+        
+        // Only update state if this message is for the currently selected coin
+        if (tickerData.s === currentCoinRef.current) {
+          setMarketPrice(tickerData.c);
+          setPriceChangePercent(tickerData.P);
+          setHighPrice(tickerData.h);
+          setLowPrice(tickerData.l);
+          setVolume(tickerData.v);
+        }
       };
 
       tickerWs.current.onerror = (error: Event) => {
@@ -151,9 +157,9 @@ function Futures() {
       tickerWs.current.onclose = (event: CloseEvent) => {
         console.log("Ticker WebSocket closed, attempting to reconnect...");
 
-        // Auto-reconnect after a short delay
+        // Auto-reconnect after a short delay, but only if the coin hasn't changed
         setTimeout(() => {
-          if (selectedCoin) {
+          if (selectedCoin && selectedCoin === currentCoinRef.current) {
             console.log("Attempting to reconnect ticker WebSocket...");
             connectTickerWebSocket();
           }
@@ -301,9 +307,17 @@ function Futures() {
   };
 
   const handleSelectCoin = (coin: string) => {
+    // Reset market data to loading state
+    setIsLoading(true);
+    setMarketPrice("0");
+    setPriceChangePercent("0");
+    setHighPrice("0");
+    setLowPrice("0");
+    setVolume("0");
+    
+    // Update selected coin
     setSelectedCoin(coin);
     setIsCoinModalOpen(false);
-    setIsLoading(true);
   };
 
   const handleOpenModal = (direction: string) => {
@@ -410,9 +424,9 @@ function Futures() {
         </div>
       </div>
 
-      
+
       {/* If no symbol is selected, defaults to BTCUSDT */}
-       <FuturesChart symbol={selectedCoin || undefined} />
+      <FuturesChart symbol={selectedCoin || undefined} />
 
       {/* Action Buttons */}
       <div className="future-action-buttons">
