@@ -43,7 +43,7 @@ const en = {
   },
 
   app: {
-    title: "MEXC",
+    title: "ChTruth",
   },
 
   api: {

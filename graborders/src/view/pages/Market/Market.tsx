@@ -1,3 +1,4 @@
+import axios from "axios";
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import ReactDOM from "react-dom";
 import { Link } from 'react-router-dom';
@@ -36,13 +37,10 @@ const Market: React.FC = () => {
     const fetchAllPrices = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch('https://api.binance.com/api/v3/ticker/24hr');
-        if (!response.ok) throw new Error('Network response was not ok');
-        
-        const data = await response.json();
+        const response = await axios.get('https://api.binance.com/api/v3/ticker/24hr');
         
         // Process only USDT pairs
-        const usdtPairs = data.filter((item: any) => 
+        const usdtPairs = response.data.filter((item: any) => 
           item.symbol.endsWith('USDT') && 
           !item.symbol.includes('UP') && 
           !item.symbol.includes('DOWN') &&
@@ -92,7 +90,6 @@ const Market: React.FC = () => {
         setIsLoading(false);
         
       } catch (error) {
-        console.error("Error fetching market data:", error);
         setIsLoading(false);
       }
     };
@@ -365,7 +362,7 @@ const Market: React.FC = () => {
         .price-info-placeholder {
           text-align: right;
           margin-right: 15px;
-          flex: 1;
+          // flex: 1;
         }
         
         .placeholder-line {

@@ -1,96 +1,204 @@
-import React, { useState } from "react";
+import axios from "axios";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import ReactDOM from "react-dom";
 
+// Interface for Binance ticker data
+interface BinanceTicker {
+  s: string; // Symbol
+  c: string; // Last price
+  P: string; // Price change percent
+  v: string; // Total traded base asset volume
+  p: string; // Price change
+}
+
+// Interface for cryptocurrency data
+interface CryptoData {
+  symbol: string;
+  name: string;
+  price: string;
+  change: string;
+  changePercent: string;
+  volume: string;
+  volumeFormatted: string;
+  isPositive: boolean;
+}
 const CoinListModal = ({ isOpen, onClose, onSelectCoin }) => {
+const [cryptoData, setCryptoData] = useState<{ [key: string]: CryptoData }>({});
   const [searchTerm, setSearchTerm] = useState("");
+  const [activeTab, setActiveTab] = useState("All");
+  const [isLoading, setIsLoading] = useState(true);
+  const ws = useRef<WebSocket | null>(null);
 
-  // Sample cryptocurrency data
-  const cryptocurrencies = [
-    {
-      symbol: "BTC",
-      name: "Bitcoin",
-      icon: "fab fa-btc",
-      price: "$51,825.10",
-      change: "+2.31%",
-    },
-    {
-      symbol: "ETH",
-      name: "Ethereum",
-      icon: "fab fa-ethereum",
-      price: "$3,405.60",
-      change: "+1.85%",
-    },
-    {
-      symbol: "BNB",
-      name: "Binance Coin",
-      icon: "fas fa-coins",
-      price: "$560.25",
-      change: "+0.92%",
-    },
-    {
-      symbol: "ADA",
-      name: "Cardano",
-      icon: "fas fa-chart-line",
-      price: "$1.25",
-      change: "-0.45%",
-    },
-    {
-      symbol: "XRP",
-      name: "Ripple",
-      icon: "fas fa-exchange-alt",
-      price: "$0.85",
-      change: "+3.12%",
-    },
-    {
-      symbol: "SOL",
-      name: "Solana",
-      icon: "fas fa-sun",
-      price: "$102.75",
-      change: "+5.67%",
-    },
-    {
-      symbol: "DOT",
-      name: "Polkadot",
-      icon: "fas fa-circle",
-      price: "$26.80",
-      change: "-1.23%",
-    },
-    {
-      symbol: "DOGE",
-      name: "Dogecoin",
-      icon: "fas fa-dog",
-      price: "$0.15",
-      change: "+8.91%",
-    },
-    {
-      symbol: "AVAX",
-      name: "Avalanche",
-      icon: "fas fa-mountain",
-      price: "$65.30",
-      change: "+4.56%",
-    },
-    {
-      symbol: "MATIC",
-      name: "Polygon",
-      icon: "fas fa-shapes",
-      price: "$1.45",
-      change: "+2.34%",
-    },
-  ];
+  // Fetch initial market data
+  useEffect(() => {
+    const fetchAllPrices = async () => {
+      try {
+        setIsLoading(true);
+        const response = await axios.get('https://api.binance.com/api/v3/ticker/24hr');
+        
+        // Process only USDT pairs
+        const usdtPairs = response.data.filter((item: any) => 
+          item.symbol.endsWith('USDT') && 
+          !item.symbol.includes('UP') && 
+          !item.symbol.includes('DOWN') &&
+          !item.symbol.includes('BEAR') && 
+          !item.symbol.includes('BULL')
+        );
+        
+        // Sort by volume to get most important pairs
+        usdtPairs.sort((a: any, b: any) => parseFloat(b.quoteVolume) - parseFloat(a.quoteVolume));
+        
+        // Take top 100 pairs by volume
+        const topPairs = usdtPairs.slice(0, 100);
+        
+        const formattedData: { [key: string]: CryptoData } = {};
+        
+        topPairs.forEach((item: any) => {
+          const symbol = item.symbol;
+          const baseSymbol = symbol.replace("USDT", "");
+          const isPositive = !item.priceChangePercent.startsWith("-");
+          const changePercent = Math.abs(Number(item.priceChangePercent)).toFixed(2);
+          
+          // Format volume
+          const volumeNum = Number(item.volume);
+          let volumeFormatted = volumeNum.toFixed(0);
+          if (volumeNum >= 1000000000) {
+            volumeFormatted = (volumeNum / 1000000000).toFixed(1) + "B";
+          } else if (volumeNum >= 1000000) {
+            volumeFormatted = (volumeNum / 1000000).toFixed(1) + "M";
+          }
+          
+          formattedData[symbol] = {
+            symbol,
+            name: `${baseSymbol}/USDT`,
+            price: Number(item.lastPrice).toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: Number(item.lastPrice) < 1 ? 6 : 4,
+            }),
+            change: item.priceChange,
+            changePercent: changePercent,
+            volume: item.volume,
+            volumeFormatted: volumeFormatted,
+            isPositive: isPositive,
+          };
+        });
+        
+        setCryptoData(formattedData);
+        setIsLoading(false);
+        
+      } catch (error) {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchAllPrices();
+  }, []);
 
-  const filteredCoins = cryptocurrencies.filter(
-    (coin) =>
-      coin.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      coin.symbol.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Setup WebSocket for real-time updates
+  useEffect(() => {
+    // Create WebSocket connection for all tickers
+    ws.current = new WebSocket('wss://stream.binance.com:9443/ws/!ticker@arr');
+    
+    ws.current.onmessage = (event) => {
+      const data: BinanceTicker[] = JSON.parse(event.data);
+      
+      // Update crypto data with real-time information
+      setCryptoData(prevData => {
+        const newData = {...prevData};
+        
+        data.forEach((ticker) => {
+          if (newData[ticker.s]) {
+            const isPositive = !ticker.P.startsWith("-");
+            const changePercent = Math.abs(Number(ticker.P)).toFixed(2);
+            
+            // Format volume
+            const volumeNum = Number(ticker.v);
+            let volumeFormatted = volumeNum.toFixed(0);
+            if (volumeNum >= 1000000000) {
+              volumeFormatted = (volumeNum / 1000000000).toFixed(1) + "B";
+            } else if (volumeNum >= 1000000) {
+              volumeFormatted = (volumeNum / 1000000).toFixed(1) + "M";
+            }
+            
+            newData[ticker.s] = {
+              ...newData[ticker.s],
+              price: Number(ticker.c).toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: Number(ticker.c) < 1 ? 6 : 4,
+              }),
+              change: ticker.p,
+              changePercent: changePercent,
+              volume: ticker.v,
+              volumeFormatted: volumeFormatted,
+              isPositive: isPositive,
+            };
+          }
+        });
+        
+        return newData;
+      });
+    };
+    
+    return () => {
+      if (ws.current) {
+        ws.current.close();
+      }
+    };
+  }, []);
 
-  if (!isOpen) return null;
+  // Filter and sort cryptocurrencies
+  const filteredCrypto = useMemo(() => {
+    const cryptoArray = Object.values(cryptoData);
+    
+    if (cryptoArray.length === 0) return [];
 
-  const handleCoinSelect = (coin) => {
-    onSelectCoin(coin);
-    onClose();
+    let filtered = cryptoArray;
+
+    // Apply search filter
+    if (searchTerm) {
+      const searchTermLower = searchTerm.toLowerCase();
+      filtered = filtered.filter(crypto => 
+        crypto.name.toLowerCase().includes(searchTermLower) ||
+        crypto.symbol.toLowerCase().includes(searchTermLower)
+      );
+    }
+
+    // Apply tab filters
+    switch (activeTab) {
+      case "Gainers":
+        return filtered
+          .filter((crypto) => crypto.isPositive)
+          .sort((a, b) => Number(b.changePercent) - Number(a.changePercent));
+      case "Losers":
+        return filtered
+          .filter((crypto) => !crypto.isPositive)
+          .sort((a, b) => Number(a.changePercent) - Number(b.changePercent));
+      case "Favorites":
+        return filtered.filter((crypto) =>
+          ["BTCUSDT", "ETHUSDT", "BNBUSDT"].includes(crypto.symbol)
+        ).sort((a, b) => Number(b.volume) - Number(a.volume));
+      default:
+        return filtered.sort((a, b) => Number(b.volume) - Number(a.volume));
+    }
+  }, [cryptoData, searchTerm, activeTab]);
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
   };
 
+  const handleTabClick = (tab: string) => {
+    setActiveTab(tab);
+  };
+
+
+
+
+
+  const handleCoinSelect = (coin) => {
+    onSelectCoin(coin.symbol);
+    onClose();
+  };
+  if (!isOpen) return null;
   const modalContent = (
     <div className="modal-overlay" onClick={onClose}>
       <div
@@ -127,62 +235,86 @@ const CoinListModal = ({ isOpen, onClose, onSelectCoin }) => {
           </div>
         </div>
 
-        {/* Coin List */}
-        <div className="coin-list">
-          {filteredCoins.length > 0 ? (
-            filteredCoins.map((coin) => (
-              <div
-                key={coin.symbol}
-                className="coin-item"
-                onClick={() => handleCoinSelect(coin)}
-              >
-                <div className="coin-info">
-                  <div className={`coin-icon ${coin.symbol.toLowerCase()}`}>
-                    <i className={coin.icon}></i>
-                  </div>
-                  <div className="coin-details">
-                    <div className="coin-symbol">{coin.symbol}</div>
-                    <div className="coin-name">{coin.name}</div>
-                  </div>
-                </div>
-                <div className="coin-price-info">
-                  <div className="coin-price">{coin.price}</div>
-                  <div
-                    className={`coin-change ${
-                      coin.change.startsWith("+") ? "positive" : "negative"
-                    }`}
-                  >
-                    {coin.change}
-                  </div>
-                </div>
-              </div>
-            ))
-          ) : (
-            <div className="no-results">
-              <i className="fas fa-search"></i>
-              <p>No cryptocurrencies found</p>
-            </div>
-          )}
-        </div>
-
-        {/* Popular Cryptocurrencies Quick Select */}
-        <div className="quick-select-section">
-          <div className="section-label">Popular</div>
-          <div className="quick-select-chips">
-            <button className="chip" onClick={() => setSearchTerm("Bitcoin")}>
-              BTC
-            </button>
-            <button className="chip" onClick={() => setSearchTerm("Ethereum")}>
-              ETH
-            </button>
-            <button className="chip" onClick={() => setSearchTerm("Binance")}>
-              BNB
-            </button>
-            <button className="chip" onClick={() => setSearchTerm("Solana")}>
-              SOL
-            </button>
+        {/* Loading State */}
+        {isLoading && (
+          <div className="loading-state">
+            <i className="fas fa-spinner fa-spin"></i>
+            <p>Loading cryptocurrency data...</p>
           </div>
-        </div>
+        )}
+
+     
+
+        {/* Coin List */}
+        {!isLoading  && (
+          <>
+            <div className="coin-list">
+              {filteredCrypto.length > 0 ? (
+                filteredCrypto.map((coin) => (
+                  <div
+                    key={coin.symbol}
+                    className="coin-item"
+                    onClick={() => handleCoinSelect(coin)}
+                  >
+                    <div className="coin-info">
+                      <div className={`coin-icon ${coin.name.toLowerCase()}`}>
+                        <img
+                        src={`https://images.weserv.nl/?url=https://bin.bnbstatic.com/static/assets/logos/${
+                          coin.name.split("/")[0]
+                        }.png`}
+                        style={{ width: 40, height: 40 }}
+                        alt={coin.name.split("/")[0]}
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = `https://via.placeholder.com/40/3a3a3a/ffffff?text=${coin.name.split("/")[0].charAt(0)}`;
+                        }}
+                      />
+                        <i className="fas fa-coins" style={{display: 'none'}}></i>
+                      </div>
+                      <div className="coin-details">
+                        <div className="coin-symbol">{coin.symbol}</div>
+                        <div className="coin-name">{coin.name}</div>
+                      </div>
+                    </div>
+                    <div className="coin-price-info">
+                      <div className="coin-price">${coin.price}</div>
+                      <div
+                        className={`coin-change ${
+                          coin.isPositive ? "positive" : "negative"
+                        }`}
+                      >
+                        {coin.change}
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="no-results">
+                  <i className="fas fa-search"></i>
+                  <p>No cryptocurrencies found</p>
+                </div>
+              )}
+            </div>
+
+            {/* Popular Cryptocurrencies Quick Select */}
+            <div className="quick-select-section">
+              <div className="section-label">Popular</div>
+              <div className="quick-select-chips">
+                <button className="chip" onClick={() => setSearchTerm("BTC")}>
+                  BTC
+                </button>
+                <button className="chip" onClick={() => setSearchTerm("ETH")}>
+                  ETH
+                </button>
+                <button className="chip" onClick={() => setSearchTerm("BNB")}>
+                  BNB
+                </button>
+                <button className="chip" onClick={() => setSearchTerm("SOL")}>
+                  SOL
+                </button>
+              </div>
+            </div>
+          </>
+        )}
       </div>
 
       <style>{`
@@ -286,6 +418,27 @@ const CoinListModal = ({ isOpen, onClose, onSelectCoin }) => {
           color: #FFFFFF;
         }
         
+        /* Loading State */
+        .loading-state, .error-state {
+          padding: 40px 20px;
+          text-align: center;
+          color: #AAAAAA;
+        }
+        
+        .loading-state i, .error-state i {
+          font-size: 32px;
+          margin-bottom: 10px;
+        }
+        
+        .error-state button {
+          margin-top: 10px;
+          padding: 8px 16px;
+          background-color: #F3BA2F;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+        }
+        
         /* Coin List */
         .coin-list {
           flex: 1;
@@ -316,35 +469,18 @@ const CoinListModal = ({ isOpen, onClose, onSelectCoin }) => {
           width: 40px;
           height: 40px;
           border-radius: 50%;
-          background-color: #F3BA2F;
+          background-color: #3a3a3a;
           display: flex;
           justify-content: center;
           align-items: center;
           font-size: 18px;
+          overflow: hidden;
         }
         
-        .coin-icon.eth {
-          background-color: #627EEA;
-        }
-        
-        .coin-icon.bnb {
-          background-color: #F3BA2F;
-        }
-        
-        .coin-icon.ada {
-          background-color: #0033AD;
-        }
-        
-        .coin-icon.xrp {
-          background-color: #23292F;
-        }
-        
-        .coin-icon.sol {
-          background-color: #9945FF;
-        }
-        
-        .coin-icon.doge {
-          background-color: #C2A633;
+        .coin-icon img {
+          width: 24px;
+          height: 24px;
+          object-fit: contain;
         }
         
         .coin-details {

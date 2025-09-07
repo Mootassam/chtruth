@@ -322,7 +322,7 @@ function Home() {
           const displayName = crypto.symbol.replace("USDT", "/USDT");
           
           return (
-            <div key={crypto.symbol} className="market-item">
+            <Link   to={`/market/detail/${crypto.symbol}`} key={crypto.symbol} className="market-item remove_blue">
               <div className="crypto-info">
                 <div 
                   className="crypto-icon" 
@@ -359,7 +359,7 @@ function Home() {
                   style={{ color: data ? (data.isPositive ? "#00C076" : "#FF6838") : "#AAAAAA" }} 
                 />
               </div>
-            </div>
+            </Link>
           );
         })}
       </div>
