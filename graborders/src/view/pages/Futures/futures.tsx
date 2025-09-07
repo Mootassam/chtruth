@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { init } from 'klinecharts';
 import axios from "axios";
+import CoinListModal from "src/shared/modal/CoinListModal";
+import FuturesModal from "src/shared/modal/FuturesModal";
 
 // Interface for Binance trade data
 interface BinanceTrade {
@@ -861,6 +863,19 @@ function Futures() {
         </div>
       )}
 
+        {/* Futures Modal */}
+      <FuturesModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        direction={tradeDirection}
+      />
+
+      <CoinListModal
+        isOpen={isCoinModalOpen}
+        onClose={handleCloseCoinModal}
+        onSelectCoin={handleSelectCoin}
+      />
+
       <style>{`
         * {
           margin: 0;
@@ -1006,13 +1021,13 @@ function Futures() {
         }
         
         .action-button {
-          flex: 1;
-          padding: 13px;
-          border: none;
-          border-radius: 8px;
-          font-size: 16px;
-          font-weight: bold;
-          cursor: pointer;
+          // flex: 1;
+          // padding: 13px;
+          // border: none;
+          // border-radius: 8px;
+          // font-size: 16px;
+          // font-weight: bold;
+          // cursor: pointer;
         }
         
         .buy-button {
