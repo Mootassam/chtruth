@@ -342,6 +342,7 @@ const Market: React.FC = () => {
           align-items: center;
           padding: 15px 0;
           border-bottom: 1px solid #2A2A2A;
+          with:100%
         }
         
         .crypto-info-placeholder {

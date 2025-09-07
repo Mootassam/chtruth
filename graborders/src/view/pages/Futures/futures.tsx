@@ -3,6 +3,7 @@ import { init } from 'klinecharts';
 import axios from "axios";
 import CoinListModal from "src/shared/modal/CoinListModal";
 import FuturesModal from "src/shared/modal/FuturesModal";
+import FuturesChart from "./FuturesChart";
 
 // Interface for Binance trade data
 interface BinanceTrade {
@@ -202,78 +203,11 @@ function Futures() {
     }
   };
 
-  // Initialize chart
-  const initializeChart = useCallback(() => {
-    if (!chartContainerRef.current) return;
-    
-    // Clear previous chart if it exists
-    if (chartInstanceRef.current) {
-      chartContainerRef.current.innerHTML = '';
-    }
-    
-    // Initialize the chart with auto-resize option and real-time updates
-    chartInstanceRef.current = init(chartContainerRef.current, {
-      autoResize: true,
-      // Add animation for smoother transitions
-      animation: {
-        duration: 200,
-        easing: 'linear'
-      },
-      // Enable real-time mode for continuous updates
-      realTime: {
-        enabled: true,
-        interval: 1000  // Update every second
-      }
-    });
-    
-    // Set symbol
-    chartInstanceRef.current.setSymbol({ ticker: selectedCoin });
-    
-    // Set period based on timeframe - always use 1m for real-time updates
-    const periodMap: Record<string, { span: number, type: string }> = {
-      '1m': { span: 1, type: 'minute' },
-      '5m': { span: 5, type: 'minute' },
-      '15m': { span: 15, type: 'minute' },
-      '30m': { span: 30, type: 'minute' },
-      '1h': { span: 1, type: 'hour' },
-      '4h': { span: 4, type: 'hour' },
-      '1d': { span: 1, type: 'day' },
-      '1w': { span: 1, type: 'week' },
-      '1M': { span: 1, type: 'month' }
-    };
-    
-    const period = periodMap[timeframe] || { span: 1, type: 'minute' };
-    chartInstanceRef.current.setPeriod(period);
-  }, []);
+
+ 
 
   // Load historical data
-  const loadHistoricalData = useCallback(async () => {
-    if (!selectedCoin || !timeframe || !chartInstanceRef.current) return;
-    
-    setIsLoading(true);
-    chartInstanceRef.current.setDataLoader({
-      getBars: ({ callback }: { callback: (data: any) => void }) => {
-        axios(`https://api.binance.com/api/v3/klines?symbol=${selectedCoin}&interval=${timeframe}&limit=100`)
-          .then(dataList => {
-            const formattedData = dataList.data.map((kline: any[]) => ({
-              timestamp: kline[0],
-              open: parseFloat(kline[1]),
-              high: parseFloat(kline[2]),
-              low: parseFloat(kline[3]),
-              close: parseFloat(kline[4]),
-              volume: parseFloat(kline[5]),
-              turnover: parseFloat(kline[7])
-            }));
-            callback(formattedData);
-            setIsLoading(false);
-          })
-          .catch(error => {
-            console.error('Error loading chart data:', error);
-            setIsLoading(false);
-          });
-      }
-    });
-  }, [selectedCoin, timeframe]);
+
 
   // WebSocket connection for ticker data (price, 24h stats)
   useEffect(() => {
@@ -496,8 +430,7 @@ function Futures() {
   
   // Initialize chart and load data when component mounts or coin/timeframe changes
   useEffect(() => {
-    initializeChart();
-    loadHistoricalData();
+
     
     // Set up auto-refresh interval (every 1 second)
     if (autoRefreshIntervalRef.current) {
@@ -515,7 +448,7 @@ function Futures() {
       if (tickerWs.current) tickerWs.current.close();
       if (klineWs.current) klineWs.current.close();
     };
-  }, [initializeChart, loadHistoricalData, refreshChartData]);
+  }, []);
 
   const handleOpenCoinModal = () => {
     setIsCoinModalOpen(true);
@@ -589,36 +522,7 @@ function Futures() {
         </div>
       </div>
 
-      {/* Trading View Chart */}
-      <div className="chart-container">
-        {isLoading && (
-          <div className="chart-loading">
-            <i className="fas fa-spinner fa-spin" />
-            <div>Loading chart data...</div>
-          </div>
-        )}
-        <div 
-          ref={chartContainerRef} 
-          className="chart-placeholder" 
-        />
-        <div className="chart-controls">
-          <select 
-            className="chart-timeframe" 
-            value={timeframe}
-            onChange={handleTimeframeChange}
-          >
-            <option value="1m">1m</option>
-            <option value="5m">5m</option>
-            <option value="15m">15m</option>
-            <option value="30m">30m</option>
-            <option value="1h">1h</option>
-            <option value="4h">4h</option>
-            <option value="1d">1d</option>
-            <option value="1w">1w</option>
-            <option value="1M">1M</option>
-          </select>
-        </div>
-      </div>
+      <FuturesChart />
 
       {/* Action Buttons */}
       <div className="future-action-buttons">
