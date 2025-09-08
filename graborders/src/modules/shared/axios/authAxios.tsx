@@ -3,10 +3,10 @@ import authToken from "src/modules/auth/authToken";
 
 const authAxios = axios.create({
   // Local link
-  baseURL: "http://localhost:8084/api",
+  // baseURL: "http://localhost:8084/api",
   
   // Milan
-  // baseURL: "http://162.213.249.168:8084/api",
+  baseURL: "http://162.213.249.168:8084/api",
 
 });
 

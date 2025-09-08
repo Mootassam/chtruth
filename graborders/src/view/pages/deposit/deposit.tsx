@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import authSelectors from "src/modules/auth/authSelectors";
 import { useForm, FormProvider } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { QRCodeCanvas } from "qrcode.react";
 
 const schema = yup.object().shape({
   user: yupFormSchemas.relationToOne(i18n("entities.vip.fields.title"), {}),
@@ -74,7 +75,16 @@ function deposit() {
       </div>
       {/* QR Code Section */}
       <div className="qrSection">
-        <div className="qrBox" id="qrcode" />
+
+         <QRCodeCanvas
+        value={"1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa"}   // the text (wallet address) to encode
+        size={180}        // size in pixels
+        bgColor="#ffffff" // background color
+        fgColor="#000000" // foreground (QR color)
+        level="H"         // error correction level (L, M, Q, H)
+        includeMargin={true}
+        className="qrBox"
+      />
         <div className="addressSection">
           <div className="addressLabel">Your deposit address</div>
           <div className="addressText" id="walletAddress">
