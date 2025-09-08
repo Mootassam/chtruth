@@ -10,6 +10,7 @@ interface BinanceTicker {
   P: string; // Price change percent
   v: string; // Total traded base asset volume
   p: string; // Price change
+  q: string; // Quote asset volume (USDT volume)
 }
 
 // Interface for cryptocurrency data
@@ -22,6 +23,7 @@ interface CryptoData {
   volume: string;
   volumeFormatted: string;
   isPositive: boolean;
+  quoteVolume: number; // For sorting by market value
 }
 
 // Main Market Component
@@ -31,6 +33,12 @@ const Market: React.FC = () => {
   const [activeTab, setActiveTab] = useState("All");
   const [isLoading, setIsLoading] = useState(true);
   const ws = useRef<WebSocket | null>(null);
+
+  // Favorite coins list - including the requested ones
+  const favoriteCoins = useMemo(() => [
+    "BTCUSDT", "ETHUSDT", "BNBUSDT", "LTCUSDT", "SOLUSDT", 
+    "XRPUSDT", "SUIUSDT", "DOGEUSDT", "SHIBUSDT"
+  ], []);
 
   // Fetch initial market data
   useEffect(() => {
@@ -48,11 +56,11 @@ const Market: React.FC = () => {
           !item.symbol.includes('BULL')
         );
         
-        // Sort by volume to get most important pairs
+        // Sort by quoteVolume (market value) to get most valuable pairs
         usdtPairs.sort((a: any, b: any) => parseFloat(b.quoteVolume) - parseFloat(a.quoteVolume));
         
-        // Take top 100 pairs by volume
-        const topPairs = usdtPairs.slice(0, 100);
+        // Take top 200 pairs by market value
+        const topPairs = usdtPairs.slice(0, 200);
         
         const formattedData: { [key: string]: CryptoData } = {};
         
@@ -83,6 +91,7 @@ const Market: React.FC = () => {
             volume: item.volume,
             volumeFormatted: volumeFormatted,
             isPositive: isPositive,
+            quoteVolume: parseFloat(item.quoteVolume), // For sorting by market value
           };
         });
         
@@ -90,6 +99,7 @@ const Market: React.FC = () => {
         setIsLoading(false);
         
       } catch (error) {
+        console.error("Error fetching market data:", error);
         setIsLoading(false);
       }
     };
@@ -134,12 +144,17 @@ const Market: React.FC = () => {
               volume: ticker.v,
               volumeFormatted: volumeFormatted,
               isPositive: isPositive,
+              quoteVolume: parseFloat(ticker.q), // Update quote volume for sorting
             };
           }
         });
         
         return newData;
       });
+    };
+    
+    ws.current.onerror = (error) => {
+      console.error("WebSocket error:", error);
     };
     
     return () => {
@@ -177,13 +192,14 @@ const Market: React.FC = () => {
           .filter((crypto) => !crypto.isPositive)
           .sort((a, b) => Number(a.changePercent) - Number(b.changePercent));
       case "Favorites":
-        return filtered.filter((crypto) =>
-          ["BTCUSDT", "ETHUSDT", "BNBUSDT"].includes(crypto.symbol)
-        ).sort((a, b) => Number(b.volume) - Number(a.volume));
+        return filtered
+          .filter((crypto) => favoriteCoins.includes(crypto.symbol))
+          .sort((a, b) => favoriteCoins.indexOf(a.symbol) - favoriteCoins.indexOf(b.symbol));
       default:
-        return filtered.sort((a, b) => Number(b.volume) - Number(a.volume));
+        // Sort by market value (quoteVolume) for All tab
+        return filtered.sort((a, b) => b.quoteVolume - a.quoteVolume);
     }
-  }, [cryptoData, searchTerm, activeTab]);
+  }, [cryptoData, searchTerm, activeTab, favoriteCoins]);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);

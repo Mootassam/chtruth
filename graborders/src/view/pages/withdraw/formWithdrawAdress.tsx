@@ -9,7 +9,7 @@ import authSelectors from "src/modules/auth/authSelectors";
 import { useForm, FormProvider } from "react-hook-form";
 
 import { yupResolver } from "@hookform/resolvers/yup";
-import FieldFormItem from "src/shared/form/fieldFormItem";
+import FieldFormItem from "src/shared/form/FieldFormItem";
 import actions from "src/modules/user/form/userFormActions";
 const currencyType = [
   { icon: "fab fa-bitcoin", label: "BTC (Bitcoin)", id: "btc" },
@@ -32,11 +32,12 @@ function formWithdrawAdress() {
   const dispatch = useDispatch();
   const currentUser = useSelector(authSelectors.selectCurrentUser);
 
+
   const [initialValues] = useState(() => 
   {
     return {
-      currency: selected,
-      address: "",
+      currency: id,
+      address: currentUser &&  currentUser.wallet && currentUser?.wallet[id]?.address ||  "",
       password: "",
     };
   });
@@ -48,7 +49,7 @@ function formWithdrawAdress() {
   });
 
   const onSubmit = (values) => {
-    
+    values.currency = id
     dispatch(actions.UpdateWalletAdress(values));
   };
 

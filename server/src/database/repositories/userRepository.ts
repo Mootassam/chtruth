@@ -153,17 +153,29 @@ static async updateWalletAddress(value, options: IRepositoryOptions) {
   if (!user || user.withdrawPassword !== password) {
     throw new Error405('Password not matching');
   }
+console.log('====================================');
+console.log(value);
+console.log('====================================');
+  // Ensure supported currency
+  const allowedCurrencies = ['tether', 'btc', 'eth'];
+  if (!allowedCurrencies.includes(currency)) {
+    throw new Error405('Unsupported currency');
+  }
 
   // Define the update path based on the currency
   const updatePath = `wallet.${currency}.address`;
 
-  // Update the specific wallet address
-  await User(options.database).updateOne(
-    { _id: currentUser.id },
-    { $set: { [updatePath]: address } },
-    options
-  );
+  // Update and return the updated user
+const updatedUser = await User(options.database).findByIdAndUpdate(
+  currentUser.id,
+  { $set: { [updatePath]: address } },
+  { new: true, useFindAndModify: false } // 👈 here
+);
+
+
+  return updatedUser;
 }
+
 
 
   static async generateRandomCode() {
