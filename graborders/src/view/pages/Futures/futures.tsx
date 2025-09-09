@@ -512,6 +512,7 @@ function Futures() {
                       className={`order-value ${
                         (order.pnl || 0) >= 0 ? "buy" : "sell"
                       }`}
+                      style={{background:"none"}}
                     >
                       ${order.pnl?.toFixed(2)}
                     </span>
@@ -626,137 +627,74 @@ function Futures() {
               </div>
 
               <div className="order-detail-section">
-                <h3>Order Information</h3>
-                <div className="detail-row">
-                  <span className="detail-label">Order Type:</span>
+  
+            
+                 <div className="detail-row">
+                  <span className="detail-label">Futures Amount:</span>
                   <span className="detail-value">
-                    {selectedOrder.orderType}
+                   300 USDT
                   </span>
                 </div>
                 <div className="detail-row">
-                  <span className="detail-label">Investment:</span>
+                  <span className="detail-label">Contract Duration:</span>
                   <span className="detail-value">
-                    ${selectedOrder.investment.toFixed(2)}
+                   3 Minutes
+                  </span>
+                </div>
+             
+                <div className="detail-row">
+                  <span className="detail-label">Futures Status:</span>
+                  <span className="detail-value">
+                    Commpleted
                   </span>
                 </div>
                 <div className="detail-row">
+                  <span className="detail-label">Open Position Pirce:</span>
+                  <span className="detail-value">
+                   115983
+                  </span>
+                </div>
+
+        <div className="detail-row">
+                  <span className="detail-label">Open Position Time:</span>
+                  <span className="detail-value">
+                   2025/08/22 07:47:23
+                  </span>
+                </div>
+                 <div className="detail-row">
+                  <span className="detail-label">Close Position Pirce:</span>
+                  <span className="detail-value">
+                   115983.62
+                  </span>
+                </div>
+                    <div className="detail-row">
+                  <span className="detail-label">Close Position Time:</span>
+                  <span className="detail-value">
+                   2025/08/22 /07:50:23
+                  </span>
+                </div>
+
+                   <div className="detail-row">
+                  <span className="detail-label">Profit And Loss Amount:</span>
+                  <span className="detail-value">
+                  -300
+                  </span>
+                </div>
+
+                   <div className="detail-row">
                   <span className="detail-label">Leverage:</span>
                   <span className="detail-value">
-                    {selectedOrder.leverage}x
+                    10X
                   </span>
                 </div>
-                <div className="detail-row">
-                  <span className="detail-label">Margin:</span>
-                  <span className="detail-value">
-                    ${selectedOrder.margin.toFixed(2)}
-                  </span>
-                </div>
-                <div className="detail-row">
-                  <span className="detail-label">Fee:</span>
-                  <span className="detail-value">
-                    ${selectedOrder.fee.toFixed(2)}
-                  </span>
-                </div>
+
+
+
               </div>
 
-              <div className="order-detail-section">
-                <h3>Price Information</h3>
-                <div className="detail-row">
-                  <span className="detail-label">Open Price:</span>
-                  <span className="detail-value">
-                    {formatNumber(
-                      selectedOrder.openPrice.toString(),
-                      selectedOrder.openPrice > 1000 ? 0 : 2
-                    )}
-                  </span>
-                </div>
-                {selectedOrder.currentPrice && (
-                  <div className="detail-row">
-                    <span className="detail-label">Current Price:</span>
-                    <span className="detail-value">
-                      {formatNumber(
-                        selectedOrder.currentPrice.toString(),
-                        selectedOrder.openPrice > 1000 ? 0 : 2
-                      )}
-                    </span>
-                  </div>
-                )}
-                {selectedOrder.closePrice && (
-                  <div className="detail-row">
-                    <span className="detail-label">Close Price:</span>
-                    <span className="detail-value">
-                      {formatNumber(
-                        selectedOrder.closePrice.toString(),
-                        selectedOrder.openPrice > 1000 ? 0 : 2
-                      )}
-                    </span>
-                  </div>
-                )}
-                <div className="detail-row">
-                  <span className="detail-label">P/L:</span>
-                  <span
-                    className={`detail-value ${
-                      (selectedOrder.pnl || 0) >= 0 ? "profit" : "loss"
-                    }`}
-                  >
-                    ${selectedOrder.pnl?.toFixed(2)}
-                  </span>
-                </div>
-              </div>
-
-              <div className="order-detail-section">
-                <h3>Time Information</h3>
-                <div className="detail-row">
-                  <span className="detail-label">Open Time:</span>
-                  <span className="detail-value">{selectedOrder.openTime}</span>
-                </div>
-                {selectedOrder.closeTime && (
-                  <div className="detail-row">
-                    <span className="detail-label">Close Time:</span>
-                    <span className="detail-value">
-                      {selectedOrder.closeTime}
-                    </span>
-                  </div>
-                )}
-              </div>
-
-              {selectedOrder.status === "Open" && (
-                <div className="order-detail-section">
-                  <h3>Risk Management</h3>
-                  {selectedOrder.stopLoss && (
-                    <div className="detail-row">
-                      <span className="detail-label">Stop Loss:</span>
-                      <span className="detail-value">
-                        {formatNumber(
-                          selectedOrder.stopLoss.toString(),
-                          selectedOrder.openPrice > 1000 ? 0 : 2
-                        )}
-                      </span>
-                    </div>
-                  )}
-                  {selectedOrder.takeProfit && (
-                    <div className="detail-row">
-                      <span className="detail-label">Take Profit:</span>
-                      <span className="detail-value">
-                        {formatNumber(
-                          selectedOrder.takeProfit.toString(),
-                          selectedOrder.openPrice > 1000 ? 0 : 2
-                        )}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              )}
             </div>
             <div className="modal-footer">
-              {selectedOrder.status === "Open" && (
-                <button
-                  className="close-order-button"
-                  onClick={() => handleCloseOrder(selectedOrder.id)}
-                >
-                  Close Order
-                </button>
-              )}
+            
               <button className="modal-button" onClick={handleCloseOrderModal}>
                 Done
               </button>
@@ -794,6 +732,12 @@ function Futures() {
           color: #FFFFFF;
           min-height: 100vh;
         }
+
+        .modal-content {
+  max-height: 90vh;
+  overflow-y: scroll;  /* allow scroll */
+  scrollbar-width: none; /* Firefox */
+}
         
         /* Header Section */
         .header {

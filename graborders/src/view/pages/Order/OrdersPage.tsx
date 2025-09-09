@@ -230,19 +230,6 @@ function OrdersPage() {
                 </div>
                 
                 <div className="detail-row">
-                  <span className="label">Filled</span>
-                  <div className="filled-container">
-                    <span className="filled-percent">{order.filled}</span>
-                    <div className="progress-bar">
-                      <div 
-                        className="progress-fill"
-                        style={{ width: order.filled }}
-                      ></div>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="detail-row">
                   <span className="label">Total</span>
                   <span className="value total">{formatNumber(order.total)} USDT</span>
                 </div>

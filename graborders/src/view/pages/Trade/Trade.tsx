@@ -545,10 +545,7 @@ function Trade() {
                       </span>
                     </div>
 
-                    <div className="order-detail">
-                      <span className="detail-label">Filled</span>
-                      <span className="order-filled">{order.filled}</span>
-                    </div>
+                  
 
                     <div className="order-detail">
                       <span className="detail-label">Price</span>
