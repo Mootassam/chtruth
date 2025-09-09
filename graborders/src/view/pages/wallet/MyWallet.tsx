@@ -82,70 +82,57 @@ function MyWallet() {
       </div>
     </div>
     <div className="wallet-asset-list">
-      {/* Bitcoin */}
-      <div className="wallet-asset-item" role="button">
-        <div className="wallet-asset-info">
-          <div className="wallet-asset-icon wallet-btc">
-            <i className="fab fa-btc" />
-          </div>
-          <div className="wallet-asset-details">
-            <div className="wallet-asset-name">Bitcoin</div>
-            <div className="wallet-asset-amount">0 BTC</div>
-          </div>
-        </div>
-        <div className="wallet-asset-value">
-          <div className="wallet-value-amount">$0</div>
-          <div className="wallet-value-change">+1.46%</div>
-        </div>
-      </div>
-      {/* Ethereum */}
-      <div className="wallet-asset-item" role="button">
-        <div className="wallet-asset-info">
-          <div className="wallet-asset-icon wallet-eth">
-            <i className="fab fa-ethereum" />
-          </div>
-          <div className="wallet-asset-details">
-            <div className="wallet-asset-name">Ethereum</div>
-            <div className="wallet-asset-amount">0 ETH</div>
-          </div>
-        </div>
-        <div className="wallet-asset-value">
-          <div className="wallet-value-amount">$0</div>
-          <div className="wallet-value-change">+2.31%</div>
-        </div>
-      </div>
-      {/* BNB */}
-      <div className="wallet-asset-item" role="button">
-        <div className="wallet-asset-info">
-          <div className="wallet-asset-icon wallet-bnb">
-            <i className="fas fa-coins" />
-          </div>
-          <div className="wallet-asset-details">
-            <div className="wallet-asset-name">BNB</div>
-            <div className="wallet-asset-amount">0 BNB</div>
-          </div>
-        </div>
-        <div className="wallet-asset-value">
-          <div className="wallet-value-amount">$0</div>
-          <div className="wallet-value-change">+0.16%</div>
-        </div>
-      </div>
-      {/* USDC */}
-      <div className="wallet-asset-item" role="button">
-        <div className="wallet-asset-info">
-          <div className="wallet-asset-icon wallet-usdc">
-            <i className="fas fa-dollar-sign" />
-          </div>
-          <div className="wallet-asset-details">
-            <div className="wallet-asset-name">USDC</div>
-            <div className="wallet-asset-amount">0 USDC</div>
-          </div>
-        </div>
-        <div className="wallet-asset-value">
-          <div className="wallet-value-amount">$0</div>
-          <div className="wallet-value-change">0.00%</div>
-        </div>
-      </div>
+   {/* Bitcoin */}
+<div className="wallet-asset-item" role="button">
+  <div className="wallet-asset-info">
+    <div className="wallet-asset-icon wallet-btc">
+      <i className="fab fa-btc" />
+    </div>
+    <div className="wallet-asset-details">
+      <div className="wallet-asset-name">Bitcoin</div>
+      <div className="wallet-asset-amount">0 BTC</div>
+    </div>
+  </div>
+  <div className="wallet-asset-value">
+    <div className="wallet-value-amount">$0</div>
+    <div className="wallet-value-change">+1.46%</div>
+  </div>
+</div>
+
+{/* Ethereum */}
+<div className="wallet-asset-item" role="button">
+  <div className="wallet-asset-info">
+    <div className="wallet-asset-icon wallet-eth">
+      <i className="fab fa-ethereum" />
+    </div>
+    <div className="wallet-asset-details">
+      <div className="wallet-asset-name">Ethereum</div>
+      <div className="wallet-asset-amount">0 ETH</div>
+    </div>
+  </div>
+  <div className="wallet-asset-value">
+    <div className="wallet-value-amount">$0</div>
+    <div className="wallet-value-change">+2.31%</div>
+  </div>
+</div>
+
+{/* TRON (TRC20) */}
+<div className="wallet-asset-item" role="button">
+  <div className="wallet-asset-info">
+    <div className="wallet-asset-icon wallet-trx">
+      <i className="fab fa-bolt" /> {/* or use a Tron-specific icon */}
+    </div>
+    <div className="wallet-asset-details">
+      <div className="wallet-asset-name">TRON (TRC20)</div>
+      <div className="wallet-asset-amount">0 TRX</div>
+    </div>
+  </div>
+  <div className="wallet-asset-value">
+    <div className="wallet-value-amount">$0</div>
+    <div className="wallet-value-change">+0.85%</div>
+  </div>
+</div>
+
     </div>
   </div>
 
