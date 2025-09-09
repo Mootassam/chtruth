@@ -566,6 +566,7 @@ function Conversion() {
             background-position: 468px 0;
           }
         }
+
         
         .shimmer {
           animation-duration: 1.5s;
@@ -601,6 +602,18 @@ function Conversion() {
         .currency-item-price-placeholder {
           text-align: right;
         }
+
+
+        
+        .currency-list {
+  max-height: 400px;       /* or whatever fits your modal */
+  overflow-y: auto;        /* allow vertical scroll */
+  scrollbar-width: none;   /* Firefox */
+}
+
+.currency-list::-webkit-scrollbar {
+  display: none;           /* Chrome, Safari, Edge */
+}
         
         .placeholder-line {
           border-radius: 4px;
@@ -813,7 +826,6 @@ function Conversion() {
         
         .modal-content {
             background-color: #1A1A1A;
-            width: 90%;
             max-width: 400px;
             border-radius: 16px;
             padding: 20px;
