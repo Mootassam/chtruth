@@ -1,6 +1,35 @@
-import React from 'react'
+import React ,{useState} from 'react'
 import {Link} from 'react-router-dom'
 function MyWallet() {
+    const [activeItem, setActiveItem] = useState<string>("/deposit");
+  
+    const quickActions = [
+    {
+      path: "/deposit",
+      icon: "fas fa-wallet",
+      name: "Deposit",
+    },
+    {
+      path: "/withdraw",
+      icon: "fas fa-money-bill-wave",
+      name: "Withdraw",
+    },
+    {
+      path: "/history",
+      icon: "fas fa-history",
+      name: "History",
+    },
+    {
+      path: "/conversion",
+      icon: "fas fa-exchange-alt action-icon",
+      name: "Convert",
+    },
+    {
+      path: "/stacking",
+      icon: "fas fa-coins action-icon",
+      name: "Staking",
+    },
+  ];
   return (
 <div className="wallet-container">
   {/* Header Section */}
@@ -18,10 +47,32 @@ function MyWallet() {
           </div>
     <div className="wallet-total-balance">
       <div className="wallet-balance-label">Total Portfolio Value</div>
-      <div className="wallet-balance-amount">$11,286.39</div>
-      <div className="wallet-balance-change">+$172.68 (1.53%) Today</div>
+      <div className="wallet-balance-amount">$0</div>
+      <div className="wallet-balance-change">+$0 (0%) Today</div>
     </div>
   </div>
+
+        {/* Quick Action Buttons */}
+        <div className="quick-actions" style={{paddingTop:0}}>
+          {quickActions.map((item) => (
+            <Link
+              to={item.path}
+              className="action-btn remove_blue"
+              role="button"
+              aria-label="Deposit cryptocurrency"
+            
+            >
+              <div
+                className={`action-circle ${
+                  activeItem === item.path ? "buy" : "other"
+                }`}
+              >
+                <i className={`${item.icon} action-icon`} aria-hidden="true" />
+              </div>
+              <span className="action-text">{item.name}</span>
+            </Link>
+          ))}
+        </div>
   {/* Assets Section */}
   <div className="wallet-assets-section">
     <div className="wallet-section-header">
@@ -39,11 +90,11 @@ function MyWallet() {
           </div>
           <div className="wallet-asset-details">
             <div className="wallet-asset-name">Bitcoin</div>
-            <div className="wallet-asset-amount">0.1254 BTC</div>
+            <div className="wallet-asset-amount">0 BTC</div>
           </div>
         </div>
         <div className="wallet-asset-value">
-          <div className="wallet-value-amount">$6,542.36</div>
+          <div className="wallet-value-amount">$0</div>
           <div className="wallet-value-change">+1.46%</div>
         </div>
       </div>
@@ -55,11 +106,11 @@ function MyWallet() {
           </div>
           <div className="wallet-asset-details">
             <div className="wallet-asset-name">Ethereum</div>
-            <div className="wallet-asset-amount">3.456 ETH</div>
+            <div className="wallet-asset-amount">0 ETH</div>
           </div>
         </div>
         <div className="wallet-asset-value">
-          <div className="wallet-value-amount">$3,825.75</div>
+          <div className="wallet-value-amount">$0</div>
           <div className="wallet-value-change">+2.31%</div>
         </div>
       </div>
@@ -71,11 +122,11 @@ function MyWallet() {
           </div>
           <div className="wallet-asset-details">
             <div className="wallet-asset-name">BNB</div>
-            <div className="wallet-asset-amount">12.56 BNB</div>
+            <div className="wallet-asset-amount">0 BNB</div>
           </div>
         </div>
         <div className="wallet-asset-value">
-          <div className="wallet-value-amount">$851.95</div>
+          <div className="wallet-value-amount">$0</div>
           <div className="wallet-value-change">+0.16%</div>
         </div>
       </div>
@@ -87,94 +138,18 @@ function MyWallet() {
           </div>
           <div className="wallet-asset-details">
             <div className="wallet-asset-name">USDC</div>
-            <div className="wallet-asset-amount">1,065.42 USDC</div>
+            <div className="wallet-asset-amount">0 USDC</div>
           </div>
         </div>
         <div className="wallet-asset-value">
-          <div className="wallet-value-amount">$1,065.42</div>
+          <div className="wallet-value-amount">$0</div>
           <div className="wallet-value-change">0.00%</div>
         </div>
       </div>
     </div>
   </div>
-  {/* Transactions Section */}
-  <div className="wallet-transactions-section">
-    <div className="wallet-section-header">
-      <div className="wallet-section-title">Recent Transactions</div>
-      <div className="wallet-see-all" role="button">
-        View All
-      </div>
-    </div>
-    <div className="wallet-transaction-list">
-      {/* Transaction 1 */}
-      <div className="wallet-transaction-item" role="button">
-        <div className="wallet-transaction-icon wallet-send">
-          <i className="fas fa-arrow-up" />
-        </div>
-        <div className="wallet-transaction-details">
-          <div className="wallet-transaction-type">Sent Bitcoin</div>
-          <div className="wallet-transaction-date">Today, 10:23 AM</div>
-        </div>
-        <div className="wallet-transaction-amount">-0.025 BTC</div>
-      </div>
-      {/* Transaction 2 */}
-      <div className="wallet-transaction-item" role="button">
-        <div className="wallet-transaction-icon wallet-receive">
-          <i className="fas fa-arrow-down" />
-        </div>
-        <div className="wallet-transaction-details">
-          <div className="wallet-transaction-type">Received Ethereum</div>
-          <div className="wallet-transaction-date">Yesterday, 2:45 PM</div>
-        </div>
-        <div className="wallet-transaction-amount">+1.25 ETH</div>
-      </div>
-      {/* Transaction 3 */}
-      <div className="wallet-transaction-item" role="button">
-        <div className="wallet-transaction-icon wallet-swap">
-          <i className="fas fa-exchange-alt" />
-        </div>
-        <div className="wallet-transaction-details">
-          <div className="wallet-transaction-type">Swapped BNB for USDC</div>
-          <div className="wallet-transaction-date">Aug 25, 9:30 AM</div>
-        </div>
-        <div className="wallet-transaction-amount">-5.2 BNB</div>
-      </div>
-      {/* Transaction 4 */}
-      <div className="wallet-transaction-item" role="button">
-        <div className="wallet-transaction-icon wallet-receive">
-          <i className="fas fa-arrow-down" />
-        </div>
-        <div className="wallet-transaction-details">
-          <div className="wallet-transaction-type">Received Bitcoin</div>
-          <div className="wallet-transaction-date">Aug 24, 4:12 PM</div>
-        </div>
-        <div className="wallet-transaction-amount">+0.075 BTC</div>
-      </div>
-    </div>
-  </div>
-  {/* Bottom Navigation */}
-  <div className="wallet-bottom-nav">
-    <div className="wallet-nav-item">
-      <i className="fas fa-home wallet-nav-icon" aria-hidden="true" />
-      <span>Home</span>
-    </div>
-    <div className="wallet-nav-item wallet-active">
-      <i className="fas fa-wallet wallet-nav-icon" aria-hidden="true" />
-      <span>Wallet</span>
-    </div>
-    <div className="wallet-nav-item">
-      <i className="fas fa-chart-bar wallet-nav-icon" aria-hidden="true" />
-      <span>Markets</span>
-    </div>
-    <div className="wallet-nav-item">
-      <i className="fas fa-coins wallet-nav-icon" aria-hidden="true" />
-      <span>Staking</span>
-    </div>
-    <div className="wallet-nav-item">
-      <i className="fas fa-cube wallet-nav-icon" aria-hidden="true" />
-      <span>Hub</span>
-    </div>
-  </div>
+
+
 </div>
 
 
