@@ -59,7 +59,7 @@ export default [
   },
   {
     id: 'withdrawal-management',
-    path: '/withdrawal-management',
+    path: '/withdraw',
     exact: true,
     icon: 'fas fa-money-check-alt',
     label: i18n('dashboard.withdrawalManagement'),
@@ -83,15 +83,7 @@ export default [
     label: i18n('dashboard.transactionManagement'),
     permissionRequired: permissions.categoryRead,
   },
-  {
-    id: 'trading',
-    path: '/trading',
-    exact: true,
-    icon: 'fas fa-chart-line',
-    label: i18n('dashboard.trading'),
-    className: 'menu-li side-menue sub-item',
-    permissionRequired: permissions.categoryRead,
-  },
+
   {
     id: 'spot',
     path: '/spot',
@@ -129,7 +121,7 @@ export default [
   },
   {
     id: 'user-messages',
-    path: '/user-messages',
+    path: '/message',
     exact: true,
     icon: 'fas fa-envelope',
     label: i18n('dashboard.userMessages'),

@@ -179,6 +179,7 @@ const en = {
         success: 'Recharge successfully deleted',
       },
     },
+
     assets: {
       menu: 'Assets',
       list: {
@@ -226,6 +227,152 @@ const en = {
       },
       destroyAll: {
         success: 'Assets successfully deleted',
+      },
+    },
+
+    message: {
+      menu: 'Messages',
+      list: {
+        title: 'Message List',
+      },
+      fields: {
+        id: 'ID',
+        name: 'Name',
+        email: 'Email',
+        subject: 'Subject',
+        content: 'Content',
+        createdAt: 'Created At',
+        updatedAt: 'Updated At',
+        createdBy: 'Created By',
+        updatedBy: 'Updated By',
+      },
+
+      new: {
+        title: 'Add New Message',
+      },
+      edit: {
+        title: 'Edit Message',
+      },
+      view: {
+        title: 'Message Details',
+      },
+      create: {
+        success: 'Message successfully saved',
+      },
+      update: {
+        success: 'Message successfully updated',
+      },
+      destroy: {
+        success: 'Message successfully deleted',
+      },
+      destroyAll: {
+        success: 'Messages successfully deleted',
+      },
+    },
+    withdraw: {
+      menu: 'Withdraws',
+      list: {
+        title: 'Withdraw List',
+      },
+      fields: {
+        id: 'ID',
+        orderNo: 'Order No',
+        currency: 'Currency',
+        withdrawAmount: 'Withdraw Amount',
+        fee: 'Fee',
+        totalAmount: 'Total Amount',
+        auditor: 'Auditor',
+        acceptTime: 'Accept Time',
+        status: 'Status',
+        createdBy: 'Created By',
+        createdAt: 'Created At',
+        updatedAt: 'Updated At',
+      },
+      enumerators: {
+        status: {
+          pending: 'Pending',
+          canceled: 'Canceled',
+          success: 'Success',
+        },
+      },
+      new: {
+        title: 'Add New Withdraw',
+      },
+      edit: {
+        title: 'Edit Withdraw',
+      },
+      view: {
+        title: 'Withdraw Details',
+      },
+      create: {
+        success: 'Withdraw successfully saved',
+      },
+      update: {
+        success: 'Withdraw successfully updated',
+      },
+      destroy: {
+        success: 'Withdraw successfully deleted',
+      },
+      destroyAll: {
+        success: 'Withdraws successfully deleted',
+      },
+    },
+
+  
+
+    spot: {
+      menu: 'Spot Orders',
+      list: {
+        title: 'Spot Order List',
+      },
+      fields: {
+        id: 'ID',
+        orderNo: 'Order No',
+        userAccount: 'User Account',
+        tradingPair: 'Trading Pair',
+        direction: 'Direction',
+        delegateType: 'Delegate Type',
+        delegateState: 'Delegate State',
+        orderQuantity: 'Order Quantity',
+        commissionPrice: 'Commission Price',
+        entrustedValue: 'Entrusted Value',
+        transactionQuantity: 'Transaction Quantity',
+        transactionValue: 'Transaction Value',
+        closingPrice: 'Closing Price',
+        handlingFee: 'Handling Fee',
+        commissionTime: 'Commission Time',
+        closingTime: 'Closing Time',
+        createdBy: 'Created By',
+        updatedBy: 'Updated By',
+        tenant: 'Tenant',
+        importHash: 'Import Hash',
+      },
+      enumerators: {
+        direction: {
+          BUY: 'Buy',
+          SELL: 'Sell',
+        },
+      },
+      new: {
+        title: 'Add New Spot Order',
+      },
+      edit: {
+        title: 'Edit Spot Order',
+      },
+      view: {
+        title: 'Spot Order Details',
+      },
+      create: {
+        success: 'Spot order successfully saved',
+      },
+      update: {
+        success: 'Spot order successfully updated',
+      },
+      destroy: {
+        success: 'Spot order successfully deleted',
+      },
+      destroyAll: {
+        success: 'Spot orders successfully deleted',
       },
     },
 
@@ -3041,10 +3188,9 @@ const en = {
     add: 'Add Number',
     download: 'Download the template',
     added: 'Number Adedd',
-    duplicated: 'Number Duplicated',
+
     Wrong: 'Number Wrong',
-    
-    
+
     assets: 'Assets',
     notFound:
       'Sorry, We couldn’t find the items you are looking for.',

@@ -1,42 +1,54 @@
 import mongoose from "mongoose";
-import FileSchema from "./schemas/fileSchema";
 const Schema = mongoose.Schema;
 
 export default (database) => {
   try {
-    return database.model("Recharge");
+    return database.model("withdraw");
   } catch (error) {
-    // continue, because model doesnt exist
+    // continue, because model doesn't exist
   }
 
-  const RechargeSchema = new Schema(
+  const WithdrawSchema = new Schema(
     {
-      rechargeamount: {
+      orderNo: {
         type: String,
-      },
-
-      rechargechannel: {
-        type: String,
-      },
-
-      type: {
-        type: String,
-        enum: ["withdraw", "deposit"],
-        default: "withdraw",
-      },
-      user: {
-        type: Schema.Types.ObjectId,
-        ref: "user",
         required: true,
       },
-      dateRecharge: {
+
+      currency: {
+        type: String,
+        required: true,
+      },
+
+      withdrawAmount: {
+        type: Number,
+        required: true,
+      },
+
+      fee: {
+        type: Number,
+        required: true,
+        default: 0,
+      },
+
+      totalAmount: {
+        type: Number,
+        required: true,
+      },
+
+      auditor: {
+        type: Schema.Types.ObjectId,
+        ref: "user",
+      },
+
+      acceptTime: {
         type: Date,
       },
 
       status: {
         type: String,
         enum: ["pending", "canceled", "success"],
-        default: "enable",
+        default: "pending",
       },
 
       tenant: {
@@ -44,20 +56,23 @@ export default (database) => {
         ref: "tenant",
         required: true,
       },
+
       createdBy: {
         type: Schema.Types.ObjectId,
         ref: "user",
       },
+
       updatedBy: {
         type: Schema.Types.ObjectId,
         ref: "user",
       },
+
       importHash: { type: String },
     },
     { timestamps: true }
   );
 
-  RechargeSchema.index(
+  WithdrawSchema.index(
     { importHash: 1, tenant: 1 },
     {
       unique: true,
@@ -67,18 +82,13 @@ export default (database) => {
     }
   );
 
-  RechargeSchema.virtual("id").get(function () {
+  WithdrawSchema.virtual("id").get(function () {
     // @ts-ignore
     return this._id.toHexString();
   });
 
-  RechargeSchema.set("toJSON", {
-    getters: true,
-  });
+  WithdrawSchema.set("toJSON", { getters: true });
+  WithdrawSchema.set("toObject", { getters: true });
 
-  RechargeSchema.set("toObject", {
-    getters: true,
-  });
-
-  return database.model("Recharge", RechargeSchema);
+  return database.model("withdraw", WithdrawSchema);
 };

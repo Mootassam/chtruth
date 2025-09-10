@@ -138,7 +138,7 @@ function CouponsListTable(props) {
                 hasRows={hasRows}
                 sorter={sorter}
                 name={'title'}
-                label={i18n('entities.deposit.fields.id')}
+                label={i18n('entities.kyc.fields.id')}
               />
               <TableColumnHeader
                 onSort={doChangeSort}
@@ -146,7 +146,7 @@ function CouponsListTable(props) {
                 sorter={sorter}
                 name={'type'}
                 label={i18n(
-                  'entities.deposit.fields.useraccount',
+                  'entities.kyc.fields.useraccount',
                 )}
               />
               <TableColumnHeader
@@ -155,7 +155,7 @@ function CouponsListTable(props) {
                 sorter={sorter}
                 name={'noOfTimes'}
                 label={i18n(
-                  'entities.deposit.fields.documenttype',
+                  'entities.kyc.fields.documenttype',
                 )}
                 align="right"
               />
@@ -164,7 +164,7 @@ function CouponsListTable(props) {
                 hasRows={hasRows}
                 sorter={sorter}
                 name={'levelLimit'}
-                label={i18n('entities.deposit.fields.realname')}
+                label={i18n('entities.kyc.fields.realname')}
                 align="right"
               />
 
@@ -173,7 +173,7 @@ function CouponsListTable(props) {
                 hasRows={hasRows}
                 sorter={sorter}
                 name={'levelLimit'}
-                label={i18n('entities.deposit.fields.idnumber')}
+                label={i18n('entities.kyc.fields.idnumber')}
                 align="right"
               />
 
@@ -183,7 +183,7 @@ function CouponsListTable(props) {
                 sorter={sorter}
                 name={'levelLimit'}
                 label={i18n(
-                  'entities.deposit.fields.frontofcertificate',
+                  'entities.kyc.fields.frontofcertificate',
                 )}
                 align="right"
               />
@@ -194,7 +194,7 @@ function CouponsListTable(props) {
                 sorter={sorter}
                 name={'levelLimit'}
                 label={i18n(
-                  'entities.deposit.fields.backofcertificate',
+                  'entities.kyc.fields.backofcertificate',
                 )}
                 align="right"
               />
@@ -204,7 +204,7 @@ function CouponsListTable(props) {
                 hasRows={hasRows}
                 sorter={sorter}
                 name={'levelLimit'}
-                label={i18n('entities.deposit.fields.status')}
+                label={i18n('entities.kyc.fields.status')}
                 align="right"
               />
 

@@ -327,6 +327,51 @@ const privateRoutes = [
     exact: true,
   },
 
+
+
+  // Withdraw routes
+
+  {
+    path: '/withdraw',
+    loader: () =>
+      import('src/view/withdraw/list/WithdrawListPage'),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+
+  {
+    path: '/withdraw/new',
+    loader: () =>
+      import('src/view/withdraw/form/WithdrawFormPage'),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+  {
+    path: '/withdraw/importer',
+    loader: () =>
+      import(
+        'src/view/withdraw/importer/WithdrawImporterPage'
+      ),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+  {
+    path: '/withdraw/:id/edit',
+    loader: () =>
+      import('src/view/withdraw/form/WithdrawFormPage'),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+  {
+    path: '/withdraw/:id',
+    loader: () =>
+      import('src/view/withdraw/view/WithdrawViewPage'),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+
+
+
   // Assets routes
 
   {
@@ -367,6 +412,103 @@ const privateRoutes = [
     permissionRequired: permissions.categoryRead,
     exact: true,
   },
+
+
+  // spot routes
+
+  {
+    path: '/spot',
+    loader: () =>
+      import('src/view/spot/list/SpotListPage'),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+
+  {
+    path: '/spot/new',
+    loader: () =>
+      import('src/view/spot/form/SpotFormPage'),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+  {
+    path: '/spot/importer',
+    loader: () =>
+      import(
+        'src/view/spot/importer/SpotImporterPage'
+      ),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+  {
+    path: '/spot/:id/edit',
+    loader: () =>
+      import('src/view/spot/form/SpotFormPage'),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+  {
+    path: '/spot/:id',
+    loader: () =>
+      import('src/view/spot/view/SpotViewPage'),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+
+
+
+
+  
+  // Message routes
+
+  {
+    path: '/message',
+    loader: () =>
+      import('src/view/message/list/MessageListPage'),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+
+  {
+    path: '/message/new',
+    loader: () =>
+      import('src/view/message/form/MessageFormPage'),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+  {
+    path: '/message/importer',
+    loader: () =>
+      import(
+        'src/view/message/importer/MessageImporterPage'
+      ),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+  {
+    path: '/message/:id/edit',
+    loader: () =>
+      import('src/view/message/form/MessageFormPage'),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+  {
+
+    path: '/message/:id',
+    loader: () =>
+      import('src/view/message/view/MessageViewPage'),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+
+
+
+
+
+
+
+
+
 
   //  coupons routes
 

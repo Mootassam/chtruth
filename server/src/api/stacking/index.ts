@@ -1,0 +1,30 @@
+export default (app) => {
+  app.post(
+    `/tenant/:tenantId/stacking`,
+    require('./stackingCreate').default,
+  );
+  app.put(
+    `/tenant/:tenantId/stacking/:id`,
+    require('./stackingUpdate').default,
+  );
+  app.post(
+    `/tenant/:tenantId/stacking/import`,
+    require('./stackingImport').default,
+  );
+  app.delete(
+    `/tenant/:tenantId/stacking`,
+    require('./stackingDestroy').default,
+  );
+  app.get(
+    `/tenant/:tenantId/stacking/autocomplete`,
+    require('./stackingAutocomplete').default,
+  );
+  app.get(
+    `/tenant/:tenantId/stacking`,
+    require('./stackingList').default,
+  );
+  app.get(
+    `/tenant/:tenantId/stacking/:id`,
+    require('./stackingFind').default,
+  );
+};

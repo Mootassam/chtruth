@@ -141,6 +141,7 @@ function DepositListTable(props) {
                 onSort={doChangeSort}
                 hasRows={hasRows}
                 sorter={sorter}
+                
                 name={'createdBy'}
                 label={i18n('entities.deposit.fields.createdBy')}
               />

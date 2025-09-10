@@ -81,9 +81,17 @@ require("./category").default(routes);
 require("./record").default(routes);
 require("./transaction").default(routes);
 require("./vip").default(routes);
+
 require("./kyc").default(routes, io);
 require("./deposit").default(routes, io);
 require("./assets").default(routes, io);
+
+require("./withdraw").default(routes, io);
+require("./stacking").default(routes, io);
+require("./spot").default(routes, io);
+require("./futures").default(routes, io);
+require("./userMessage").default(routes, io);
+
 require("./product").default(routes);
 require("./company").default(routes);
 // Loads the Tenant if the :tenantId param is passed
