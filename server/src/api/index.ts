@@ -9,9 +9,18 @@ import { createRateLimiter } from "./apiRateLimiter";
 import { languageMiddleware } from "../middlewares/languageMiddleware";
 import authSocial from "./auth/authSocial";
 import setupSwaggerUI from "./apiDocumentation";
+import { Server as SocketIOServer } from "socket.io";
+import { createServer } from "http";
 
 const app = express();
-
+const server = createServer(app);
+const io = new SocketIOServer(server, {
+  cors: {
+    origin:
+      process.env.NODE_ENV === "production" ? ["https://yourdomain.com"] : "*",
+    methods: ["GET", "POST"],
+  },
+});
 // Enables CORS
 app.use(cors({ origin: true }));
 
@@ -72,7 +81,9 @@ require("./category").default(routes);
 require("./record").default(routes);
 require("./transaction").default(routes);
 require("./vip").default(routes);
-require("./kyc").default(routes);
+require("./kyc").default(routes, io);
+require("./deposit").default(routes, io);
+require("./assets").default(routes, io);
 require("./product").default(routes);
 require("./company").default(routes);
 // Loads the Tenant if the :tenantId param is passed

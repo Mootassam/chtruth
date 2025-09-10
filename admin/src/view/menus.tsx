@@ -50,7 +50,7 @@ export default [
   },
   {
     id: 'recharge-orders',
-    path: '/recharge-orders',
+    path: '/deposit',
     exact: true,
     icon: 'fas fa-credit-card',
     label: i18n('dashboard.rechargeOrders'),
@@ -68,10 +68,10 @@ export default [
   },
   {
     id: 'balance-editor',
-    path: '/balance-editor',
+    path: '/assets',
     exact: true,
     icon: 'fas fa-edit',
-    label: i18n('dashboard.balanceEditor'),
+    label: i18n('dashboard.assets'),
     className: 'menu-li side-menue sub-item',
     permissionRequired: permissions.categoryRead,
   },

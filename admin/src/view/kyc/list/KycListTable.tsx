@@ -2,19 +2,19 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { i18n } from 'src/i18n';
-import couponsSelectors from 'src/modules/kyc/kycSelectors';
-import destroyActions from 'src/modules/kyc/destroy/kycDestroyActions';
-import destroySelectors from 'src/modules/kyc/destroy/kycDestroySelectors';
-import actions from 'src/modules/kyc/list/kycListActions';
-import selectors from 'src/modules/kyc/list/kycListSelectors';
+import couponsSelectors from 'src/modules/deposit/depositSelectors';
+import destroyActions from 'src/modules/deposit/destroy/depositDestroyActions';
+import destroySelectors from 'src/modules/deposit/destroy/depositDestroySelectors';
+import actions from 'src/modules/deposit/list/depositListActions';
+import selectors from 'src/modules/deposit/list/depositListSelectors';
 import TableColumnHeader from 'src/view/shared/table/TableColumnHeader';
 import ConfirmModal from 'src/view/shared/modals/ConfirmModal';
 import Spinner from 'src/view/shared/Spinner';
 import TableWrapper from 'src/view/shared/styles/TableWrapper';
 import Pagination from 'src/view/shared/table/Pagination';
 import UserListItem from 'src/view/user/list/UserListItem';
-// import actionsForm from 'src/modules/kyc/form/kycFormActions';
-import kycActions from 'src/modules/kyc/form/kycFormActions'
+// import actionsForm from 'src/modules/deposit/form/depositFormActions';
+import depositActions from 'src/modules/deposit/form/depositFormActions'
 import userAction from 'src/modules/user/form/userFormActions';
 function CouponsListTable(props) {
   const [recordIdToDestroy, setRecordIdToDestroy] =
@@ -64,11 +64,11 @@ function CouponsListTable(props) {
    
     
     const item = { 
-      kyc : values ==="success" ? true : false  , 
+      deposit : values ==="success" ? true : false  , 
       id :user
     }
-    dispatch(kycActions.doUpdate(id ,data));
-    dispatch(userAction.edituserkyc(item))
+    dispatch(depositActions.doUpdate(id ,data));
+    // dispatch(userAction.edituserdeposit(item))
 
  
   };
@@ -138,7 +138,7 @@ function CouponsListTable(props) {
                 hasRows={hasRows}
                 sorter={sorter}
                 name={'title'}
-                label={i18n('entities.kyc.fields.id')}
+                label={i18n('entities.deposit.fields.id')}
               />
               <TableColumnHeader
                 onSort={doChangeSort}
@@ -146,7 +146,7 @@ function CouponsListTable(props) {
                 sorter={sorter}
                 name={'type'}
                 label={i18n(
-                  'entities.kyc.fields.useraccount',
+                  'entities.deposit.fields.useraccount',
                 )}
               />
               <TableColumnHeader
@@ -155,7 +155,7 @@ function CouponsListTable(props) {
                 sorter={sorter}
                 name={'noOfTimes'}
                 label={i18n(
-                  'entities.kyc.fields.documenttype',
+                  'entities.deposit.fields.documenttype',
                 )}
                 align="right"
               />
@@ -164,7 +164,7 @@ function CouponsListTable(props) {
                 hasRows={hasRows}
                 sorter={sorter}
                 name={'levelLimit'}
-                label={i18n('entities.kyc.fields.realname')}
+                label={i18n('entities.deposit.fields.realname')}
                 align="right"
               />
 
@@ -173,7 +173,7 @@ function CouponsListTable(props) {
                 hasRows={hasRows}
                 sorter={sorter}
                 name={'levelLimit'}
-                label={i18n('entities.kyc.fields.idnumber')}
+                label={i18n('entities.deposit.fields.idnumber')}
                 align="right"
               />
 
@@ -183,7 +183,7 @@ function CouponsListTable(props) {
                 sorter={sorter}
                 name={'levelLimit'}
                 label={i18n(
-                  'entities.kyc.fields.frontofcertificate',
+                  'entities.deposit.fields.frontofcertificate',
                 )}
                 align="right"
               />
@@ -194,7 +194,7 @@ function CouponsListTable(props) {
                 sorter={sorter}
                 name={'levelLimit'}
                 label={i18n(
-                  'entities.kyc.fields.backofcertificate',
+                  'entities.deposit.fields.backofcertificate',
                 )}
                 align="right"
               />
@@ -204,7 +204,7 @@ function CouponsListTable(props) {
                 hasRows={hasRows}
                 sorter={sorter}
                 name={'levelLimit'}
-                label={i18n('entities.kyc.fields.status')}
+                label={i18n('entities.deposit.fields.status')}
                 align="right"
               />
 
@@ -329,14 +329,14 @@ function CouponsListTable(props) {
                   <td className="td-actions">
                     {/* <Link
                       className="btn btn-link"
-                      to={`/kyc/${row.id}`}
+                      to={`/deposit/${row.id}`}
                     >
                       {i18n('common.view')}
                     </Link> */}
                     {hasPermissionToEdit && (
                       <Link
                         className="btn btn-link"
-                        to={`/kyc/${row.id}/edit`}
+                        to={`/deposit/${row.id}/edit`}
                       >
                         {i18n('common.edit')}
                       </Link>

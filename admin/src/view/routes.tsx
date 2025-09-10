@@ -216,9 +216,6 @@ const privateRoutes = [
     exact: true,
   },
 
-
-
-
   // Kyc routes
 
   {
@@ -227,7 +224,6 @@ const privateRoutes = [
     permissionRequired: permissions.categoryRead,
     exact: true,
   },
-
 
   {
     path: '/kyc/new',
@@ -254,7 +250,6 @@ const privateRoutes = [
     permissionRequired: permissions.categoryRead,
     exact: true,
   },
-
 
   // kyc routes
 
@@ -265,7 +260,6 @@ const privateRoutes = [
     exact: true,
   },
 
-
   {
     path: '/kyc/new',
     loader: () => import('src/view/kyc/form/KycFormPage'),
@@ -292,6 +286,87 @@ const privateRoutes = [
     exact: true,
   },
 
+  // Deposit routes
+
+  {
+    path: '/deposit',
+    loader: () =>
+      import('src/view/deposit/list/DepositListPage'),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+
+  {
+    path: '/deposit/new',
+    loader: () =>
+      import('src/view/deposit/form/DepositFormPage'),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+  {
+    path: '/deposit/importer',
+    loader: () =>
+      import(
+        'src/view/deposit/importer/DepositImporterPage'
+      ),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+  {
+    path: '/deposit/:id/edit',
+    loader: () =>
+      import('src/view/deposit/form/DepositFormPage'),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+  {
+    path: '/deposit/:id',
+    loader: () =>
+      import('src/view/deposit/view/DepositViewPage'),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+
+  // Assets routes
+
+  {
+    path: '/assets',
+    loader: () =>
+      import('src/view/assets/list/AssetsListPage'),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+
+  {
+    path: '/assets/new',
+    loader: () =>
+      import('src/view/assets/form/AssetsFormPage'),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+  {
+    path: '/assets/importer',
+    loader: () =>
+      import(
+        'src/view/deposit/importer/DepositImporterPage'
+      ),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+  {
+    path: '/assets/:id/edit',
+    loader: () =>
+      import('src/view/assets/form/AssetsFormPage'),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+  {
+    path: '/assets/:id',
+    loader: () =>
+      import('src/view/assets/view/AssetsViewPage'),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
 
   //  coupons routes
 

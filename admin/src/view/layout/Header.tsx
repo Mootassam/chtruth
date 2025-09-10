@@ -59,21 +59,19 @@ function Header(props) {
         <i className="fas fa-bars" />
       </button>
 
-      <div className='right__section'>
+      <div className="right__section">
         <div className="quick_actions">
-                <div className="action">
-            
-            <span>KYC(02)</span>
+          <div className="action">
+            <span>KYC(0)</span>
           </div>
           <div className="action">
-
-            <span>Recharges(50)</span>
+            <span>Recharges(0)</span>
           </div>
-             <div className="action">
-            <span>Withdraw Funds(50)</span>
+          <div className="action">
+            <span>Withdraw Funds(0)</span>
           </div>
-             <div className="action">
-            <span>Futures(50)</span>
+          <div className="action">
+            <span>Futures(0)</span>
           </div>
         </div>
 

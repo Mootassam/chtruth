@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import userSelectors from 'src/modules/user/userSelectors';
@@ -35,10 +36,10 @@ function UserTable() {
   const selectedKeys = useSelector(
     selectors.selectSelectedKeys,
   );
-  const [showTask, setShowTask] = useState(false)
+  const [showTask, setShowTask] = useState(false);
   const hasRows = useSelector(selectors.selectHasRows);
   const sorter = useSelector(selectors.selectSorter);
-  const [dailytask,setDailyTask ] = useState(0)
+  const [dailytask, setDailyTask] = useState(0);
   const isAllSelected = useSelector(
     selectors.selectIsAllSelected,
   );
@@ -80,12 +81,14 @@ function UserTable() {
     dispatch(actions.doToggleOneSelected(id));
   };
 
-  const showThecurrentRecord = async (dailyTask, totaltask?) => {
-
+  const showThecurrentRecord = async (
+    dailyTask,
+    totaltask?,
+  ) => {
     // await dispatch(recordListActions.doTasksDone(id));
 
-    setShowTask(true)
-    setDailyTask(dailyTask)
+    setShowTask(true);
+    setDailyTask(dailyTask);
     setTotalTasks(totaltask);
   };
 
@@ -157,7 +160,7 @@ function UserTable() {
                   className="text-center"
                   label={i18n('user.fields.status')}
                 />
-              
+
                 <TableColumnHeader className="th-actions" />
               </tr>
             </thead>
@@ -216,6 +219,7 @@ function UserTable() {
                     <td>{row.fullName}</td>
                     <td>{row.invitationcode}</td>
                     <td>{row.refcode}</td>
+             
                     <td>
                       {row.roles.map((roleId) => (
                         <div key={roleId}>
@@ -279,7 +283,13 @@ function UserTable() {
       )}
       {!LoadingTasksDone && showTask && (
         <div className="modal__socore">
-          <div className='score__close' onClick={() => setShowTask(false)}> <i className='fa fa-close font' /></div>
+          <div
+            className="score__close"
+            onClick={() => setShowTask(false)}
+          >
+            {' '}
+            <i className="fa fa-close font" />
+          </div>
           <div className="modal__contentscore">
             <p className="text__score">
               {dailytask} / {totalTask}

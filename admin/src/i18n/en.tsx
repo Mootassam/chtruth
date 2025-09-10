@@ -106,7 +106,6 @@ const en = {
         title: 'List of Kyc',
       },
       fields: {
-        
         id: 'ID',
         useraccount: 'User Account',
         documenttype: 'Document type',
@@ -137,6 +136,96 @@ const en = {
       },
       destroyAll: {
         success: 'Vip successfully deleted',
+      },
+    },
+
+    deposit: {
+      menu: 'Vip',
+      list: {
+        title: 'Recharge Orders',
+      },
+      fields: {
+        id: 'id',
+        orderno: 'Order No',
+        createdBy: 'Created By',
+        amount: 'Amount',
+        rechargechannel: 'Recharge Channel',
+        txid: 'TXID',
+        rechargetime: 'Recharge Time',
+        auditor: 'Auditor',
+        acceptime: 'Acceptime',
+        status: 'Status',
+      },
+
+      new: {
+        title: 'Add New Recharge',
+      },
+      edit: {
+        title: 'Edit Recharge',
+      },
+      view: {
+        title: 'Detail Recharge',
+      },
+      create: {
+        success: 'Recharge successfully saved',
+      },
+      update: {
+        success: 'Recharge successfully saved',
+      },
+      destroy: {
+        success: 'Vip successfully deleted',
+      },
+      destroyAll: {
+        success: 'Recharge successfully deleted',
+      },
+    },
+    assets: {
+      menu: 'Assets',
+      list: {
+        title: 'Assets List',
+      },
+      fields: {
+        id: 'ID',
+        user: 'User',
+        symbol: 'Symbol',
+        coinName: 'Coin Name',
+        amount: 'Amount',
+        status: 'Status',
+        tenant: 'Tenant',
+        createdBy: 'Created By',
+        updatedBy: 'Updated By',
+        createdAt: 'Created At',
+        updatedAt: 'Updated At',
+      },
+
+      enumerators: {
+        status: {
+          available: 'Available',
+          locked: 'Locked',
+          pending: 'Pending',
+        },
+      },
+
+      new: {
+        title: 'Add New Asset',
+      },
+      edit: {
+        title: 'Edit Asset',
+      },
+      view: {
+        title: 'Asset Details',
+      },
+      create: {
+        success: 'Asset successfully added',
+      },
+      update: {
+        success: 'Asset successfully updated',
+      },
+      destroy: {
+        success: 'Asset successfully deleted',
+      },
+      destroyAll: {
+        success: 'Assets successfully deleted',
       },
     },
 
@@ -2954,6 +3043,9 @@ const en = {
     added: 'Number Adedd',
     duplicated: 'Number Duplicated',
     Wrong: 'Number Wrong',
+    
+    
+    assets: 'Assets',
     notFound:
       'Sorry, We couldn’t find the items you are looking for.',
     validation: 'Number added with Success',
