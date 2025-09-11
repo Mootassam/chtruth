@@ -1,7 +1,7 @@
-import vipService from 'src/modules/kyc/kycService';
-import selectors from 'src/modules/kyc/list/kycListSelectors';
+import depositService from 'src/modules/deposit/depositService';
+import selectors from 'src/modules/deposit/list/depositListSelectors';
 import { i18n } from 'src/i18n';
-import exporterFields from 'src/modules/kyc/list/kycListExporterFields';
+import exporterFields from 'src/modules/deposit/list/depositListExporterFields';
 import Errors from 'src/modules/shared/error/errors';
 import Exporter from 'src/modules/shared/exporter/exporter';
 
@@ -63,7 +63,7 @@ const vipListActions = {
       });
 
       const filter = selectors.selectFilter(getState());
-      const response = await vipService.list(
+      const response = await depositService.list(
         filter,
         selectors.selectOrderBy(getState()),
         null,
@@ -72,7 +72,7 @@ const vipListActions = {
 
       new Exporter(
         exporterFields,
-        i18n('entities.kyc.exporterFileName'),
+        i18n('entities.deposit.exporterFileName'),
       ).transformAndExportAsExcelFile(response.rows);
 
       dispatch({
@@ -124,7 +124,7 @@ const vipListActions = {
           type: vipListActions.FETCH_STARTED,
           payload: { filter, rawFilter, keepPagination },
         });
-        const response = await vipService.list(
+        const response = await depositService.list(
           filter,
           selectors.selectOrderBy(getState()),
           selectors.selectLimit(getState()),

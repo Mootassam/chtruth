@@ -51,6 +51,47 @@ const en = {
   },
 
   entities: {
+
+        deposit: {
+      menu: 'Vip',
+      list: {
+        title: 'Recharge Orders',
+      },
+      fields: {
+        id: 'id',
+        orderno: 'Order No',
+        createdBy: 'Created By',
+        amount: 'Amount',
+        rechargechannel: 'Recharge Channel',
+        txid: 'TXID',
+        rechargetime: 'Recharge Time',
+        auditor: 'Auditor',
+        acceptime: 'Acceptime',
+        status: 'Status',
+      },
+
+      new: {
+        title: 'Add New Recharge',
+      },
+      edit: {
+        title: 'Edit Recharge',
+      },
+      view: {
+        title: 'Detail Recharge',
+      },
+      create: {
+        success: 'Recharge successfully saved',
+      },
+      update: {
+        success: 'Recharge successfully saved',
+      },
+      destroy: {
+        success: 'Vip successfully deleted',
+      },
+      destroyAll: {
+        success: 'Recharge successfully deleted',
+      },
+    },
     record: {
       menu: "Records",
       fields: {

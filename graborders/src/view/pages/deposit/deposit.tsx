@@ -10,42 +10,78 @@ import { useForm, FormProvider } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { QRCodeCanvas } from "qrcode.react";
 import FieldFormItem from "src/shared/form/FieldFormItem";
+import actions from 'src/modules/deposit/form/depositFormActions';
 
 const schema = yup.object().shape({
-  user: yupFormSchemas.relationToOne(i18n("entities.vip.fields.title"), {}),
-  Documenttype: yupFormSchemas.string(i18n("Document Type"), {}),
-  realname: yupFormSchemas.string(i18n("Full Name"), {}),
-  idnumer: yupFormSchemas.string(i18n("Id Numer"), {}),
+  orderno: yupFormSchemas.string(
+    i18n('entities.deposit.fields.orderno'),
+  ),
+  amount: yupFormSchemas.decimal(
+    i18n('entities.deposit.fields.amount'),{required:true}
+  ),
+  txid: yupFormSchemas.string(
+    i18n('entities.deposit.fields.txid'),{required:true}
+    
+  ),
+  rechargechannel: yupFormSchemas.string(
+    i18n('entities.deposit.fields.rechargechannel'),
+  ),
 });
 
-function deposit() {
+function Deposit() {
   const dispatch = useDispatch();
   const currentUser = useSelector(authSelectors.selectCurrentUser);
+  const [selectedNetwork, setSelectedNetwork] = useState("btc");
 
   const [initialValues] = useState(() => {
     return {
-      user: currentUser || [],
-      Documenttype: document,
-      realname: "",
+      orderno: '',
+      amount: "",
+      txid: '',
+      rechargechannel: "",
+      rechargetime: "",
+      status: 'pending',
     };
   });
 
-  const [selectedNetwork, setSelectedNetwork] = useState("btc");
-
   const form = useForm({
     resolver: yupResolver(schema),
-    mode: "all",
+    mode: 'all',
     defaultValues: initialValues,
   });
 
   const onSubmit = (values) => {
-    const data = {
-      user: currentUser,
-      Documenttype: document,
-      ...values,
-    };
-    alert("values");
-    // dispatch(actions.doCreate(data));
+    // Generate order number in format: RE + YYYYMMDD + 7 random digits
+    const now = new Date();
+    
+    // Format date as YYYYMMDD
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const dateStr = `${year}${month}${day}`;
+    
+    // Generate 7 random digits
+    const randomDigits = Math.floor(Math.random() * 10000000).toString().padStart(7, '0');
+    
+    // Create order number
+    values.orderno = `RE${dateStr}${randomDigits}`;
+    
+    // Set recharge time to current date and time
+    values.rechargetime = now.toISOString();
+    
+    values.rechargechannel = selectedNetwork;
+    
+    dispatch(actions.doCreate(values));
+    
+    // Reset form fields after submission
+    form.reset({
+      orderno: '',
+      amount: "",
+      txid: '',
+      rechargechannel: "",
+      rechargetime: "",
+      status: 'pending',
+    });
   };
 
   // Network data
@@ -63,8 +99,8 @@ function deposit() {
   );
 
   // Handle network selection
-  const handleNetworkSelect = (networkId) => {
-    setSelectedNetwork(networkId);
+  const handleNetworkSelect = (event) => {
+    setSelectedNetwork(event.target.value);
   };
 
   return (
@@ -72,34 +108,35 @@ function deposit() {
       {/* Header Section */}
       <SubHeader title="Deposit Crypto" />
       
-      {/* Network Selection */}
+      {/* Network Selection - Changed to Dropdown */}
       <div className="networkSection">
         <div className="sectionHeading">Select Network</div>
-        <div className="networkList">
-          {networks.map((network) => (
-            <div 
-              key={network.id}
-              className={`networkItem ${selectedNetwork === network.id ? 'selected' : ''}`}
-              onClick={() => handleNetworkSelect(network.id)}
-              data-network={network.id}
-            >
-              <div className="networkIcon" style={{ color: network.color }}>
-                <i className={network.icon} />
-              </div>
-              <div className="networkName">{network.name}</div>
-            </div>
-          ))}
+        <div className="networkDropdownContainer">
+          <select 
+            className="networkDropdown"
+            value={selectedNetwork}
+            onChange={handleNetworkSelect}
+          >
+            {networks.map((network) => (
+              <option key={network.id} value={network.id}>
+                {network.name}
+              </option>
+            ))}
+          </select>
+          <div className="networkDropdownIcon" style={{ color: selectedNetworkData.color }}>
+            <i className={selectedNetworkData.icon} />
+          </div>
         </div>
       </div>
       
       {/* QR Code Section */}
       <div className="qrSection">
         <QRCodeCanvas
-          value={"1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa"} // the text (wallet address) to encode
-          size={180} // size in pixels
-          bgColor="#ffffff" // background color
-          fgColor="#000000" // foreground (QR color)
-          level="H" // error correction level (L, M, Q, H)
+          value={"1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa"}
+          size={180}
+          bgColor="#ffffff"
+          fgColor="#000000"
+          level="H"
           includeMargin={true}
           className="qrBox"
         />
@@ -156,9 +193,9 @@ function deposit() {
           
           {/* Deposit Button */}
           <button
+            type="submit"
             className="depositBtn"
             id="depositBtn"
-            onClick={form.handleSubmit(onSubmit)}
           >
             Confirm Deposit
           </button>
@@ -200,42 +237,38 @@ function deposit() {
       font-size: 16px;
   }
 
-  .networkList {
-      display: flex;
-      gap: 10px;
-      overflow-x: auto;
-      padding-bottom: 5px;
+  /* Network Dropdown Styles */
+  .networkDropdownContainer {
+    position: relative;
+    width: 100%;
   }
 
-  .networkItem {
-      background-color: #2A2A2A;
-      border: 2px solid #2A2A2A;
-      border-radius: 12px;
-      padding: 12px 15px;
-      min-width: 110px;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.3s ease;
+  .networkDropdown {
+    width: 100%;
+    background-color: #2A2A2A;
+    border: 2px solid #2A2A2A;
+    border-radius: 12px;
+    padding: 12px 45px 12px 15px;
+    color: white;
+    font-size: 16px;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    cursor: pointer;
   }
 
-  .networkItem:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  .networkDropdown:focus {
+    outline: none;
+    border-color: #F3BA2F;
   }
 
-  .networkItem.selected {
-      border-color: #F3BA2F;
-      background-color: rgba(243, 186, 47, 0.1);
-  }
-
-  .networkIcon {
-      font-size: 24px;
-      margin-bottom: 8px;
-  }
-
-  .networkName {
-      font-size: 14px;
-      font-weight: 500;
+  .networkDropdownIcon {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 24px;
+    pointer-events: none;
   }
 
   /* QR Code Section */
@@ -461,17 +494,14 @@ function deposit() {
       font-size: 16px;
     }
     
-    .networkItem {
-      min-width: 90px;
-      padding: 10px;
+    .networkDropdown {
+      padding: 10px 40px 10px 12px;
+      font-size: 14px;
     }
     
-    .networkIcon {
+    .networkDropdownIcon {
       font-size: 20px;
-    }
-    
-    .networkName {
-      font-size: 12px;
+      right: 12px;
     }
   }
 
@@ -483,4 +513,4 @@ function deposit() {
   );
 }
 
-export default deposit;
+export default Deposit;

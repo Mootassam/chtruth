@@ -7,82 +7,43 @@ import destroyActions from 'src/modules/message/destroy/messageDestroyActions';
 import destroySelectors from 'src/modules/message/destroy/messageDestroySelectors';
 import actions from 'src/modules/message/list/messageListActions';
 import selectors from 'src/modules/message/list/messageListSelectors';
-import TableColumnHeader from 'src/view/shared/table/TableColumnHeader';
 import ConfirmModal from 'src/view/shared/modals/ConfirmModal';
 import Spinner from 'src/view/shared/Spinner';
-import TableWrapper from 'src/view/shared/styles/TableWrapper';
 import Pagination from 'src/view/shared/table/Pagination';
 import UserListItem from 'src/view/user/list/UserListItem';
-// import actionsForm from 'src/modules/message/form/messageFormActions';
 import MessageActions from 'src/modules/message/form/messageFormActions';
-import userAction from 'src/modules/user/form/userFormActions';
+
 function MessageListTable(props) {
-  const [recordIdToDestroy, setRecordIdToDestroy] =
-    useState(null);
+  const [recordIdToDestroy, setRecordIdToDestroy] = useState(null);
   const dispatch = useDispatch();
-  
 
   const findLoading = useSelector(selectors.selectLoading);
-
-  const destroyLoading = useSelector(
-    destroySelectors.selectLoading,
-  );
-
+  const destroyLoading = useSelector(destroySelectors.selectLoading);
   const loading = findLoading || destroyLoading;
 
   const rows = useSelector(selectors.selectRows);
-  const pagination = useSelector(
-    selectors.selectPagination,
-  );
-  const selectedKeys = useSelector(
-    selectors.selectSelectedKeys,
-  );
+  const pagination = useSelector(selectors.selectPagination);
+  const selectedKeys = useSelector(selectors.selectSelectedKeys);
   const hasRows = useSelector(selectors.selectHasRows);
   const sorter = useSelector(selectors.selectSorter);
-  const isAllSelected = useSelector(
-    selectors.selectIsAllSelected,
-  );
-  const hasPermissionToEdit = useSelector(
-    couponsSelectors.selectPermissionToEdit,
-  );
-  const hasPermissionToDestroy = useSelector(
-    couponsSelectors.selectPermissionToDestroy,
-  );
+  const isAllSelected = useSelector(selectors.selectIsAllSelected);
+  const hasPermissionToEdit = useSelector(couponsSelectors.selectPermissionToEdit);
+  const hasPermissionToDestroy = useSelector(couponsSelectors.selectPermissionToDestroy);
 
-  const doOpenDestroyConfirmModal = (id) => {
-    setRecordIdToDestroy(id);
-  };
-
-  const doCloseDestroyConfirmModal = () => {
-    setRecordIdToDestroy(null);
-  };
+  const doOpenDestroyConfirmModal = (id) => setRecordIdToDestroy(id);
+  const doCloseDestroyConfirmModal = () => setRecordIdToDestroy(null);
 
   const onSubmit = (id, values, user) => {
     const data = {
       user: user,
       status: values,
     };
-
-    const item = {
-      message: values === 'success' ? true : false,
-      id: user,
-    };
     dispatch(MessageActions.doUpdate(id, data));
-    // dispatch(userAction.editusermessage(item))
   };
 
   const doChangeSort = (field) => {
-    const order =
-      sorter.field === field && sorter.order === 'ascend'
-        ? 'descend'
-        : 'ascend';
-
-    dispatch(
-      actions.doChangeSort({
-        field,
-        order,
-      }),
-    );
+    const order = sorter.field === field && sorter.order === 'ascend' ? 'descend' : 'ascend';
+    dispatch(actions.doChangeSort({ field, order }));
   };
 
   const doChangePagination = (pagination) => {
@@ -91,141 +52,134 @@ function MessageListTable(props) {
 
   const doDestroy = (id) => {
     doCloseDestroyConfirmModal();
-
     dispatch(destroyActions.doDestroy(id));
   };
 
-  const doToggleAllSelected = () => {
-    dispatch(actions.doToggleAllSelected());
-  };
+  const doToggleAllSelected = () => dispatch(actions.doToggleAllSelected());
+  const doToggleOneSelected = (id) => dispatch(actions.doToggleOneSelected(id));
 
-  const doToggleOneSelected = (id) => {
-    dispatch(actions.doToggleOneSelected(id));
-  };
-  // const formSubmit = (id, e) => {
-  //   let data = { status: e.target.value };
-  //   dispatch(actionsForm.doUpdate(id, data));
-  // };
   return (
-    <TableWrapper>
+    <div className="spot-list-container">
       <div className="table-responsive">
-        <table className="table table-striped mt-2">
-          <thead className="thead">
+        <table className="spot-list-table">
+          <thead className="table-header">
             <tr>
-              <TableColumnHeader className="th-checkbox">
+              <th className="checkbox-column">
                 {hasRows && (
-                  <div className="adherent-control adherent-checkbox">
+                  <div className="checkbox-wrapper">
                     <input
                       type="checkbox"
-                      className="adherent-control-input"
-                      id="table-header-checkbox"
+                      className="form-checkbox"
                       checked={Boolean(isAllSelected)}
-                      onChange={() => doToggleAllSelected()}
+                      onChange={doToggleAllSelected}
                     />
-                    <label
-                      htmlFor="table-header-checkbox"
-                      className="adherent-control-label"
-                    >
-                      &#160;
-                    </label>
                   </div>
                 )}
-              </TableColumnHeader>
-              <TableColumnHeader
-                onSort={doChangeSort}
-                hasRows={hasRows}
-                sorter={sorter}
-                name={'name'}
-                label={i18n('entities.message.fields.name')}
-              />
-              <TableColumnHeader
-                onSort={doChangeSort}
-                hasRows={hasRows}
-                sorter={sorter}
-                name={'email'}
-                label={i18n('entities.message.fields.email')}
-              />
-              <TableColumnHeader
-                onSort={doChangeSort}
-                hasRows={hasRows}
-                sorter={sorter}
-                name={'subject'}
-                label={i18n('entities.message.fields.subject')}
-              />
-              <TableColumnHeader
-                onSort={doChangeSort}
-                hasRows={hasRows}
-                sorter={sorter}
-                name={'content'}
-                label={i18n('entities.message.fields.content')}
-              />
-              <TableColumnHeader className="th-actions" />
+              </th>
+              <th 
+                className="sortable-header"
+                onClick={() => doChangeSort('name')}
+              >
+                {i18n('entities.message.fields.name')}
+                {sorter.field === 'name' && (
+                  <span className="sort-icon">
+                    {sorter.order === 'ascend' ? '↑' : '↓'}
+                  </span>
+                )}
+              </th>
+              <th 
+                className="sortable-header"
+                onClick={() => doChangeSort('email')}
+              >
+                {i18n('entities.message.fields.email')}
+                {sorter.field === 'email' && (
+                  <span className="sort-icon">
+                    {sorter.order === 'ascend' ? '↑' : '↓'}
+                  </span>
+                )}
+              </th>
+              <th 
+                className="sortable-header"
+                onClick={() => doChangeSort('subject')}
+              >
+                {i18n('entities.message.fields.subject')}
+                {sorter.field === 'subject' && (
+                  <span className="sort-icon">
+                    {sorter.order === 'ascend' ? '↑' : '↓'}
+                  </span>
+                )}
+              </th>
+              <th 
+                className="sortable-header"
+                onClick={() => doChangeSort('content')}
+              >
+                {i18n('entities.message.fields.content')}
+                {sorter.field === 'content' && (
+                  <span className="sort-icon">
+                    {sorter.order === 'ascend' ? '↑' : '↓'}
+                  </span>
+                )}
+              </th>
+              <th className="actions-header">Actions</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="table-body">
             {loading && (
               <tr>
-                <td colSpan={100}>
-                  <Spinner />
+                <td colSpan={6} className="loading-cell">
+                  <div className="loading-container">
+                    <Spinner />
+                    <span className="loading-text">Loading data...</span>
+                  </div>
                 </td>
               </tr>
             )}
             {!loading && !hasRows && (
               <tr>
-                <td colSpan={100}>
-                  <div className="d-flex justify-content-center">
-                    {i18n('table.noData')}
+                <td colSpan={6} className="no-data-cell">
+                  <div className="no-data-content">
+                    <i className="fas fa-database no-data-icon"></i>
+                    <p>{i18n('table.noData')}</p>
                   </div>
                 </td>
               </tr>
             )}
             {!loading &&
               rows.map((row) => (
-                <tr key={row.id}>
-                  <th className="th-checkbox" scope="row">
-                    <div className="adherent-control adherent-checkbox">
+                <tr key={row.id} className="table-row">
+                  <td className="checkbox-column">
+                    <div className="checkbox-wrapper">
                       <input
                         type="checkbox"
-                        className="adherent-control-input"
-                        id={`table-header-checkbox-${row.id}`}
+                        className="form-checkbox"
                         checked={selectedKeys.includes(row.id)}
-                        onChange={() =>
-                          doToggleOneSelected(row.id)
-                        }
+                        onChange={() => doToggleOneSelected(row.id)}
                       />
-                      <label
-                        htmlFor={`table-header-checkbox-${row.id}`}
-                        className="adherent-control-label"
-                      >
-                        &#160;
-                      </label>
                     </div>
-                  </th>
-                  <td>{row.name}</td>
-                  <td>{row.email}</td>
-                  <td>{row.subject}</td>
-                  <td>{row.content}</td>
-
-                  <td className="td-actions">
-                    {hasPermissionToEdit && (
-                      <Link
-                        className="btn btn-link"
-                        to={`/message/${row.id}/edit`}
-                      >
-                        {i18n('common.edit')}
-                      </Link>
-                    )}
-                    {hasPermissionToDestroy && (
-                      <button
-                        className="btn btn-link"
-                        type="button"
-                        onClick={() =>
-                          doOpenDestroyConfirmModal(row.id)
-                        }
-                      >
-                        {i18n('common.destroy')}
-                      </button>
-                    )}
+                  </td>
+                  <td className="table-cell">{row.name}</td>
+                  <td className="table-cell">{row.email}</td>
+                  <td className="table-cell">{row.subject}</td>
+                  <td className="table-cell">{row.content}</td>
+                  <td className="actions-cell">
+                    <div className="actions-container">
+                      {hasPermissionToEdit && (
+                        <Link className="btn-action edit" to={`/message/${row.id}/edit`}>
+                          <i className="fas fa-edit"></i>
+                          <span>{i18n('common.edit')}</span>
+                        </Link>
+                      )}
+                      {hasPermissionToDestroy && (
+                        <button 
+                          className="btn-action delete" 
+                          type="button" 
+                          onClick={() => doOpenDestroyConfirmModal(row.id)}
+                        >
+                          <i className="fas fa-trash"></i>
+                          <span>{i18n('common.destroy')}</span>
+                        </button>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -233,22 +187,20 @@ function MessageListTable(props) {
         </table>
       </div>
 
-      <Pagination
-        onChange={doChangePagination}
-        disabled={loading}
-        pagination={pagination}
-      />
+      <div className="pagination-container">
+        <Pagination onChange={doChangePagination} disabled={loading} pagination={pagination} />
+      </div>
 
       {recordIdToDestroy && (
         <ConfirmModal
           title={i18n('common.areYouSure')}
           onConfirm={() => doDestroy(recordIdToDestroy)}
-          onClose={() => doCloseDestroyConfirmModal()}
+          onClose={doCloseDestroyConfirmModal}
           okText={i18n('common.yes')}
           cancelText={i18n('common.no')}
         />
       )}
-    </TableWrapper>
+    </div>
   );
 }
 

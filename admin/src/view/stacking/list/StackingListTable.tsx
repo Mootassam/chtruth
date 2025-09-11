@@ -7,10 +7,8 @@ import destroyActions from 'src/modules/stacking/destroy/stackingDestroyActions'
 import destroySelectors from 'src/modules/stacking/destroy/stackingDestroySelectors';
 import actions from 'src/modules/stacking/list/stackingListActions';
 import selectors from 'src/modules/stacking/list/stackingListSelectors';
-import TableColumnHeader from 'src/view/shared/table/TableColumnHeader';
 import ConfirmModal from 'src/view/shared/modals/ConfirmModal';
 import Spinner from 'src/view/shared/Spinner';
-import TableWrapper from 'src/view/shared/styles/TableWrapper';
 import Pagination from 'src/view/shared/table/Pagination';
 import UserListItem from 'src/view/user/list/UserListItem';
 
@@ -31,20 +29,11 @@ function StackingListTable() {
   const hasPermissionToEdit = useSelector(stackingSelectors.selectPermissionToEdit);
   const hasPermissionToDestroy = useSelector(stackingSelectors.selectPermissionToDestroy);
 
-  const doOpenDestroyConfirmModal = (id) => {
-    setRecordIdToDestroy(id);
-  };
-
-  const doCloseDestroyConfirmModal = () => {
-    setRecordIdToDestroy(null);
-  };
+  const doOpenDestroyConfirmModal = (id) => setRecordIdToDestroy(id);
+  const doCloseDestroyConfirmModal = () => setRecordIdToDestroy(null);
 
   const doChangeSort = (field) => {
-    const order =
-      sorter.field === field && sorter.order === 'ascend'
-        ? 'descend'
-        : 'ascend';
-
+    const order = sorter.field === field && sorter.order === 'ascend' ? 'descend' : 'ascend';
     dispatch(actions.doChangeSort({ field, order }));
   };
 
@@ -57,210 +46,213 @@ function StackingListTable() {
     dispatch(destroyActions.doDestroy(id));
   };
 
-  const doToggleAllSelected = () => {
-    dispatch(actions.doToggleAllSelected());
-  };
-
-  const doToggleOneSelected = (id) => {
-    dispatch(actions.doToggleOneSelected(id));
-  };
+  const doToggleAllSelected = () => dispatch(actions.doToggleAllSelected());
+  const doToggleOneSelected = (id) => dispatch(actions.doToggleOneSelected(id));
 
   return (
-    <TableWrapper>
+    <div className="spot-list-container">
       <div className="table-responsive">
-        <table className="table table-striped mt-2">
-          <thead className="thead">
+        <table className="spot-list-table">
+          <thead className="table-header">
             <tr>
-              <TableColumnHeader className="th-checkbox">
+              <th className="checkbox-column">
                 {hasRows && (
-                  <div className="adherent-control adherent-checkbox">
+                  <div className="checkbox-wrapper">
                     <input
                       type="checkbox"
-                      className="adherent-control-input"
-                      id="table-header-checkbox"
+                      className="form-checkbox"
                       checked={Boolean(isAllSelected)}
-                      onChange={() => doToggleAllSelected()}
+                      onChange={doToggleAllSelected}
                     />
-                    <label
-                      htmlFor="table-header-checkbox"
-                      className="adherent-control-label"
-                    >
-                      &#160;
-                    </label>
                   </div>
                 )}
-              </TableColumnHeader>
-
-              <TableColumnHeader
-                onSort={doChangeSort}
-                hasRows={hasRows}
-                sorter={sorter}
-                name="user"
-                label={i18n('entities.stacking.fields.user')}
-              />
-
-              <TableColumnHeader
-                onSort={doChangeSort}
-                hasRows={hasRows}
-                sorter={sorter}
-                name="currency"
-                label={i18n('entities.stacking.fields.currency')}
-              />
-
-              <TableColumnHeader
-                onSort={doChangeSort}
-                hasRows={hasRows}
-                sorter={sorter}
-                name="amount"
-                label={i18n('entities.stacking.fields.amount')}
-                align="right"
-              />
-
-              <TableColumnHeader
-                onSort={doChangeSort}
-                hasRows={hasRows}
-                sorter={sorter}
-                name="apy"
-                label={i18n('entities.stacking.fields.apy')}
-                align="right"
-              />
-
-              <TableColumnHeader
-                onSort={doChangeSort}
-                hasRows={hasRows}
-                sorter={sorter}
-                name="minimumStake"
-                label={i18n('entities.stacking.fields.minimumStake')}
-                align="right"
-              />
-
-              <TableColumnHeader
-                onSort={doChangeSort}
-                hasRows={hasRows}
-                sorter={sorter}
-                name="unstakingPeriod"
-                label={i18n('entities.stacking.fields.unstakingPeriod')}
-                align="right"
-              />
-
-              <TableColumnHeader
-                onSort={doChangeSort}
-                hasRows={hasRows}
-                sorter={sorter}
-                name="earnedRewards"
-                label={i18n('entities.stacking.fields.earnedRewards')}
-                align="right"
-              />
-
-              <TableColumnHeader
-                onSort={doChangeSort}
-                hasRows={hasRows}
-                sorter={sorter}
-                name="startDate"
-                label={i18n('entities.stacking.fields.startDate')}
-              />
-
-              <TableColumnHeader
-                onSort={doChangeSort}
-                hasRows={hasRows}
-                sorter={sorter}
-                name="endDate"
-                label={i18n('entities.stacking.fields.endDate')}
-              />
-
-              <TableColumnHeader
-                onSort={doChangeSort}
-                hasRows={hasRows}
-                sorter={sorter}
-                name="status"
-                label={i18n('entities.stacking.fields.status')}
-              />
-
-              <TableColumnHeader className="th-actions" />
+              </th>
+              <th 
+                className="sortable-header"
+                onClick={() => doChangeSort('user')}
+              >
+                {i18n('entities.stacking.fields.user')}
+                {sorter.field === 'user' && (
+                  <span className="sort-icon">
+                    {sorter.order === 'ascend' ? '↑' : '↓'}
+                  </span>
+                )}
+              </th>
+              <th 
+                className="sortable-header"
+                onClick={() => doChangeSort('currency')}
+              >
+                {i18n('entities.stacking.fields.currency')}
+                {sorter.field === 'currency' && (
+                  <span className="sort-icon">
+                    {sorter.order === 'ascend' ? '↑' : '↓'}
+                  </span>
+                )}
+              </th>
+              <th 
+                className="sortable-header"
+                onClick={() => doChangeSort('amount')}
+              >
+                {i18n('entities.stacking.fields.amount')}
+                {sorter.field === 'amount' && (
+                  <span className="sort-icon">
+                    {sorter.order === 'ascend' ? '↑' : '↓'}
+                  </span>
+                )}
+              </th>
+              <th 
+                className="sortable-header"
+                onClick={() => doChangeSort('apy')}
+              >
+                {i18n('entities.stacking.fields.apy')}
+                {sorter.field === 'apy' && (
+                  <span className="sort-icon">
+                    {sorter.order === 'ascend' ? '↑' : '↓'}
+                  </span>
+                )}
+              </th>
+              <th 
+                className="sortable-header"
+                onClick={() => doChangeSort('minimumStake')}
+              >
+                {i18n('entities.stacking.fields.minimumStake')}
+                {sorter.field === 'minimumStake' && (
+                  <span className="sort-icon">
+                    {sorter.order === 'ascend' ? '↑' : '↓'}
+                  </span>
+                )}
+              </th>
+              <th 
+                className="sortable-header"
+                onClick={() => doChangeSort('unstakingPeriod')}
+              >
+                {i18n('entities.stacking.fields.unstakingPeriod')}
+                {sorter.field === 'unstakingPeriod' && (
+                  <span className="sort-icon">
+                    {sorter.order === 'ascend' ? '↑' : '↓'}
+                  </span>
+                )}
+              </th>
+              <th 
+                className="sortable-header"
+                onClick={() => doChangeSort('earnedRewards')}
+              >
+                {i18n('entities.stacking.fields.earnedRewards')}
+                {sorter.field === 'earnedRewards' && (
+                  <span className="sort-icon">
+                    {sorter.order === 'ascend' ? '↑' : '↓'}
+                  </span>
+                )}
+              </th>
+              <th 
+                className="sortable-header"
+                onClick={() => doChangeSort('startDate')}
+              >
+                {i18n('entities.stacking.fields.startDate')}
+                {sorter.field === 'startDate' && (
+                  <span className="sort-icon">
+                    {sorter.order === 'ascend' ? '↑' : '↓'}
+                  </span>
+                )}
+              </th>
+              <th 
+                className="sortable-header"
+                onClick={() => doChangeSort('endDate')}
+              >
+                {i18n('entities.stacking.fields.endDate')}
+                {sorter.field === 'endDate' && (
+                  <span className="sort-icon">
+                    {sorter.order === 'ascend' ? '↑' : '↓'}
+                  </span>
+                )}
+              </th>
+              <th 
+                className="sortable-header"
+                onClick={() => doChangeSort('status')}
+              >
+                {i18n('entities.stacking.fields.status')}
+                {sorter.field === 'status' && (
+                  <span className="sort-icon">
+                    {sorter.order === 'ascend' ? '↑' : '↓'}
+                  </span>
+                )}
+              </th>
+              <th className="actions-header">Actions</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="table-body">
             {loading && (
               <tr>
-                <td colSpan={100}>
-                  <Spinner />
+                <td colSpan={12} className="loading-cell">
+                  <div className="loading-container">
+                    <Spinner />
+                    <span className="loading-text">Loading data...</span>
+                  </div>
                 </td>
               </tr>
             )}
             {!loading && !hasRows && (
               <tr>
-                <td colSpan={100}>
-                  <div className="d-flex justify-content-center">
-                    {i18n('table.noData')}
+                <td colSpan={12} className="no-data-cell">
+                  <div className="no-data-content">
+                    <i className="fas fa-database no-data-icon"></i>
+                    <p>{i18n('table.noData')}</p>
                   </div>
                 </td>
               </tr>
             )}
             {!loading &&
               rows.map((row) => (
-                <tr key={row.id}>
-                  <th className="th-checkbox" scope="row">
-                    <div className="adherent-control adherent-checkbox">
+                <tr key={row.id} className="table-row">
+                  <td className="checkbox-column">
+                    <div className="checkbox-wrapper">
                       <input
                         type="checkbox"
-                        className="adherent-control-input"
-                        id={`table-header-checkbox-${row.id}`}
+                        className="form-checkbox"
                         checked={selectedKeys.includes(row.id)}
                         onChange={() => doToggleOneSelected(row.id)}
                       />
-                      <label
-                        htmlFor={`table-header-checkbox-${row.id}`}
-                        className="adherent-control-label"
-                      >
-                        &#160;
-                      </label>
                     </div>
-                  </th>
-
-                  <td><UserListItem value={row.user} /></td>
-                  <td>{row.currency}</td>
-                  <td style={{ textAlign: 'right' }}>{row.amount}</td>
-                  <td style={{ textAlign: 'right' }}>{row.apy}%</td>
-                  <td style={{ textAlign: 'right' }}>{row.minimumStake}</td>
-                  <td style={{ textAlign: 'right' }}>{row.unstakingPeriod} days</td>
-                  <td style={{ textAlign: 'right' }}>{row.earnedRewards}</td>
-                  <td>{row.startDate}</td>
-                  <td>{row.endDate}</td>
-
-                  <td>
-                    <span
-                      style={{
-                        color:
-                          row.status === 'active'
-                            ? 'green'
-                            : row.status === 'completed'
-                            ? 'blue'
-                            : 'red',
-                        fontWeight: 'bold',
-                      }}
-                    >
+                  </td>
+                  <td className="table-cell">
+                    <UserListItem value={row.user} />
+                  </td>
+                  <td className="table-cell">{row.currency}</td>
+                  <td className="table-cell numeric">{row.amount}</td>
+                  <td className="table-cell numeric">{row.apy}%</td>
+                  <td className="table-cell numeric">{row.minimumStake}</td>
+                  <td className="table-cell numeric">{row.unstakingPeriod} days</td>
+                  <td className="table-cell numeric">{row.earnedRewards}</td>
+                  <td className="table-cell">{row.startDate}</td>
+                  <td className="table-cell">{row.endDate}</td>
+                  <td className="table-cell">
+                    <span className={`status-badge ${
+                      row.status === 'active' ? 'active' : 
+                      row.status === 'completed' ? 'completed' : 
+                      'canceled'
+                    }`}>
                       {row.status}
                     </span>
                   </td>
-
-                  <td className="td-actions">
-                    {hasPermissionToEdit && (
-                      <Link
-                        className="btn btn-link"
-                        to={`/stacking/${row.id}/edit`}
-                      >
-                        {i18n('common.edit')}
-                      </Link>
-                    )}
-                    {hasPermissionToDestroy && (
-                      <button
-                        className="btn btn-link"
-                        type="button"
-                        onClick={() => doOpenDestroyConfirmModal(row.id)}
-                      >
-                        {i18n('common.destroy')}
-                      </button>
-                    )}
+                  <td className="actions-cell">
+                    <div className="actions-container">
+                      {hasPermissionToEdit && (
+                        <Link className="btn-action edit" to={`/stacking/${row.id}/edit`}>
+                          <i className="fas fa-edit"></i>
+                          <span>{i18n('common.edit')}</span>
+                        </Link>
+                      )}
+                      {hasPermissionToDestroy && (
+                        <button 
+                          className="btn-action delete" 
+                          type="button" 
+                          onClick={() => doOpenDestroyConfirmModal(row.id)}
+                        >
+                          <i className="fas fa-trash"></i>
+                          <span>{i18n('common.destroy')}</span>
+                        </button>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -268,22 +260,20 @@ function StackingListTable() {
         </table>
       </div>
 
-      <Pagination
-        onChange={doChangePagination}
-        disabled={loading}
-        pagination={pagination}
-      />
+      <div className="pagination-container">
+        <Pagination onChange={doChangePagination} disabled={loading} pagination={pagination} />
+      </div>
 
       {recordIdToDestroy && (
         <ConfirmModal
           title={i18n('common.areYouSure')}
           onConfirm={() => doDestroy(recordIdToDestroy)}
-          onClose={() => doCloseDestroyConfirmModal()}
+          onClose={doCloseDestroyConfirmModal}
           okText={i18n('common.yes')}
           cancelText={i18n('common.no')}
         />
       )}
-    </TableWrapper>
+    </div>
   );
 }
 

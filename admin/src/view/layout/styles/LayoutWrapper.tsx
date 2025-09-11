@@ -344,11 +344,7 @@ const LayoutWrapper = styled.div`
   /* Dark mode support */
   @media (prefers-color-scheme: dark) {
     .sidebar-container {
-      background: linear-gradient(
-        135deg,
-        #1a1f2c 0%,
-        #0d1117 100%
-      );
+    
     }
   }
 

@@ -1,9 +1,9 @@
 
-import vipService from 'src/modules/kyc/kycService';
+import vipService from 'src/modules/deposit/depositService';
 import Errors from 'src/modules/shared/error/errors';
 import Message from 'src/view/shared/message';
 import { getHistory } from 'src/modules/store';
-import { i18n } from 'src/i18n';
+import { i18n } from '../../../i18n';
 
 const prefix = 'COUPONS_FORM';
 
@@ -45,7 +45,7 @@ const vipFormActions = {
         type: vipFormActions.INIT_ERROR,
       });
 
-      getHistory().push('/kyc');
+      getHistory().push('/deposit');
     }
   },
 
@@ -62,10 +62,10 @@ const vipFormActions = {
       });
 
       Message.success(
-        i18n('entities.kyc.create.success'),
+        i18n('entities.deposit.create.success'),
       );
 
-      getHistory().push('/kyc');
+      getHistory().push('/deposit');
     } catch (error) {
       Errors.handle(error);
 
@@ -88,10 +88,10 @@ const vipFormActions = {
       });
 
       Message.success(
-        i18n('entities.kyc.update.success'),
+        i18n('entities.deposit.update.success'),
       );
 
-      getHistory().push('/kyc');
+      getHistory().push('/deposit');
     } catch (error) {
       Errors.handle(error);
 

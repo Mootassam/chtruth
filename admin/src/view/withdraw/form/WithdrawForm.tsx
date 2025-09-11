@@ -11,40 +11,16 @@ import UserAutocompleteFormItem from 'src/view/user/autocomplete/UserAutocomplet
 import SelectFormItem from 'src/view/shared/form/items/SelectFormItem';
 
 const schema = yup.object().shape({
-  orderNo: yupFormSchemas.string(
-    i18n('entities.withdraw.fields.orderNo'),
-    { required: true },
-  ),
-  currency: yupFormSchemas.string(
-    i18n('entities.withdraw.fields.currency'),
-    { required: true },
-  ),
-  withdrawAmount: yupFormSchemas.decimal(
-    i18n('entities.withdraw.fields.withdrawAmount'),
-    { required: true },
-  ),
-  fee: yupFormSchemas.decimal(
-    i18n('entities.withdraw.fields.fee'),
-    { required: true },
-  ),
-  totalAmount: yupFormSchemas.decimal(
-    i18n('entities.withdraw.fields.totalAmount'),
-    { required: true },
-  ),
-  auditor: yupFormSchemas.relationToOne(
-    i18n('entities.withdraw.fields.auditor'),
-    {},
-  ),
-  acceptTime: yupFormSchemas.datetime(
-    i18n('entities.withdraw.fields.acceptTime'),
-    {},
-  ),
-  status: yupFormSchemas.enumerator(
-    i18n('entities.withdraw.fields.status'),
-    {
-      options: ['pending', 'canceled', 'success'],
-    },
-  ),
+  orderNo: yupFormSchemas.string(i18n('entities.withdraw.fields.orderNo'), { required: true }),
+  currency: yupFormSchemas.string(i18n('entities.withdraw.fields.currency'), { required: true }),
+  withdrawAmount: yupFormSchemas.decimal(i18n('entities.withdraw.fields.withdrawAmount'), { required: true }),
+  fee: yupFormSchemas.decimal(i18n('entities.withdraw.fields.fee'), { required: true }),
+  totalAmount: yupFormSchemas.decimal(i18n('entities.withdraw.fields.totalAmount'), { required: true }),
+  auditor: yupFormSchemas.relationToOne(i18n('entities.withdraw.fields.auditor')),
+  acceptTime: yupFormSchemas.datetime(i18n('entities.withdraw.fields.acceptTime')),
+  status: yupFormSchemas.enumerator(i18n('entities.withdraw.fields.status'), {
+    options: ['pending', 'canceled', 'success'],
+  }),
 });
 
 function WithdrawForm(props) {
@@ -73,75 +49,43 @@ function WithdrawForm(props) {
   };
 
   const onReset = () => {
-    Object.keys(initialValues).forEach((key) => {
-      form.setValue(key, initialValues[key]);
-    });
+    Object.keys(initialValues).forEach((key) => form.setValue(key, initialValues[key]));
   };
 
   return (
     <FormWrapper>
       <FormProvider {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
-          <div className="row">
-            <div className="col-lg-7 col-md-8 col-12">
-              <InputFormItem
-                name="orderNo"
-                label={i18n('entities.withdraw.fields.orderNo')}
-                required
-              />
+          <div className="row g-3">
+            <div className="col-lg-6 col-md-6 col-sm-12">
+              <InputFormItem name="orderNo" label={i18n('entities.withdraw.fields.orderNo')} required />
             </div>
 
-            <div className="col-lg-7 col-md-8 col-12">
-              <InputFormItem
-                name="currency"
-                label={i18n('entities.withdraw.fields.currency')}
-                required
-              />
+            <div className="col-lg-6 col-md-6 col-sm-12">
+              <InputFormItem name="currency" label={i18n('entities.withdraw.fields.currency')} required />
             </div>
 
-            <div className="col-lg-7 col-md-8 col-12">
-              <InputFormItem
-                name="withdrawAmount"
-                label={i18n('entities.withdraw.fields.withdrawAmount')}
-                required
-                type="number"
-              />
+            <div className="col-lg-6 col-md-6 col-sm-12">
+              <InputFormItem name="withdrawAmount" label={i18n('entities.withdraw.fields.withdrawAmount')} required type="number" />
             </div>
 
-            <div className="col-lg-7 col-md-8 col-12">
-              <InputFormItem
-                name="fee"
-                label={i18n('entities.withdraw.fields.fee')}
-                required
-                type="number"
-              />
+            <div className="col-lg-6 col-md-6 col-sm-12">
+              <InputFormItem name="fee" label={i18n('entities.withdraw.fields.fee')} required type="number" />
             </div>
 
-            <div className="col-lg-7 col-md-8 col-12">
-              <InputFormItem
-                name="totalAmount"
-                label={i18n('entities.withdraw.fields.totalAmount')}
-                required
-                type="number"
-              />
+            <div className="col-lg-6 col-md-6 col-sm-12">
+              <InputFormItem name="totalAmount" label={i18n('entities.withdraw.fields.totalAmount')} required type="number" />
             </div>
 
-            <div className="col-lg-7 col-md-8 col-12">
-              <UserAutocompleteFormItem
-                name="auditor"
-                label={i18n('entities.withdraw.fields.auditor')}
-              />
+            <div className="col-lg-6 col-md-6 col-sm-12">
+              <UserAutocompleteFormItem name="auditor" label={i18n('entities.withdraw.fields.auditor')} />
             </div>
 
-            <div className="col-lg-7 col-md-8 col-12">
-              <InputFormItem
-                name="acceptTime"
-                label={i18n('entities.withdraw.fields.acceptTime')}
-                type="datetime-local"
-              />
+            <div className="col-lg-6 col-md-6 col-sm-12">
+              <InputFormItem name="acceptTime" label={i18n('entities.withdraw.fields.acceptTime')} type="datetime-local" />
             </div>
 
-            <div className="col-lg-7 col-md-8 col-12">
+            <div className="col-lg-6 col-md-6 col-sm-12">
               <SelectFormItem
                 name="status"
                 label={i18n('entities.withdraw.fields.status')}
@@ -155,41 +99,18 @@ function WithdrawForm(props) {
             </div>
           </div>
 
-          <div className="form-buttons">
-            <button
-              className="btn btn-primary"
-              disabled={props.saveLoading}
-              type="button"
-              onClick={form.handleSubmit(onSubmit)}
-            >
-              <ButtonIcon
-                loading={props.saveLoading}
-                iconClass="far fa-save"
-              />
-              &nbsp;
-              {i18n('common.save')}
+          <div className="form-buttons d-flex flex-wrap gap-2 mt-3">
+            <button className="btn btn-primary" disabled={props.saveLoading} type="button" onClick={form.handleSubmit(onSubmit)}>
+              <ButtonIcon loading={props.saveLoading} iconClass="far fa-save" />&nbsp;{i18n('common.save')}
             </button>
 
-            <button
-              className="btn btn-light"
-              type="button"
-              disabled={props.saveLoading}
-              onClick={onReset}
-            >
-              <i className="fas fa-undo"></i>
-              &nbsp;
-              {i18n('common.reset')}
+            <button className="btn btn-light" type="button" disabled={props.saveLoading} onClick={onReset}>
+              <i className="fas fa-undo"></i>&nbsp;{i18n('common.reset')}
             </button>
 
             {props.onCancel && (
-              <button
-                className="btn btn-light"
-                type="button"
-                disabled={props.saveLoading}
-                onClick={props.onCancel}
-              >
-                <i className="fas fa-times"></i>&nbsp;
-                {i18n('common.cancel')}
+              <button className="btn btn-light" type="button" disabled={props.saveLoading} onClick={props.onCancel}>
+                <i className="fas fa-times"></i>&nbsp;{i18n('common.cancel')}
               </button>
             )}
           </div>

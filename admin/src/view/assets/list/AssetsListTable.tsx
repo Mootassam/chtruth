@@ -7,10 +7,8 @@ import destroyActions from 'src/modules/assets/destroy/assetsDestroyActions';
 import destroySelectors from 'src/modules/assets/destroy/assetsDestroySelectors';
 import actions from 'src/modules/assets/list/assetsListActions';
 import selectors from 'src/modules/assets/list/assetsListSelectors';
-import TableColumnHeader from 'src/view/shared/table/TableColumnHeader';
 import ConfirmModal from 'src/view/shared/modals/ConfirmModal';
 import Spinner from 'src/view/shared/Spinner';
-import TableWrapper from 'src/view/shared/styles/TableWrapper';
 import Pagination from 'src/view/shared/table/Pagination';
 import UserListItem from 'src/view/user/list/UserListItem';
 
@@ -31,26 +29,12 @@ function AssetsListTable(props) {
   const hasPermissionToEdit = useSelector(assetsSelectors.selectPermissionToEdit);
   const hasPermissionToDestroy = useSelector(assetsSelectors.selectPermissionToDestroy);
 
-  const doOpenDestroyConfirmModal = (id) => {
-    setRecordIdToDestroy(id);
-  };
-
-  const doCloseDestroyConfirmModal = () => {
-    setRecordIdToDestroy(null);
-  };
+  const doOpenDestroyConfirmModal = (id) => setRecordIdToDestroy(id);
+  const doCloseDestroyConfirmModal = () => setRecordIdToDestroy(null);
 
   const doChangeSort = (field) => {
-    const order =
-      sorter.field === field && sorter.order === 'ascend'
-        ? 'descend'
-        : 'ascend';
-
-    dispatch(
-      actions.doChangeSort({
-        field,
-        order,
-      }),
-    );
+    const order = sorter.field === field && sorter.order === 'ascend' ? 'descend' : 'ascend';
+    dispatch(actions.doChangeSort({ field, order }));
   };
 
   const doChangePagination = (pagination) => {
@@ -62,159 +46,161 @@ function AssetsListTable(props) {
     dispatch(destroyActions.doDestroy(id));
   };
 
-  const doToggleAllSelected = () => {
-    dispatch(actions.doToggleAllSelected());
-  };
-
-  const doToggleOneSelected = (id) => {
-    dispatch(actions.doToggleOneSelected(id));
-  };
+  const doToggleAllSelected = () => dispatch(actions.doToggleAllSelected());
+  const doToggleOneSelected = (id) => dispatch(actions.doToggleOneSelected(id));
 
   return (
-    <TableWrapper>
+    <div className="spot-list-container">
       <div className="table-responsive">
-        <table className="table table-striped mt-2">
-          <thead className="thead">
+        <table className="spot-list-table">
+          <thead className="table-header">
             <tr>
-              <TableColumnHeader className="th-checkbox">
+              <th className="checkbox-column">
                 {hasRows && (
-                  <div className="adherent-control adherent-checkbox">
+                  <div className="checkbox-wrapper">
                     <input
                       type="checkbox"
-                      className="adherent-control-input"
-                      id="table-header-checkbox"
+                      className="form-checkbox"
                       checked={Boolean(isAllSelected)}
-                      onChange={() => doToggleAllSelected()}
+                      onChange={doToggleAllSelected}
                     />
-                    <label
-                      htmlFor="table-header-checkbox"
-                      className="adherent-control-label"
-                    >
-                      &#160;
-                    </label>
                   </div>
                 )}
-              </TableColumnHeader>
-
-              <TableColumnHeader
-                onSort={doChangeSort}
-                hasRows={hasRows}
-                sorter={sorter}
-                name={'id'}
-                label={i18n('entities.assets.fields.id')}
-              />
-              <TableColumnHeader
-                onSort={doChangeSort}
-                hasRows={hasRows}
-                sorter={sorter}
-                name={'user'}
-                label={i18n('entities.assets.fields.user')}
-              />
-              <TableColumnHeader
-                onSort={doChangeSort}
-                hasRows={hasRows}
-                sorter={sorter}
-                name={'symbol'}
-                label={i18n('entities.assets.fields.symbol')}
-              />
-              <TableColumnHeader
-                onSort={doChangeSort}
-                hasRows={hasRows}
-                sorter={sorter}
-                name={'coinName'}
-                label={i18n('entities.assets.fields.coinName')}
-              />
-              <TableColumnHeader
-                onSort={doChangeSort}
-                hasRows={hasRows}
-                sorter={sorter}
-                name={'amount'}
-                label={i18n('entities.assets.fields.amount')}
-                align="right"
-              />
-              <TableColumnHeader
-                onSort={doChangeSort}
-                hasRows={hasRows}
-                sorter={sorter}
-                name={'status'}
-                label={i18n('entities.assets.fields.status')}
-                align="right"
-              />
-
-              <TableColumnHeader className="th-actions" />
+              </th>
+              <th 
+                className="sortable-header"
+                onClick={() => doChangeSort('id')}
+              >
+                {i18n('entities.assets.fields.id')}
+                {sorter.field === 'id' && (
+                  <span className="sort-icon">
+                    {sorter.order === 'ascend' ? '↑' : '↓'}
+                  </span>
+                )}
+              </th>
+              <th 
+                className="sortable-header"
+                onClick={() => doChangeSort('user')}
+              >
+                {i18n('entities.assets.fields.user')}
+                {sorter.field === 'user' && (
+                  <span className="sort-icon">
+                    {sorter.order === 'ascend' ? '↑' : '↓'}
+                  </span>
+                )}
+              </th>
+              <th 
+                className="sortable-header"
+                onClick={() => doChangeSort('symbol')}
+              >
+                {i18n('entities.assets.fields.symbol')}
+                {sorter.field === 'symbol' && (
+                  <span className="sort-icon">
+                    {sorter.order === 'ascend' ? '↑' : '↓'}
+                  </span>
+                )}
+              </th>
+              <th 
+                className="sortable-header"
+                onClick={() => doChangeSort('coinName')}
+              >
+                {i18n('entities.assets.fields.coinName')}
+                {sorter.field === 'coinName' && (
+                  <span className="sort-icon">
+                    {sorter.order === 'ascend' ? '↑' : '↓'}
+                  </span>
+                )}
+              </th>
+              <th 
+                className="sortable-header"
+                onClick={() => doChangeSort('amount')}
+              >
+                {i18n('entities.assets.fields.amount')}
+                {sorter.field === 'amount' && (
+                  <span className="sort-icon">
+                    {sorter.order === 'ascend' ? '↑' : '↓'}
+                  </span>
+                )}
+              </th>
+              <th 
+                className="sortable-header"
+                onClick={() => doChangeSort('status')}
+              >
+                {i18n('entities.assets.fields.status')}
+                {sorter.field === 'status' && (
+                  <span className="sort-icon">
+                    {sorter.order === 'ascend' ? '↑' : '↓'}
+                  </span>
+                )}
+              </th>
+              <th className="actions-header">Actions</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="table-body">
             {loading && (
               <tr>
-                <td colSpan={100}>
-                  <Spinner />
+                <td colSpan={8} className="loading-cell">
+                  <div className="loading-container">
+                    <Spinner />
+                    <span className="loading-text">Loading data...</span>
+                  </div>
                 </td>
               </tr>
             )}
             {!loading && !hasRows && (
               <tr>
-                <td colSpan={100}>
-                  <div className="d-flex justify-content-center">
-                    {i18n('table.noData')}
+                <td colSpan={8} className="no-data-cell">
+                  <div className="no-data-content">
+                    <i className="fas fa-database no-data-icon"></i>
+                    <p>{i18n('table.noData')}</p>
                   </div>
                 </td>
               </tr>
             )}
             {!loading &&
               rows.map((row) => (
-                <tr key={row.id}>
-                  <th className="th-checkbox" scope="row">
-                    <div className="adherent-control adherent-checkbox">
+                <tr key={row.id} className="table-row">
+                  <td className="checkbox-column">
+                    <div className="checkbox-wrapper">
                       <input
                         type="checkbox"
-                        className="adherent-control-input"
-                        id={`table-header-checkbox-${row.id}`}
+                        className="form-checkbox"
                         checked={selectedKeys.includes(row.id)}
                         onChange={() => doToggleOneSelected(row.id)}
                       />
-                      <label
-                        htmlFor={`table-header-checkbox-${row.id}`}
-                        className="adherent-control-label"
-                      >
-                        &#160;
-                      </label>
                     </div>
-                  </th>
-
-                  <td>{row.id}</td>
-                  <td style={{ textAlign: 'left' }}>
+                  </td>
+                  <td className="table-cell">{row.id}</td>
+                  <td className="table-cell">
                     <UserListItem value={row.createdBy} />
                   </td>
-                  <td>{row.symbol}</td>
-                  <td>{row.coinName}</td>
-                  <td style={{ textAlign: 'right' }}>{row.amount}</td>
-                  <td style={{ textAlign: 'right' }}>
-                    <span
-                      style={{
-                        color: row.status === 'success' || row.status === 'available' ? 'green' : 'red',
-                        fontWeight: 'bold',
-                      }}
-                    >
+                  <td className="table-cell">{row.symbol}</td>
+                  <td className="table-cell">{row.coinName}</td>
+                  <td className="table-cell numeric">{row.amount}</td>
+                  <td className="table-cell">
+                    <span className={`status-badge ${(row.status === 'success' || row.status === 'available') ? 'success' : 'canceled'}`}>
                       {row.status}
                     </span>
                   </td>
-
-                  <td className="td-actions">
-                    {hasPermissionToEdit && (
-                      <Link className="btn btn-link" to={`/assets/${row.id}/edit`}>
-                        {i18n('common.edit')}
-                      </Link>
-                    )}
-                    {hasPermissionToDestroy && (
-                      <button
-                        className="btn btn-link"
-                        type="button"
-                        onClick={() => doOpenDestroyConfirmModal(row.id)}
-                      >
-                        {i18n('common.destroy')}
-                      </button>
-                    )}
+                  <td className="actions-cell">
+                    <div className="actions-container">
+                      {hasPermissionToEdit && (
+                        <Link className="btn-action edit" to={`/assets/${row.id}/edit`}>
+                          <i className="fas fa-edit"></i>
+                          <span>{i18n('common.edit')}</span>
+                        </Link>
+                      )}
+                      {hasPermissionToDestroy && (
+                        <button 
+                          className="btn-action delete" 
+                          type="button" 
+                          onClick={() => doOpenDestroyConfirmModal(row.id)}
+                        >
+                          <i className="fas fa-trash"></i>
+                          <span>{i18n('common.destroy')}</span>
+                        </button>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -222,18 +208,20 @@ function AssetsListTable(props) {
         </table>
       </div>
 
-      <Pagination onChange={doChangePagination} disabled={loading} pagination={pagination} />
+      <div className="pagination-container">
+        <Pagination onChange={doChangePagination} disabled={loading} pagination={pagination} />
+      </div>
 
       {recordIdToDestroy && (
         <ConfirmModal
           title={i18n('common.areYouSure')}
           onConfirm={() => doDestroy(recordIdToDestroy)}
-          onClose={() => doCloseDestroyConfirmModal()}
+          onClose={doCloseDestroyConfirmModal}
           okText={i18n('common.yes')}
           cancelText={i18n('common.no')}
         />
       )}
-    </TableWrapper>
+    </div>
   );
 }
 

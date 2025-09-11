@@ -11,54 +11,18 @@ import UserAutocompleteFormItem from 'src/view/user/autocomplete/UserAutocomplet
 import SelectFormItem from 'src/view/shared/form/items/SelectFormItem';
 
 const schema = yup.object().shape({
-  futuresAmount: yupFormSchemas.decimal(
-    i18n('entities.futures.fields.futuresAmount'),
-    { required: true },
-  ),
-  contractDuration: yupFormSchemas.string(
-    i18n('entities.futures.fields.contractDuration'),
-    { required: true },
-  ),
-  direction: yupFormSchemas.string(
-    i18n('entities.futures.fields.direction'),
-    { required: true },
-  ),
-  openPositionPrice: yupFormSchemas.decimal(
-    i18n('entities.futures.fields.openPositionPrice'),
-    { required: true },
-  ),
-  openPositionTime: yupFormSchemas.datetime(
-    i18n('entities.futures.fields.openPositionTime'),
-    { required: true },
-  ),
-  closePositionPrice: yupFormSchemas.decimal(
-    i18n('entities.futures.fields.closePositionPrice'),
-    {},
-  ),
-  closePositionTime: yupFormSchemas.datetime(
-    i18n('entities.futures.fields.closePositionTime'),
-    {},
-  ),
-  profitAndLoss: yupFormSchemas.decimal(
-    i18n('entities.futures.fields.profitAndLoss'),
-    {},
-  ),
-  leverage: yupFormSchemas.decimal(
-    i18n('entities.futures.fields.leverage'),
-    { required: true },
-  ),
-  control: yupFormSchemas.string(
-    i18n('entities.futures.fields.control'),
-    { required: true },
-  ),
-  operate: yupFormSchemas.string(
-    i18n('entities.futures.fields.operate'),
-    { required: true },
-  ),
-  auditor: yupFormSchemas.relationToOne(
-    i18n('entities.futures.fields.auditor'),
-    {},
-  ),
+  futuresAmount: yupFormSchemas.decimal(i18n('entities.futures.fields.futuresAmount'), { required: true }),
+  contractDuration: yupFormSchemas.string(i18n('entities.futures.fields.contractDuration'), { required: true }),
+  direction: yupFormSchemas.string(i18n('entities.futures.fields.direction'), { required: true }),
+  openPositionPrice: yupFormSchemas.decimal(i18n('entities.futures.fields.openPositionPrice'), { required: true }),
+  openPositionTime: yupFormSchemas.datetime(i18n('entities.futures.fields.openPositionTime'), { required: true }),
+  closePositionPrice: yupFormSchemas.decimal(i18n('entities.futures.fields.closePositionPrice'), {}),
+  closePositionTime: yupFormSchemas.datetime(i18n('entities.futures.fields.closePositionTime'), {}),
+  profitAndLoss: yupFormSchemas.decimal(i18n('entities.futures.fields.profitAndLoss'), {}),
+  leverage: yupFormSchemas.decimal(i18n('entities.futures.fields.leverage'), { required: true }),
+  control: yupFormSchemas.string(i18n('entities.futures.fields.control'), { required: true }),
+  operate: yupFormSchemas.string(i18n('entities.futures.fields.operate'), { required: true }),
+  auditor: yupFormSchemas.relationToOne(i18n('entities.futures.fields.auditor'), {}),
 });
 
 function FuturesForm(props) {
@@ -76,7 +40,7 @@ function FuturesForm(props) {
       leverage: record.leverage,
       control: record.control,
       operate: record.operate,
-      auditor: record.auditor || [],
+      auditor: record.auditor || null,
     };
   });
 
@@ -100,26 +64,26 @@ function FuturesForm(props) {
     <FormWrapper>
       <FormProvider {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
-          <div className="row">
+          <div className="row g-3">
 
-            <div className="col-lg-7 col-md-8 col-12">
+            <div className="col-lg-6 col-md-6 col-sm-12">
               <InputFormItem
                 name="futuresAmount"
                 label={i18n('entities.futures.fields.futuresAmount')}
-                required={true}
+                required
                 type="number"
               />
             </div>
 
-            <div className="col-lg-7 col-md-8 col-12">
+            <div className="col-lg-6 col-md-6 col-sm-12">
               <InputFormItem
                 name="contractDuration"
                 label={i18n('entities.futures.fields.contractDuration')}
-                required={true}
+                required
               />
             </div>
 
-            <div className="col-lg-7 col-md-8 col-12">
+            <div className="col-lg-6 col-md-6 col-sm-12">
               <SelectFormItem
                 name="direction"
                 label={i18n('entities.futures.fields.direction')}
@@ -127,65 +91,62 @@ function FuturesForm(props) {
                   { value: 'BUY', label: 'Buy' },
                   { value: 'SELL', label: 'Sell' },
                 ]}
-                required={true}
+                required
               />
             </div>
 
-            <div className="col-lg-7 col-md-8 col-12">
+            <div className="col-lg-6 col-md-6 col-sm-12">
               <InputFormItem
                 name="openPositionPrice"
                 label={i18n('entities.futures.fields.openPositionPrice')}
-                required={true}
+                required
                 type="number"
               />
             </div>
 
-            <div className="col-lg-7 col-md-8 col-12">
+            <div className="col-lg-6 col-md-6 col-sm-12">
               <InputFormItem
                 name="openPositionTime"
                 label={i18n('entities.futures.fields.openPositionTime')}
-                required={true}
+                required
                 type="datetime-local"
               />
             </div>
 
-            <div className="col-lg-7 col-md-8 col-12">
+            <div className="col-lg-6 col-md-6 col-sm-12">
               <InputFormItem
                 name="closePositionPrice"
                 label={i18n('entities.futures.fields.closePositionPrice')}
-                required={false}
                 type="number"
               />
             </div>
 
-            <div className="col-lg-7 col-md-8 col-12">
+            <div className="col-lg-6 col-md-6 col-sm-12">
               <InputFormItem
                 name="closePositionTime"
                 label={i18n('entities.futures.fields.closePositionTime')}
-                required={false}
                 type="datetime-local"
               />
             </div>
 
-            <div className="col-lg-7 col-md-8 col-12">
+            <div className="col-lg-6 col-md-6 col-sm-12">
               <InputFormItem
                 name="profitAndLoss"
                 label={i18n('entities.futures.fields.profitAndLoss')}
-                required={false}
                 type="number"
               />
             </div>
 
-            <div className="col-lg-7 col-md-8 col-12">
+            <div className="col-lg-6 col-md-6 col-sm-12">
               <InputFormItem
                 name="leverage"
                 label={i18n('entities.futures.fields.leverage')}
-                required={true}
+                required
                 type="number"
               />
             </div>
 
-            <div className="col-lg-7 col-md-8 col-12">
+            <div className="col-lg-6 col-md-6 col-sm-12">
               <SelectFormItem
                 name="control"
                 label={i18n('entities.futures.fields.control')}
@@ -194,11 +155,11 @@ function FuturesForm(props) {
                   { value: 'loss', label: 'Loss' },
                   { value: 'profit', label: 'Profit' },
                 ]}
-                required={true}
+                required
               />
             </div>
 
-            <div className="col-lg-7 col-md-8 col-12">
+            <div className="col-lg-6 col-md-6 col-sm-12">
               <SelectFormItem
                 name="operate"
                 label={i18n('entities.futures.fields.operate')}
@@ -206,33 +167,28 @@ function FuturesForm(props) {
                   { value: 'high', label: 'High' },
                   { value: 'low', label: 'Low' },
                 ]}
-                required={true}
+                required
               />
             </div>
 
-            <div className="col-lg-7 col-md-8 col-12">
+            <div className="col-lg-6 col-md-6 col-sm-12">
               <UserAutocompleteFormItem
                 name="auditor"
                 label={i18n('entities.futures.fields.auditor')}
-                required={false}
               />
             </div>
 
           </div>
 
-          <div className="form-buttons">
+          <div className="form-buttons d-flex flex-wrap gap-2 mt-3">
             <button
               className="btn btn-primary"
               disabled={props.saveLoading}
               type="button"
               onClick={form.handleSubmit(onSubmit)}
             >
-              <ButtonIcon
-                loading={props.saveLoading}
-                iconClass="far fa-save"
-              />
-              &nbsp;
-              {i18n('common.save')}
+              <ButtonIcon loading={props.saveLoading} iconClass="far fa-save" />
+              &nbsp;{i18n('common.save')}
             </button>
 
             <button
@@ -241,22 +197,19 @@ function FuturesForm(props) {
               disabled={props.saveLoading}
               onClick={onReset}
             >
-              <i className="fas fa-undo"></i>
-              &nbsp;
-              {i18n('common.reset')}
+              <i className="fas fa-undo"></i>&nbsp;{i18n('common.reset')}
             </button>
 
-            {props.onCancel ? (
+            {props.onCancel && (
               <button
                 className="btn btn-light"
                 type="button"
                 disabled={props.saveLoading}
-                onClick={() => props.onCancel()}
+                onClick={props.onCancel}
               >
-                <i className="fas fa-times"></i>&nbsp;
-                {i18n('common.cancel')}
+                <i className="fas fa-times"></i>&nbsp;{i18n('common.cancel')}
               </button>
-            ) : null}
+            )}
           </div>
         </form>
       </FormProvider>

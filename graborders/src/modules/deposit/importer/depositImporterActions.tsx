@@ -9,7 +9,7 @@ const couponsImporterActions = importerActions(
   selectors,
   CouponsService.import,
   fields,
-  i18n('entities.kyc.importer.fileName'),
+  i18n('entities.deposit.importer.fileName'),
 );
 
 export default couponsImporterActions;

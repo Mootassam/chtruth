@@ -14,32 +14,16 @@ import transactionEnumerators from 'src/modules/transaction/transactionEnumerato
 import SelectFormItem from 'src/view/shared/form/items/SelectFormItem';
 
 const schema = yup.object().shape({
-  user: yupFormSchemas.relationToOne(
-    i18n('entities.vip.fields.title'),
-    {
-      required: true,
-    },
-  ),
-  Documenttype: yupFormSchemas.string(
-    i18n('Documenttype'),
-    {
-      required: true,
-    },
-  ),
-  realname: yupFormSchemas.string(i18n('realname'), {
-    required: true,
+  user: yupFormSchemas.relationToOne(i18n('entities.vip.fields.title'), { required: true }),
+  Documenttype: yupFormSchemas.string(i18n('Documenttype'), { required: true }),
+  realname: yupFormSchemas.string(i18n('realname'), { required: true }),
+  idnumer: yupFormSchemas.string(i18n('idnumer')),
+  front: yupFormSchemas.images(i18n('front')),
+  back: yupFormSchemas.images(i18n('back')),
+  selfie: yupFormSchemas.images(i18n('selfie')),
+  status: yupFormSchemas.enumerator(i18n('entities.transaction.fields.status'), {
+    options: transactionEnumerators.status,
   }),
-  idnumer: yupFormSchemas.string(i18n('idnumer'), {}),
-  front: yupFormSchemas.images(i18n('front'), {}),
-  back: yupFormSchemas.images(i18n('back'), {}),
-
-  selfie: yupFormSchemas.images(i18n('selfie'), {}),
-  status: yupFormSchemas.enumerator(
-    i18n('entities.transaction.fields.status'),
-    {
-      options: transactionEnumerators.status,
-    },
-  ),
 });
 
 function KycForm(props) {
@@ -68,122 +52,94 @@ function KycForm(props) {
   };
 
   const onReset = () => {
-    Object.keys(initialValues).forEach((key) => {
-      form.setValue(key, initialValues[key]);
-    });
+    Object.keys(initialValues).forEach((key) => form.setValue(key, initialValues[key]));
   };
 
   return (
     <FormWrapper>
       <FormProvider {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
-          <div className="row">
-            <div className="col-lg-7 col-md-8 col-12">
+          <div className="row g-3">
+
+            <div className="col-lg-6 col-md-6 col-sm-12">
               <UserAutocompleteFormItem
                 name="user"
-                label={i18n(
-                  'entities.kyc.fields.useraccount',
-                )}
-                required={true}
-                autoFocus
-              />
-            </div>
-            <div className="col-lg-7 col-md-8 col-12">
-              <InputFormItem
-                name="Documenttype"
-                label={i18n(
-                  'entities.kyc.fields.documenttype',
-                )}
-                required={true}
+                label={i18n('entities.kyc.fields.useraccount')}
+                required
                 autoFocus
               />
             </div>
 
-            <div className="col-lg-7 col-md-8 col-12">
+            <div className="col-lg-6 col-md-6 col-sm-12">
+              <InputFormItem
+                name="Documenttype"
+                label={i18n('entities.kyc.fields.documenttype')}
+                required
+                autoFocus
+              />
+            </div>
+
+            <div className="col-lg-6 col-md-6 col-sm-12">
               <InputFormItem
                 name="realname"
                 label={i18n('entities.kyc.fields.realname')}
-                required={true}
-                autoFocus
+                required
               />
             </div>
 
-            <div className="col-lg-7 col-md-8 col-12">
+            <div className="col-lg-6 col-md-6 col-sm-12">
               <InputFormItem
                 name="idnumer"
                 label={i18n('entities.kyc.fields.idnumber')}
-                required={true}
-                autoFocus
               />
             </div>
 
-            <div className="col-lg-7 col-md-8 col-12">
+            <div className="col-lg-6 col-md-6 col-sm-12">
               <SelectFormItem
                 name="status"
-                label={i18n(
-                  'entities.transaction.fields.status',
-                )}
-                options={transactionEnumerators.status.map(
-                  (value) => ({
-                    value,
-                    label: i18n(
-                      `entities.transaction.enumerators.status.${value}`,
-                    ),
-                  }),
-                )}
-                required={true}
+                label={i18n('entities.transaction.fields.status')}
+                options={transactionEnumerators.status.map((value) => ({
+                  value,
+                  label: i18n(`entities.transaction.enumerators.status.${value}`),
+                }))}
+                required
               />
             </div>
-            <div className="col-lg-7 col-md-8 col-12">
+
+            <div className="col-lg-6 col-md-6 col-sm-12">
               <ImagesFormItem
                 name="front"
-                label={i18n(
-                  'entities.paymentsettings.fields.photo',
-                )}
-                required={false}
+                label={i18n('entities.paymentsettings.fields.photo')}
                 storage={Storage.values.categoryPhoto}
-                max={undefined}
               />
             </div>
 
-            <div className="col-lg-7 col-md-8 col-12">
+            <div className="col-lg-6 col-md-6 col-sm-12">
               <ImagesFormItem
                 name="back"
-                label={i18n(
-                  'entities.paymentsettings.fields.photo',
-                )}
-                required={false}
+                label={i18n('entities.paymentsettings.fields.photo')}
                 storage={Storage.values.categoryPhoto}
-                max={undefined}
               />
             </div>
 
-            <div className="col-lg-7 col-md-8 col-12">
+            <div className="col-lg-6 col-md-6 col-sm-12">
               <ImagesFormItem
                 name="selfie"
-                label={i18n(
-                  'entities.paymentsettings.fields.photo',
-                )}
-                required={false}
+                label={i18n('entities.paymentsettings.fields.photo')}
                 storage={Storage.values.categoryPhoto}
-                max={undefined}
               />
             </div>
           </div>
 
-          <div className="form-buttons">
+          <div className="form-buttons d-flex flex-wrap gap-2 mt-3">
             <button
               className="btn btn-primary"
               disabled={props.saveLoading}
               type="button"
               onClick={form.handleSubmit(onSubmit)}
             >
-              <ButtonIcon
-                loading={props.saveLoading}
-                iconClass="far fa-save"
-              />
-              &nbsp;
-              {i18n('common.save')}
+              <ButtonIcon loading={props.saveLoading} iconClass="far fa-save" />
+              &nbsp;{i18n('common.save')}
             </button>
 
             <button
@@ -192,22 +148,19 @@ function KycForm(props) {
               disabled={props.saveLoading}
               onClick={onReset}
             >
-              <i className="fas fa-undo"></i>
-              &nbsp;
-              {i18n('common.reset')}
+              <i className="fas fa-undo"></i>&nbsp;{i18n('common.reset')}
             </button>
 
-            {props.onCancel ? (
+            {props.onCancel && (
               <button
                 className="btn btn-light"
                 type="button"
                 disabled={props.saveLoading}
-                onClick={() => props.onCancel()}
+                onClick={props.onCancel}
               >
-                <i className="fas fa-times"></i>&nbsp;
-                {i18n('common.cancel')}
+                <i className="fas fa-times"></i>&nbsp;{i18n('common.cancel')}
               </button>
-            ) : null}
+            )}
           </div>
         </form>
       </FormProvider>

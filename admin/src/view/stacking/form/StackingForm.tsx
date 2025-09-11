@@ -55,6 +55,7 @@ const schema = yup.object().shape({
   ),
 });
 
+
 function StackingForm(props) {
   const [initialValues] = useState(() => {
     const record = props.record || {};

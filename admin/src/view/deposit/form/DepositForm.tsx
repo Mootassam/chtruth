@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { i18n } from 'src/i18n';
@@ -15,33 +14,23 @@ import SelectFormItem from 'src/view/shared/form/items/SelectFormItem';
 const schema = yup.object().shape({
   orderno: yupFormSchemas.string(
     i18n('entities.deposit.fields.orderno'),
-    {
-      required: true,
-    },
+    { required: true },
   ),
   amount: yupFormSchemas.decimal(
     i18n('entities.deposit.fields.amount'),
-    {
-      required: true,
-    },
+    { required: true },
   ),
   txid: yupFormSchemas.string(
     i18n('entities.deposit.fields.txid'),
-    {
-      required: true,
-    },
+    { required: true },
   ),
   rechargechannel: yupFormSchemas.string(
     i18n('entities.deposit.fields.rechargechannel'),
-    {
-      required: true,
-    },
+    { required: true },
   ),
   rechargetime: yupFormSchemas.datetime(
     i18n('entities.deposit.fields.rechargetime'),
-    {
-      required: true,
-    },
+    { required: true },
   ),
   auditor: yupFormSchemas.relationToOne(
     i18n('entities.deposit.fields.auditor'),
@@ -59,18 +48,18 @@ const schema = yup.object().shape({
   ),
 });
 
-function TransactionForm(props) {
+function DepositForm(props) {
   const [initialValues] = useState(() => {
     const record = props.record || {};
     return {
-      orderno: record.orderno,
+      orderno: record.orderno || '',
       amount: record.amount,
-      txid: record.txid,
-      rechargechannel: record.rechargechannel,
+      txid: record.txid || '',
+      rechargechannel: record.rechargechannel || '',
       rechargetime: record.rechargetime,
-      auditor: record.auditor || [],
+      auditor: record.auditor || null,
       acceptime: record.acceptime,
-      status: record.status,
+      status: record.status || 'pending',
     };
   });
 
@@ -83,7 +72,7 @@ function TransactionForm(props) {
   const onSubmit = (values) => {
     props.onSubmit(props.record?.id, values);
   };
- 
+
   const onReset = () => {
     Object.keys(initialValues).forEach((key) => {
       form.setValue(key, initialValues[key]);
@@ -96,7 +85,7 @@ function TransactionForm(props) {
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <div className="row">
 
-            <div className="col-lg-7 col-md-8 col-12">
+            <div className="col-lg-6 col-md-8 col-12">
               <InputFormItem
                 name="orderno"
                 label={i18n('entities.deposit.fields.orderno')}
@@ -104,7 +93,7 @@ function TransactionForm(props) {
               />
             </div>
 
-            <div className="col-lg-7 col-md-8 col-12">
+            <div className="col-lg-6 col-md-8 col-12">
               <InputFormItem
                 name="amount"
                 label={i18n('entities.deposit.fields.amount')}
@@ -113,7 +102,7 @@ function TransactionForm(props) {
               />
             </div>
 
-            <div className="col-lg-7 col-md-8 col-12">
+            <div className="col-lg-6 col-md-8 col-12">
               <InputFormItem
                 name="txid"
                 label={i18n('entities.deposit.fields.txid')}
@@ -121,7 +110,7 @@ function TransactionForm(props) {
               />
             </div>
 
-            <div className="col-lg-7 col-md-8 col-12">
+            <div className="col-lg-6 col-md-8 col-12">
               <InputFormItem
                 name="rechargechannel"
                 label={i18n('entities.deposit.fields.rechargechannel')}
@@ -129,7 +118,7 @@ function TransactionForm(props) {
               />
             </div>
 
-            <div className="col-lg-7 col-md-8 col-12">
+            <div className="col-lg-6 col-md-8 col-12">
               <InputFormItem
                 name="rechargetime"
                 label={i18n('entities.deposit.fields.rechargetime')}
@@ -138,29 +127,25 @@ function TransactionForm(props) {
               />
             </div>
 
-            <div className="col-lg-7 col-md-8 col-12">
+            <div className="col-lg-6 col-md-8 col-12">
               <UserAutocompleteFormItem
                 name="auditor"
                 label={i18n('entities.deposit.fields.auditor')}
-                required={false}
               />
             </div>
 
-            <div className="col-lg-7 col-md-8 col-12">
+            <div className="col-lg-6 col-md-8 col-12">
               <InputFormItem
                 name="acceptime"
                 label={i18n('entities.deposit.fields.acceptime')}
-                required={false}
                 type="datetime-local"
               />
             </div>
 
-            <div className="col-lg-7 col-md-8 col-12">
-             <SelectFormItem
+            <div className="col-lg-6 col-md-8 col-12">
+              <SelectFormItem
                 name="status"
-                label={i18n(
-                  'entities.transaction.fields.status',
-                )}
+                label={i18n('entities.deposit.fields.status')}
                 options={transactionEnumerators.status.map(
                   (value) => ({
                     value,
@@ -185,8 +170,7 @@ function TransactionForm(props) {
                 loading={props.saveLoading}
                 iconClass="far fa-save"
               />
-              &nbsp;
-              {i18n('common.save')}
+              &nbsp;{i18n('common.save')}
             </button>
 
             <button
@@ -196,8 +180,7 @@ function TransactionForm(props) {
               onClick={onReset}
             >
               <i className="fas fa-undo"></i>
-              &nbsp;
-              {i18n('common.reset')}
+              &nbsp;{i18n('common.reset')}
             </button>
 
             {props.onCancel ? (
@@ -207,8 +190,8 @@ function TransactionForm(props) {
                 disabled={props.saveLoading}
                 onClick={() => props.onCancel()}
               >
-                <i className="fas fa-times"></i>&nbsp;
-                {i18n('common.cancel')}
+                <i className="fas fa-times"></i>
+                &nbsp;{i18n('common.cancel')}
               </button>
             ) : null}
           </div>
@@ -218,4 +201,4 @@ function TransactionForm(props) {
   );
 }
 
-export default TransactionForm;
+export default DepositForm;

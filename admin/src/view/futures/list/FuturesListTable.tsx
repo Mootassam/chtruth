@@ -7,10 +7,8 @@ import destroyActions from 'src/modules/futures/destroy/futuresDestroyActions';
 import destroySelectors from 'src/modules/futures/destroy/futuresDestroySelectors';
 import actions from 'src/modules/futures/list/futuresListActions';
 import selectors from 'src/modules/futures/list/futuresListSelectors';
-import TableColumnHeader from 'src/view/shared/table/TableColumnHeader';
 import ConfirmModal from 'src/view/shared/modals/ConfirmModal';
 import Spinner from 'src/view/shared/Spinner';
-import TableWrapper from 'src/view/shared/styles/TableWrapper';
 import Pagination from 'src/view/shared/table/Pagination';
 import UserListItem from 'src/view/user/list/UserListItem';
 
@@ -35,9 +33,7 @@ function FuturesListTable() {
   const doCloseDestroyConfirmModal = () => setRecordIdToDestroy(null);
 
   const doChangeSort = (field) => {
-    const order =
-      sorter.field === field && sorter.order === 'ascend' ? 'descend' : 'ascend';
-
+    const order = sorter.field === field && sorter.order === 'ascend' ? 'descend' : 'ascend';
     dispatch(actions.doChangeSort({ field, order }));
   };
 
@@ -50,196 +46,227 @@ function FuturesListTable() {
   const doToggleOneSelected = (id) => dispatch(actions.doToggleOneSelected(id));
 
   return (
-    <TableWrapper>
+    <div className="spot-list-container">
       <div className="table-responsive">
-        <table className="table table-striped mt-2">
-          <thead className="thead">
+        <table className="spot-list-table">
+          <thead className="table-header">
             <tr>
-              <TableColumnHeader className="th-checkbox">
+              <th className="checkbox-column">
                 {hasRows && (
-                  <div className="adherent-control adherent-checkbox">
+                  <div className="checkbox-wrapper">
                     <input
                       type="checkbox"
-                      id="table-header-checkbox"
-                      className="adherent-control-input"
+                      className="form-checkbox"
                       checked={Boolean(isAllSelected)}
                       onChange={doToggleAllSelected}
                     />
-                    <label htmlFor="table-header-checkbox" className="adherent-control-label">
-                      &#160;
-                    </label>
                   </div>
                 )}
-              </TableColumnHeader>
-
-              <TableColumnHeader
-                onSort={doChangeSort}
-                hasRows={hasRows}
-                sorter={sorter}
-                name="futuresAmount"
-                label={i18n('entities.futures.fields.futuresAmount')}
-              />
-
-              <TableColumnHeader
-                onSort={doChangeSort}
-                hasRows={hasRows}
-                sorter={sorter}
-                name="contractDuration"
-                label={i18n('entities.futures.fields.contractDuration')}
-              />
-
-              <TableColumnHeader
-                onSort={doChangeSort}
-                hasRows={hasRows}
-                sorter={sorter}
-                name="futuresStatus"
-                label={i18n('entities.futures.fields.status')}
-              />
-
-              <TableColumnHeader
-                onSort={doChangeSort}
-                hasRows={hasRows}
-                sorter={sorter}
-                name="openPositionPrice"
-                label={i18n('entities.futures.fields.openPositionPrice')}
-              />
-
-              <TableColumnHeader
-                onSort={doChangeSort}
-                hasRows={hasRows}
-                sorter={sorter}
-                name="openPositionTime"
-                label={i18n('entities.futures.fields.openPositionTime')}
-              />
-
-              <TableColumnHeader
-                onSort={doChangeSort}
-                hasRows={hasRows}
-                sorter={sorter}
-                name="closePositionPrice"
-                label={i18n('entities.futures.fields.closePositionPrice')}
-              />
-
-              <TableColumnHeader
-                onSort={doChangeSort}
-                hasRows={hasRows}
-                sorter={sorter}
-                name="closePositionTime"
-                label={i18n('entities.futures.fields.closePositionTime')}
-              />
-
-              <TableColumnHeader
-                onSort={doChangeSort}
-                hasRows={hasRows}
-                sorter={sorter}
-                name="profitAndLossAmount"
-                label={i18n('entities.futures.fields.profitAndLossAmount')}
-              />
-
-              <TableColumnHeader
-                onSort={doChangeSort}
-                hasRows={hasRows}
-                sorter={sorter}
-                name="leverage"
-                label={i18n('entities.futures.fields.leverage')}
-              />
-
-              <TableColumnHeader
-                onSort={doChangeSort}
-                hasRows={hasRows}
-                sorter={sorter}
-                name="control"
-                label={i18n('entities.futures.fields.control')}
-              />
-
-              <TableColumnHeader
-                onSort={doChangeSort}
-                hasRows={hasRows}
-                sorter={sorter}
-                name="operate"
-                label={i18n('entities.futures.fields.operate')}
-              />
-
-              <TableColumnHeader
-                onSort={doChangeSort}
-                hasRows={hasRows}
-                sorter={sorter}
-                name="createdBy"
-                label={i18n('entities.futures.fields.createdBy')}
-              />
-
-              <TableColumnHeader className="th-actions" />
+              </th>
+              <th 
+                className="sortable-header"
+                onClick={() => doChangeSort('futuresAmount')}
+              >
+                {i18n('entities.futures.fields.futuresAmount')}
+                {sorter.field === 'futuresAmount' && (
+                  <span className="sort-icon">
+                    {sorter.order === 'ascend' ? '↑' : '↓'}
+                  </span>
+                )}
+              </th>
+              <th 
+                className="sortable-header"
+                onClick={() => doChangeSort('contractDuration')}
+              >
+                {i18n('entities.futures.fields.contractDuration')}
+                {sorter.field === 'contractDuration' && (
+                  <span className="sort-icon">
+                    {sorter.order === 'ascend' ? '↑' : '↓'}
+                  </span>
+                )}
+              </th>
+              <th 
+                className="sortable-header"
+                onClick={() => doChangeSort('status')}
+              >
+                {i18n('entities.futures.fields.status')}
+                {sorter.field === 'status' && (
+                  <span className="sort-icon">
+                    {sorter.order === 'ascend' ? '↑' : '↓'}
+                  </span>
+                )}
+              </th>
+              <th 
+                className="sortable-header"
+                onClick={() => doChangeSort('openPositionPrice')}
+              >
+                {i18n('entities.futures.fields.openPositionPrice')}
+                {sorter.field === 'openPositionPrice' && (
+                  <span className="sort-icon">
+                    {sorter.order === 'ascend' ? '↑' : '↓'}
+                  </span>
+                )}
+              </th>
+              <th 
+                className="sortable-header"
+                onClick={() => doChangeSort('openPositionTime')}
+              >
+                {i18n('entities.futures.fields.openPositionTime')}
+                {sorter.field === 'openPositionTime' && (
+                  <span className="sort-icon">
+                    {sorter.order === 'ascend' ? '↑' : '↓'}
+                  </span>
+                )}
+              </th>
+              <th 
+                className="sortable-header"
+                onClick={() => doChangeSort('closePositionPrice')}
+              >
+                {i18n('entities.futures.fields.closePositionPrice')}
+                {sorter.field === 'closePositionPrice' && (
+                  <span className="sort-icon">
+                    {sorter.order === 'ascend' ? '↑' : '↓'}
+                  </span>
+                )}
+              </th>
+              <th 
+                className="sortable-header"
+                onClick={() => doChangeSort('closePositionTime')}
+              >
+                {i18n('entities.futures.fields.closePositionTime')}
+                {sorter.field === 'closePositionTime' && (
+                  <span className="sort-icon">
+                    {sorter.order === 'ascend' ? '↑' : '↓'}
+                  </span>
+                )}
+              </th>
+              <th 
+                className="sortable-header"
+                onClick={() => doChangeSort('profitAndLossAmount')}
+              >
+                {i18n('entities.futures.fields.profitAndLossAmount')}
+                {sorter.field === 'profitAndLossAmount' && (
+                  <span className="sort-icon">
+                    {sorter.order === 'ascend' ? '↑' : '↓'}
+                  </span>
+                )}
+              </th>
+              <th 
+                className="sortable-header"
+                onClick={() => doChangeSort('leverage')}
+              >
+                {i18n('entities.futures.fields.leverage')}
+                {sorter.field === 'leverage' && (
+                  <span className="sort-icon">
+                    {sorter.order === 'ascend' ? '↑' : '↓'}
+                  </span>
+                )}
+              </th>
+              <th 
+                className="sortable-header"
+                onClick={() => doChangeSort('control')}
+              >
+                {i18n('entities.futures.fields.control')}
+                {sorter.field === 'control' && (
+                  <span className="sort-icon">
+                    {sorter.order === 'ascend' ? '↑' : '↓'}
+                  </span>
+                )}
+              </th>
+              <th 
+                className="sortable-header"
+                onClick={() => doChangeSort('operate')}
+              >
+                {i18n('entities.futures.fields.operate')}
+                {sorter.field === 'operate' && (
+                  <span className="sort-icon">
+                    {sorter.order === 'ascend' ? '↑' : '↓'}
+                  </span>
+                )}
+              </th>
+              <th 
+                className="sortable-header"
+                onClick={() => doChangeSort('createdBy')}
+              >
+                {i18n('entities.futures.fields.createdBy')}
+                {sorter.field === 'createdBy' && (
+                  <span className="sort-icon">
+                    {sorter.order === 'ascend' ? '↑' : '↓'}
+                  </span>
+                )}
+              </th>
+              <th className="actions-header">Actions</th>
             </tr>
           </thead>
-
-          <tbody>
+          <tbody className="table-body">
             {loading && (
               <tr>
-                <td colSpan={100}>
-                  <Spinner />
+                <td colSpan={15} className="loading-cell">
+                  <div className="loading-container">
+                    <Spinner />
+                    <span className="loading-text">Loading data...</span>
+                  </div>
                 </td>
               </tr>
             )}
-
             {!loading && !hasRows && (
               <tr>
-                <td colSpan={100}>
-                  <div className="d-flex justify-content-center">{i18n('table.noData')}</div>
+                <td colSpan={15} className="no-data-cell">
+                  <div className="no-data-content">
+                    <i className="fas fa-database no-data-icon"></i>
+                    <p>{i18n('table.noData')}</p>
+                  </div>
                 </td>
               </tr>
             )}
-
             {!loading &&
               rows.map((row) => (
-                <tr key={row.id}>
-                  <th className="th-checkbox" scope="row">
-                    <div className="adherent-control adherent-checkbox">
+                <tr key={row.id} className="table-row">
+                  <td className="checkbox-column">
+                    <div className="checkbox-wrapper">
                       <input
                         type="checkbox"
-                        id={`table-header-checkbox-${row.id}`}
-                        className="adherent-control-input"
+                        className="form-checkbox"
                         checked={selectedKeys.includes(row.id)}
                         onChange={() => doToggleOneSelected(row.id)}
                       />
-                      <label
-                        htmlFor={`table-header-checkbox-${row.id}`}
-                        className="adherent-control-label"
-                      >
-                        &#160;
-                      </label>
                     </div>
-                  </th>
-
-                  <td>{row.futuresAmount}</td>
-                  <td>{row.contractDuration}</td>
-                  <td>{row.futuresStatus}</td>
-                  <td>{row.openPositionPrice}</td>
-                  <td>{row.openPositionTime}</td>
-                  <td>{row.closePositionPrice}</td>
-                  <td>{row.closePositionTime}</td>
-                  <td>{row.profitAndLossAmount}</td>
-                  <td>{row.leverage}</td>
-                  <td>{row.control}</td>
-                  <td>{row.operate}</td>
-                  <td>
+                  </td>
+                  <td className="table-cell numeric">{row.futuresAmount}</td>
+                  <td className="table-cell">{row.contractDuration}</td>
+                  <td className="table-cell">
+                    <span className="status-badge">{row.futuresStatus}</span>
+                  </td>
+                  <td className="table-cell numeric">{row.openPositionPrice}</td>
+                  <td className="table-cell">{row.openPositionTime}</td>
+                  <td className="table-cell numeric">{row.closePositionPrice}</td>
+                  <td className="table-cell">{row.closePositionTime}</td>
+                  <td className="table-cell numeric">{row.profitAndLossAmount}</td>
+                  <td className="table-cell numeric">{row.leverage}</td>
+                  <td className="table-cell">{row.control}</td>
+                  <td className="table-cell">{row.operate}</td>
+                  <td className="table-cell">
                     <UserListItem value={row.createdBy} />
                   </td>
-
-                  <td className="td-actions">
-                    {hasPermissionToEdit && (
-                      <Link className="btn btn-link" to={`/futures/${row.id}/edit`}>
-                        {i18n('common.edit')}
-                      </Link>
-                    )}
-                    {hasPermissionToDestroy && (
-                      <button
-                        className="btn btn-link"
-                        type="button"
-                        onClick={() => doOpenDestroyConfirmModal(row.id)}
-                      >
-                        {i18n('common.destroy')}
-                      </button>
-                    )}
+                  <td className="actions-cell">
+                    <div className="actions-container">
+                      {hasPermissionToEdit && (
+                        <Link className="btn-action edit" to={`/futures/${row.id}/edit`}>
+                          <i className="fas fa-edit"></i>
+                          <span>{i18n('common.edit')}</span>
+                        </Link>
+                      )}
+                      {hasPermissionToDestroy && (
+                        <button 
+                          className="btn-action delete" 
+                          type="button" 
+                          onClick={() => doOpenDestroyConfirmModal(row.id)}
+                        >
+                          <i className="fas fa-trash"></i>
+                          <span>{i18n('common.destroy')}</span>
+                        </button>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -247,7 +274,9 @@ function FuturesListTable() {
         </table>
       </div>
 
-      <Pagination onChange={doChangePagination} disabled={loading} pagination={pagination} />
+      <div className="pagination-container">
+        <Pagination onChange={doChangePagination} disabled={loading} pagination={pagination} />
+      </div>
 
       {recordIdToDestroy && (
         <ConfirmModal
@@ -258,7 +287,7 @@ function FuturesListTable() {
           cancelText={i18n('common.no')}
         />
       )}
-    </TableWrapper>
+    </div>
   );
 }
 

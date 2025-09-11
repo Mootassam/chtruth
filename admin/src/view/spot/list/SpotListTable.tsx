@@ -7,13 +7,10 @@ import destroyActions from 'src/modules/spot/destroy/spotDestroyActions';
 import destroySelectors from 'src/modules/spot/destroy/spotDestroySelectors';
 import actions from 'src/modules/spot/list/spotListActions';
 import selectors from 'src/modules/spot/list/spotListSelectors';
-import TableColumnHeader from 'src/view/shared/table/TableColumnHeader';
-import ConfirmModal from 'src/view/shared/modals/ConfirmModal';
 import Spinner from 'src/view/shared/Spinner';
-import TableWrapper from 'src/view/shared/styles/TableWrapper';
 import Pagination from 'src/view/shared/table/Pagination';
 import UserListItem from 'src/view/user/list/UserListItem';
-import SpotActions from 'src/modules/spot/form/spotFormActions';
+import ConfirmModal from 'src/view/shared/modals/ConfirmModal';
 
 function SpotListTable() {
   const [recordIdToDestroy, setRecordIdToDestroy] = useState(null);
@@ -34,143 +31,299 @@ function SpotListTable() {
 
   const doOpenDestroyConfirmModal = (id) => setRecordIdToDestroy(id);
   const doCloseDestroyConfirmModal = () => setRecordIdToDestroy(null);
-
-  const doChangeSort = (field) => {
-    const order = sorter.field === field && sorter.order === 'ascend' ? 'descend' : 'ascend';
-    dispatch(actions.doChangeSort({ field, order }));
-  };
-
-  const doChangePagination = (pagination) => {
-    dispatch(actions.doChangePagination(pagination));
-  };
-
   const doDestroy = (id) => {
     doCloseDestroyConfirmModal();
     dispatch(destroyActions.doDestroy(id));
   };
-
   const doToggleAllSelected = () => dispatch(actions.doToggleAllSelected());
   const doToggleOneSelected = (id) => dispatch(actions.doToggleOneSelected(id));
-
-  const onSubmitStatus = (id, status, userId) => {
-    const data = { user: userId, status };
-    dispatch(SpotActions.doUpdate(id, data));
+  const doChangeSort = (field) => {
+    const order = sorter.field === field && sorter.order === 'ascend' ? 'descend' : 'ascend';
+    dispatch(actions.doChangeSort({ field, order }));
   };
+  const doChangePagination = (pagination) => dispatch(actions.doChangePagination(pagination));
 
   return (
-    <TableWrapper>
+    <div className="spot-list-container">
       <div className="table-responsive">
-        <table className="table table-striped mt-2">
-          <thead className="thead">
+        <table className="spot-list-table">
+          <thead className="table-header">
             <tr>
-              <TableColumnHeader className="th-checkbox">
+              <th className="checkbox-column">
                 {hasRows && (
-                  <div className="adherent-control adherent-checkbox">
+                  <div className="checkbox-wrapper">
                     <input
                       type="checkbox"
-                      className="adherent-control-input"
-                      id="table-header-checkbox"
+                      className="form-checkbox"
                       checked={Boolean(isAllSelected)}
                       onChange={doToggleAllSelected}
                     />
-                    <label htmlFor="table-header-checkbox" className="adherent-control-label">
-                      &#160;
-                    </label>
                   </div>
                 )}
-              </TableColumnHeader>
-
-              <TableColumnHeader onSort={doChangeSort} hasRows={hasRows} sorter={sorter} name="orderNo" label={i18n('entities.spot.fields.orderNo')} />
-              <TableColumnHeader onSort={doChangeSort} hasRows={hasRows} sorter={sorter} name="userAccount" label={i18n('entities.spot.fields.userAccount')} />
-              <TableColumnHeader onSort={doChangeSort} hasRows={hasRows} sorter={sorter} name="tradingPair" label={i18n('entities.spot.fields.tradingPair')} />
-              <TableColumnHeader onSort={doChangeSort} hasRows={hasRows} sorter={sorter} name="direction" label={i18n('entities.spot.fields.direction')} />
-              <TableColumnHeader onSort={doChangeSort} hasRows={hasRows} sorter={sorter} name="delegateType" label={i18n('entities.spot.fields.delegateType')} />
-              <TableColumnHeader onSort={doChangeSort} hasRows={hasRows} sorter={sorter} name="delegateState" label={i18n('entities.spot.fields.delegateState')} />
-              <TableColumnHeader onSort={doChangeSort} hasRows={hasRows} sorter={sorter} name="orderQuantity" label={i18n('entities.spot.fields.orderQuantity')} />
-              <TableColumnHeader onSort={doChangeSort} hasRows={hasRows} sorter={sorter} name="commissionPrice" label={i18n('entities.spot.fields.commissionPrice')} />
-              <TableColumnHeader onSort={doChangeSort} hasRows={hasRows} sorter={sorter} name="entrustedValue" label={i18n('entities.spot.fields.entrustedValue')} />
-              <TableColumnHeader onSort={doChangeSort} hasRows={hasRows} sorter={sorter} name="transactionQuantity" label={i18n('entities.spot.fields.transactionQuantity')} />
-              <TableColumnHeader onSort={doChangeSort} hasRows={hasRows} sorter={sorter} name="transactionValue" label={i18n('entities.spot.fields.transactionValue')} />
-              <TableColumnHeader onSort={doChangeSort} hasRows={hasRows} sorter={sorter} name="closingPrice" label={i18n('entities.spot.fields.closingPrice')} />
-              <TableColumnHeader onSort={doChangeSort} hasRows={hasRows} sorter={sorter} name="handlingFee" label={i18n('entities.spot.fields.handlingFee')} />
-              <TableColumnHeader onSort={doChangeSort} hasRows={hasRows} sorter={sorter} name="commissionTime" label={i18n('entities.spot.fields.commissionTime')} />
-              <TableColumnHeader onSort={doChangeSort} hasRows={hasRows} sorter={sorter} name="closingTime" label={i18n('entities.spot.fields.closingTime')} />
-              <TableColumnHeader onSort={doChangeSort} hasRows={hasRows} sorter={sorter} name="createdBy" label={i18n('entities.spot.fields.createdBy')} />
-
-              <TableColumnHeader className="th-actions" />
+              </th>
+              <th 
+                className="sortable-header"
+                onClick={() => doChangeSort('orderNo')}
+              >
+                {i18n('entities.spot.fields.orderNo')}
+                {sorter.field === 'orderNo' && (
+                  <span className="sort-icon">
+                    {sorter.order === 'ascend' ? '↑' : '↓'}
+                  </span>
+                )}
+              </th>
+              <th 
+                className="sortable-header"
+                onClick={() => doChangeSort('userAccount')}
+              >
+                {i18n('entities.spot.fields.userAccount')}
+                {sorter.field === 'userAccount' && (
+                  <span className="sort-icon">
+                    {sorter.order === 'ascend' ? '↑' : '↓'}
+                  </span>
+                )}
+              </th>
+              <th 
+                className="sortable-header"
+                onClick={() => doChangeSort('tradingPair')}
+              >
+                {i18n('entities.spot.fields.tradingPair')}
+                {sorter.field === 'tradingPair' && (
+                  <span className="sort-icon">
+                    {sorter.order === 'ascend' ? '↑' : '↓'}
+                  </span>
+                )}
+              </th>
+              <th 
+                className="sortable-header"
+                onClick={() => doChangeSort('direction')}
+              >
+                {i18n('entities.spot.fields.direction')}
+                {sorter.field === 'direction' && (
+                  <span className="sort-icon">
+                    {sorter.order === 'ascend' ? '↑' : '↓'}
+                  </span>
+                )}
+              </th>
+              <th 
+                className="sortable-header"
+                onClick={() => doChangeSort('delegateType')}
+              >
+                {i18n('entities.spot.fields.delegateType')}
+                {sorter.field === 'delegateType' && (
+                  <span className="sort-icon">
+                    {sorter.order === 'ascend' ? '↑' : '↓'}
+                  </span>
+                )}
+              </th>
+              <th 
+                className="sortable-header"
+                onClick={() => doChangeSort('delegateState')}
+              >
+                {i18n('entities.spot.fields.delegateState')}
+                {sorter.field === 'delegateState' && (
+                  <span className="sort-icon">
+                    {sorter.order === 'ascend' ? '↑' : '↓'}
+                  </span>
+                )}
+              </th>
+              <th 
+                className="sortable-header"
+                onClick={() => doChangeSort('orderQuantity')}
+              >
+                {i18n('entities.spot.fields.orderQuantity')}
+                {sorter.field === 'orderQuantity' && (
+                  <span className="sort-icon">
+                    {sorter.order === 'ascend' ? '↑' : '↓'}
+                  </span>
+                )}
+              </th>
+              <th 
+                className="sortable-header"
+                onClick={() => doChangeSort('commissionPrice')}
+              >
+                {i18n('entities.spot.fields.commissionPrice')}
+                {sorter.field === 'commissionPrice' && (
+                  <span className="sort-icon">
+                    {sorter.order === 'ascend' ? '↑' : '↓'}
+                  </span>
+                )}
+              </th>
+              <th 
+                className="sortable-header"
+                onClick={() => doChangeSort('entrustedValue')}
+              >
+                {i18n('entities.spot.fields.entrustedValue')}
+                {sorter.field === 'entrustedValue' && (
+                  <span className="sort-icon">
+                    {sorter.order === 'ascend' ? '↑' : '↓'}
+                  </span>
+                )}
+              </th>
+              <th 
+                className="sortable-header"
+                onClick={() => doChangeSort('transactionQuantity')}
+              >
+                {i18n('entities.spot.fields.transactionQuantity')}
+                {sorter.field === 'transactionQuantity' && (
+                  <span className="sort-icon">
+                    {sorter.order === 'ascend' ? '↑' : '↓'}
+                  </span>
+                )}
+              </th>
+              <th 
+                className="sortable-header"
+                onClick={() => doChangeSort('transactionValue')}
+              >
+                {i18n('entities.spot.fields.transactionValue')}
+                {sorter.field === 'transactionValue' && (
+                  <span className="sort-icon">
+                    {sorter.order === 'ascend' ? '↑' : '↓'}
+                  </span>
+                )}
+              </th>
+              <th 
+                className="sortable-header"
+                onClick={() => doChangeSort('closingPrice')}
+              >
+                {i18n('entities.spot.fields.closingPrice')}
+                {sorter.field === 'closingPrice' && (
+                  <span className="sort-icon">
+                    {sorter.order === 'ascend' ? '↑' : '↓'}
+                  </span>
+                )}
+              </th>
+              <th 
+                className="sortable-header"
+                onClick={() => doChangeSort('handlingFee')}
+              >
+                {i18n('entities.spot.fields.handlingFee')}
+                {sorter.field === 'handlingFee' && (
+                  <span className="sort-icon">
+                    {sorter.order === 'ascend' ? '↑' : '↓'}
+                  </span>
+                )}
+              </th>
+              <th 
+                className="sortable-header"
+                onClick={() => doChangeSort('commissionTime')}
+              >
+                {i18n('entities.spot.fields.commissionTime')}
+                {sorter.field === 'commissionTime' && (
+                  <span className="sort-icon">
+                    {sorter.order === 'ascend' ? '↑' : '↓'}
+                  </span>
+                )}
+              </th>
+              <th 
+                className="sortable-header"
+                onClick={() => doChangeSort('closingTime')}
+              >
+                {i18n('entities.spot.fields.closingTime')}
+                {sorter.field === 'closingTime' && (
+                  <span className="sort-icon">
+                    {sorter.order === 'ascend' ? '↑' : '↓'}
+                  </span>
+                )}
+              </th>
+              <th 
+                className="sortable-header"
+                onClick={() => doChangeSort('createdBy')}
+              >
+                {i18n('entities.spot.fields.createdBy')}
+                {sorter.field === 'createdBy' && (
+                  <span className="sort-icon">
+                    {sorter.order === 'ascend' ? '↑' : '↓'}
+                  </span>
+                )}
+              </th>
+              <th className="actions-header">Actions</th>
             </tr>
           </thead>
-
-          <tbody>
+          <tbody className="table-body">
             {loading && (
               <tr>
-                <td colSpan={100}>
-                  <Spinner />
+                <td colSpan={18} className="loading-cell">
+                  <div className="loading-container">
+                    <Spinner />
+                    <span className="loading-text">Loading data...</span>
+                  </div>
                 </td>
               </tr>
             )}
             {!loading && !hasRows && (
               <tr>
-                <td colSpan={100}>
-                  <div className="d-flex justify-content-center">{i18n('table.noData')}</div>
+                <td colSpan={18} className="no-data-cell">
+                  <div className="no-data-content">
+                    <i className="fas fa-database no-data-icon"></i>
+                    <p>{i18n('table.noData')}</p>
+                  </div>
                 </td>
               </tr>
             )}
             {!loading &&
               rows.map((row) => (
-                <tr key={row.id}>
-                  <th className="th-checkbox" scope="row">
-                    <div className="adherent-control adherent-checkbox">
+                <tr key={row.id} className="table-row">
+                  <td className="checkbox-column">
+                    <div className="checkbox-wrapper">
                       <input
                         type="checkbox"
-                        className="adherent-control-input"
-                        id={`table-header-checkbox-${row.id}`}
+                        className="form-checkbox"
                         checked={selectedKeys.includes(row.id)}
                         onChange={() => doToggleOneSelected(row.id)}
                       />
-                      <label htmlFor={`table-header-checkbox-${row.id}`} className="adherent-control-label">
-                        &#160;
-                      </label>
                     </div>
-                  </th>
-
-                  <td>{row.orderNo}</td>
-                  <td>{row.userAccount}</td>
-                  <td>{row.tradingPair}</td>
-                  <td>{row.direction}</td>
-                  <td>{row.delegateType}</td>
-                  <td>{row.delegateState}</td>
-                  <td>{row.orderQuantity}</td>
-                  <td>{row.commissionPrice}</td>
-                  <td>{row.entrustedValue}</td>
-                  <td>{row.transactionQuantity}</td>
-                  <td>{row.transactionValue}</td>
-                  <td>{row.closingPrice}</td>
-                  <td>{row.handlingFee}</td>
-                  <td>{row.commissionTime}</td>
-                  <td>{row.closingTime}</td>
-                  <td><UserListItem value={row.createdBy} /></td>
-
-
-                  <td className="td-actions">
-                    {hasPermissionToEdit && (
-                      <Link className="btn btn-link" to={`/spot/${row.id}/edit`}>
-                        {i18n('common.edit')}
-                      </Link>
-                    )}
-                    {hasPermissionToDestroy && (
-                      <button className="btn btn-link" type="button" onClick={() => doOpenDestroyConfirmModal(row.id)}>
-                        {i18n('common.destroy')}
-                      </button>
-                    )}
+                  </td>
+                  <td className="table-cell">{row.orderNo}</td>
+                  <td className="table-cell">{row.userAccount}</td>
+                  <td className="table-cell">{row.tradingPair}</td>
+                  <td className="table-cell">
+                    <span className={`direction-badge ${row.direction === 'buy' ? 'buy' : 'sell'}`}>
+                      {row.direction}
+                    </span>
+                  </td>
+                  <td className="table-cell">{row.delegateType}</td>
+                  <td className="table-cell">
+                    <span className="status-badge">{row.delegateState}</span>
+                  </td>
+                  <td className="table-cell numeric">{row.orderQuantity}</td>
+                  <td className="table-cell numeric">{row.commissionPrice}</td>
+                  <td className="table-cell numeric">{row.entrustedValue}</td>
+                  <td className="table-cell numeric">{row.transactionQuantity}</td>
+                  <td className="table-cell numeric">{row.transactionValue}</td>
+                  <td className="table-cell numeric">{row.closingPrice}</td>
+                  <td className="table-cell numeric">{row.handlingFee}</td>
+                  <td className="table-cell">{row.commissionTime}</td>
+                  <td className="table-cell">{row.closingTime}</td>
+                  <td className="table-cell"><UserListItem value={row.createdBy} /></td>
+                  <td className="actions-cell">
+                    <div className="actions-container">
+                      {hasPermissionToEdit && (
+                        <Link className="btn-action edit" to={`/spot/${row.id}/edit`}>
+                          <i className="fas fa-edit"></i>
+                          <span>Edit</span>
+                        </Link>
+                      )}
+                      {hasPermissionToDestroy && (
+                        <button 
+                          className="btn-action delete" 
+                          type="button" 
+                          onClick={() => doOpenDestroyConfirmModal(row.id)}
+                        >
+                          <i className="fas fa-trash"></i>
+                          <span>Delete</span>
+                        </button>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}
           </tbody>
         </table>
       </div>
-
-      <Pagination onChange={doChangePagination} disabled={loading} pagination={pagination} />
+      <div className="pagination-container">
+        <Pagination onChange={doChangePagination} disabled={loading} pagination={pagination} />
+      </div>
 
       {recordIdToDestroy && (
         <ConfirmModal
@@ -181,7 +334,11 @@ function SpotListTable() {
           cancelText={i18n('common.no')}
         />
       )}
-    </TableWrapper>
+
+      <style>{`
+     
+      `}</style>
+    </div>
   );
 }
 

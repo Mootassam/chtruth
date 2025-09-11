@@ -49,7 +49,7 @@ function SpotForm(props) {
       handlingFee: record.handlingFee,
       commissionTime: record.commissionTime,
       closingTime: record.closingTime,
-      createdBy: record.createdBy,
+      createdBy: record.createdBy || null,
     };
   });
 
@@ -71,16 +71,16 @@ function SpotForm(props) {
     <FormWrapper>
       <FormProvider {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
-          <div className="row">
+          <div className="row g-3">
             {Object.keys(initialValues).map((field) => (
-              <div key={field} className="col-lg-7 col-md-8 col-12">
+              <div key={field} className="col-lg-6 col-md-6 col-sm-12">
                 {field === 'createdBy' ? (
                   <UserAutocompleteFormItem name={field} label={i18n(`entities.spot.fields.${field}`)} />
-                ) : field === 'direction' || field === 'status' ? (
+                ) : field === 'direction' ? (
                   <SelectFormItem
                     name={field}
                     label={i18n(`entities.spot.fields.${field}`)}
-                    options={(field === 'direction' ? ['BUY', 'SELL'] : spotEnumerators.status).map((v) => ({ value: v, label: v }))}
+                    options={['BUY', 'SELL'].map((v) => ({ value: v, label: v }))}
                   />
                 ) : field.includes('Time') ? (
                   <InputFormItem name={field} label={i18n(`entities.spot.fields.${field}`)} type="datetime-local" />
@@ -93,9 +93,10 @@ function SpotForm(props) {
             ))}
           </div>
 
-          <div className="form-buttons">
+          <div className="form-buttons d-flex flex-wrap gap-2 mt-3">
             <button className="btn btn-primary" disabled={props.saveLoading} type="button" onClick={form.handleSubmit(onSubmit)}>
-              <ButtonIcon loading={props.saveLoading} iconClass="far fa-save" />&nbsp;{i18n('common.save')}
+              <ButtonIcon loading={props.saveLoading} iconClass="far fa-save" />
+              &nbsp;{i18n('common.save')}
             </button>
 
             <button className="btn btn-light" type="button" disabled={props.saveLoading} onClick={onReset}>
@@ -103,7 +104,7 @@ function SpotForm(props) {
             </button>
 
             {props.onCancel && (
-              <button className="btn btn-light" type="button" disabled={props.saveLoading} onClick={() => props.onCancel()}>
+              <button className="btn btn-light" type="button" disabled={props.saveLoading} onClick={props.onCancel}>
                 <i className="fas fa-times"></i>&nbsp;{i18n('common.cancel')}
               </button>
             )}

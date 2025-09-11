@@ -1,5 +1,5 @@
 import listActions from 'src/modules/transaction/list/transactionListActions';
-import vipService from 'src/modules/kyc/kycService';
+import vipService from 'src/modules/deposit/depositService';
 import Errors from 'src/modules/shared/error/errors';
 import { i18n } from 'src/i18n';
 import { getHistory } from 'src/modules/store';
@@ -29,12 +29,12 @@ const vipDestroyActions = {
       });
 
       Message.success(
-        i18n('entities.kyc.destroy.success'),
+        i18n('entities.deposit.destroy.success'),
       );
 
       dispatch(listActions.doFetchCurrentFilter());
 
-      getHistory().push('/kyc');
+      getHistory().push('/deposit');
     } catch (error) {
       Errors.handle(error);
 
@@ -64,10 +64,10 @@ const vipDestroyActions = {
       }
 
       Message.success(
-        i18n('entities.kyc.destroyAll.success'),
+        i18n('entities.deposit.destroyAll.success'),
       );
 
-      getHistory().push('/kyc');
+      getHistory().push('/deposit');
     } catch (error) {
       Errors.handle(error);
 
