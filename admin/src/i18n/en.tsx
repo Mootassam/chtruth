@@ -376,6 +376,77 @@ const en = {
       },
     },
 
+
+    futures: {
+  menu: 'Futures Orders',
+  list: {
+    title: 'Futures Order List',
+  },
+  fields: {
+    id: 'ID',
+    futuresAmount: 'Futures Amount',
+    contractDuration: 'Contract Duration',
+    status: 'Futures Status',
+    direction: 'Direction',
+    openPositionPrice: 'Open Position Price',
+    openPositionTime: 'Open Position Time',
+    closePositionPrice: 'Close Position Price',
+    closePositionTime: 'Close Position Time',
+    profitAndLoss: 'Profit And Loss Amount',
+    leverage: 'Leverage',
+    control: 'Control',
+    operate: 'Operate',
+    auditor: 'Auditor',
+    createdBy: 'Created By',
+    updatedBy: 'Updated By',
+    tenant: 'Tenant',
+    importHash: 'Import Hash',
+    profitAndLossAmount	:"profitAndLossAmount",
+   
+  },
+  enumerators: {
+    direction: {
+      BUY: 'Buy',
+      SELL: 'Sell',
+    },
+    control: {
+      normal: 'Normal',
+      loss: 'Loss',
+      profit: 'Profit',
+    },
+    operate: {
+      high: 'High',
+      low: 'Low',
+    },
+    status: {
+      open: 'Open',
+      closed: 'Closed',
+    },
+  },
+  new: {
+    title: 'Add New Futures Order',
+  },
+  edit: {
+    title: 'Edit Futures Order',
+  },
+  view: {
+    title: 'Futures Order Details',
+  },
+  create: {
+    success: 'Futures order successfully saved',
+  },
+  update: {
+    success: 'Futures order successfully updated',
+  },
+  destroy: {
+    success: 'Futures order successfully deleted',
+  },
+  destroyAll: {
+    success: 'Futures orders successfully deleted',
+  },
+},
+
+
     vip: {
       menu: 'Vip',
       list: {

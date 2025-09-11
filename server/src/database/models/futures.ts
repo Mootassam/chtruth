@@ -56,13 +56,13 @@ export default (database) => {
 
       control: {
         type: String,
-        enum: ["Normal", "Loss", "Profit"],
+        enum: ["normal", "loss", "profit"],
         default: "Normal",
       },
 
       operate: {
         type: String,
-        enum: ["High", "Low"],
+        enum: ["high", "low"],
         default: "Low",
       },
 

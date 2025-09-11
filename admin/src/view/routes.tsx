@@ -507,6 +507,49 @@ const privateRoutes = [
 
 
 
+  
+  // Futures routes
+
+  {
+    path: '/futures',
+    loader: () =>
+      import('src/view/futures/list/FuturesListPage'),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+
+  {
+    path: '/futures/new',
+    loader: () =>
+      import('src/view/futures/form/FuturesFormPage'),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+  {
+    path: '/futures/importer',
+    loader: () =>
+      import(
+        'src/view/futures/importer/FuturesImporterPage'
+      ),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+  {
+    path: '/futures/:id/edit',
+    loader: () =>
+      import('src/view/futures/form/FuturesFormPage'),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+  {
+
+    path: '/futures/:id',
+    loader: () =>
+      import('src/view/futures/view/FuturesViewPage'),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+
 
 
 

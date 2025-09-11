@@ -4,15 +4,15 @@ import AuditLogRepository from "./auditLogRepository";
 import Error404 from "../../errors/Error404";
 import { IRepositoryOptions } from "./IRepositoryOptions";
 import FileRepository from "./fileRepository";
-import Kyc from "../models/kyc";
+import Futures from "../models/futures";
 
-class KycRepository {
+class FuturesRepository {
   static async create(data, options: IRepositoryOptions) {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
 
     const currentUser = MongooseRepository.getCurrentUser(options);
 
-    const [record] = await Kyc(options.database).create(
+    const [record] = await Futures(options.database).create(
       [
         {
           ...data,
@@ -38,7 +38,7 @@ class KycRepository {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
 
     let record = await MongooseRepository.wrapWithSessionIfExists(
-      Kyc(options.database).findById(id),
+      Futures(options.database).findById(id),
       options
     );
 
@@ -46,7 +46,7 @@ class KycRepository {
       throw new Error404();
     }
 
-    await Kyc(options.database).updateOne(
+    await Futures(options.database).updateOne(
       { _id: id },
       {
         ...data,
@@ -66,7 +66,7 @@ class KycRepository {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
 
     let record = await MongooseRepository.wrapWithSessionIfExists(
-      Kyc(options.database).findById(id),
+      Futures(options.database).findById(id),
       options
     );
 
@@ -74,7 +74,7 @@ class KycRepository {
       throw new Error404();
     }
 
-    await Kyc(options.database).deleteOne({ _id: id }, options);
+    await Futures(options.database).deleteOne({ _id: id }, options);
 
     await this._createAuditLog(AuditLogRepository.DELETE, id, record, options);
   }
@@ -83,7 +83,7 @@ class KycRepository {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
 
     return MongooseRepository.wrapWithSessionIfExists(
-      Kyc(options.database).countDocuments({
+      Futures(options.database).countDocuments({
         ...filter,
         tenant: currentTenant.id,
       }),
@@ -95,7 +95,7 @@ class KycRepository {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
 
     let record = await MongooseRepository.wrapWithSessionIfExists(
-      Kyc(options.database).findById(id).populate("user"),
+      Futures(options.database).findById(id).populate("user").populate("createdBy"),
       options
     );
 
@@ -145,14 +145,15 @@ class KycRepository {
     const skip = Number(offset || 0) || undefined;
     const limitEscaped = Number(limit || 0) || undefined;
     const criteria = criteriaAnd.length ? { $and: criteriaAnd } : null;
-    let rows = await Kyc(options.database)
+    let rows = await Futures(options.database)
       .find(criteria)
       .skip(skip)
       .limit(limitEscaped)
       .sort(sort)
-      .populate("user");
+      .populate("user")
+      .populate("createdBy");
 
-    const count = await Kyc(options.database).countDocuments(criteria);
+    const count = await Futures(options.database).countDocuments(criteria);
 
     rows = await Promise.all(rows.map(this._fillFileDownloadUrls));
 
@@ -189,7 +190,7 @@ class KycRepository {
 
     const criteria = { $and: criteriaAnd };
 
-    const records = await Kyc(options.database)
+    const records = await Futures(options.database)
       .find(criteria)
       .limit(limitEscaped)
       .sort(sort);
@@ -203,7 +204,7 @@ class KycRepository {
   static async _createAuditLog(action, id, data, options: IRepositoryOptions) {
     await AuditLogRepository.log(
       {
-        entityName: Kyc(options.database).modelName,
+        entityName: Futures(options.database).modelName,
         entityId: id,
         action,
         values: data,
@@ -225,4 +226,4 @@ class KycRepository {
   }
 }
 
-export default KycRepository;
+export default FuturesRepository;
