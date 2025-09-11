@@ -500,13 +500,6 @@ const privateRoutes = [
     permissionRequired: permissions.categoryRead,
     exact: true,
   },
-
-
-
-
-
-
-
   
   // Futures routes
 
@@ -551,6 +544,47 @@ const privateRoutes = [
   },
 
 
+  // Stacking routes
+
+  {
+    path: '/stacking',
+    loader: () =>
+      import('src/view/stacking/list/StackingListPage'),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+
+  {
+    path: '/stacking/new',
+    loader: () =>
+      import('src/view/stacking/form/StackingFormPage'),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+  {
+    path: '/stacking/importer',
+    loader: () =>
+      import(
+        'src/view/stacking/importer/StackingImporterPage'
+      ),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+  {
+    path: '/stacking/:id/edit',
+    loader: () =>
+      import('src/view/stacking/form/StackingFormPage'),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+  {
+
+    path: '/stacking/:id',
+    loader: () =>
+      import('src/view/stacking/view/StackingViewPage'),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
 
 
   //  coupons routes

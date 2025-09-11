@@ -172,7 +172,6 @@ const LayoutWrapper = styled.div`
   .sidebar-menu-item a:hover {
     background: rgba(255, 255, 255, 0.08);
     color: #fff;
-    transform: translateX(4px);
   }
 
   .sidebar-icon {
@@ -239,12 +238,10 @@ const LayoutWrapper = styled.div`
 
   @media (max-width: 768px) {
     .sidebar-container {
-      transform: translateX(-100%);
       width: 280px;
     }
 
     .sidebar-container.mobile-open {
-      transform: translateX(0);
     }
 
     .sidebar-logo {
@@ -264,11 +261,9 @@ const LayoutWrapper = styled.div`
   @keyframes slideIn {
     from {
       opacity: 0;
-      transform: translateX(-10px);
     }
     to {
       opacity: 1;
-      transform: translateX(0);
     }
   }
 

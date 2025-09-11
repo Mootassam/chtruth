@@ -445,6 +445,57 @@ const en = {
     success: 'Futures orders successfully deleted',
   },
 },
+stacking: {
+  menu: 'Staking Orders',
+  list: {
+    title: 'Staking Order List',
+  },
+  fields: {
+    id: 'ID',
+    user: 'User',
+    currency: 'Currency',
+    amount: 'Amount',
+    apy: 'APY (%)',
+    minimumStake: 'Minimum Stake',
+    unstakingPeriod: 'Unstaking Period (days)',
+    status: 'Status',
+    startDate: 'Start Date',
+    endDate: 'End Date',
+    earnedRewards: 'Earned Rewards',
+    createdBy: 'Created By',
+    updatedBy: 'Updated By',
+    tenant: 'Tenant',
+    importHash: 'Import Hash',
+  },
+  enumerators: {
+    status: {
+      active: 'Active',
+      completed: 'Completed',
+      cancelled: 'Cancelled',
+    },
+  },
+  new: {
+    title: 'Add New Staking Order',
+  },
+  edit: {
+    title: 'Edit Staking Order',
+  },
+  view: {
+    title: 'Staking Order Details',
+  },
+  create: {
+    success: 'Staking order successfully saved',
+  },
+  update: {
+    success: 'Staking order successfully updated',
+  },
+  destroy: {
+    success: 'Staking order successfully deleted',
+  },
+  destroyAll: {
+    success: 'Staking orders successfully deleted',
+  },
+},
 
 
     vip: {

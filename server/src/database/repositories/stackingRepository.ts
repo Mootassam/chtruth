@@ -4,7 +4,7 @@ import AuditLogRepository from "./auditLogRepository";
 import Error404 from "../../errors/Error404";
 import { IRepositoryOptions } from "./IRepositoryOptions";
 import FileRepository from "./fileRepository";
-import Deposit from "../models/deposit";
+import Stacking from "../models/stacking";
 
 class StackingRepository {
   static async create(data, options: IRepositoryOptions) {
@@ -12,7 +12,7 @@ class StackingRepository {
 
     const currentUser = MongooseRepository.getCurrentUser(options);
 
-    const [record] = await Deposit(options.database).create(
+    const [record] = await Stacking(options.database).create(
       [
         {
           ...data,
@@ -38,7 +38,7 @@ class StackingRepository {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
 
     let record = await MongooseRepository.wrapWithSessionIfExists(
-      Deposit(options.database).findById(id),
+      Stacking(options.database).findById(id),
       options
     );
 
@@ -46,7 +46,7 @@ class StackingRepository {
       throw new Error404();
     }
 
-    await Deposit(options.database).updateOne(
+    await Stacking(options.database).updateOne(
       { _id: id },
       {
         ...data,
@@ -66,7 +66,7 @@ class StackingRepository {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
 
     let record = await MongooseRepository.wrapWithSessionIfExists(
-      Deposit(options.database).findById(id),
+      Stacking(options.database).findById(id),
       options
     );
 
@@ -74,7 +74,7 @@ class StackingRepository {
       throw new Error404();
     }
 
-    await Deposit(options.database).deleteOne({ _id: id }, options);
+    await Stacking(options.database).deleteOne({ _id: id }, options);
 
     await this._createAuditLog(AuditLogRepository.DELETE, id, record, options);
   }
@@ -83,7 +83,7 @@ class StackingRepository {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
 
     return MongooseRepository.wrapWithSessionIfExists(
-      Deposit(options.database).countDocuments({
+      Stacking(options.database).countDocuments({
         ...filter,
         tenant: currentTenant.id,
       }),
@@ -95,7 +95,7 @@ class StackingRepository {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
 
     let record = await MongooseRepository.wrapWithSessionIfExists(
-      Deposit(options.database)
+      Stacking(options.database)
         .findById(id)
         .populate("auditor")
         .populate("createdBy"),
@@ -148,7 +148,7 @@ class StackingRepository {
     const skip = Number(offset || 0) || undefined;
     const limitEscaped = Number(limit || 0) || undefined;
     const criteria = criteriaAnd.length ? { $and: criteriaAnd } : null;
-    let rows = await Deposit(options.database)
+    let rows = await Stacking(options.database)
       .find(criteria)
       .skip(skip)
       .limit(limitEscaped)
@@ -156,7 +156,7 @@ class StackingRepository {
       .populate("auditor")
       .populate("createdBy");
 
-    const count = await Deposit(options.database).countDocuments(criteria);
+    const count = await Stacking(options.database).countDocuments(criteria);
 
     rows = await Promise.all(rows.map(this._fillFileDownloadUrls));
 
@@ -193,7 +193,7 @@ class StackingRepository {
 
     const criteria = { $and: criteriaAnd };
 
-    const records = await Deposit(options.database)
+    const records = await Stacking(options.database)
       .find(criteria)
       .limit(limitEscaped)
       .sort(sort);
@@ -207,7 +207,7 @@ class StackingRepository {
   static async _createAuditLog(action, id, data, options: IRepositoryOptions) {
     await AuditLogRepository.log(
       {
-        entityName: Deposit(options.database).modelName,
+        entityName: Stacking(options.database).modelName,
         entityId: id,
         action,
         values: data,

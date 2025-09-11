@@ -102,15 +102,15 @@ export default [
     className: 'menu-li side-menue sub-item',
     permissionRequired: permissions.categoryRead,
   },
-  {
-    id: 'wallet-monitor',
-    path: '/wallet-monitor',
-    exact: true,
-    icon: 'fas fa-wallet',
-    label: i18n('dashboard.walletMonitor'),
-    className: 'menu-li side-menue sub-item',
-    permissionRequired: permissions.categoryRead,
-  },
+  // {
+  //   id: 'wallet-monitor',
+  //   path: '/wallet-monitor',
+  //   exact: true,
+  //   icon: 'fas fa-wallet',
+  //   label: i18n('dashboard.walletMonitor'),
+  //   className: 'menu-li side-menue sub-item',
+  //   permissionRequired: permissions.categoryRead,
+  // },
 
   // Operation Related Section
   {
@@ -138,7 +138,7 @@ export default [
   },
   {
     id: 'mining-project',
-    path: '/mining-project',
+    path: '/stacking',
     exact: true,
     icon: 'fas fa-digging',
     label: i18n('dashboard.miningProject'),
