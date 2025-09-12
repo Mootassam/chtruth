@@ -3033,7 +3033,7 @@ stacking: {
       avatars: 'Avatar',
       email: 'Email',
       username: 'Username',
-      refcode: 'refcode',
+      refcode: 'Invitation Code',
       score: 'Score',
       grab: 'Grab',
       withdraw: 'Withdraw',

@@ -21,7 +21,7 @@ const MENU_ITEMS = [
 // Status constants for better maintainability
 const VERIFICATION_STATUS = {
   PENDING: "pending",
-  VERIFIED: "verified",
+  SUCCESS: "success",
   UNVERIFIED: "unverified",
 };
 
@@ -35,7 +35,7 @@ function Profile() {
     if (selectRows[0]?.status === VERIFICATION_STATUS.PENDING) {
       return VERIFICATION_STATUS.PENDING;
     }
-    return currentUser?.kyc ? VERIFICATION_STATUS.VERIFIED : VERIFICATION_STATUS.UNVERIFIED;
+    return currentUser?.kyc ? VERIFICATION_STATUS.SUCCESS : VERIFICATION_STATUS.UNVERIFIED;
   }, [selectRows, currentUser?.kyc]);
 
   // Memoized user data to prevent unnecessary re-renders
@@ -106,7 +106,7 @@ function Profile() {
         {/* Verification Details */}
         {kycStatus === VERIFICATION_STATUS.PENDING ? (
           <PendingVerifications />
-        ) : kycStatus === VERIFICATION_STATUS.VERIFIED ? (
+        ) : kycStatus === VERIFICATION_STATUS.SUCCESS ? (
           <ApprovedVerifications />
         ) : (
           <AccountLimitations />
@@ -168,8 +168,8 @@ const ProfileHeader = ({ currentUser, kycStatus }) => (
     </div>
     <div className="profile-profile-info">
       <div className="profile-profile-name">{currentUser?.fullName}</div>
-      <div className={kycStatus === VERIFICATION_STATUS.VERIFIED ? "profile-profile-status" : "profile-not-status"}>
-        {kycStatus === VERIFICATION_STATUS.VERIFIED ? "VERIFIED" : "UNVERIFIED"}
+      <div className={kycStatus === VERIFICATION_STATUS.SUCCESS ? "profile-profile-status" : "profile-not-status"}>
+        {kycStatus === VERIFICATION_STATUS.SUCCESS ? "VERIFIED" : "UNVERIFIED"}
       </div>
     </div>
   </div>

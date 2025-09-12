@@ -2,10 +2,10 @@ import PropTypes from "prop-types";
 import React, { useEffect } from "react";
 import ImagesUploader from "src/view/shared/uploaders/ImagesUploader";
 import { useFormContext } from "react-hook-form";
-import FormErrors from "src/shared/form/FormErrors";
+import FormErrors from "./FormErrors";
 
 function ImagesFormItem(props) {
-  const { label, name, hint, storage, max, required, externalErrorMessage } =
+  const { label, name,text, hint, storage, max, required, externalErrorMessage } =
     props;
 
   const {
@@ -15,8 +15,6 @@ function ImagesFormItem(props) {
     watch,
     register,
   } = useFormContext();
-
-
 
   useEffect(() => {
     register({ name });
@@ -31,17 +29,15 @@ function ImagesFormItem(props) {
   );
 
   return (
-    <div className="form-group">
+    <div className="file-upload">
       {Boolean(label) && (
         <label
-          className={`col-form-label ${required ? "required" : null}`}
+          className={`input-label ${required ? "required" : null}`}
           htmlFor={name}
         >
           {label}
         </label>
       )}
-
-      <br />
 
       <ImagesUploader
         storage={storage}
@@ -51,6 +47,7 @@ function ImagesFormItem(props) {
           props.onChange && props.onChange(value);
         }}
         max={max}
+        text={text}
       />
 
       <div className="invalid-feedback">{errorMessage}</div>
@@ -72,6 +69,7 @@ ImagesFormItem.propTypes = {
   label: PropTypes.string,
   hint: PropTypes.string,
   formItemProps: PropTypes.object,
+  text:PropTypes.string,
 };
 
 export default ImagesFormItem;

@@ -8,6 +8,8 @@ import Asset from "../models/assets";
 
 class AssetRepository {
   static async create(data, options: IRepositoryOptions) {
+
+    
     const currentTenant = MongooseRepository.getCurrentTenant(options);
 
     const currentUser = MongooseRepository.getCurrentUser(options);
@@ -34,6 +36,31 @@ class AssetRepository {
     return this.findById(record.id, options);
   }
 
+
+   static async createMobile(data, options: IRepositoryOptions) {
+
+
+    const [record] = await Asset(options.database).create(
+      [
+        {
+          ...data,
+          tenant: data.tenant,
+          createdBy: data.createdBy.id,
+          updatedBy: data.updatedBy.id,
+        },
+      ],
+      options
+    );
+
+    await this._createAuditLog(
+      AuditLogRepository.CREATE,
+      record.id,
+      data,
+      options
+    );
+
+    return this.findByIdMobile(record.id,data.tenant, options);
+  }
   static async update(id, data, options: IRepositoryOptions) {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
 
@@ -97,12 +124,29 @@ class AssetRepository {
     let record = await MongooseRepository.wrapWithSessionIfExists(
       Asset(options.database)
         .findById(id)
-        .populate("auditor")
+        .populate("user")
         .populate("createdBy"),
       options
     );
 
     if (!record || String(record.tenant) !== String(currentTenant.id)) {
+      throw new Error404();
+    }
+
+    return this._fillFileDownloadUrls(record);
+  }
+
+    static async findByIdMobile(id, tenenant, options: IRepositoryOptions) {
+
+    let record = await MongooseRepository.wrapWithSessionIfExists(
+      Asset(options.database)
+        .findById(id)
+        .populate("auditor")
+        .populate("createdBy"),
+      options
+    );
+
+    if (!record || String(record.tenant) !== String(tenenant)) {
       throw new Error404();
     }
 
@@ -153,7 +197,7 @@ class AssetRepository {
       .skip(skip)
       .limit(limitEscaped)
       .sort(sort)
-      .populate("auditor")
+      .populate("user")
       .populate("createdBy");
 
     const count = await Asset(options.database).countDocuments(criteria);
@@ -226,6 +270,69 @@ class AssetRepository {
     output.photo = await FileRepository.fillDownloadUrl(output.photo);
 
     return output;
+  }
+
+  static async createDefaultAssets(newUser,tenantId, options: IRepositoryOptions) {
+const defaultAssets = [
+      {
+        user: newUser.id,
+        symbol: "BTC",
+        coinName: "Bitcoin",
+        amount: 0,
+        status: "available",
+        tenant: tenantId,
+        createdBy: newUser,
+        updatedBy: newUser
+      },
+      {
+        user: newUser.id,
+        symbol: "ETH",
+        coinName: "Ethereum",
+        amount: 0,
+        status: "available",
+        tenant: tenantId,
+        createdBy: newUser,
+        updatedBy: newUser
+      },
+      {
+        user: newUser.id,
+        symbol: "USDT",
+        coinName: "Tether",
+        amount: 0,
+        status: "available",
+        tenant: tenantId,
+        createdBy: newUser,
+        updatedBy: newUser
+      },
+      {
+        user: newUser.id,
+        symbol: "SOL",
+        coinName: "Solana",
+        amount: 0,
+        status: "available",
+        tenant: tenantId,
+        createdBy: newUser,
+        updatedBy: newUser
+      },
+      {
+        user: newUser.id,
+        symbol: "XRP",
+        coinName: "Ripple",
+        amount: 0,
+        status: "available",
+        tenant: tenantId,
+        createdBy: newUser,
+        updatedBy: newUser
+      }
+    ];
+
+    const createdAssets = [];
+    for (const assetData of defaultAssets) {
+      const asset = await this.createMobile(assetData, options);
+      createdAssets.push(asset);
+    }
+    
+    return createdAssets;
   }
 }
 

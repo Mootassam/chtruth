@@ -16,6 +16,8 @@ export default async (req, res, next) => {
       req,
     );
 
+    
+
    
     await ApiResponseHandler.success(req, res, payload);
   } catch (error) {

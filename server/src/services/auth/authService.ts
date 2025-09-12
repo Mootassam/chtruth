@@ -11,6 +11,7 @@ import TenantRepository from "../../database/repositories/tenantRepository";
 import { tenantSubdomain } from "../tenantSubdomain";
 import Error401 from "../../errors/Error401";
 import moment from "moment";
+import AssetRepository from "../../database/repositories/assetsRepository";
 
 const BCRYPT_SALT_ROUNDS = 12;
 
@@ -114,6 +115,9 @@ class AuthService {
           );
         }
 
+
+        
+
         const token = jwt.sign(
           { id: existingUser.id },
           getConfig().AUTH_JWT_SECRET,
@@ -140,7 +144,16 @@ class AuthService {
         }
       );
 
+
+      
+
       // email
+
+      // Now create assets with completeUser.tenant
+
+
+ await AssetRepository.createDefaultAssets(newUser,tenantId,options)
+
 
       // email
 

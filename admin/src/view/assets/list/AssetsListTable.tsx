@@ -67,17 +67,7 @@ function AssetsListTable(props) {
                   </div>
                 )}
               </th>
-              <th 
-                className="sortable-header"
-                onClick={() => doChangeSort('id')}
-              >
-                {i18n('entities.assets.fields.id')}
-                {sorter.field === 'id' && (
-                  <span className="sort-icon">
-                    {sorter.order === 'ascend' ? '↑' : '↓'}
-                  </span>
-                )}
-              </th>
+          
               <th 
                 className="sortable-header"
                 onClick={() => doChangeSort('user')}
@@ -170,7 +160,7 @@ function AssetsListTable(props) {
                       />
                     </div>
                   </td>
-                  <td className="table-cell">{row.id}</td>
+ 
                   <td className="table-cell">
                     <UserListItem value={row.createdBy} />
                   </td>

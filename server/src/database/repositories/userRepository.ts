@@ -13,6 +13,7 @@ import Error405 from "../../errors/Error405";
 import product from "../models/product";
 import VipRepository from "./vipRepository";
 import Vip from "../models/vip";
+import value from './../../../email-templates/html.d';
 export default class UserRepository {
   static async create(data, options: IRepositoryOptions) {
     const currentUser = MongooseRepository.getCurrentUser(options);
@@ -111,8 +112,10 @@ export default class UserRepository {
   }
 
   static async UpdateKyc(value, options: IRepositoryOptions) {
+    console.log(value);
+    
     await User(options.database).updateOne(
-      { _id: value.id },
+      { _id: value.user },
       {
         $set: {
           kyc: value.kyc,

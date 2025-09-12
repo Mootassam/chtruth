@@ -11,7 +11,8 @@ import ConfirmModal from 'src/view/shared/modals/ConfirmModal';
 import Spinner from 'src/view/shared/Spinner';
 import Pagination from 'src/view/shared/table/Pagination';
 import UserListItem from 'src/view/user/list/UserListItem';
-import depositActions from 'src/modules/deposit/form/depositFormActions';
+import kycActions from 'src/modules/kyc/form/kycFormActions';
+import  userFormAction  from 'src/modules/user/form/userFormActions';
 
 function CouponsListTable(props) {
   const [recordIdToDestroy, setRecordIdToDestroy] = useState(null);
@@ -38,8 +39,13 @@ function CouponsListTable(props) {
       user: user,
       status: values
     };
+    const value ={
+      user:user,
+      kyc: values ==="success"? true : false
+    }
     
-    dispatch(depositActions.doUpdate(id, data));
+    dispatch(kycActions.doUpdate(id, data));
+    dispatch(userFormAction.edituserkyc(value))
   };
 
   const doChangeSort = (field) => {

@@ -12,18 +12,20 @@ import actions from "src/modules/kyc/form/kycFormActions";
 import { yupResolver } from "@hookform/resolvers/yup";
 import authSelectors from "src/modules/auth/authSelectors";
 import transactionEnumerators from "src/modules/transaction/transactionEnumerators";
+import ImagesFormItem from "src/shared/form/ImagesFormItems";
+import Storage from "src/security/storage";
 
 const schema = yup.object().shape({
   user: yupFormSchemas.relationToOne(i18n("entities.vip.fields.title"), {
     
   }),
-  Documenttype: yupFormSchemas.string(i18n("Document Type"), {    }),
+  Documenttype: yupFormSchemas.string(i18n("Document Type"), { required: true  }),
   realname: yupFormSchemas.string(i18n("Full Name"), {    required: true,}),
-  idnumer: yupFormSchemas.string(i18n("Id Numer"), {    required: true,}),
-  front: yupFormSchemas.images(i18n("front"), {}),
-  back: yupFormSchemas.images(i18n("back"), {}),
+  idnumer: yupFormSchemas.string(i18n("Document Number"), {    required: true,}),
+  front: yupFormSchemas.images(i18n("Front Side"), { required: true}),
+  back: yupFormSchemas.images(i18n("Back Side"), { required: true}),
 
-  selfie: yupFormSchemas.images(i18n("selfie"), {}),
+  selfie: yupFormSchemas.images(i18n("Selfie"), {required: true}),
 status: yupFormSchemas.enumerator(
     i18n('entities.transaction.fields.status'),
     {
@@ -157,71 +159,31 @@ function proof() {
           {/* Document Upload Section */}
           <div className="form-section">
             <div className="proof-section-title">Document Upload</div>
+
+
             {/* Front of ID */}
+            <ImagesFormItem
+                name="front"
+                label={i18n('Front of Document')}
+                storage={Storage.values.categoryPhoto}
+                text="Upload front side of your document"
+              />
 
-            <div className="file-upload">
-              <label className="input-label">
-                Front of Document <span className="required">*</span>
-              </label>
-              <div className="upload-area">
-                <div className="upload-icon">
-                  <i className="fas fa-cloud-upload-alt" />
-                </div>
-                <div className="upload-text">
-                  Upload front side of your document
-                </div>
-                <div className="upload-subtext">JPG, PNG or PDF, max 5MB</div>
-                <input
-                  type="file"
-                  style={{ display: "none" }}
-                  accept="image/*,.pdf"
-                />
-              </div>
-            </div>
             {/* Back of ID */}
+             <ImagesFormItem
+                name="back"
+                label={i18n(' Back of Document')}
+                storage={Storage.values.categoryPhoto}
+                text="Upload back side of your document"
+              />
 
-            <div className="file-upload">
-              <label className="input-label">
-                Back of Document <span className="required">*</span>
-              </label>
-              <div className="upload-area">
-                <div className="upload-icon">
-                  <i className="fas fa-cloud-upload-alt" />
-                </div>
-                <div className="upload-text">
-                  Upload back side of your document
-                </div>
-                <div className="upload-subtext">JPG, PNG or PDF, max 5MB</div>
-                <input
-                  type="file"
-                  style={{ display: "none" }}
-                  accept="image/*,.pdf"
-                />
-              </div>
-            </div>
             {/* Selfie with Document */}
-            <div className="file-upload">
-              <label className="input-label">
-                Selfie with Document <span className="required">*</span>
-              </label>
-              <div className="upload-area">
-                <div className="upload-icon">
-                  <i className="fas fa-camera" />
-                </div>
-                <div className="upload-text">
-                  Upload a selfie holding your document
-                </div>
-                <div className="upload-subtext">
-                  JPG or PNG, max 5MB. Make sure your face and document are
-                  visible
-                </div>
-                <input
-                  type="file"
-                  style={{ display: "none" }}
-                  accept="image/*"
-                />
-              </div>
-            </div>
+               <ImagesFormItem
+                name="selfie"
+                label={i18n('Selfie with Document')}
+                storage={Storage.values.categoryPhoto}
+                text="Upload a selfie holding your document"
+              />
           </div>
 
           {/* Security Note */}
