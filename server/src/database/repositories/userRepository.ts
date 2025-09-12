@@ -1,3 +1,4 @@
+
 import MongooseRepository from "./mongooseRepository";
 import User from "../models/user";
 import AuditLogRepository from "./auditLogRepository";
@@ -13,7 +14,6 @@ import Error405 from "../../errors/Error405";
 import product from "../models/product";
 import VipRepository from "./vipRepository";
 import Vip from "../models/vip";
-import value from './../../../email-templates/html.d';
 export default class UserRepository {
   static async create(data, options: IRepositoryOptions) {
     const currentUser = MongooseRepository.getCurrentUser(options);

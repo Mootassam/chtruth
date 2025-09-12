@@ -1,20 +1,18 @@
 import ApiResponseHandler from '../apiResponseHandler';
+import Error403 from '../../errors/Error403';
 import TenantService from '../../services/tenantService';
 
 export default async (req, res, next) => {
   try {
-    
-    let payload;
+    // if (!req.currentUser || !req.currentUser.id) {
+    //   throw new Error403(req.language);
+    // }
 
-    if (req.params.id) {
-      payload = await new TenantService(req).findById(
-        req.params.id,
-      );
-    } else {
-      payload = await new TenantService(req).findByUrl(
-        req.query.url,
-      );
-    }
+
+
+    const payload = await new TenantService(
+      req,
+    ).findAndCountAlls(req.query);
 
     await ApiResponseHandler.success(req, res, payload);
   } catch (error) {

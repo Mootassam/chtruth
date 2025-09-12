@@ -31,11 +31,17 @@ export default class UserService {
     };
     const tenantId = AuthCurrentTenant.get();
     const response = await authAxios.put(
-      `/tenant/${tenantId}/UpdateWallet`,
+      `/tenant/${tenantId}/UpdateWallet
+      `,
       body
     );
 
     return response.data;
+  }
+
+  static async getSingle() {
+    const response = await authAxios.get(`/single`);
+    return response.data.rows[0].id;
   }
 
   static async destroy(ids) {

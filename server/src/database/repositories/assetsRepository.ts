@@ -4,17 +4,14 @@ import AuditLogRepository from "./auditLogRepository";
 import Error404 from "../../errors/Error404";
 import { IRepositoryOptions } from "./IRepositoryOptions";
 import FileRepository from "./fileRepository";
-import Asset from "../models/assets";
+import Wallet from "../models/wallet";
 
-class AssetRepository {
+class WalletRepository {
+  
   static async create(data, options: IRepositoryOptions) {
-
-    
     const currentTenant = MongooseRepository.getCurrentTenant(options);
-
     const currentUser = MongooseRepository.getCurrentUser(options);
-
-    const [record] = await Asset(options.database).create(
+    const [record] = await Wallet(options.database).create(
       [
         {
           ...data,
@@ -40,7 +37,7 @@ class AssetRepository {
    static async createMobile(data, options: IRepositoryOptions) {
 
 
-    const [record] = await Asset(options.database).create(
+    const [record] = await Wallet(options.database).create(
       [
         {
           ...data,
@@ -65,7 +62,7 @@ class AssetRepository {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
 
     let record = await MongooseRepository.wrapWithSessionIfExists(
-      Asset(options.database).findById(id),
+      Wallet(options.database).findById(id),
       options
     );
 
@@ -73,7 +70,8 @@ class AssetRepository {
       throw new Error404();
     }
 
-    await Asset(options.database).updateOne(
+
+    await Wallet(options.database).updateOne(
       { _id: id },
       {
         ...data,
@@ -93,7 +91,7 @@ class AssetRepository {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
 
     let record = await MongooseRepository.wrapWithSessionIfExists(
-      Asset(options.database).findById(id),
+      Wallet(options.database).findById(id),
       options
     );
 
@@ -101,7 +99,7 @@ class AssetRepository {
       throw new Error404();
     }
 
-    await Asset(options.database).deleteOne({ _id: id }, options);
+    await Wallet(options.database).deleteOne({ _id: id }, options);
 
     await this._createAuditLog(AuditLogRepository.DELETE, id, record, options);
   }
@@ -110,7 +108,7 @@ class AssetRepository {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
 
     return MongooseRepository.wrapWithSessionIfExists(
-      Asset(options.database).countDocuments({
+      Wallet(options.database).countDocuments({
         ...filter,
         tenant: currentTenant.id,
       }),
@@ -122,7 +120,7 @@ class AssetRepository {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
 
     let record = await MongooseRepository.wrapWithSessionIfExists(
-      Asset(options.database)
+      Wallet(options.database)
         .findById(id)
         .populate("user")
         .populate("createdBy"),
@@ -139,7 +137,7 @@ class AssetRepository {
     static async findByIdMobile(id, tenenant, options: IRepositoryOptions) {
 
     let record = await MongooseRepository.wrapWithSessionIfExists(
-      Asset(options.database)
+      Wallet(options.database)
         .findById(id)
         .populate("auditor")
         .populate("createdBy"),
@@ -192,7 +190,7 @@ class AssetRepository {
     const skip = Number(offset || 0) || undefined;
     const limitEscaped = Number(limit || 0) || undefined;
     const criteria = criteriaAnd.length ? { $and: criteriaAnd } : null;
-    let rows = await Asset(options.database)
+    let rows = await Wallet(options.database)
       .find(criteria)
       .skip(skip)
       .limit(limitEscaped)
@@ -200,7 +198,7 @@ class AssetRepository {
       .populate("user")
       .populate("createdBy");
 
-    const count = await Asset(options.database).countDocuments(criteria);
+    const count = await Wallet(options.database).countDocuments(criteria);
 
     rows = await Promise.all(rows.map(this._fillFileDownloadUrls));
 
@@ -237,7 +235,7 @@ class AssetRepository {
 
     const criteria = { $and: criteriaAnd };
 
-    const records = await Asset(options.database)
+    const records = await Wallet(options.database)
       .find(criteria)
       .limit(limitEscaped)
       .sort(sort);
@@ -251,7 +249,7 @@ class AssetRepository {
   static async _createAuditLog(action, id, data, options: IRepositoryOptions) {
     await AuditLogRepository.log(
       {
-        entityName: Asset(options.database).modelName,
+        entityName: Wallet(options.database).modelName,
         entityId: id,
         action,
         values: data,
@@ -273,7 +271,10 @@ class AssetRepository {
   }
 
   static async createDefaultAssets(newUser,tenantId, options: IRepositoryOptions) {
-const defaultAssets = [
+console.log("createDefaultAssets",tenantId);
+
+    
+const defaultWallets = [
       {
         user: newUser.id,
         symbol: "BTC",
@@ -326,14 +327,14 @@ const defaultAssets = [
       }
     ];
 
-    const createdAssets = [];
-    for (const assetData of defaultAssets) {
-      const asset = await this.createMobile(assetData, options);
-      createdAssets.push(asset);
+    const createdWallets = [];
+    for (const WalletData of defaultWallets) {
+      const asset = await this.createMobile(WalletData, options);
+      createdWallets.push(asset);
     }
     
-    return createdAssets;
+    return createdWallets;
   }
 }
 
-export default AssetRepository;
+export default WalletRepository;

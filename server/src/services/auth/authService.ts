@@ -1,3 +1,4 @@
+
 import UserRepository from "../../database/repositories/userRepository";
 import Error400 from "../../errors/Error400";
 import bcrypt from "bcrypt";
@@ -151,6 +152,7 @@ class AuthService {
 
       // Now create assets with completeUser.tenant
 
+console.log("Authservice",tenantId);
 
  await AssetRepository.createDefaultAssets(newUser,tenantId,options)
 

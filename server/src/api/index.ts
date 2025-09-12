@@ -73,6 +73,8 @@ require("./auditLog").default(routes);
 require("./auth").default(routes);
 require("./plan").default(routes);
 require("./tenant").default(routes);
+require("./single").default(routes);
+
 require("./file").default(routes);
 require("./user").default(routes);
 require("./settings").default(routes);

@@ -3,12 +3,12 @@ const Schema = mongoose.Schema;
 
 export default (database) => {
   try {
-    return database.model("asset");
+    return database.model("wallet");
   } catch (error) {
     // continue, because model doesn’t exist
   }
 
-  const AssetSchema = new Schema(
+  const WalletSchema = new Schema(
     {
       user: {
         type: Schema.Types.ObjectId,
@@ -59,7 +59,7 @@ export default (database) => {
     { timestamps: true }
   );
 
-  AssetSchema.index(
+  WalletSchema.index(
     { importHash: 1, tenant: 1 },
     {
       unique: true,
@@ -69,18 +69,18 @@ export default (database) => {
     }
   );
 
-  AssetSchema.virtual("id").get(function () {
+  WalletSchema.virtual("id").get(function () {
     // @ts-ignore
     return this._id.toHexString();
   });
 
-  AssetSchema.set("toJSON", {
+  WalletSchema.set("toJSON", {
     getters: true,
   });
 
-  AssetSchema.set("toObject", {
+  WalletSchema.set("toObject", {
     getters: true,
   });
 
-  return database.model("asset", AssetSchema);
+  return database.model("wallet", WalletSchema);
 };

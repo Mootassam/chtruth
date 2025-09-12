@@ -2,6 +2,7 @@ import authAxios from "src/modules/shared/axios/authAxios";
 import AuthToken from "src/modules/auth/authToken";
 import AuthCurrentTenant from "src/modules/auth/authCurrentTenant";
 import AuthInvitationToken from "src/modules/auth/authInvitationToken";
+import UserService from "../user/userService";
 
 export default class AuthService {
   static async registerWithEmailAndPassword(
@@ -13,8 +14,8 @@ export default class AuthService {
   ) {
     const invitationToken = AuthInvitationToken.get();
 
+    const tenantId = await UserService.getSingle();
 
-  
     const response = await authAxios.post("/auth/signupmobile", {
       email,
       password,
@@ -22,7 +23,7 @@ export default class AuthService {
       withdrawPassword,
       invitationcode,
       invitationToken,
-      tenantId: AuthCurrentTenant.get(),
+      tenantId: tenantId,
     });
 
     AuthInvitationToken.clear();
@@ -39,9 +40,7 @@ export default class AuthService {
       invitationToken,
       tenantId: AuthCurrentTenant.get(),
     });
-
     AuthInvitationToken.clear();
-
     return response.data;
   }
 

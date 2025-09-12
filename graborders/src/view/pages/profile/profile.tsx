@@ -6,16 +6,51 @@ import authActions from "src/modules/auth/authActions";
 import authSelectors from "src/modules/auth/authSelectors";
 import kycSelectors from "src/modules/kyc/list/kycListSelectors";
 import actions from "src/modules/kyc/list/kycListActions";
-
+import assetsActions from "src/modules/assets/list/assetsListActions";
 // Constants for menu items (moved outside component to prevent recreation)
 const MENU_ITEMS = [
-  { icon: "fas fa-globe", path: "/language", name: "Language", requiresKyc: false },
-  { icon: "fas fa-wallet", path: "/withdrawaddress", name: "Withdrawal Address", requiresKyc: true },
-  { icon: "fas fa-lock", path: "/passwordtype", name: "Password", requiresKyc: false },
-  { icon: "fas fa-bell", path: "/notification", name: "Notifications", requiresKyc: false },
-  { icon: "fas fa-gift", path: "/invitation", name: "My Invitation", requiresKyc: true },
-  { icon: "fas fa-info-circle", path: "/about", name: "About Us", requiresKyc: false },
-  { icon: "fas fa-file-certificate", path: "/approval", name: "MSB Approval", requiresKyc: false },
+  {
+    icon: "fas fa-globe",
+    path: "/language",
+    name: "Language",
+    requiresKyc: false,
+  },
+  {
+    icon: "fas fa-wallet",
+    path: "/withdrawaddress",
+    name: "Withdrawal Address",
+    requiresKyc: true,
+  },
+  {
+    icon: "fas fa-lock",
+    path: "/passwordtype",
+    name: "Password",
+    requiresKyc: false,
+  },
+  {
+    icon: "fas fa-bell",
+    path: "/notification",
+    name: "Notifications",
+    requiresKyc: false,
+  },
+  {
+    icon: "fas fa-gift",
+    path: "/invitation",
+    name: "My Invitation",
+    requiresKyc: true,
+  },
+  {
+    icon: "fas fa-info-circle",
+    path: "/about",
+    name: "About Us",
+    requiresKyc: false,
+  },
+  {
+    icon: "fas fa-file-certificate",
+    path: "/approval",
+    name: "MSB Approval",
+    requiresKyc: false,
+  },
 ];
 
 // Status constants for better maintainability
@@ -30,12 +65,14 @@ function Profile() {
   const currentUser = useSelector(authSelectors.selectCurrentUser);
   const selectRows = useSelector(kycSelectors.selectRows);
   const loading = useSelector(kycSelectors.selectLoading);
-  
+
   const kycStatus = useMemo(() => {
     if (selectRows[0]?.status === VERIFICATION_STATUS.PENDING) {
       return VERIFICATION_STATUS.PENDING;
     }
-    return currentUser?.kyc ? VERIFICATION_STATUS.SUCCESS : VERIFICATION_STATUS.UNVERIFIED;
+    return currentUser?.kyc
+      ? VERIFICATION_STATUS.SUCCESS
+      : VERIFICATION_STATUS.UNVERIFIED;
   }, [selectRows, currentUser?.kyc]);
 
   // Memoized user data to prevent unnecessary re-renders
@@ -43,24 +80,28 @@ function Profile() {
 
   useEffect(() => {
     dispatch(actions.doFetch(userData, userData));
+    dispatch(assetsActions.doFetch());
   }, [dispatch, userData]);
 
   const handleSignout = useCallback(() => {
     dispatch(authActions.doSignout());
   }, [dispatch]);
 
-  const menuItems = useMemo(() => 
-    MENU_ITEMS.map(item => ({
-      ...item,
-      disabled: item.requiresKyc && !currentUser?.kyc,
-    })),
+  const menuItems = useMemo(
+    () =>
+      MENU_ITEMS.map((item) => ({
+        ...item,
+        disabled: item.requiresKyc && !currentUser?.kyc,
+      })),
     [currentUser?.kyc]
   );
 
   // Memoized render function for menu items
   const renderMenuItem = useCallback((item) => {
     const menuItemContent = (
-      <li className={`profile-settings-item ${item.disabled ? 'disabled' : ''}`}>
+      <li
+        className={`profile-settings-item ${item.disabled ? "disabled" : ""}`}
+      >
         <div className="profile-settings-info">
           <div className="profile-settings-icon">
             <i className={item.icon} />
@@ -83,7 +124,6 @@ function Profile() {
   }, []);
 
   // Loading state
-
 
   return (
     <div className="profile_container">
@@ -142,7 +182,10 @@ const VerificationPending = () => (
       <i className="fas fa-clock"></i>
     </div>
     <div className="status-title">Verification Pending</div>
-    <div className="status-desc">Your account verification is in progress. This usually takes 1-3 business days.</div>
+    <div className="status-desc">
+      Your account verification is in progress. This usually takes 1-3 business
+      days.
+    </div>
   </div>
 );
 
@@ -168,7 +211,13 @@ const ProfileHeader = ({ currentUser, kycStatus }) => (
     </div>
     <div className="profile-profile-info">
       <div className="profile-profile-name">{currentUser?.fullName}</div>
-      <div className={kycStatus === VERIFICATION_STATUS.SUCCESS ? "profile-profile-status" : "profile-not-status"}>
+      <div
+        className={
+          kycStatus === VERIFICATION_STATUS.SUCCESS
+            ? "profile-profile-status"
+            : "profile-not-status"
+        }
+      >
         {kycStatus === VERIFICATION_STATUS.SUCCESS ? "VERIFIED" : "UNVERIFIED"}
       </div>
     </div>
@@ -200,7 +249,7 @@ const AccountInfo = ({ currentUser }) => (
 const PendingVerifications = () => (
   <div className="info-section">
     <div className="profile-section-title">PENDING VERIFICATIONS</div>
-    
+
     <div className="verification-item">
       <div className="verification-icon">
         <i className="fas fa-id-card"></i>
@@ -211,7 +260,7 @@ const PendingVerifications = () => (
       </div>
       <div className="verification-status-badge">Pending</div>
     </div>
-    
+
     <div className="verification-item">
       <div className="verification-icon">
         <i className="fas fa-home"></i>

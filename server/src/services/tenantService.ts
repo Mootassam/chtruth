@@ -478,6 +478,18 @@ export default class TenantService {
     );
   }
   
+
+
+
+
+    
+  async findAndCountAlls(args) {
+    return TenantRepository.findAll(
+      args,
+      this.options,
+    );
+  }
+  
   async acceptInvitation(
     token,
     forceAcceptOtherEmail = false,

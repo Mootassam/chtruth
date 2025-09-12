@@ -1,56 +1,46 @@
-import MongooseRepository from './mongooseRepository';
-import MongooseQueryUtils from '../utils/mongooseQueryUtils';
-import AuditLogRepository from './auditLogRepository';
-import User from '../models/user';
-import Tenant from '../models/tenant';
-import Settings from '../models/settings';
-import Error404 from '../../errors/Error404';
-import Association from '../models/association';
-import Mandat from '../models/mandat';
-import CategorieMouv from '../models/categorieMouv';
-import Mouvements from '../models/mouvements';
-import Campagne from '../models/campagne';
-import DetailsCampagne from '../models/detailsCampagne';
-import Palier from '../models/palier';
-import HistoriquePoints from '../models/historiquePoints';
-import Projet from '../models/projet';
-import Votes from '../models/votes';
-import Dons from '../models/dons';
-import ProduitCategorie from '../models/produitCategorie';
-import Produit from '../models/produit';
-import ProduitCommande from '../models/produitCommande';
-import CommandLine from '../models/commandLine';
-import Error400 from '../../errors/Error400';
-import { v4 as uuid } from 'uuid';
-import { isUserInTenant } from '../utils/userTenantUtils';
-import SettingsRepository from './settingsRepository';
-import { IRepositoryOptions } from './IRepositoryOptions';
+import MongooseRepository from "./mongooseRepository";
+import MongooseQueryUtils from "../utils/mongooseQueryUtils";
+import AuditLogRepository from "./auditLogRepository";
+import User from "../models/user";
+import Tenant from "../models/tenant";
+import Settings from "../models/settings";
+import Error404 from "../../errors/Error404";
+import Association from "../models/association";
+import Mandat from "../models/mandat";
+import CategorieMouv from "../models/categorieMouv";
+import Mouvements from "../models/mouvements";
+import Campagne from "../models/campagne";
+import DetailsCampagne from "../models/detailsCampagne";
+import Palier from "../models/palier";
+import HistoriquePoints from "../models/historiquePoints";
+import Projet from "../models/projet";
+import Votes from "../models/votes";
+import Dons from "../models/dons";
+import ProduitCategorie from "../models/produitCategorie";
+import Produit from "../models/produit";
+import ProduitCommande from "../models/produitCommande";
+import CommandLine from "../models/commandLine";
+import Error400 from "../../errors/Error400";
+import { v4 as uuid } from "uuid";
+import { isUserInTenant } from "../utils/userTenantUtils";
+import SettingsRepository from "./settingsRepository";
+import { IRepositoryOptions } from "./IRepositoryOptions";
 
-const forbiddenTenantUrls = ['www'];
+const forbiddenTenantUrls = ["www"];
 
 class TenantRepository {
   static async create(data, options: IRepositoryOptions) {
-    const currentUser = MongooseRepository.getCurrentUser(
-      options,
-    );
+    const currentUser = MongooseRepository.getCurrentUser(options);
 
     // URL is required,
     // in case of multi tenant without subdomain
     // set a random uuid
     data.url = data.url || uuid();
 
-    const existsUrl = Boolean(
-      await this.count({ url: data.url }, options),
-    );
+    const existsUrl = Boolean(await this.count({ url: data.url }, options));
 
-    if (
-      forbiddenTenantUrls.includes(data.url) ||
-      existsUrl
-    ) {
-      throw new Error400(
-        options.language,
-        'tenant.url.exists',
-      );
+    if (forbiddenTenantUrls.includes(data.url) || existsUrl) {
+      throw new Error400(options.language, "tenant.url.exists");
     }
 
     const [record] = await Tenant(options.database).create(
@@ -59,34 +49,23 @@ class TenantRepository {
           ...data,
           createdBy: currentUser.id,
           updatedBy: currentUser.id,
-        }
+        },
       ],
-      options,
+      options
     );
 
-    await this._createAuditLog(
-      AuditLogRepository.CREATE,
-      record.id,
-      data,
-      {
-        ...options,
-        currentTenant: record,
-      },
-    );
+    await this._createAuditLog(AuditLogRepository.CREATE, record.id, data, {
+      ...options,
+      currentTenant: record,
+    });
 
     return this.findById(record.id, {
       ...options,
     });
   }
 
-  static async update(
-    id,
-    data,
-    options: IRepositoryOptions,
-  ) {
-    const currentUser = MongooseRepository.getCurrentUser(
-      options,
-    );
+  static async update(id, data, options: IRepositoryOptions) {
+    const currentUser = MongooseRepository.getCurrentUser(options);
 
     if (!isUserInTenant(currentUser, id)) {
       throw new Error404();
@@ -101,20 +80,11 @@ class TenantRepository {
     data.url = data.url || record.url;
 
     const existsUrl = Boolean(
-      await this.count(
-        { url: data.url, _id: { $ne: id } },
-        options,
-      ),
+      await this.count({ url: data.url, _id: { $ne: id } }, options)
     );
 
-    if (
-      forbiddenTenantUrls.includes(data.url) ||
-      existsUrl
-    ) {
-      throw new Error400(
-        options.language,
-        'tenant.url.exists',
-      );
+    if (forbiddenTenantUrls.includes(data.url) || existsUrl) {
+      throw new Error400(options.language, "tenant.url.exists");
     }
 
     // Does not allow user to update the plan
@@ -128,19 +98,12 @@ class TenantRepository {
       { _id: id },
       {
         ...data,
-        updatedBy: MongooseRepository.getCurrentUser(
-          options,
-        ).id,
+        updatedBy: MongooseRepository.getCurrentUser(options).id,
       },
-      options,
+      options
     );
 
-    await this._createAuditLog(
-      AuditLogRepository.UPDATE,
-      id,
-      data,
-      options,
-    );
+    await this._createAuditLog(AuditLogRepository.UPDATE, id, data, options);
 
     return await this.findById(id, options);
   }
@@ -152,11 +115,9 @@ class TenantRepository {
     id,
     planStripeCustomerId,
     planUserId,
-    options: IRepositoryOptions,
+    options: IRepositoryOptions
   ) {
-    const currentUser = MongooseRepository.getCurrentUser(
-      options,
-    );
+    const currentUser = MongooseRepository.getCurrentUser(options);
 
     const data = {
       planStripeCustomerId,
@@ -164,18 +125,9 @@ class TenantRepository {
       updatedBy: currentUser.id,
     };
 
-    await Tenant(options.database).updateOne(
-      { _id: id },
-      data,
-      options,
-    );
+    await Tenant(options.database).updateOne({ _id: id }, data, options);
 
-    await this._createAuditLog(
-      AuditLogRepository.UPDATE,
-      id,
-      data,
-      options,
-    );
+    await this._createAuditLog(AuditLogRepository.UPDATE, id, data, options);
 
     return await this.findById(id, options);
   }
@@ -184,7 +136,7 @@ class TenantRepository {
     planStripeCustomerId,
     plan,
     planStatus,
-    options: IRepositoryOptions,
+    options: IRepositoryOptions
   ) {
     const data = {
       plan,
@@ -196,29 +148,23 @@ class TenantRepository {
       Tenant(options.database).findOne({
         planStripeCustomerId,
       }),
-      options,
+      options
     );
 
-    await Tenant(options.database).updateOne(
-      { _id: record.id },
-      data,
-      options,
-    );
+    await Tenant(options.database).updateOne({ _id: record.id }, data, options);
 
     await this._createAuditLog(
       AuditLogRepository.UPDATE,
       record.id,
       data,
-      options,
+      options
     );
 
     return await this.findById(record.id, options);
   }
 
   static async destroy(id, options: IRepositoryOptions) {
-    const currentUser = MongooseRepository.getCurrentUser(
-      options,
-    );
+    const currentUser = MongooseRepository.getCurrentUser(options);
 
     if (!isUserInTenant(currentUser, id)) {
       throw new Error404();
@@ -226,20 +172,12 @@ class TenantRepository {
 
     let record = await MongooseRepository.wrapWithSessionIfExists(
       Tenant(options.database).findById(id),
-      options,
+      options
     );
 
-    await Tenant(options.database).deleteOne(
-      { _id: id },
-      options,
-    );
+    await Tenant(options.database).deleteOne({ _id: id }, options);
 
-    await this._createAuditLog(
-      AuditLogRepository.DELETE,
-      id,
-      record,
-      options,
-    );
+    await this._createAuditLog(AuditLogRepository.DELETE, id, record, options);
 
     await Association(options.database).deleteMany({ tenant: id }, options);
 
@@ -255,7 +193,10 @@ class TenantRepository {
 
     await Palier(options.database).deleteMany({ tenant: id }, options);
 
-    await HistoriquePoints(options.database).deleteMany({ tenant: id }, options);
+    await HistoriquePoints(options.database).deleteMany(
+      { tenant: id },
+      options
+    );
 
     await Projet(options.database).deleteMany({ tenant: id }, options);
 
@@ -263,7 +204,10 @@ class TenantRepository {
 
     await Dons(options.database).deleteMany({ tenant: id }, options);
 
-    await ProduitCategorie(options.database).deleteMany({ tenant: id }, options);
+    await ProduitCategorie(options.database).deleteMany(
+      { tenant: id },
+      options
+    );
 
     await Produit(options.database).deleteMany({ tenant: id }, options);
 
@@ -271,10 +215,7 @@ class TenantRepository {
 
     await CommandLine(options.database).deleteMany({ tenant: id }, options);
 
-    await Settings(options.database).deleteMany(
-      { tenant: id },
-      options,
-    );
+    await Settings(options.database).deleteMany({ tenant: id }, options);
 
     await User(options.database).updateMany(
       {},
@@ -283,30 +224,28 @@ class TenantRepository {
           tenants: { tenant: id },
         },
       },
-      options,
+      options
     );
   }
 
   static async count(filter, options: IRepositoryOptions) {
     return MongooseRepository.wrapWithSessionIfExists(
       Tenant(options.database).countDocuments(filter),
-      options,
+      options
     );
   }
 
   static async findById(id, options: IRepositoryOptions) {
     const record = await MongooseRepository.wrapWithSessionIfExists(
       Tenant(options.database).findById(id),
-      options,
+      options
     );
 
     if (!record) {
       return record;
     }
 
-    const output = record.toObject
-      ? record.toObject()
-      : record;
+    const output = record.toObject ? record.toObject() : record;
 
     output.settings = await SettingsRepository.find({
       currentTenant: record,
@@ -319,16 +258,14 @@ class TenantRepository {
   static async findByUrl(url, options: IRepositoryOptions) {
     const record = await MongooseRepository.wrapWithSessionIfExists(
       Tenant(options.database).findOne({ url }),
-      options,
+      options
     );
 
     if (!record) {
       return null;
     }
 
-    const output = record.toObject
-      ? record.toObject()
-      : record;
+    const output = record.toObject ? record.toObject() : record;
 
     output.settings = await SettingsRepository.find({
       currentTenant: record,
@@ -343,12 +280,10 @@ class TenantRepository {
   }
 
   static async findAndCountAll(
-    { filter, limit = 0, offset = 0, orderBy = '' },
-    options: IRepositoryOptions,
+    { filter, limit = 0, offset = 0, orderBy = "" },
+    options: IRepositoryOptions
   ) {
-    const currentUser = MongooseRepository.getCurrentUser(
-      options,
-    );
+    const currentUser = MongooseRepository.getCurrentUser(options);
 
     let criteriaAnd: any = [];
 
@@ -356,9 +291,7 @@ class TenantRepository {
       _id: {
         $in: currentUser.tenants
           .filter((userTenant) =>
-            ['invited', 'active'].includes(
-              userTenant.status,
-            ),
+            ["invited", "active"].includes(userTenant.status)
           )
           .map((userTenant) => userTenant.tenant.id),
       },
@@ -367,17 +300,15 @@ class TenantRepository {
     if (filter) {
       if (filter.id) {
         criteriaAnd.push({
-          ['_id']: MongooseQueryUtils.uuid(filter.id),
+          ["_id"]: MongooseQueryUtils.uuid(filter.id),
         });
       }
 
       if (filter.name) {
         criteriaAnd.push({
           name: {
-            $regex: MongooseQueryUtils.escapeRegExp(
-              filter.name,
-            ),
-            $options: 'i',
+            $regex: MongooseQueryUtils.escapeRegExp(filter.name),
+            $options: "i",
           },
         });
       }
@@ -385,25 +316,17 @@ class TenantRepository {
       if (filter.createdAtRange) {
         const [start, end] = filter.createdAtRange;
 
-        if (
-          start !== undefined &&
-          start !== null &&
-          start !== ''
-        ) {
+        if (start !== undefined && start !== null && start !== "") {
           criteriaAnd.push({
-            ['createdAt']: {
+            ["createdAt"]: {
               $gte: start,
             },
           });
         }
 
-        if (
-          end !== undefined &&
-          end !== null &&
-          end !== ''
-        ) {
+        if (end !== undefined && end !== null && end !== "") {
           criteriaAnd.push({
-            ['createdAt']: {
+            ["createdAt"]: {
               $lte: end,
             },
           });
@@ -411,15 +334,11 @@ class TenantRepository {
       }
     }
 
-    const sort = MongooseQueryUtils.sort(
-      orderBy || 'name_ASC',
-    );
+    const sort = MongooseQueryUtils.sort(orderBy || "name_ASC");
 
     const skip = Number(offset || 0) || undefined;
     const limitEscaped = Number(limit || 0) || undefined;
-    const criteria = criteriaAnd.length
-      ? { $and: criteriaAnd }
-      : null;
+    const criteria = criteriaAnd.length ? { $and: criteriaAnd } : null;
 
     const rows = await Tenant(options.database)
       .find(criteria)
@@ -427,28 +346,81 @@ class TenantRepository {
       .limit(limitEscaped)
       .sort(sort);
 
-    const count = await Tenant(
-      options.database,
-    ).countDocuments(criteria);
+    const count = await Tenant(options.database).countDocuments(criteria);
 
     return { rows, count };
   }
 
-  static async findAllAutocomplete(
-    search,
-    limit,
-    options: IRepositoryOptions,
+  static async findAll(
+    { filter, limit = 0, offset = 0, orderBy = "" },
+    options: IRepositoryOptions
   ) {
-    const currentUser = MongooseRepository.getCurrentUser(
-      options,
-    );
+
+    let criteriaAnd: any = [];
+
+
+
+    if (filter) {
+      if (filter.id) {
+        criteriaAnd.push({
+          ["_id"]: MongooseQueryUtils.uuid(filter.id),
+        });
+      }
+
+      if (filter.name) {
+        criteriaAnd.push({
+          name: {
+            $regex: MongooseQueryUtils.escapeRegExp(filter.name),
+            $options: "i",
+          },
+        });
+      }
+
+      if (filter.createdAtRange) {
+        const [start, end] = filter.createdAtRange;
+
+        if (start !== undefined && start !== null && start !== "") {
+          criteriaAnd.push({
+            ["createdAt"]: {
+              $gte: start,
+            },
+          });
+        }
+
+        if (end !== undefined && end !== null && end !== "") {
+          criteriaAnd.push({
+            ["createdAt"]: {
+              $lte: end,
+            },
+          });
+        }
+      }
+    }
+
+    const sort = MongooseQueryUtils.sort(orderBy || "name_ASC");
+
+    const skip = Number(offset || 0) || undefined;
+    const limitEscaped = Number(limit || 0) || undefined;
+    const criteria = criteriaAnd.length ? { $and: criteriaAnd } : null;
+
+    const rows = await Tenant(options.database)
+      .find(criteria)
+      .skip(skip)
+      .limit(limitEscaped)
+      .sort(sort);
+
+    const count = await Tenant(options.database).countDocuments(criteria);
+
+    return { rows, count };
+  }
+
+  static async findAllAutocomplete(search, limit, options: IRepositoryOptions) {
+    const currentUser = MongooseRepository.getCurrentUser(options);
 
     let criteriaAnd: Array<any> = [
       {
         _id: {
-          $in: currentUser.tenants.map(
-            (userTenant) => userTenant.tenant.id,
-          ),
+          $in: currentUser.tenants.map((userTenant) => userTenant.tenant.id),
         },
       },
     ];
@@ -461,17 +433,15 @@ class TenantRepository {
           },
           {
             name: {
-              $regex: MongooseQueryUtils.escapeRegExp(
-                search,
-              ),
-              $options: 'i',
+              $regex: MongooseQueryUtils.escapeRegExp(search),
+              $options: "i",
             },
           },
         ],
       });
     }
 
-    const sort = MongooseQueryUtils.sort('name_ASC');
+    const sort = MongooseQueryUtils.sort("name_ASC");
     const limitEscaped = Number(limit || 0) || undefined;
 
     const criteria = { $and: criteriaAnd };
@@ -483,16 +453,11 @@ class TenantRepository {
 
     return records.map((record) => ({
       id: record.id,
-      label: record['name'],
+      label: record["name"],
     }));
   }
 
-  static async _createAuditLog(
-    action,
-    id,
-    data,
-    options: IRepositoryOptions,
-  ) {
+  static async _createAuditLog(action, id, data, options: IRepositoryOptions) {
     await AuditLogRepository.log(
       {
         entityName: Tenant(options.database).modelName,
@@ -500,7 +465,7 @@ class TenantRepository {
         action,
         values: data,
       },
-      options,
+      options
     );
   }
 
@@ -510,8 +475,7 @@ class TenantRepository {
     }
 
     return user.tenants.some(
-      (tenantUser) =>
-        String(tenantUser.tenant.id) === String(tenantId),
+      (tenantUser) => String(tenantUser.tenant.id) === String(tenantId)
     );
   }
 }

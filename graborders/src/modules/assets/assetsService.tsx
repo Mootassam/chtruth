@@ -1,8 +1,7 @@
-
 import authAxios from 'src/modules/shared/axios/authAxios';
 import AuthCurrentTenant from 'src/modules/auth/authCurrentTenant';
 
-export default class assetsService {
+export default class depositService {
   static async update(id, data) {
     const body = {
       id,
