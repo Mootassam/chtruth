@@ -1,5 +1,6 @@
 
-import vipService from 'src/modules/kyc/kycService';
+
+import KycService from 'src/modules/kyc/kycService';
 import Errors from 'src/modules/shared/error/errors';
 import Message from 'src/view/shared/message';
 import { getHistory } from 'src/modules/store';
@@ -31,7 +32,7 @@ const vipFormActions = {
       const isEdit = Boolean(id);
 
       if (isEdit) {
-        record = await vipService.find(id);
+        record = await KycService.find(id);
       }
 
       dispatch({
@@ -55,7 +56,7 @@ const vipFormActions = {
         type: vipFormActions.CREATE_STARTED,
       });
 
-      await vipService.create(values);
+      await KycService.create(values);
 
       dispatch({
         type: vipFormActions.CREATE_SUCCESS,
@@ -81,7 +82,7 @@ const vipFormActions = {
         type: vipFormActions.UPDATE_STARTED,
       });
 
-      await vipService.update(id, values);
+      await KycService.update(id, values);
 
       dispatch({
         type: vipFormActions.UPDATE_SUCCESS,

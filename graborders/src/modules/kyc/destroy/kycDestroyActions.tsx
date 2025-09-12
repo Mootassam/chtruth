@@ -1,5 +1,5 @@
 import listActions from 'src/modules/transaction/list/transactionListActions';
-import vipService from 'src/modules/kyc/kycService';
+import KycService from 'src/modules/kyc/kycService';
 import Errors from 'src/modules/shared/error/errors';
 import { i18n } from 'src/i18n';
 import { getHistory } from 'src/modules/store';
@@ -22,7 +22,7 @@ const vipDestroyActions = {
         type: vipDestroyActions.DESTROY_STARTED,
       });
 
-      await vipService.destroyAll([id]);
+      await KycService.destroyAll([id]);
 
       dispatch({
         type: vipDestroyActions.DESTROY_SUCCESS,
@@ -52,7 +52,7 @@ const vipDestroyActions = {
         type: vipDestroyActions.DESTROY_ALL_STARTED,
       });
 
-      await vipService.destroyAll(ids);
+      await KycService.destroyAll(ids);
 
       dispatch({
         type: vipDestroyActions.DESTROY_ALL_SUCCESS,

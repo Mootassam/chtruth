@@ -19,7 +19,7 @@ const schema = yup.object().shape({
   user: yupFormSchemas.relationToOne(i18n("entities.vip.fields.title"), {
     
   }),
-  Documenttype: yupFormSchemas.string(i18n("Document Type"), { required: true  }),
+  Documenttype: yupFormSchemas.string(i18n("Document Type")),
   realname: yupFormSchemas.string(i18n("Full Name"), {    required: true,}),
   idnumer: yupFormSchemas.string(i18n("Document Number"), {    required: true,}),
   front: yupFormSchemas.images(i18n("Front Side"), { required: true}),

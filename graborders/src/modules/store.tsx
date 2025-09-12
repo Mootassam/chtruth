@@ -5,7 +5,9 @@ import createRootReducer from 'src/modules/reducers';
 import { applyMiddleware, createStore } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension/developmentOnly';
 import thunkMiddleware from 'redux-thunk';
+
 const history = createBrowserHistory();
+
 let store;
 
 export function configureStore(preloadedState?) {
@@ -23,6 +25,7 @@ export function configureStore(preloadedState?) {
   for (const initializer of initializers) {
     initializer(store);
   }
+
   return store;
 }
 
