@@ -10,10 +10,6 @@ const privateRoutes = [
     exact: true,
   },
 
-
-
-  
-
   {
     path: "/market",
     loader: () => import("src/view/pages/Market/Market"),
@@ -56,11 +52,10 @@ const privateRoutes = [
   },
   {
     path: "/wallets",
-    loader: () => import("src/view/pages/wallet/MyWallet"),
+    loader: () => import("src/view/pages/wallet/Wallet"),
     permissionRequired: permissions.categoryRead,
     exact: true,
   },
-
 ];
 
 const screenRoutes = [
@@ -69,19 +64,25 @@ const screenRoutes = [
     loader: () => import("src/view/pages/invitation/invitation"),
     permissionRequired: permissions.categoryRead,
   },
-    {
+  {
+    path: "/wallets/:id",
+    loader: () => import("src/view/pages/wallet/assetsDetail"),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+  {
     path: "/conversion",
     loader: () => import("src/view/pages/conversion/Conversion"),
     permissionRequired: permissions.categoryRead,
   },
- {
+  {
     path: "/ordersPage",
     loader: () => import("src/view/pages/Order/OrdersPage"),
     permissionRequired: permissions.categoryRead,
     exact: true,
   },
 
-    {
+  {
     path: "/deposit",
     loader: () => import("src/view/pages/deposit/deposit"),
     permissionRequired: permissions.categoryRead,
@@ -113,13 +114,6 @@ const screenRoutes = [
   {
     path: "/market/detail/:id",
     loader: () => import("src/view/pages/Market/MarketDetail"),
-  },
-
-  {
-    path: "/wallet",
-    loader: () => import("src/view/pages/wallet/Wallet"),
-    permissionRequired: permissions.categoryRead,
-    exact: true,
   },
 
   {
