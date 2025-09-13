@@ -6,7 +6,6 @@ import authActions from "src/modules/auth/authActions";
 import authSelectors from "src/modules/auth/authSelectors";
 import kycSelectors from "src/modules/kyc/list/kycListSelectors";
 import actions from "src/modules/kyc/list/kycListActions";
-import assetsActions from "src/modules/assets/list/assetsListActions";
 // Constants for menu items (moved outside component to prevent recreation)
 const MENU_ITEMS = [
   {
@@ -80,7 +79,6 @@ function Profile() {
 
   useEffect(() => {
     dispatch(actions.doFetch(userData, userData));
-    dispatch(assetsActions.doFetch());
   }, [dispatch, userData]);
 
   const handleSignout = useCallback(() => {
