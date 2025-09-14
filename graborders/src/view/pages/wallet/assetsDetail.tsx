@@ -11,8 +11,10 @@ function AssetsDetail() {
     const { id } = useParams<{ id: string }>();
     const dispatch = useDispatch();
     const details = useSelector(assetsSelectors.selectRecord);
-    const loading = useSelector(assetsSelectors.selectLoading)
-    const transaction = useSelector(transactionListSelector.selectRows);
+        const transaction = useSelector(transactionListSelector.selectRows);
+            const assetLoading = useSelector(assetsSelectors.selectLoading);
+    const Transactionloading = useSelector(transactionListSelector.selectLoading)
+const loading = assetLoading || Transactionloading ;
     const [filterModalOpen, setFilterModalOpen] = useState(false);
     const [filters, setFilters] = useState({
         status: 'all',

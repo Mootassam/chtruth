@@ -326,7 +326,7 @@ function Home() {
               displayName?.split("/")[0]
             }.png`}
                     className={crypto.icon} 
-                   style={{width:30}}
+                   style={{width:40}}
                   />
                 </div>
                 <div>

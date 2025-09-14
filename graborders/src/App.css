@@ -6483,6 +6483,10 @@
   .transaction-details {
       flex: 1;
   }
+  .convert_out { 
+    background :#627EEA;
+    color :#ffff
+  }
 
   .transaction-type {
       font-weight: bold;
@@ -6518,15 +6522,15 @@
       color: #AAAAAA;
   }
 
-  .status-completed {
+  .statuss-success{
       color: #00C076;
   }
 
-  .status-pending {
+  .statuss-pending {
       color: #F3BA2F;
   }
 
-  .status-failed {
+  .statuss-canceled {
       color: #FF6838;
   }
 

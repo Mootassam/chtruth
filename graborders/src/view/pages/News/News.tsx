@@ -64,7 +64,7 @@ function News() {
         const data ={ 
       id : 1, 
       page : 1 , 
-      size:30
+      size:60
     }
     dispatch(productListActions.doFindNews(data));
   }, [dispatch]);

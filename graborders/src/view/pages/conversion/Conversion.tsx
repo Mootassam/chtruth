@@ -40,6 +40,11 @@ function Conversion() {
   const [error, setError] = useState<string | null>(null);
   const [cryptoData, setCryptoData] = useState<{ [key: string]: CryptoData }>({});
   const [lastConversionUpdate, setLastConversionUpdate] = useState<number>(Date.now());
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const [conversionFee, setConversionFee] = useState(0);
+  const [finalAmount, setFinalAmount] = useState(0);
+  const [isConverting, setIsConverting] = useState(false);
+  
   const ws = useRef<WebSocket | null>(null);
   const conversionLock = useRef(false);
 
@@ -301,19 +306,39 @@ function Conversion() {
     setToCurrency(temp);
   };
 
+  // Calculate conversion fee (0.1% of transaction)
+  const calculateFee = useMemo(() => {
+    return fromAmount * 0.001; // 0.1% fee
+  }, [fromAmount]);
+
+  // Calculate final amount after fee
+  const calculateFinalAmount = useMemo(() => {
+    return toAmount - (toAmount * 0.001); // 0.1% fee deducted from received amount
+  }, [toAmount]);
+
+  // Open confirmation modal
+  const openConfirmationModal = () => {
+    setConversionFee(calculateFee);
+    setFinalAmount(calculateFinalAmount);
+    setShowConfirmationModal(true);
+  };
+
   // Perform conversion - lock rates during transaction
   const performConversion = () => {
+    setIsConverting(true);
     conversionLock.current = true;
     
-    // Show conversion confirmation
-    alert(`Converting ${fromAmount} ${fromCurrency} to ${toAmount.toFixed(8)} ${toCurrency}`);
-    
-    // In a real app, this would submit a transaction to your backend
-    // After transaction is complete, unlock conversion
+    // Simulate API call/transaction processing
     setTimeout(() => {
       conversionLock.current = false;
-      calculateConversionRate();
-    }, 3000); // Simulate transaction time
+      setIsConverting(false);
+      setShowConfirmationModal(false);
+      
+      // Show success message
+      alert(`Successfully converted ${fromAmount} ${fromCurrency} to ${finalAmount.toFixed(8)} ${toCurrency}`);
+      
+      // In a real app, this would update balances and transaction history
+    }, 2000);
   };
 
   // Filter currencies based on search
@@ -360,7 +385,7 @@ function Conversion() {
         {/* Loading and error indicators */}
         {isLoading && (
           <div className="loading-overlay">
-            <div className="loading-spinner"></div>
+            <div className="loading-spinner-large"></div>
             <span>Loading latest prices...</span>
           </div>
         )}
@@ -393,16 +418,14 @@ function Conversion() {
               />
               <div className="currency-selector" onClick={() => openModal('from')}>
                 <div className="currency-icon" style={{ backgroundColor: getCurrency(fromCurrency)?.color || '#F3BA2F' }}>
-          <img
-                        src={`https://images.weserv.nl/?url=https://bin.bnbstatic.com/static/assets/logos/${
-                          fromCurrency?.split("/")[0]
-                        }.png`}
-                        style={{ width: 25, height: 25 }}
-                        alt={ fromCurrency?.split("/")[0]}
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src = `https://via.placeholder.com/40/3a3a3a/ffffff?text=${crypto.name.split("/")[0].charAt(0)}`;
-                        }}
-                      />
+                  <img
+                    src={`https://images.weserv.nl/?url=https://bin.bnbstatic.com/static/assets/logos/${fromCurrency}.png`}
+                    style={{ width: 25, height: 25 }}
+                    alt={fromCurrency}
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = `https://via.placeholder.com/40/3a3a3a/ffffff?text=${fromCurrency.charAt(0)}`;
+                    }}
+                  />
                 </div>
                 <div className="currency-name">{fromCurrency}</div>
                 <i className="fas fa-chevron-down" />
@@ -440,16 +463,14 @@ function Conversion() {
               />
               <div className="currency-selector" onClick={() => openModal('to')}>
                 <div className="currency-icon" style={{ backgroundColor: getCurrency(toCurrency)?.color || '#F3BA2F' }}>
-                   <img
-                        src={`https://images.weserv.nl/?url=https://bin.bnbstatic.com/static/assets/logos/${
-                          toCurrency?.split("/")[0]
-                        }.png`}
-                        style={{ width: 25, height: 25 }}
-                        alt={ toCurrency?.split("/")[0]}
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src = `https://via.placeholder.com/40/3a3a3a/ffffff?text=${crypto.name.split("/")[0].charAt(0)}`;
-                        }}
-                      />
+                  <img
+                    src={`https://images.weserv.nl/?url=https://bin.bnbstatic.com/static/assets/logos/${toCurrency}.png`}
+                    style={{ width: 25, height: 25 }}
+                    alt={toCurrency}
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = `https://via.placeholder.com/40/3a3a3a/ffffff?text=${toCurrency.charAt(0)}`;
+                    }}
+                  />
                 </div>
                 <div className="currency-name">{toCurrency}</div>
                 <i className="fas fa-chevron-down" />
@@ -479,10 +500,10 @@ function Conversion() {
           {/* Convert Button */}
           <button 
             className="convert-btn" 
-            onClick={performConversion} 
-            disabled={isLoading || conversionLock.current}
+            onClick={openConfirmationModal} 
+            disabled={isLoading || fromAmount <= 0}
           >
-            {conversionLock.current ? 'Processing...' : 'Convert Now'}
+            Convert Now
           </button>
           
           {/* Last updated time */}
@@ -524,17 +545,14 @@ function Conversion() {
                       className="currency-item-icon"
                       style={{ backgroundColor: currency.color }}
                     >
-                        <img
-                        src={`https://images.weserv.nl/?url=https://bin.bnbstatic.com/static/assets/logos/${
-                          currency.name.split("/")[0]
-                        }.png`}
+                      <img
+                        src={`https://images.weserv.nl/?url=https://bin.bnbstatic.com/static/assets/logos/${currency.code}.png`}
                         style={{ width: 40, height: 40 }}
-                        alt={currency.name.split("/")[0]}
+                        alt={currency.code}
                         onError={(e) => {
-                          (e.target as HTMLImageElement).src = `https://via.placeholder.com/40/3a3a3a/ffffff?text=${crypto.name.split("/")[0].charAt(0)}`;
+                          (e.target as HTMLImageElement).src = `https://via.placeholder.com/40/3a3a3a/ffffff?text=${currency.code.charAt(0)}`;
                         }}
                       />
-                      {/* <i className={currency.icon} /> */}
                     </div>
                     <div className="currency-item-info">
                       <div className="currency-item-name">{currency.code}</div>
@@ -556,7 +574,374 @@ function Conversion() {
         </div>
       )}
       
+      {/* Enhanced Confirmation Modal */}
+      {showConfirmationModal && (
+        <div className="confirmation-modal">
+          <div className="modal-overlay" onClick={() => !isConverting && setShowConfirmationModal(false)}></div>
+          <div className="modal-dialog">
+            <div className="modal-header">
+              <h2>Confirm Conversion</h2>
+              <button className="close-btn" onClick={() => !isConverting && setShowConfirmationModal(false)}>
+                <i className="fas fa-times"></i>
+              </button>
+            </div>
+            
+            <div className="modal-body">
+              <div className="conversion-summary">
+                <div className="conversion-from">
+                  <div className="currency-amount">
+                    <span className="amount">{fromAmount}</span>
+                    <span className="currency">{fromCurrency}</span>
+                  </div>
+                  <div className="currency-icon">
+                    <img
+                      src={`https://images.weserv.nl/?url=https://bin.bnbstatic.com/static/assets/logos/${fromCurrency}.png`}
+                      alt={fromCurrency}
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = `https://via.placeholder.com/40/3a3a3a/ffffff?text=${fromCurrency.charAt(0)}`;
+                      }}
+                    />
+                  </div>
+                </div>
+                
+                <div className="conversion-arrow">
+                  <i className="fas fa-arrow-down"></i>
+                </div>
+                
+                <div className="conversion-to">
+                  <div className="currency-amount">
+                    <span className="amount">{finalAmount.toFixed(8)}</span>
+                    <span className="currency">{toCurrency}</span>
+                  </div>
+                  <div className="currency-icon">
+                    <img
+                      src={`https://images.weserv.nl/?url=https://bin.bnbstatic.com/static/assets/logos/${toCurrency}.png`}
+                      alt={toCurrency}
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = `https://via.placeholder.com/40/3a3a3a/ffffff?text=${toCurrency.charAt(0)}`;
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+              
+              <div className="conversion-details">
+                <h3>Conversion Details</h3>
+                
+                <div className="detail-item">
+                  <span className="detail-label">Exchange Rate</span>
+                  <span className="detail-value">1 {fromCurrency} = {conversionRate.toFixed(8)} {toCurrency}</span>
+                </div>
+                
+                <div className="detail-item">
+                  <span className="detail-label">Network Fee</span>
+                  <span className="detail-value">{conversionFee.toFixed(8)} {fromCurrency}</span>
+                </div>
+                
+                <div className="detail-item">
+                  <span className="detail-label">Estimated Arrival</span>
+                  <span className="detail-value">~30 seconds</span>
+                </div>
+              </div>
+            </div>
+            
+            <div className="modal-footer">
+              <button 
+                className="confirm-btn" 
+                onClick={performConversion}
+                disabled={isConverting}
+              >
+                {isConverting ? (
+                  <>
+                    <i className="fas fa-spinner fa-spin"></i>
+                    Processing Conversion...
+                  </>
+                ) : (
+                  <>
+                    <i className="fas fa-check-circle"></i>
+                    Confirm Conversion
+                  </>
+                )}
+              </button>
+              
+              <button 
+                className="cancel-btn" 
+                onClick={() => setShowConfirmationModal(false)}
+                disabled={isConverting}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      
       <style>{`
+        /* Enhanced Confirmation Modal Styles */
+        .confirmation-modal {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          z-index: 2000;
+          padding: 20px;
+          box-sizing: border-box;
+        }
+        
+        .modal-overlay {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background-color: rgba(0, 0, 0, 0.7);
+          backdrop-filter: blur(5px);
+        }
+        
+        .modal-dialog {
+          background: linear-gradient(145deg, #1a1a1a, #2a2a2a);
+          border-radius: 20px;
+          width: 100%;
+          max-width: 400px;
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+          overflow: hidden;
+          z-index: 2001;
+          position: relative;
+          border: 1px solid #333;
+          animation: modalSlideIn 0.3s ease-out;
+          height:100%
+        }
+        
+        @keyframes modalSlideIn {
+          from {
+            opacity: 0;
+            transform: translateY(-20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        
+        .modal-header {
+          padding: 20px 25px;
+          border-bottom: 1px solid #333;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          background: rgba(0, 0, 0, 0.2);
+        }
+        
+        .modal-header h2 {
+          margin: 0;
+          color: #F3BA2F;
+          font-size: 1.5rem;
+          font-weight: 600;
+        }
+        
+        .close-btn {
+          background: none;
+          border: none;
+          color: #aaa;
+          font-size: 1.2rem;
+          cursor: pointer;
+          padding: 5px;
+          border-radius: 50%;
+          width: 32px;
+          height: 32px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.2s;
+        }
+        
+        .close-btn:hover {
+          background: rgba(255, 255, 255, 0.1);
+          color: #fff;
+        }
+        
+        .modal-body {
+          padding: 25px;
+        }
+        
+        .conversion-summary {
+          text-align: center;
+          margin-bottom: 30px;
+        }
+        
+        .conversion-from, .conversion-to {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 15px;
+          background: rgba(0, 0, 0, 0.2);
+          border-radius: 12px;
+          margin: 10px 0;
+        }
+        
+        .currency-amount {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        
+        .currency-amount .amount {
+          font-size: 1.8rem;
+          font-weight: bold;
+          color: #fff;
+        }
+        
+        .currency-amount .currency {
+          font-size: 1rem;
+          color: #F3BA2F;
+          margin-top: 5px;
+        }
+        
+        .currency-icon {
+          width: 50px;
+          height: 50px;
+          border-radius: 50%;
+          overflow: hidden;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: #2a2a2a;
+          border: 2px solid #333;
+        }
+        
+        .currency-icon img {
+          width: 30px;
+          height: 30px;
+        }
+        
+        .conversion-arrow {
+          margin: 15px 0;
+          color: #F3BA2F;
+          font-size: 1.2rem;
+        }
+        
+        .conversion-details {
+          background: rgba(0, 0, 0, 0.2);
+          border-radius: 12px;
+          padding: 20px;
+        }
+        
+        .conversion-details h3 {
+          margin: 0 0 15px 0;
+          color: #fff;
+          font-size: 1.1rem;
+          font-weight: 600;
+        }
+        
+        .detail-item {
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 12px;
+          padding-bottom: 12px;
+          border-bottom: 1px solid #333;
+        }
+        
+        .detail-item:last-child {
+          margin-bottom: 0;
+          padding-bottom: 0;
+          border-bottom: none;
+        }
+        
+        .detail-label {
+          color: #aaa;
+          font-size: 0.9rem;
+        }
+        
+        .detail-value {
+          color: #fff;
+          font-weight: 500;
+        }
+        
+        .modal-footer {
+          padding: 20px 25px;
+          border-top: 1px solid #333;
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+          background: rgba(0, 0, 0, 0.2);
+        }
+        
+        .confirm-btn {
+          background: linear-gradient(145deg, #F3BA2F, #E0A91C);
+          color: #000;
+          border: none;
+          border-radius: 12px;
+          padding: 16px;
+          font-size: 1rem;
+          font-weight: 600;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 10px;
+          transition: all 0.2s;
+        }
+        
+        .confirm-btn:hover:not(:disabled) {
+          background: linear-gradient(145deg, #E0A91C, #D49F19);
+          transform: translateY(-2px);
+          box-shadow: 0 5px 15px rgba(243, 186, 47, 0.3);
+        }
+        
+        .confirm-btn:disabled {
+          opacity: 0.7;
+          cursor: not-allowed;
+        }
+        
+        .cancel-btn {
+          background: rgba(255, 255, 255, 0.1);
+          color: #fff;
+          border: 1px solid #444;
+          border-radius: 12px;
+          padding: 16px;
+          font-size: 1rem;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+        
+        .cancel-btn:hover:not(:disabled) {
+          background: rgba(255, 255, 255, 0.15);
+        }
+        
+        .cancel-btn:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+        
+        /* Responsive adjustments for the modal */
+        @media (max-width: 480px) {
+          .modal-dialog {
+            max-width: 100%;
+            border-radius: 16px;
+          }
+          
+          .modal-header, .modal-body, .modal-footer {
+            padding: 15px;
+          }
+          
+          .currency-amount .amount {
+            font-size: 1.5rem;
+          }
+          
+          .currency-icon {
+            width: 40px;
+            height: 40px;
+          }
+        }
+        
+        /* Rest of the styles remain the same as before */
+        /* ... (previous styles) ... */
+        
         /* Shimmer animation for loading placeholders */
         @keyframes shimmer {
           0% {
@@ -606,14 +991,14 @@ function Conversion() {
 
         
         .currency-list {
-  max-height: 400px;       /* or whatever fits your modal */
-  overflow-y: auto;        /* allow vertical scroll */
-  scrollbar-width: none;   /* Firefox */
-}
+          max-height: 400px;
+          overflow-y: auto;
+          scrollbar-width: none;
+        }
 
-.currency-list::-webkit-scrollbar {
-  display: none;           /* Chrome, Safari, Edge */
-}
+        .currency-list::-webkit-scrollbar {
+          display: none;
+        }
         
         .placeholder-line {
           border-radius: 4px;
@@ -624,7 +1009,6 @@ function Conversion() {
           max-width: 400px;
           margin: 0 auto;
           padding: 0px 15px;
-      
         }
         
         .conversion-box {
@@ -810,7 +1194,7 @@ function Conversion() {
             cursor: not-allowed;
         }
         
-        /* Currency Selector Modal */
+        /* Currency Selection Modal */
         .currency-modal {
             position: fixed;
             top: 0;
@@ -824,7 +1208,7 @@ function Conversion() {
             align-items: center;
         }
         
-        .modal-content {
+        .currency-modal .modal-content {
             background-color: #1A1A1A;
             max-width: 400px;
             border-radius: 16px;
@@ -833,19 +1217,19 @@ function Conversion() {
             overflow-y: auto;
         }
         
-        .modal-header {
+        .currency-modal .modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
         }
         
-        .modal-title {
+        .currency-modal .modal-title {
             font-size: 18px;
             font-weight: bold;
         }
         
-        .close-modal {
+        .currency-modal .close-modal {
             color: #AAAAAA;
             font-size: 24px;
             cursor: pointer;
@@ -930,32 +1314,32 @@ function Conversion() {
           font-size: 11px;
         }
         
-/* Fullscreen loading overlay */
-.loading-overlay {
-    position: fixed;       /* stay on top of everything */
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;          /* full height */
-    background-color: rgba(0, 0, 0, 0.7);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 10000;
-    color: #F3BA2F;
-    font-size: 20px;
-    font-weight: bold;
-}
-
+        /* Fullscreen loading overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            color: #F3BA2F;
+            font-size: 20px;
+            font-weight: bold;
+            flex-direction: column;
+            gap: 20px;
+        }
         
-        .loading-spinner {
-            border: 2px solid #333;
-            border-top: 2px solid #F3BA2F;
+        .loading-spinner-large {
+            border: 4px solid #333;
+            border-top: 4px solid #F3BA2F;
             border-radius: 50%;
-            width: 20px;
-            height: 20px;
+            width: 50px;
+            height: 50px;
             animation: spin 1s linear infinite;
-            margin-right: 10px;
         }
         
         .mini-loader {
