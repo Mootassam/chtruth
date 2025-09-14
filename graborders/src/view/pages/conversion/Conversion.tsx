@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import SubHeader from "src/view/shared/Header/SubHeader";
 import axios from "axios";
+import userSelectors from "src/modules/user/userSelectors";
+import assetsListSelectors from 'src/modules/assets/list/assetsListSelectors';
+import { useDispatch, useSelector } from "react-redux";
 
 // Interface for Binance ticker data
 interface BinanceTicker {
@@ -44,23 +47,31 @@ function Conversion() {
   const [conversionFee, setConversionFee] = useState(0);
   const [finalAmount, setFinalAmount] = useState(0);
   const [isConverting, setIsConverting] = useState(false);
-  
+  const assetsBalance = useSelector(assetsListSelectors.selectRows);
+  const [imageErrors, setImageErrors] = useState<{[key: string]: boolean}>({});
+ 
   const ws = useRef<WebSocket | null>(null);
   const conversionLock = useRef(false);
-
+ 
   // Mock user balances for each currency
-  const [balances] = useState({
-    USDT: 1250.75,
-    BTC: 0.35,
-    ETH: 2.5,
-    BNB: 15.2,
-    SOL: 8.7,
-    ADA: 1200,
-    XRP: 850,
-    DOGE: 5000,
-    DOT: 95.5,
-    AVAX: 32.8
-  });
+  const [balances, setBalances] = useState<{[key: string]: number}>({});
+  
+  useEffect(() => {
+    if (assetsBalance?.length) {
+      const formatted = assetsBalance.reduce((acc: {[key: string]: number}, item) => {
+        acc[item.symbol] = item.amount;
+        return acc;
+      }, {});
+      setBalances(formatted);
+    }
+  }, [assetsBalance]);
+
+  // Check if user has sufficient balance
+  const hasSufficientBalance = useMemo(() => {
+    if (!fromCurrency || fromAmount <= 0) return false;
+    const balance = balances[fromCurrency] || 0;
+    return fromAmount <= balance;
+  }, [fromAmount, fromCurrency, balances]);
 
   // Fetch initial market data
   useEffect(() => {
@@ -196,6 +207,7 @@ function Conversion() {
     
     ws.current.onerror = (error) => {
       console.error("WebSocket error:", error);
+      setError('WebSocket connection error. Prices may not update in real-time.');
     };
     
     return () => {
@@ -279,7 +291,7 @@ function Conversion() {
 
   // Set max amount based on balance
   const handleSetMaxAmount = () => {
-    setFromAmount(balances[fromCurrency as keyof typeof balances] || 0);
+    setFromAmount(balances[fromCurrency] || 0);
   };
 
   // Handle currency selection
@@ -318,6 +330,8 @@ function Conversion() {
 
   // Open confirmation modal
   const openConfirmationModal = () => {
+    if (!hasSufficientBalance) return;
+    
     setConversionFee(calculateFee);
     setFinalAmount(calculateFinalAmount);
     setShowConfirmationModal(true);
@@ -325,6 +339,8 @@ function Conversion() {
 
   // Perform conversion - lock rates during transaction
   const performConversion = () => {
+    if (!hasSufficientBalance) return;
+    
     setIsConverting(true);
     conversionLock.current = true;
     
@@ -354,6 +370,11 @@ function Conversion() {
   const getCurrencyPrice = (code: string) => {
     const currency = getCurrency(code);
     return currency ? currency.price : null;
+  };
+
+  // Handle image error
+  const handleImageError = (currencyCode: string) => {
+    setImageErrors(prev => ({...prev, [currencyCode]: true}));
   };
 
   // Loading placeholder for currency items
@@ -404,7 +425,7 @@ function Conversion() {
             <div className="input-header">
               <div className="input-label">You send</div>
               <div className="balance-display">
-                Balance: {balances[fromCurrency as keyof typeof balances] || 0} {fromCurrency}
+                Balance: {balances[fromCurrency] || 0} {fromCurrency}
                 <button className="max-button" onClick={handleSetMaxAmount}>MAX</button>
               </div>
             </div>
@@ -418,14 +439,18 @@ function Conversion() {
               />
               <div className="currency-selector" onClick={() => openModal('from')}>
                 <div className="currency-icon" style={{ backgroundColor: getCurrency(fromCurrency)?.color || '#F3BA2F' }}>
-                  <img
-                    src={`https://images.weserv.nl/?url=https://bin.bnbstatic.com/static/assets/logos/${fromCurrency}.png`}
-                    style={{ width: 25, height: 25 }}
-                    alt={fromCurrency}
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src = `https://via.placeholder.com/40/3a3a3a/ffffff?text=${fromCurrency.charAt(0)}`;
-                    }}
-                  />
+                  {imageErrors[fromCurrency] ? (
+                    <div className="currency-icon-fallback">
+                      {fromCurrency.charAt(0)}
+                    </div>
+                  ) : (
+                    <img
+                      src={`https://images.weserv.nl/?url=https://bin.bnbstatic.com/static/assets/logos/${fromCurrency}.png`}
+                      style={{ width: 25, height: 25 }}
+                      alt={fromCurrency}
+                      onError={() => handleImageError(fromCurrency)}
+                    />
+                  )}
                 </div>
                 <div className="currency-name">{fromCurrency}</div>
                 <i className="fas fa-chevron-down" />
@@ -438,6 +463,12 @@ function Conversion() {
                 <>&nbsp;</>
               )}
             </div>
+            {!hasSufficientBalance && fromAmount > 0 && (
+              <div className="error-text">
+                <i className="fas fa-exclamation-circle"></i>
+                Insufficient balance
+              </div>
+            )}
           </div>
           
           {/* Switch Button */}
@@ -452,7 +483,7 @@ function Conversion() {
             <div className="input-header">
               <div className="input-label">You receive</div>
               <div className="balance-display">
-                Balance: {balances[toCurrency as keyof typeof balances] || 0} {toCurrency}
+                Balance: {balances[toCurrency] || 0} {toCurrency}
               </div>
             </div>
             <div className="input-field">
@@ -463,14 +494,18 @@ function Conversion() {
               />
               <div className="currency-selector" onClick={() => openModal('to')}>
                 <div className="currency-icon" style={{ backgroundColor: getCurrency(toCurrency)?.color || '#F3BA2F' }}>
-                  <img
-                    src={`https://images.weserv.nl/?url=https://bin.bnbstatic.com/static/assets/logos/${toCurrency}.png`}
-                    style={{ width: 25, height: 25 }}
-                    alt={toCurrency}
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src = `https://via.placeholder.com/40/3a3a3a/ffffff?text=${toCurrency.charAt(0)}`;
-                    }}
-                  />
+                  {imageErrors[toCurrency] ? (
+                    <div className="currency-icon-fallback">
+                      {toCurrency.charAt(0)}
+                    </div>
+                  ) : (
+                    <img
+                      src={`https://images.weserv.nl/?url=https://bin.bnbstatic.com/static/assets/logos/${toCurrency}.png`}
+                      style={{ width: 25, height: 25 }}
+                      alt={toCurrency}
+                      onError={() => handleImageError(toCurrency)}
+                    />
+                  )}
                 </div>
                 <div className="currency-name">{toCurrency}</div>
                 <i className="fas fa-chevron-down" />
@@ -501,9 +536,10 @@ function Conversion() {
           <button 
             className="convert-btn" 
             onClick={openConfirmationModal} 
-            disabled={isLoading || fromAmount <= 0}
+            disabled={isLoading || fromAmount <= 0 || !hasSufficientBalance || fromCurrency === toCurrency}
           >
-            Convert Now
+            {fromCurrency === toCurrency ? 'Select different currencies' : 
+             !hasSufficientBalance ? 'Insufficient balance' : 'Convert Now'}
           </button>
           
           {/* Last updated time */}
@@ -545,14 +581,18 @@ function Conversion() {
                       className="currency-item-icon"
                       style={{ backgroundColor: currency.color }}
                     >
-                      <img
-                        src={`https://images.weserv.nl/?url=https://bin.bnbstatic.com/static/assets/logos/${currency.code}.png`}
-                        style={{ width: 40, height: 40 }}
-                        alt={currency.code}
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src = `https://via.placeholder.com/40/3a3a3a/ffffff?text=${currency.code.charAt(0)}`;
-                        }}
-                      />
+                      {imageErrors[currency.code] ? (
+                        <div className="currency-icon-fallback">
+                          {currency.code.charAt(0)}
+                        </div>
+                      ) : (
+                        <img
+                          src={`https://images.weserv.nl/?url=https://bin.bnbstatic.com/static/assets/logos/${currency.code}.png`}
+                          style={{ width: 40, height: 40 }}
+                          alt={currency.code}
+                          onError={() => handleImageError(currency.code)}
+                        />
+                      )}
                     </div>
                     <div className="currency-item-info">
                       <div className="currency-item-name">{currency.code}</div>
@@ -563,7 +603,7 @@ function Conversion() {
                         ${currency.price.toLocaleString('en-US', { maximumFractionDigits: 2 })}
                       </div>
                       <div className="currency-item-balance">
-                        Balance: {balances[currency.code as keyof typeof balances] || 0} {currency.code}
+                        Balance: {balances[currency.code] || 0} {currency.code}
                       </div>
                     </div>
                   </li>
@@ -594,13 +634,17 @@ function Conversion() {
                     <span className="currency">{fromCurrency}</span>
                   </div>
                   <div className="currency-icon">
-                    <img
-                      src={`https://images.weserv.nl/?url=https://bin.bnbstatic.com/static/assets/logos/${fromCurrency}.png`}
-                      alt={fromCurrency}
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src = `https://via.placeholder.com/40/3a3a3a/ffffff?text=${fromCurrency.charAt(0)}`;
-                      }}
-                    />
+                    {imageErrors[fromCurrency] ? (
+                      <div className="currency-icon-fallback large">
+                        {fromCurrency.charAt(0)}
+                      </div>
+                    ) : (
+                      <img
+                        src={`https://images.weserv.nl/?url=https://bin.bnbstatic.com/static/assets/logos/${fromCurrency}.png`}
+                        alt={fromCurrency}
+                        onError={() => handleImageError(fromCurrency)}
+                      />
+                    )}
                   </div>
                 </div>
                 
@@ -614,13 +658,17 @@ function Conversion() {
                     <span className="currency">{toCurrency}</span>
                   </div>
                   <div className="currency-icon">
-                    <img
-                      src={`https://images.weserv.nl/?url=https://bin.bnbstatic.com/static/assets/logos/${toCurrency}.png`}
-                      alt={toCurrency}
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src = `https://via.placeholder.com/40/3a3a3a/ffffff?text=${toCurrency.charAt(0)}`;
-                      }}
-                    />
+                    {imageErrors[toCurrency] ? (
+                      <div className="currency-icon-fallback large">
+                        {toCurrency.charAt(0)}
+                      </div>
+                    ) : (
+                      <img
+                        src={`https://images.weserv.nl/?url=https://bin.bnbstatic.com/static/assets/logos/${toCurrency}.png`}
+                        alt={toCurrency}
+                        onError={() => handleImageError(toCurrency)}
+                      />
+                    )}
                   </div>
                 </div>
               </div>
@@ -707,13 +755,14 @@ function Conversion() {
           border-radius: 20px;
           width: 100%;
           max-width: 400px;
+       
           box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
           overflow: hidden;
           z-index: 2001;
           position: relative;
           border: 1px solid #333;
           animation: modalSlideIn 0.3s ease-out;
-          height:100%
+             height:100%
         }
         
         @keyframes modalSlideIn {
@@ -818,6 +867,22 @@ function Conversion() {
           height: 30px;
         }
         
+        .currency-icon-fallback {
+          width: 100%;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: #F3BA2F;
+          color: #000;
+          font-weight: bold;
+          font-size: 16px;
+        }
+        
+        .currency-icon-fallback.large {
+          font-size: 20px;
+        }
+        
         .conversion-arrow {
           margin: 15px 0;
           color: #F3BA2F;
@@ -916,6 +981,16 @@ function Conversion() {
         .cancel-btn:disabled {
           opacity: 0.5;
           cursor: not-allowed;
+        }
+        
+        /* Error text styling */
+        .error-text {
+          color: #FF6838;
+          font-size: 12px;
+          margin-top: 8px;
+          display: flex;
+          align-items: center;
+          gap: 5px;
         }
         
         /* Responsive adjustments for the modal */
@@ -1020,6 +1095,7 @@ function Conversion() {
             border-radius: 12px;
             padding: 20px;
             margin-bottom: 20px;
+            position: relative;
         }
         
         .input-header {
@@ -1092,6 +1168,13 @@ function Conversion() {
             justify-content: center;
             align-items: center;
             margin-right: 8px;
+            overflow: hidden;
+        }
+        
+        .currency-icon img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
         }
         
         .currency-name {
@@ -1280,6 +1363,13 @@ function Conversion() {
             justify-content: center;
             align-items: center;
             margin-right: 15px;
+            overflow: hidden;
+        }
+        
+        .currency-item-icon img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
         }
         
         .currency-item-info {
