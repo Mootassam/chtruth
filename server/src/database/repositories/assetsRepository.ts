@@ -7,59 +7,53 @@ import FileRepository from "./fileRepository";
 import Wallet from "../models/wallet";
 
 class WalletRepository {
-  static async create(data, options: IRepositoryOptions) {
-    const currentTenant = MongooseRepository.getCurrentTenant(options);
-    const currentUser = MongooseRepository.getCurrentUser(options);
+static async create(data, options: IRepositoryOptions) {
+  const currentTenant = MongooseRepository.getCurrentTenant(options);
+  const currentUser = MongooseRepository.getCurrentUser(options);
 
-    const record = await this.convertAsset(data, options);
-    // const [record] = await Wallet(options.database).create(
-    //   [
-    //     {
-    //       ...data,
-    //       tenant: currentTenant.id,
-    //       createdBy: currentUser.id,
-    //       updatedBy: currentUser.id,
-    //     },
-    //   ],
-    //   options
-    // );
+  // 1️⃣ Perform conversion
+  const { from: sourceWallet, to: targetWallet } = await this.convertAsset(data, options);
 
-    // await this._createAuditLog(
-    //   AuditLogRepository.CREATE,
-    //   record.id,
-    //   data,
-    //   options
-    // );
+  const Transaction = options.database.model("transaction");
+
+  // 2️⃣ Log the outgoing conversion (source asset)
+  await Transaction.create({
+    type: "convert_out",
+    wallet: sourceWallet._id,
+    asset: data.fromSymbol,
+    relatedAsset: data.toSymbol,
+    amount: data.fromAmount,
+    direction: "out",
+    status: "completed",
+    user: data.user,
+    tenant: currentTenant.id,
+    createdBy: currentUser.id,
+    updatedBy: currentUser.id,
+  });
+
+  // 3️⃣ Log the incoming conversion (target asset)
+  await Transaction.create({
+    type: "convert_in",
+    wallet: targetWallet._id,
+    asset: data.toSymbol,
+    relatedAsset: data.fromSymbol,
+    amount: data.toAmount,
+    direction: "in",
+    status: "completed",
+    user: data.user,
+    tenant: currentTenant.id,
+    createdBy: currentUser.id,
+    updatedBy: currentUser.id,
+  });
+
+  return {
+    sourceWallet,
+    targetWallet,
+  };
+}
 
 
-  }
 
-  static async updateWalletBalance(data, options: IRepositoryOptions) {
-    const currentTenant = MongooseRepository.getCurrentTenant(options);
-    const currentUser = MongooseRepository.getCurrentUser(options);
-    const wallet = await Wallet(options.database).findOneAndUpdate(
-      {
-        user: data.user,
-        symbol: data.symbol,
-      },
-      {
-        $inc: { amount: data.amount },
-        $setOnInsert: {
-          coinName: data.symbol,
-          status: "available",
-          tenant: currentTenant.id,
-          createdBy: currentUser.id,
-          updatedBy: currentUser.id,
-        },
-      },
-      {
-        upsert: true,
-        new: true, // return the updated wallet
-      }
-    );
-
-    return wallet.amount; // ✅ new balance
-  }
 
 static async convertAsset(data, options: IRepositoryOptions) {
   const currentTenant = MongooseRepository.getCurrentTenant(options);

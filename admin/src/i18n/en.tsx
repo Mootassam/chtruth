@@ -101,7 +101,7 @@ const en = {
     },
 
     kyc: {
-      menu: 'Vip',
+      menu: 'KYC',
       list: {
         title: 'List of Kyc',
       },
@@ -269,6 +269,7 @@ const en = {
         success: 'Messages successfully deleted',
       },
     },
+
     withdraw: {
       menu: 'Withdraws',
       list: {
@@ -441,6 +442,7 @@ const en = {
         success: 'Futures orders successfully deleted',
       },
     },
+
     stacking: {
       menu: 'Staking Orders',
       list: {
@@ -576,6 +578,7 @@ const en = {
         hint: 'Files/Images columns must be the URLs of the files separated by space.',
       },
     },
+
     category: {
       name: 'category',
       label: 'Social Media',
@@ -642,6 +645,7 @@ const en = {
         hint: 'Files/Images columns must be the URLs of the files separated by space.',
       },
     },
+    
     palier: {
       name: 'Level',
       label: 'Levels',
