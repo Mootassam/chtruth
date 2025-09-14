@@ -71,7 +71,6 @@ export default class DepositServicess {
     );
 
     try {
-      console.log(data.status);
 
       const record = await DepositRepository.updateStatus(id, data, io, {
         ...this.options,

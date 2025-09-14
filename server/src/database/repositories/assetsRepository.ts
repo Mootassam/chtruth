@@ -5,7 +5,7 @@ import Error404 from "../../errors/Error404";
 import { IRepositoryOptions } from "./IRepositoryOptions";
 import FileRepository from "./fileRepository";
 import Wallet from "../models/wallet";
-
+import Transaction from "../models/transaction"
 class WalletRepository {
 static async create(data, options: IRepositoryOptions) {
   const currentTenant = MongooseRepository.getCurrentTenant(options);
@@ -188,9 +188,6 @@ static async convertAsset(data, options: IRepositoryOptions) {
     //   Wallet(options.database).findByUser(id),
     //   options
     // );
-    console.log("====================================");
-    console.log(id);
-    console.log("====================================");
     // if (!record || String(record.tenant) !== String(currentTenant.id)) {
     //   throw new Error404();
     // }
@@ -203,15 +200,14 @@ static async convertAsset(data, options: IRepositoryOptions) {
     const rows = await Wallet(options.database).updateOne(
       { user: id, symbol: data.rechargechannel.toUpperCase() }, // filter
       {
-        $set: {
-          amount: data.amount,
-          updatedBy: MongooseRepository.getCurrentUser(options).id,
-        },
+        
+             $inc: { amount: data.amount },
       }, // update
       options // options
     );
 
-    console.log(record);
+
+
 
     return record;
   }
@@ -417,7 +413,6 @@ static async convertAsset(data, options: IRepositoryOptions) {
     tenantId,
     options: IRepositoryOptions
   ) {
-    console.log("createDefaultAssets", tenantId);
 
     const defaultWallets = [
       {

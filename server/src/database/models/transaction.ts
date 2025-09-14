@@ -17,7 +17,10 @@ export default (database) => {
         enum: ["deposit", "withdraw", "convert_in", "convert_out"],
         required: true,
       },
-
+     referenceId: {
+        type: Schema.Types.ObjectId,
+        required: true,
+      },
       // ✅ Which coin (BTC, ETH, USDT, etc.)
       wallet: {
         type: Schema.Types.ObjectId,

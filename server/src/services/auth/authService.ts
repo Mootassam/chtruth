@@ -27,7 +27,6 @@ class AuthService {
     tenantId,
     options: any = {}
   ) {
-    // console.log("APPLY NOW PLease",withdrawPassword, invitationcode, phoneNumber, password, email);
 
     const session = await MongooseRepository.createSession(options.database);
 
@@ -219,7 +218,6 @@ console.log("Authservice",tenantId);
     tenantId,
     options: any = {}
   ) {
-    // console.log("APPLY NOW PLease",withdrawPassword, invitationcode, phoneNumber, password, email);
 
     const session = await MongooseRepository.createSession(options.database);
 

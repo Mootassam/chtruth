@@ -5,12 +5,13 @@ import Error404 from "../../errors/Error404";
 import { IRepositoryOptions } from "./IRepositoryOptions";
 import FileRepository from "./fileRepository";
 import Deposit from "../models/deposit";
-import WalletRepository from "./assetsRepository";
+import assets from "../models/wallet";
+import transaction from "../models/transaction";
+import wallet from "../models/wallet";
 
 class DepositRepository {
   static async create(data, options: IRepositoryOptions) {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
-
     const currentUser = MongooseRepository.getCurrentUser(options);
 
     const [record] = await Deposit(options.database).create(
@@ -25,14 +26,34 @@ class DepositRepository {
       options
     );
 
-    await this._createAuditLog(
-      AuditLogRepository.CREATE,
-      record.id,
-      data,
-      options
-    );
+    const WalletModel = assets(options.database);
+    const TransactionModel = options.database.model("transaction");
 
-    return this.findById(record.id, options);
+    // 1️⃣ Fetch the user's wallet for the given asset
+    let wallet = await WalletModel.findOne({
+      user: currentUser.id,
+      symbol: data.rechargechannel.toUpperCase(),
+    });
+
+
+
+    // 3️⃣ Create a transaction log
+    await TransactionModel.create({
+      type: "deposit",
+      wallet: wallet.id,
+      asset: wallet.symbol,
+      amount: data.amount,
+      referenceId:record.id,
+      direction: "in",
+      status: "pending", // deposit is pending
+      user: currentUser.id,
+      tenant: currentTenant.id,
+      createdBy: currentUser.id,
+      updatedBy: currentUser.id,
+    });
+
+    // 4️⃣ Return the updated wallet
+    return wallet;
   }
 
   static async update(id, data, io, options: IRepositoryOptions) {
@@ -64,25 +85,39 @@ class DepositRepository {
     return record;
   }
 
-  static async updateStatus(id, data, io, options: IRepositoryOptions) {
-console.log('====================================');
-console.log(id);
-console.log('====================================');
+static async updateStatus(id, data, io, options: IRepositoryOptions) {
+  const currentUser = MongooseRepository.getCurrentUser(options);
 
-
-    await Deposit(options.database).updateOne(
-      { _id: id },
-      {
-        $set: {
-          status: data.status,
-          accepttime: new Date(), // ✅ store current time
-          auditor: MongooseRepository.getCurrentUser(options).id,
-          updatedBy: MongooseRepository.getCurrentUser(options).id,
-        },
+  // ✅ Update the deposit status
+  await Deposit(options.database).updateOne(
+    { _id: id },
+    {
+      $set: {
+        status: data.status,
+        acceptime: new Date(), // store current time
+        auditor: currentUser.id,
+        updatedBy: currentUser.id,
       },
-      options
-    );
-  }
+    },
+    options
+  );
+
+  // ✅ Update the related transaction using referenceId + referenceModel
+  await transaction(options.database).updateOne(
+    {
+      referenceId: id,
+
+    },
+    {
+      $set: {
+        status: data.status,
+        updatedBy: currentUser.id,
+      },
+    },
+    options
+  );
+}
+
 
   static async destroy(id, options: IRepositoryOptions) {
     const currentTenant = MongooseRepository.getCurrentTenant(options);

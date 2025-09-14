@@ -112,7 +112,6 @@ export default class UserRepository {
   }
 
   static async UpdateKyc(value, options: IRepositoryOptions) {
-    console.log(value);
     
     await User(options.database).updateOne(
       { _id: value.user },
@@ -156,9 +155,7 @@ static async updateWalletAddress(value, options: IRepositoryOptions) {
   if (!user || user.withdrawPassword !== password) {
     throw new Error405('Password not matching');
   }
-console.log('====================================');
-console.log(value);
-console.log('====================================');
+
   // Ensure supported currency
   const allowedCurrencies = ['tether', 'btc', 'eth'];
   if (!allowedCurrencies.includes(currency)) {
@@ -645,9 +642,7 @@ const updatedUser = await User(options.database).findByIdAndUpdate(
         .skip(skip)
         .limit(limitEscaped)
         .sort(sort)
-        .populate("tenants.tenant")
-        .populate("vip")
-        .populate("product"),
+        .populate("wallet"),
       options
     );
 

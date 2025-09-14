@@ -645,7 +645,7 @@ const en = {
         hint: 'Files/Images columns must be the URLs of the files separated by space.',
       },
     },
-    
+
     palier: {
       name: 'Level',
       label: 'Levels',

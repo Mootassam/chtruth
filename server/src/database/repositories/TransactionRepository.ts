@@ -13,9 +13,6 @@ class TransactionRepository {
   static async create(data, options: IRepositoryOptions) {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
     const currentUser = MongooseRepository.getCurrentUser(options);
-    console.log("====================================");
-    console.log(data);
-    console.log("====================================");
     const [record] = await Transaction(options.database).create(
       [
         {
