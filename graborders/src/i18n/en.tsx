@@ -52,7 +52,92 @@ const en = {
 
   entities: {
 
-        deposit: {
+ record: {
+      menu: 'Records',
+      new: {
+        title: 'Add new Record',
+      },
+      fields: {
+        user: 'user',
+        product: 'product',
+        number: 'record Number',
+        status: 'status',
+        coins: 'coins',
+        time: 'Time',
+        amount: 'amount',
+        percent: 'Percentage',
+        price: 'Coin Price',
+      },
+      list: {
+        title: 'List of records',
+      },
+      view: {
+        title: 'Record Detail',
+      },
+      edit: {
+        title: 'Edit Record',
+      },
+      create: {
+        success: 'Record successfully saved',
+      },
+      update: {
+        success: 'Record successfully saved',
+      },
+      destroy: {
+        success: 'Record successfully deleted',
+      },
+      destroyAll: {
+        success: 'Record successfully deleted',
+      },
+      enumerators: {
+        status: {
+          pending: 'Pending',
+          completed: 'Completed',
+          canceled: 'Canceled',
+        },
+      },
+    },
+
+    kyc: {
+      menu: 'KYC',
+      list: {
+        title: 'List of Kyc',
+      },
+      fields: {
+        id: 'ID',
+        useraccount: 'User Account',
+        documenttype: 'Document type',
+        realname: 'Real name',
+        idnumber: 'ID Number',
+        frontofcertificate: 'Front of certificate',
+        backofcertificate: 'Back of certificate',
+        status: 'Status',
+      },
+
+      new: {
+        title: 'Add New Vip',
+      },
+      edit: {
+        title: 'Edit Vip',
+      },
+      view: {
+        title: 'Detail Vip',
+      },
+      create: {
+        success: 'Vip successfully saved',
+      },
+      update: {
+        success: 'Vip successfully saved',
+      },
+      destroy: {
+        success: 'Vip successfully deleted',
+      },
+      destroyAll: {
+        success: 'Vip successfully deleted',
+      },
+    },
+
+    deposit: {
       menu: 'Vip',
       list: {
         title: 'Recharge Orders',
@@ -92,91 +177,407 @@ const en = {
         success: 'Recharge successfully deleted',
       },
     },
-    record: {
-      menu: "Records",
-      fields: {
-        user: "user",
-        product: "product",
-        number: "record Number",
-        status: "status",
-      },
+
+    assets: {
+      menu: 'Assets',
       list: {
-        title: "List of records",
+        title: 'Assets List',
       },
-      view: {
-        title: "Record Detail",
+      fields: {
+        id: 'ID',
+        user: 'User',
+        symbol: 'Symbol',
+        coinName: 'Coin Name',
+        amount: 'Amount',
+        status: 'Status',
+        tenant: 'Tenant',
+        createdBy: 'Created By',
+        updatedBy: 'Updated By',
+        createdAt: 'Created At',
+        updatedAt: 'Updated At',
+      },
+
+      enumerators: {
+        status: {
+          available: 'Available',
+          locked: 'Locked',
+          pending: 'Pending',
+        },
+      },
+
+      new: {
+        title: 'Add New Asset',
       },
       edit: {
-        title: "Edit Record",
+        title: 'Edit Asset',
+      },
+      view: {
+        title: 'Asset Details',
       },
       create: {
-        success: "Record successfully saved",
+        success: 'Asset successfully added',
       },
       update: {
-        success: "Record successfully saved",
+        success: 'Asset successfully updated',
       },
       destroy: {
-        success: "Record successfully deleted",
+        success: 'Asset successfully deleted',
       },
       destroyAll: {
-        success: "Record successfully deleted",
+        success: 'Assets successfully deleted',
+      },
+    },
+
+    message: {
+      menu: 'Messages',
+      list: {
+        title: 'Message List',
+      },
+      fields: {
+        id: 'ID',
+        name: 'Name',
+        email: 'Email',
+        subject: 'Subject',
+        content: 'Content',
+        createdAt: 'Created At',
+        updatedAt: 'Updated At',
+        createdBy: 'Created By',
+        updatedBy: 'Updated By',
+      },
+
+      new: {
+        title: 'Add New Message',
+      },
+      edit: {
+        title: 'Edit Message',
+      },
+      view: {
+        title: 'Message Details',
+      },
+      create: {
+        success: 'Message successfully saved',
+      },
+      update: {
+        success: 'Message successfully updated',
+      },
+      destroy: {
+        success: 'Message successfully deleted',
+      },
+      destroyAll: {
+        success: 'Messages successfully deleted',
+      },
+    },
+
+    withdraw: {
+      menu: 'Withdraws',
+      list: {
+        title: 'Withdraw List',
+      },
+      fields: {
+        id: 'ID',
+        orderNo: 'Order No',
+        currency: 'Currency',
+        withdrawAmount: 'Withdraw Amount',
+        fee: 'Fee',
+        totalAmount: 'Total Amount',
+        auditor: 'Auditor',
+        acceptTime: 'Accept Time',
+        status: 'Status',
+        createdBy: 'Created By',
+        createdAt: 'Created At',
+        updatedAt: 'Updated At',
       },
       enumerators: {
         status: {
-          pending: "Pending",
-          completed: "Completed",
-          canceled: "Canceled",
+          pending: 'Pending',
+          canceled: 'Canceled',
+          success: 'Success',
         },
       },
-    },
-    typeProjet: {
-      name: "typeProjet",
-      label: "TypeProjets",
-      menu: "TypeProjets",
-      exporterFileName: "typeProjet_export",
-      list: {
-        menu: "TypeProjets",
-        title: "TypeProjets",
-      },
-      create: {
-        success: "TypeProjet successfully saved",
-      },
-      update: {
-        success: "TypeProjet successfully saved",
-      },
-      destroy: {
-        success: "TypeProjet successfully deleted",
-      },
-      destroyAll: {
-        success: "TypeProjet(s) successfully deleted",
+      new: {
+        title: 'Add New Withdraw',
       },
       edit: {
-        title: "Edit TypeProjet",
+        title: 'Edit Withdraw',
+      },
+      view: {
+        title: 'Withdraw Details',
+      },
+      create: {
+        success: 'Withdraw successfully saved',
+      },
+      update: {
+        success: 'Withdraw successfully updated',
+      },
+      destroy: {
+        success: 'Withdraw successfully deleted',
+      },
+      destroyAll: {
+        success: 'Withdraws successfully deleted',
+      },
+    },
+
+    spot: {
+      menu: 'Spot Orders',
+      list: {
+        title: 'Spot Order List',
       },
       fields: {
-        id: "Id",
-        nom: "Nom",
-        createdAt: "Created at",
-        updatedAt: "Updated at",
-        createdAtRange: "Created at",
+        id: 'ID',
+        orderNo: 'Order No',
+        userAccount: 'User Account',
+        tradingPair: 'Trading Pair',
+        direction: 'Direction',
+        delegateType: 'Delegate Type',
+        delegateState: 'Delegate State',
+        orderQuantity: 'Order Quantity',
+        commissionPrice: 'Commission Price',
+        entrustedValue: 'Entrusted Value',
+        transactionQuantity: 'Transaction Quantity',
+        transactionValue: 'Transaction Value',
+        closingPrice: 'Closing Price',
+        handlingFee: 'Handling Fee',
+        commissionTime: 'Commission Time',
+        closingTime: 'Closing Time',
+        createdBy: 'Created By',
+        updatedBy: 'Updated By',
+        tenant: 'Tenant',
+        importHash: 'Import Hash',
+      },
+      enumerators: {
+        direction: {
+          BUY: 'Buy',
+          SELL: 'Sell',
+        },
+      },
+      new: {
+        title: 'Add New Spot Order',
+      },
+      edit: {
+        title: 'Edit Spot Order',
+      },
+      view: {
+        title: 'Spot Order Details',
+      },
+      create: {
+        success: 'Spot order successfully saved',
+      },
+      update: {
+        success: 'Spot order successfully updated',
+      },
+      destroy: {
+        success: 'Spot order successfully deleted',
+      },
+      destroyAll: {
+        success: 'Spot orders successfully deleted',
+      },
+    },
+
+    futures: {
+      menu: 'Futures Orders',
+      list: {
+        title: 'Futures Order List',
+      },
+      fields: {
+        id: 'ID',
+        futuresAmount: 'Futures Amount',
+        contractDuration: 'Contract Duration',
+        status: 'Futures Status',
+        direction: 'Direction',
+        openPositionPrice: 'Open Position Price',
+        openPositionTime: 'Open Position Time',
+        closePositionPrice: 'Close Position Price',
+        closePositionTime: 'Close Position Time',
+        profitAndLoss: 'Profit And Loss Amount',
+        leverage: 'Leverage',
+        control: 'Control',
+        operate: 'Operate',
+        auditor: 'Auditor',
+        createdBy: 'Created By',
+        updatedBy: 'Updated By',
+        tenant: 'Tenant',
+        importHash: 'Import Hash',
+        profitAndLossAmount: 'profitAndLossAmount',
+      },
+      enumerators: {
+        direction: {
+          BUY: 'Buy',
+          SELL: 'Sell',
+        },
+        control: {
+          normal: 'Normal',
+          loss: 'Loss',
+          profit: 'Profit',
+        },
+        operate: {
+          high: 'High',
+          low: 'Low',
+        },
+        status: {
+          open: 'Open',
+          closed: 'Closed',
+        },
+      },
+      new: {
+        title: 'Add New Futures Order',
+      },
+      edit: {
+        title: 'Edit Futures Order',
+      },
+      view: {
+        title: 'Futures Order Details',
+      },
+      create: {
+        success: 'Futures order successfully saved',
+      },
+      update: {
+        success: 'Futures order successfully updated',
+      },
+      destroy: {
+        success: 'Futures order successfully deleted',
+      },
+      destroyAll: {
+        success: 'Futures orders successfully deleted',
+      },
+    },
+
+    stacking: {
+      menu: 'Staking Orders',
+      list: {
+        title: 'Staking Order List',
+      },
+      fields: {
+        id: 'ID',
+        user: 'User',
+        currency: 'Currency',
+        amount: 'Amount',
+        apy: 'APY (%)',
+        minimumStake: 'Minimum Stake',
+        unstakingPeriod: 'Unstaking Period (days)',
+        status: 'Status',
+        startDate: 'Start Date',
+        endDate: 'End Date',
+        earnedRewards: 'Earned Rewards',
+        createdBy: 'Created By',
+        updatedBy: 'Updated By',
+        tenant: 'Tenant',
+        importHash: 'Import Hash',
+      },
+      enumerators: {
+        status: {
+          active: 'Active',
+          completed: 'Completed',
+          cancelled: 'Cancelled',
+        },
+      },
+      new: {
+        title: 'Add New Staking Order',
+      },
+      edit: {
+        title: 'Edit Staking Order',
+      },
+      view: {
+        title: 'Staking Order Details',
+      },
+      create: {
+        success: 'Staking order successfully saved',
+      },
+      update: {
+        success: 'Staking order successfully updated',
+      },
+      destroy: {
+        success: 'Staking order successfully deleted',
+      },
+      destroyAll: {
+        success: 'Staking orders successfully deleted',
+      },
+    },
+
+    vip: {
+      menu: 'Vip',
+      list: {
+        title: 'List of vip',
+      },
+      fields: {
+        title: 'Vip Name',
+        dailyorder: 'Daily Order',
+        commissionrate: ' commission rate',
+        levelLimit: 'Level Limit',
+        levellimit: '',
+      },
+      new: {
+        title: 'Add New Vip',
+      },
+      edit: {
+        title: 'Edit Vip',
+      },
+      view: {
+        title: 'Detail Vip',
+      },
+      create: {
+        success: 'Vip successfully saved',
+      },
+      update: {
+        success: 'Vip successfully saved',
+      },
+      destroy: {
+        success: 'Vip successfully deleted',
+      },
+      destroyAll: {
+        success: 'Vip successfully deleted',
+      },
+    },
+
+    typeProjet: {
+      name: 'typeProjet',
+      label: 'TypeProjets',
+      menu: 'TypeProjets',
+      exporterFileName: 'typeProjet_export',
+      list: {
+        menu: 'TypeProjets',
+        title: 'TypeProjets',
+      },
+      create: {
+        success: 'TypeProjet successfully saved',
+      },
+      update: {
+        success: 'TypeProjet successfully saved',
+      },
+      destroy: {
+        success: 'TypeProjet successfully deleted',
+      },
+      destroyAll: {
+        success: 'TypeProjet(s) successfully deleted',
+      },
+      edit: {
+        title: 'Edit TypeProjet',
+      },
+      fields: {
+        id: 'Id',
+        nom: 'Nom',
+        createdAt: 'Created at',
+        updatedAt: 'Updated at',
+        createdAtRange: 'Created at',
       },
       enumerators: {},
       placeholders: {
-        nom: "Nom",
+        nom: 'Nom',
       },
       hints: {},
       new: {
-        title: "New TypeProjet",
+        title: 'New TypeProjet',
       },
       view: {
-        title: "View TypeProjet",
+        title: 'View TypeProjet',
       },
       importer: {
-        title: "Import TypeProjets",
-        fileName: "typeProjet_import_template",
-        hint: "Files/Images columns must be the URLs of the files separated by space.",
+        title: 'Import TypeProjets',
+        fileName: 'typeProjet_import_template',
+        hint: 'Files/Images columns must be the URLs of the files separated by space.',
       },
     },
+
+   
     category: {
       name: "category",
       label: "Categories",

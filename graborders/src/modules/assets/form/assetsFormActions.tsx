@@ -3,7 +3,7 @@ import vipService from 'src/modules/assets/assetsService';
 import Errors from 'src/modules/shared/error/errors';
 import Message from 'src/view/shared/message';
 import { getHistory } from 'src/modules/store';
-import { i18n } from 'src/i18n';
+import { i18n } from '../../../i18n';
 
 const prefix = 'COUPONS_FORM';
 
@@ -45,7 +45,7 @@ const vipFormActions = {
         type: vipFormActions.INIT_ERROR,
       });
 
-      getHistory().push('/assets');
+      getHistory().push('/conversion');
     }
   },
 
@@ -62,10 +62,10 @@ const vipFormActions = {
       });
 
       Message.success(
-        i18n('entities.vip.create.success'),
+        i18n('entities.assets.create.success'),
       );
 
-      getHistory().push('/assets');
+      getHistory().push('/conversion');
     } catch (error) {
       Errors.handle(error);
 
@@ -88,10 +88,10 @@ const vipFormActions = {
       });
 
       Message.success(
-        i18n('entities.vip.update.success'),
+        i18n('entities.assets.update.success'),
       );
 
-      getHistory().push('/assets');
+      getHistory().push('/conversion');
     } catch (error) {
       Errors.handle(error);
 

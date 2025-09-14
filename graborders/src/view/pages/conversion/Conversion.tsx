@@ -1,9 +1,18 @@
-import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  useRef,
+} from "react";
 import SubHeader from "src/view/shared/Header/SubHeader";
 import axios from "axios";
 import userSelectors from "src/modules/user/userSelectors";
-import assetsListSelectors from 'src/modules/assets/list/assetsListSelectors';
+import assetsListSelectors from "src/modules/assets/list/assetsListSelectors";
 import { useDispatch, useSelector } from "react-redux";
+import assetsFormAction from "src/modules/assets/form/assetsFormActions";
+import authSelectors from "src/modules/auth/authSelectors";
+import assetsActions from "src/modules/assets/list/assetsListActions";
 
 // Interface for Binance ticker data
 interface BinanceTicker {
@@ -31,37 +40,48 @@ interface CryptoData {
 
 function Conversion() {
   // State for conversion values
-  const [fromCurrency, setFromCurrency] = useState('USDT');
-  const [toCurrency, setToCurrency] = useState('BTC');
+  const dispatch = useDispatch();
+  const currentUser = useSelector(authSelectors.selectCurrentUser);
+  const [fromCurrency, setFromCurrency] = useState("USDT");
+  const [toCurrency, setToCurrency] = useState("BTC");
   const [fromAmount, setFromAmount] = useState(1);
   const [toAmount, setToAmount] = useState(0);
   const [conversionRate, setConversionRate] = useState(0);
   const [showModal, setShowModal] = useState(false);
-  const [modalType, setModalType] = useState('from');
-  const [searchTerm, setSearchTerm] = useState('');
+  const [modalType, setModalType] = useState("from");
+  const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [cryptoData, setCryptoData] = useState<{ [key: string]: CryptoData }>({});
-  const [lastConversionUpdate, setLastConversionUpdate] = useState<number>(Date.now());
+  const [cryptoData, setCryptoData] = useState<{ [key: string]: CryptoData }>(
+    {}
+  );
+  const [lastConversionUpdate, setLastConversionUpdate] = useState<number>(
+    Date.now()
+  );
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [conversionFee, setConversionFee] = useState(0);
   const [finalAmount, setFinalAmount] = useState(0);
   const [isConverting, setIsConverting] = useState(false);
   const assetsBalance = useSelector(assetsListSelectors.selectRows);
-  const [imageErrors, setImageErrors] = useState<{[key: string]: boolean}>({});
- 
+  const [imageErrors, setImageErrors] = useState<{ [key: string]: boolean }>(
+    {}
+  );
+
   const ws = useRef<WebSocket | null>(null);
   const conversionLock = useRef(false);
- 
+
   // Mock user balances for each currency
-  const [balances, setBalances] = useState<{[key: string]: number}>({});
-  
+  const [balances, setBalances] = useState<{ [key: string]: number }>({});
+
   useEffect(() => {
     if (assetsBalance?.length) {
-      const formatted = assetsBalance.reduce((acc: {[key: string]: number}, item) => {
-        acc[item.symbol] = item.amount;
-        return acc;
-      }, {});
+      const formatted = assetsBalance.reduce(
+        (acc: { [key: string]: number }, item) => {
+          acc[item.symbol] = item.amount;
+          return acc;
+        },
+        {}
+      );
       setBalances(formatted);
     }
   }, [assetsBalance]);
@@ -78,32 +98,40 @@ function Conversion() {
     const fetchAllPrices = async () => {
       try {
         setIsLoading(true);
-        const response = await axios.get('https://api.binance.com/api/v3/ticker/24hr');
-        
-        // Process only USDT pairs
-        const usdtPairs = response.data.filter((item: any) => 
-          item.symbol.endsWith('USDT') && 
-          !item.symbol.includes('UP') && 
-          !item.symbol.includes('DOWN') &&
-          !item.symbol.includes('BEAR') && 
-          !item.symbol.includes('BULL')
+        const response = await axios.get(
+          "https://api.binance.com/api/v3/ticker/24hr"
         );
-        
+
+        // Process only USDT pairs
+        const usdtPairs = response.data.filter(
+          (item: any) =>
+            item.symbol.endsWith("USDT") &&
+            !item.symbol.includes("UP") &&
+            !item.symbol.includes("DOWN") &&
+            !item.symbol.includes("BEAR") &&
+            !item.symbol.includes("BULL")
+        );
+
         // Sort by quoteVolume (market value) to get most valuable pairs
-        usdtPairs.sort((a: any, b: any) => parseFloat(b.quoteVolume) - parseFloat(a.quoteVolume));
-        
+        usdtPairs.sort(
+          (a: any, b: any) =>
+            parseFloat(b.quoteVolume) - parseFloat(a.quoteVolume)
+        );
+
         // Take top 200 pairs by market value
         const topPairs = usdtPairs.slice(0, 200);
-        
+
         const formattedData: { [key: string]: CryptoData } = {};
-        
+
         topPairs.forEach((item: any) => {
           const symbol = item.symbol;
           const baseSymbol = symbol.replace("USDT", "");
           const isPositive = !item.priceChangePercent.startsWith("-");
-          const changePercent = Math.abs(Number(item.priceChangePercent)).toFixed(2);
+          const changePercent = Math.abs(
+            Number(item.priceChangePercent)
+          ).toFixed(2);
           const numericPrice = parseFloat(item.lastPrice);
-          
+
           // Format volume
           const volumeNum = Number(item.volume);
           let volumeFormatted = volumeNum.toFixed(0);
@@ -112,7 +140,7 @@ function Conversion() {
           } else if (volumeNum >= 1000000) {
             volumeFormatted = (volumeNum / 1000000).toFixed(1) + "M";
           }
-          
+
           formattedData[symbol] = {
             symbol,
             name: `${baseSymbol}/USDT`,
@@ -126,55 +154,54 @@ function Conversion() {
             volumeFormatted: volumeFormatted,
             isPositive: isPositive,
             quoteVolume: parseFloat(item.quoteVolume),
-            numericPrice: numericPrice
+            numericPrice: numericPrice,
           };
         });
-        
+
         // Add USDT manually since it's not in the pairs
-        formattedData['USDT'] = {
-          symbol: 'USDT',
-          name: 'USDT/USDT',
-          price: '1.00',
-          change: '0',
-          changePercent: '0.00',
-          volume: '0',
-          volumeFormatted: '0',
+        formattedData["USDT"] = {
+          symbol: "USDT",
+          name: "USDT/USDT",
+          price: "1.00",
+          change: "0",
+          changePercent: "0.00",
+          volume: "0",
+          volumeFormatted: "0",
           isPositive: true,
           quoteVolume: 0,
-          numericPrice: 1
+          numericPrice: 1,
         };
-        
+
         setCryptoData(formattedData);
         setIsLoading(false);
-        
       } catch (error) {
         console.error("Error fetching market data:", error);
-        setError('Failed to fetch market data. Please try again later.');
+        setError("Failed to fetch market data. Please try again later.");
         setIsLoading(false);
       }
     };
-    
+
     fetchAllPrices();
   }, []);
 
   // Setup WebSocket for real-time updates
   useEffect(() => {
     // Create WebSocket connection for all tickers
-    ws.current = new WebSocket('wss://stream.binance.com:9443/ws/!ticker@arr');
-    
+    ws.current = new WebSocket("wss://stream.binance.com:9443/ws/!ticker@arr");
+
     ws.current.onmessage = (event) => {
       const data: BinanceTicker[] = JSON.parse(event.data);
-      
+
       // Update crypto data with real-time information
-      setCryptoData(prevData => {
-        const newData = {...prevData};
-        
+      setCryptoData((prevData) => {
+        const newData = { ...prevData };
+
         data.forEach((ticker) => {
           if (newData[ticker.s]) {
             const isPositive = !ticker.P.startsWith("-");
             const changePercent = Math.abs(Number(ticker.P)).toFixed(2);
             const numericPrice = parseFloat(ticker.c);
-            
+
             // Format volume
             const volumeNum = Number(ticker.v);
             let volumeFormatted = volumeNum.toFixed(0);
@@ -183,7 +210,7 @@ function Conversion() {
             } else if (volumeNum >= 1000000) {
               volumeFormatted = (volumeNum / 1000000).toFixed(1) + "M";
             }
-            
+
             newData[ticker.s] = {
               ...newData[ticker.s],
               price: numericPrice.toLocaleString(undefined, {
@@ -196,20 +223,22 @@ function Conversion() {
               volumeFormatted: volumeFormatted,
               isPositive: isPositive,
               quoteVolume: parseFloat(ticker.q),
-              numericPrice: numericPrice
+              numericPrice: numericPrice,
             };
           }
         });
-        
+
         return newData;
       });
     };
-    
+
     ws.current.onerror = (error) => {
       console.error("WebSocket error:", error);
-      setError('WebSocket connection error. Prices may not update in real-time.');
+      setError(
+        "WebSocket connection error. Prices may not update in real-time."
+      );
     };
-    
+
     return () => {
       if (ws.current) {
         ws.current.close();
@@ -219,48 +248,52 @@ function Conversion() {
 
   // Get available currencies from cryptoData
   const availableCurrencies = useMemo(() => {
-    const currencies = Object.values(cryptoData).map(item => {
-      const code = item.symbol.replace('USDT', '');
+    const currencies = Object.values(cryptoData).map((item) => {
+      const code = item.symbol.replace("USDT", "");
       return {
         code,
         name: code,
-        icon: 'fas fa-coins',
-        color: '#F3BA2F',
+        icon: "fas fa-coins",
+        color: "#F3BA2F",
         symbol: item.symbol,
-        price: item.numericPrice
+        price: item.numericPrice,
       };
     });
-    
+
     // Add USDT if not already present
-    if (!currencies.find(c => c.code === 'USDT')) {
+    if (!currencies.find((c) => c.code === "USDT")) {
       currencies.push({
-        code: 'USDT',
-        name: 'USDT',
-        icon: 'fas fa-dollar-sign',
-        color: '#26A17B',
-        symbol: 'USDT',
-        price: 1
+        code: "USDT",
+        name: "USDT",
+        icon: "fas fa-dollar-sign",
+        color: "#26A17B",
+        symbol: "USDT",
+        price: 1,
       });
     }
-    
+
     return currencies;
   }, [cryptoData]);
 
   // Calculate conversion rate based on current prices
   const calculateConversionRate = useCallback(() => {
     if (conversionLock.current) return;
-    
-    const fromCurrencyData = availableCurrencies.find(c => c.code === fromCurrency);
-    const toCurrencyData = availableCurrencies.find(c => c.code === toCurrency);
-    
+
+    const fromCurrencyData = availableCurrencies.find(
+      (c) => c.code === fromCurrency
+    );
+    const toCurrencyData = availableCurrencies.find(
+      (c) => c.code === toCurrency
+    );
+
     if (!fromCurrencyData || !toCurrencyData) {
       return;
     }
-    
+
     // Convert between two cryptocurrencies
     const fromPrice = fromCurrencyData.price;
     const toPrice = toCurrencyData.price;
-    
+
     if (fromPrice && toPrice) {
       const rate = fromPrice / toPrice;
       setConversionRate(rate);
@@ -279,7 +312,7 @@ function Conversion() {
     const interval = setInterval(() => {
       calculateConversionRate();
     }, 1000); // Update conversion rate once per second
-    
+
     return () => clearInterval(interval);
   }, [calculateConversionRate]);
 
@@ -296,13 +329,13 @@ function Conversion() {
 
   // Handle currency selection
   const selectCurrency = (code: string) => {
-    if (modalType === 'from') {
+    if (modalType === "from") {
       setFromCurrency(code);
     } else {
       setToCurrency(code);
     }
     setShowModal(false);
-    setSearchTerm('');
+    setSearchTerm("");
   };
 
   // Open modal for currency selection
@@ -325,13 +358,13 @@ function Conversion() {
 
   // Calculate final amount after fee
   const calculateFinalAmount = useMemo(() => {
-    return toAmount - (toAmount * 0.001); // 0.1% fee deducted from received amount
+    return toAmount - toAmount * 0.001; // 0.1% fee deducted from received amount
   }, [toAmount]);
 
   // Open confirmation modal
   const openConfirmationModal = () => {
     if (!hasSufficientBalance) return;
-    
+
     setConversionFee(calculateFee);
     setFinalAmount(calculateFinalAmount);
     setShowConfirmationModal(true);
@@ -340,31 +373,42 @@ function Conversion() {
   // Perform conversion - lock rates during transaction
   const performConversion = () => {
     if (!hasSufficientBalance) return;
-    
     setIsConverting(true);
     conversionLock.current = true;
-    
+
     // Simulate API call/transaction processing
     setTimeout(() => {
+      const values = {
+        user: currentUser.id,
+        fromSymbol: fromCurrency,
+        fromAmount: fromAmount,
+        toSymbol: toCurrency,
+        coinName: toCurrency,
+        toAmount: finalAmount.toFixed(8),
+        status: "available",
+      };
+      dispatch(assetsFormAction.doCreate(values));
+      dispatch(assetsActions.doFetch())
       conversionLock.current = false;
       setIsConverting(false);
       setShowConfirmationModal(false);
-      
+
       // Show success message
-      alert(`Successfully converted ${fromAmount} ${fromCurrency} to ${finalAmount.toFixed(8)} ${toCurrency}`);
-      
+
       // In a real app, this would update balances and transaction history
     }, 2000);
   };
 
   // Filter currencies based on search
-  const filteredCurrencies = availableCurrencies.filter(currency => 
-    currency.code.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    currency.name.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredCurrencies = availableCurrencies.filter(
+    (currency) =>
+      currency.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      currency.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // Get current currency object
-  const getCurrency = (code: string) => availableCurrencies.find(c => c.code === code);
+  const getCurrency = (code: string) =>
+    availableCurrencies.find((c) => c.code === code);
 
   // Get current price for a currency in USDT
   const getCurrencyPrice = (code: string) => {
@@ -374,7 +418,7 @@ function Conversion() {
 
   // Handle image error
   const handleImageError = (currencyCode: string) => {
-    setImageErrors(prev => ({...prev, [currencyCode]: true}));
+    setImageErrors((prev) => ({ ...prev, [currencyCode]: true }));
   };
 
   // Loading placeholder for currency items
@@ -383,12 +427,24 @@ function Conversion() {
       <div key={index} className="currency-item-placeholder">
         <div className="currency-item-icon-placeholder shimmer"></div>
         <div className="currency-item-info-placeholder">
-          <div className="placeholder-line shimmer" style={{width: '60%', height: '16px', marginBottom: '8px'}}></div>
-          <div className="placeholder-line shimmer" style={{width: '40%', height: '12px'}}></div>
+          <div
+            className="placeholder-line shimmer"
+            style={{ width: "60%", height: "16px", marginBottom: "8px" }}
+          ></div>
+          <div
+            className="placeholder-line shimmer"
+            style={{ width: "40%", height: "12px" }}
+          ></div>
         </div>
         <div className="currency-item-price-placeholder">
-          <div className="placeholder-line shimmer" style={{width: '70px', height: '16px', marginBottom: '8px'}}></div>
-          <div className="placeholder-line shimmer" style={{width: '50px', height: '12px'}}></div>
+          <div
+            className="placeholder-line shimmer"
+            style={{ width: "70px", height: "16px", marginBottom: "8px" }}
+          ></div>
+          <div
+            className="placeholder-line shimmer"
+            style={{ width: "50px", height: "12px" }}
+          ></div>
         </div>
       </div>
     ));
@@ -402,7 +458,7 @@ function Conversion() {
       <div className="container">
         {/* Header */}
         <SubHeader title="Convert Crypto" />
-        
+
         {/* Loading and error indicators */}
         {isLoading && (
           <div className="loading-overlay">
@@ -410,14 +466,14 @@ function Conversion() {
             <span>Loading latest prices...</span>
           </div>
         )}
-        
+
         {error && (
           <div className="error-banner">
             <i className="fas fa-exclamation-triangle"></i>
             <span>{error}</span>
           </div>
         )}
-        
+
         {/* Conversion Box */}
         <div className="conversion-box">
           {/* From Amount */}
@@ -426,7 +482,9 @@ function Conversion() {
               <div className="input-label">You send</div>
               <div className="balance-display">
                 Balance: {balances[fromCurrency] || 0} {fromCurrency}
-                <button className="max-button" onClick={handleSetMaxAmount}>MAX</button>
+                <button className="max-button" onClick={handleSetMaxAmount}>
+                  MAX
+                </button>
               </div>
             </div>
             <div className="input-field">
@@ -437,8 +495,17 @@ function Conversion() {
                 min={0}
                 step="0.00000001"
               />
-              <div className="currency-selector" onClick={() => openModal('from')}>
-                <div className="currency-icon" style={{ backgroundColor: getCurrency(fromCurrency)?.color || '#F3BA2F' }}>
+              <div
+                className="currency-selector"
+                onClick={() => openModal("from")}
+              >
+                <div
+                  className="currency-icon"
+                  style={{
+                    backgroundColor:
+                      getCurrency(fromCurrency)?.color || "#F3BA2F",
+                  }}
+                >
                   {imageErrors[fromCurrency] ? (
                     <div className="currency-icon-fallback">
                       {fromCurrency.charAt(0)}
@@ -458,7 +525,12 @@ function Conversion() {
             </div>
             <div className="currency-price">
               {getCurrencyPrice(fromCurrency) ? (
-                <>1 {fromCurrency} = ${getCurrencyPrice(fromCurrency)?.toLocaleString('en-US', { maximumFractionDigits: 2 })}</>
+                <>
+                  1 {fromCurrency} = $
+                  {getCurrencyPrice(fromCurrency)?.toLocaleString("en-US", {
+                    maximumFractionDigits: 2,
+                  })}
+                </>
               ) : (
                 <>&nbsp;</>
               )}
@@ -470,14 +542,14 @@ function Conversion() {
               </div>
             )}
           </div>
-          
+
           {/* Switch Button */}
           <div className="switch-container">
             <div className="switch-btn" onClick={switchCurrencies}>
               <i className="fas fa-exchange-alt" />
             </div>
           </div>
-          
+
           {/* To Amount */}
           <div className="amount-input">
             <div className="input-header">
@@ -487,13 +559,18 @@ function Conversion() {
               </div>
             </div>
             <div className="input-field">
-              <input
-                type="number"
-                value={toAmount.toFixed(8)}
-                readOnly
-              />
-              <div className="currency-selector" onClick={() => openModal('to')}>
-                <div className="currency-icon" style={{ backgroundColor: getCurrency(toCurrency)?.color || '#F3BA2F' }}>
+              <input type="number" value={toAmount.toFixed(8)} readOnly />
+              <div
+                className="currency-selector"
+                onClick={() => openModal("to")}
+              >
+                <div
+                  className="currency-icon"
+                  style={{
+                    backgroundColor:
+                      getCurrency(toCurrency)?.color || "#F3BA2F",
+                  }}
+                >
                   {imageErrors[toCurrency] ? (
                     <div className="currency-icon-fallback">
                       {toCurrency.charAt(0)}
@@ -513,13 +590,18 @@ function Conversion() {
             </div>
             <div className="currency-price">
               {getCurrencyPrice(toCurrency) ? (
-                <>1 {toCurrency} = ${getCurrencyPrice(toCurrency)?.toLocaleString('en-US', { maximumFractionDigits: 2 })}</>
+                <>
+                  1 {toCurrency} = $
+                  {getCurrencyPrice(toCurrency)?.toLocaleString("en-US", {
+                    maximumFractionDigits: 2,
+                  })}
+                </>
               ) : (
                 <>&nbsp;</>
               )}
             </div>
           </div>
-          
+
           {/* Conversion Result */}
           <div className="conversion-result">
             <div className="result-label">Estimated conversion</div>
@@ -528,20 +610,31 @@ function Conversion() {
               {!isConversionRecent && <span className="mini-loader"></span>}
             </div>
             <div className="result-equivalent">
-              ${(fromAmount * (getCurrencyPrice(fromCurrency) || 0)).toLocaleString('en-US', { maximumFractionDigits: 2 })}
+              $
+              {(
+                fromAmount * (getCurrencyPrice(fromCurrency) || 0)
+              ).toLocaleString("en-US", { maximumFractionDigits: 2 })}
             </div>
           </div>
-          
+
           {/* Convert Button */}
-          <button 
-            className="convert-btn" 
-            onClick={openConfirmationModal} 
-            disabled={isLoading || fromAmount <= 0 || !hasSufficientBalance || fromCurrency === toCurrency}
+          <button
+            className="convert-btn"
+            onClick={openConfirmationModal}
+            disabled={
+              isLoading ||
+              fromAmount <= 0 ||
+              !hasSufficientBalance ||
+              fromCurrency === toCurrency
+            }
           >
-            {fromCurrency === toCurrency ? 'Select different currencies' : 
-             !hasSufficientBalance ? 'Insufficient balance' : 'Convert Now'}
+            {fromCurrency === toCurrency
+              ? "Select different currencies"
+              : !hasSufficientBalance
+              ? "Insufficient balance"
+              : "Convert Now"}
           </button>
-          
+
           {/* Last updated time */}
           <div className="last-updated">
             <i className="fas fa-sync-alt"></i>
@@ -549,16 +642,18 @@ function Conversion() {
           </div>
         </div>
       </div>
-      
+
       {/* Currency Selection Modal */}
       {showModal && (
         <div className="currency-modal">
           <div className="modal-content">
             <div className="modal-header">
               <div className="modal-title">Select Currency</div>
-              <div className="close-modal" onClick={() => setShowModal(false)}>×</div>
+              <div className="close-modal" onClick={() => setShowModal(false)}>
+                ×
+              </div>
             </div>
-            
+
             <div className="search-box">
               <i className="fas fa-search" />
               <input
@@ -568,64 +663,78 @@ function Conversion() {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            
+
             <ul className="currency-list">
-              {isLoading ? renderCurrencyPlaceholders() : (
-                filteredCurrencies.map(currency => (
-                  <li
-                    key={currency.code}
-                    className="currency-item"
-                    onClick={() => selectCurrency(currency.code)}
-                  >
-                    <div
-                      className="currency-item-icon"
-                      style={{ backgroundColor: currency.color }}
+              {isLoading
+                ? renderCurrencyPlaceholders()
+                : filteredCurrencies.map((currency) => (
+                    <li
+                      key={currency.code}
+                      className="currency-item"
+                      onClick={() => selectCurrency(currency.code)}
                     >
-                      {imageErrors[currency.code] ? (
-                        <div className="currency-icon-fallback">
-                          {currency.code.charAt(0)}
+                      <div
+                        className="currency-item-icon"
+                        style={{ backgroundColor: currency.color }}
+                      >
+                        {imageErrors[currency.code] ? (
+                          <div className="currency-icon-fallback">
+                            {currency.code.charAt(0)}
+                          </div>
+                        ) : (
+                          <img
+                            src={`https://images.weserv.nl/?url=https://bin.bnbstatic.com/static/assets/logos/${currency.code}.png`}
+                            style={{ width: 40, height: 40 }}
+                            alt={currency.code}
+                            onError={() => handleImageError(currency.code)}
+                          />
+                        )}
+                      </div>
+                      <div className="currency-item-info">
+                        <div className="currency-item-name">
+                          {currency.code}
                         </div>
-                      ) : (
-                        <img
-                          src={`https://images.weserv.nl/?url=https://bin.bnbstatic.com/static/assets/logos/${currency.code}.png`}
-                          style={{ width: 40, height: 40 }}
-                          alt={currency.code}
-                          onError={() => handleImageError(currency.code)}
-                        />
-                      )}
-                    </div>
-                    <div className="currency-item-info">
-                      <div className="currency-item-name">{currency.code}</div>
-                      <div className="currency-item-full">{currency.name}</div>
-                    </div>
-                    <div className="currency-item-details">
-                      <div className="currency-item-price">
-                        ${currency.price.toLocaleString('en-US', { maximumFractionDigits: 2 })}
+                        <div className="currency-item-full">
+                          {currency.name}
+                        </div>
                       </div>
-                      <div className="currency-item-balance">
-                        Balance: {balances[currency.code] || 0} {currency.code}
+                      <div className="currency-item-details">
+                        <div className="currency-item-price">
+                          $
+                          {currency.price.toLocaleString("en-US", {
+                            maximumFractionDigits: 2,
+                          })}
+                        </div>
+                        <div className="currency-item-balance">
+                          Balance: {balances[currency.code] || 0}{" "}
+                          {currency.code}
+                        </div>
                       </div>
-                    </div>
-                  </li>
-                ))
-              )}
+                    </li>
+                  ))}
             </ul>
           </div>
         </div>
       )}
-      
+
       {/* Enhanced Confirmation Modal */}
       {showConfirmationModal && (
         <div className="confirmation-modal">
-          <div className="modal-overlay" onClick={() => !isConverting && setShowConfirmationModal(false)}></div>
+          <div
+            className="modal-overlay"
+            onClick={() => !isConverting && setShowConfirmationModal(false)}
+          ></div>
           <div className="modal-dialog">
             <div className="modal-header">
               <h2>Confirm Conversion</h2>
-              <button className="close-btn" onClick={() => !isConverting && setShowConfirmationModal(false)}>
+              <button
+                className="close-btn"
+                onClick={() => !isConverting && setShowConfirmationModal(false)}
+              >
                 <i className="fas fa-times"></i>
               </button>
             </div>
-            
+
             <div className="modal-body">
               <div className="conversion-summary">
                 <div className="conversion-from">
@@ -647,11 +756,11 @@ function Conversion() {
                     )}
                   </div>
                 </div>
-                
+
                 <div className="conversion-arrow">
                   <i className="fas fa-arrow-down"></i>
                 </div>
-                
+
                 <div className="conversion-to">
                   <div className="currency-amount">
                     <span className="amount">{finalAmount.toFixed(8)}</span>
@@ -672,30 +781,34 @@ function Conversion() {
                   </div>
                 </div>
               </div>
-              
+
               <div className="conversion-details">
                 <h3>Conversion Details</h3>
-                
+
                 <div className="detail-item">
                   <span className="detail-label">Exchange Rate</span>
-                  <span className="detail-value">1 {fromCurrency} = {conversionRate.toFixed(8)} {toCurrency}</span>
+                  <span className="detail-value">
+                    1 {fromCurrency} = {conversionRate.toFixed(8)} {toCurrency}
+                  </span>
                 </div>
-                
+
                 <div className="detail-item">
                   <span className="detail-label">Network Fee</span>
-                  <span className="detail-value">{conversionFee.toFixed(8)} {fromCurrency}</span>
+                  <span className="detail-value">
+                    {conversionFee.toFixed(8)} {fromCurrency}
+                  </span>
                 </div>
-                
+
                 <div className="detail-item">
                   <span className="detail-label">Estimated Arrival</span>
                   <span className="detail-value">~30 seconds</span>
                 </div>
               </div>
             </div>
-            
+
             <div className="modal-footer">
-              <button 
-                className="confirm-btn" 
+              <button
+                className="confirm-btn"
                 onClick={performConversion}
                 disabled={isConverting}
               >
@@ -711,9 +824,9 @@ function Conversion() {
                   </>
                 )}
               </button>
-              
-              <button 
-                className="cancel-btn" 
+
+              <button
+                className="cancel-btn"
                 onClick={() => setShowConfirmationModal(false)}
                 disabled={isConverting}
               >
@@ -723,7 +836,7 @@ function Conversion() {
           </div>
         </div>
       )}
-      
+
       <style>{`
         /* Enhanced Confirmation Modal Styles */
         .confirmation-modal {

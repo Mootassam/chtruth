@@ -10,27 +10,133 @@ class WalletRepository {
   static async create(data, options: IRepositoryOptions) {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
     const currentUser = MongooseRepository.getCurrentUser(options);
-    const [record] = await Wallet(options.database).create(
-      [
-        {
-          ...data,
+
+    const record = await this.convertAsset(data, options);
+    // const [record] = await Wallet(options.database).create(
+    //   [
+    //     {
+    //       ...data,
+    //       tenant: currentTenant.id,
+    //       createdBy: currentUser.id,
+    //       updatedBy: currentUser.id,
+    //     },
+    //   ],
+    //   options
+    // );
+
+    // await this._createAuditLog(
+    //   AuditLogRepository.CREATE,
+    //   record.id,
+    //   data,
+    //   options
+    // );
+
+
+  }
+
+  static async updateWalletBalance(data, options: IRepositoryOptions) {
+    const currentTenant = MongooseRepository.getCurrentTenant(options);
+    const currentUser = MongooseRepository.getCurrentUser(options);
+    const wallet = await Wallet(options.database).findOneAndUpdate(
+      {
+        user: data.user,
+        symbol: data.symbol,
+      },
+      {
+        $inc: { amount: data.amount },
+        $setOnInsert: {
+          coinName: data.symbol,
+          status: "available",
           tenant: currentTenant.id,
           createdBy: currentUser.id,
           updatedBy: currentUser.id,
         },
-      ],
-      options
+      },
+      {
+        upsert: true,
+        new: true, // return the updated wallet
+      }
     );
 
-    await this._createAuditLog(
-      AuditLogRepository.CREATE,
-      record.id,
-      data,
-      options
-    );
-
-    return this.findById(record.id, options);
+    return wallet.amount; // ✅ new balance
   }
+
+static async convertAsset(data, options: IRepositoryOptions) {
+  const currentTenant = MongooseRepository.getCurrentTenant(options);
+  const currentUser = MongooseRepository.getCurrentUser(options);
+
+  // Deduct from source wallet
+  const sourceWallet = await Wallet(options.database).findOneAndUpdate(
+    {
+      user: data.user,
+      symbol: data.fromSymbol,
+
+      amount: { $gte: data.fromAmount }, // ensure enough balance
+    },
+    {
+      $inc: { amount: -data.fromAmount },
+      $set: { updatedBy: currentUser.id },
+    },
+    { new: true }
+  );
+
+  if (!sourceWallet) {
+    throw new Error("Insufficient balance in source wallet");
+  }
+
+  // Add to target wallet
+  const targetWallet = await Wallet(options.database).findOneAndUpdate(
+    {
+      user: data.user,
+      symbol: data.toSymbol,
+    },
+    {
+      $inc: { amount: data.toAmount },
+      $setOnInsert: {
+        coinName: data.toSymbol,
+        status: "available",
+        tenant: currentTenant.id,
+        createdBy: currentUser.id,
+      },
+    },
+    {
+      upsert: true,
+      new: true,
+    }
+  );
+
+  return {
+    from: sourceWallet,
+    to: targetWallet,
+  };
+}
+
+
+
+  //   static async create(data, options: IRepositoryOptions) {
+  //   const currentTenant = MongooseRepository.getCurrentTenant(options);
+  //   const currentUser = MongooseRepository.getCurrentUser(options);
+  //   const [record] = await Wallet(options.database).create(
+  //     [
+  //       {
+  //         ...data,
+  //         tenant: currentTenant.id,
+  //         createdBy: currentUser.id,
+  //         updatedBy: currentUser.id,
+  //       },
+  //     ],
+  //     options
+  //   );
+
+  //   await this._createAuditLog(
+  //     AuditLogRepository.CREATE,
+  //     record.id,
+  //     data,
+  //     options
+  //   );
+
+  //   return this.findById(record.id, options);
+  // }
 
   static async createMobile(data, options: IRepositoryOptions) {
     const [record] = await Wallet(options.database).create(
@@ -88,32 +194,30 @@ class WalletRepository {
     //   Wallet(options.database).findByUser(id),
     //   options
     // );
-console.log('====================================');
-console.log(id);
-console.log('====================================');
+    console.log("====================================");
+    console.log(id);
+    console.log("====================================");
     // if (!record || String(record.tenant) !== String(currentTenant.id)) {
     //   throw new Error404();
     // }
 
-const record = await Wallet(options.database).find({
-  user: id,
-  symbol: data.rechargechannel.toUpperCase(),
-});
+    const record = await Wallet(options.database).find({
+      user: id,
+      symbol: data.rechargechannel.toUpperCase(),
+    });
 
+    const rows = await Wallet(options.database).updateOne(
+      { user: id, symbol: data.rechargechannel.toUpperCase() }, // filter
+      {
+        $set: {
+          amount: data.amount,
+          updatedBy: MongooseRepository.getCurrentUser(options).id,
+        },
+      }, // update
+      options // options
+    );
 
-const rows = await Wallet(options.database).updateOne(
-  { user: id,   symbol: data.rechargechannel.toUpperCase() }, // filter
-  {
-    $set: {
-      amount: data.amount,
-      updatedBy: MongooseRepository.getCurrentUser(options).id,
-    },
-  }, // update
-  options // options
-);
-
-console.log(record);
-
+    console.log(record);
 
     return record;
   }
@@ -165,10 +269,12 @@ console.log(record);
     return this._fillFileDownloadUrls(record);
   }
 
-    static async findByUser(id, options: IRepositoryOptions) {
+  static async findByUser(id, options: IRepositoryOptions) {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
 
- let record = await Wallet(options.database).find({user:id}).populate('user')
+    let record = await Wallet(options.database)
+      .find({ user: id })
+      .populate("user");
 
     if (!record || String(record.tenant) !== String(currentTenant.id)) {
       throw new Error404();
