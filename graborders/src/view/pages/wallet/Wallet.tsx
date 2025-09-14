@@ -229,11 +229,7 @@ function MyWallet() {
                   src={`https://images.weserv.nl/?url=https://bin.bnbstatic.com/static/assets/logos/${asset.symbol}.png`}
                   style={{ width: 35, height: 35 }}
                   alt={asset.symbol}
-                  onError={(e) => {
-                    (
-                      e.target as HTMLImageElement
-                    ).src = `https://via.placeholder.com/40/3a3a3a/ffffff?text=${asset.symbol.charAt(0)}`;
-                  }}
+                
                 />
               </div>
               <div className="wallet-asset-details">

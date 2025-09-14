@@ -5759,6 +5759,7 @@
       text-decoration: none;
       color: var(--text-primary);
       border: 1px solid transparent;
+    gap:10px;
   }
 
   .currency-option:hover {
@@ -5877,6 +5878,7 @@
       background: rgba(243, 186, 47, 0.1);
       border-radius: 12px;
       border: 1px solid var(--accent-color);
+      gap:10px
   }
 
   /* Divider */

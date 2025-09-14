@@ -77,7 +77,9 @@ const loading = assetLoading || Transactionloading ;
         if (type === 'convert_in') {
             config.typeText = relatedAsset ? `Converted from ${relatedAsset}` : 'Conversion';
         }
-
+   if (type === 'convert_out') {
+            config.typeText = relatedAsset ? `Converted to ${relatedAsset}` : 'Conversion';
+        }
         // Handle withdrawal specifically
         if (type === 'withdraw') {
             config.icon = 'fa-arrow-up';

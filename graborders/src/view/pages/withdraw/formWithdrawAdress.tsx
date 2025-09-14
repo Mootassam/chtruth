@@ -12,9 +12,9 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import FieldFormItem from "src/shared/form/FieldFormItem";
 import actions from "src/modules/user/form/userFormActions";
 const currencyType = [
-  { icon: "fab fa-bitcoin", label: "BTC (Bitcoin)", id: "btc" },
-  { icon: "fab fa-ethereum", label: "ETH (Ethereum)", id: "eth" },
-  { icon: "fas fa-chevron-right", label: "USDT (Tether)", id: "tether" },
+  { icon: "fab fa-bitcoin", label: "BTC (Bitcoin)", id: "btc",symbol:"BTC" },
+  { icon: "fab fa-ethereum", label: "ETH (Ethereum)", id: "eth", symbol:"ETH" },
+  { icon: "fas fa-chevron-right", label: "USDT (Tether)", id: "tether", symbol:"USDT" },
 ];
 
 const schema = yup.object().shape({
@@ -64,9 +64,12 @@ function formWithdrawAdress() {
 
         {selected.map((item) => (
           <div className="selected-currency">
-            <div className="currency-icon">
-              <i className={item.icon} />
-            </div>
+                  <img
+                  src={`https://images.weserv.nl/?url=https://bin.bnbstatic.com/static/assets/logos/${item.symbol}.png`}
+                  style={{ width: 26, height: 26 }}
+                  alt={item.symbol}
+                
+                />
             <div className="currency-name">{item.label}</div>
           </div>
         ))}
