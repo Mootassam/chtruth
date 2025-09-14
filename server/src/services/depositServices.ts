@@ -2,8 +2,9 @@ import Error400 from "../errors/Error400";
 import MongooseRepository from "../database/repositories/mongooseRepository";
 import { IServiceOptions } from "./IServiceOptions";
 import DepositRepository from "../database/repositories/depositRepository";
+import WalletRepository from "../database/repositories/assetsRepository";
 
-export default class kycServicess {
+export default class DepositServicess {
   options: IServiceOptions;
 
   constructor(options) {
@@ -51,6 +52,37 @@ export default class kycServicess {
       await MongooseRepository.commitTransaction(session);
 
       return record;
+    } catch (error) {
+      await MongooseRepository.abortTransaction(session);
+
+      MongooseRepository.handleUniqueFieldError(
+        error,
+        this.options.language,
+        "vip"
+      );
+
+      throw error;
+    }
+  }
+
+  async updateStatus(id, data, io) {
+    const session = await MongooseRepository.createSession(
+      this.options.database
+    );
+
+    try {
+      console.log(data.status);
+
+      const record = await DepositRepository.updateStatus(id, data, io, {
+        ...this.options,
+        session,
+      });
+      await WalletRepository.updateAmount(data.createdBy.id, data, {
+        ...this.options,
+        session,
+      });
+
+      await MongooseRepository.commitTransaction(session);
     } catch (error) {
       await MongooseRepository.abortTransaction(session);
 

@@ -11,32 +11,69 @@ export default (database) => {
 
   const TransactionSchema = new Schema(
     {
-      status: {
-        type: String,
-        enum: ["pending", "canceled", "success"],
-        default: "enable",
-      },
-      amount: {
-        type: String,
-      },
+      // ✅ Deposit, Withdraw, Convert
       type: {
         type: String,
-        enum: ["withdraw", "deposit"],
-        default: "withdraw",
+        enum: ["deposit", "withdraw", "convert_in", "convert_out"],
+        required: true,
       },
+
+      // ✅ Which coin (BTC, ETH, USDT, etc.)
+      wallet: {
+        type: Schema.Types.ObjectId,
+        ref: "wallet",
+        required: true,
+      },
+      asset: {
+        type: String,
+        required: true,
+      },
+
+      // ✅ If conversion, show the "other side" of the trade
+      relatedAsset: {
+        type: String,
+      },
+
+      // ✅ Amount in that asset
+      amount: {
+        type: Number,
+        required: true,
+      },
+
+      // ✅ Status of transaction
+      status: {
+        type: String,
+        enum: ["pending", "canceled", "completed"],
+        default: "pending",
+      },
+
+      // ✅ Direction (in/out) helps for UI
+      direction: {
+        type: String,
+        enum: ["in", "out"],
+        required: true,
+      },
+
+      // ✅ User reference
       user: {
         type: Schema.Types.ObjectId,
         ref: "user",
         required: true,
       },
-      datetransaction: {
+
+      // ✅ Date of transaction
+      dateTransaction: {
         type: Date,
+        default: Date.now,
       },
+
+      // ✅ Multi-tenancy (if you need it)
       tenant: {
         type: Schema.Types.ObjectId,
         ref: "tenant",
         required: true,
       },
+
       createdBy: {
         type: Schema.Types.ObjectId,
         ref: "user",
@@ -45,6 +82,7 @@ export default (database) => {
         type: Schema.Types.ObjectId,
         ref: "user",
       },
+
       importHash: { type: String },
     },
     { timestamps: true }

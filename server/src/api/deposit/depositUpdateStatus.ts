@@ -1,21 +1,19 @@
-import PermissionChecker from '../../services/user/permissionChecker';
-import ApiResponseHandler from '../apiResponseHandler';
-import Permissions from '../../security/permissions';
+import PermissionChecker from "../../services/user/permissionChecker";
+import ApiResponseHandler from "../apiResponseHandler";
+import Permissions from "../../security/permissions";
 import DepositeServices from "../../services/depositServices";
 
-
-export default async (req, res, next) => {
+export default (io) => async (req, res, next) => {
   try {
     // new PermissionChecker(req).validateHas(
     //   Permissions.values.categoryRead,
     // );
 
-    const payload = await new DepositeServices(req).findById(
+    const payload = await new DepositeServices(req).updateStatus(
       req.params.id,
+      req.body.data,
+      io
     );
-
-
-    
 
     await ApiResponseHandler.success(req, res, payload);
   } catch (error) {

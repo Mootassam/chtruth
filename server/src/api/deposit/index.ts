@@ -4,6 +4,10 @@ export default (app, io) => {
     `/tenant/:tenantId/deposit/:id`,
     require("./depositUpdate").default(io)
   );
+  app.put(
+    `/tenant/:tenantId/depositupdate/:id`,
+    require("./depositUpdateStatus").default(io)
+  );
   app.post(
     `/tenant/:tenantId/deposit/import`,
     require("./depositImport").default

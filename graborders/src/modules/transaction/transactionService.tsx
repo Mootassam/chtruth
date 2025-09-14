@@ -107,7 +107,7 @@ export default class TransactionService {
     const tenantId = AuthCurrentTenant.get();
 
     const response = await authAxios.get(
-      `/tenant/${tenantId}/transaction`,
+      `/tenant/${tenantId}/transaction/byUser`,
       {
         params,
       },

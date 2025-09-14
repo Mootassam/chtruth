@@ -16,6 +16,7 @@ const privateRoutes = [
     permissionRequired: permissions.userRead,
     exact: true,
   },
+  
   {
     path: '/profile',
     loader: () => import('src/view/auth/ProfileFormPage'),
@@ -129,6 +130,48 @@ const privateRoutes = [
     permissionRequired: permissions.categoryRead,
     exact: true,
   },
+
+
+   // product routes
+  {
+    path: '/transaction',
+    loader: () =>
+      import('src/view/transaction/list/TransactionListPage'),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+
+  {
+    path: '/transaction/new',
+    loader: () =>
+      import('src/view/transaction/form/TransactionFormPage'),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+  {
+    path: '/transaction/importer',
+    loader: () =>
+      import(
+        'src/view/transaction/importer/TransactionImporterPage'
+      ),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+  {
+    path: '/transaction/:id/edit',
+    loader: () =>
+      import('src/view/transaction/form/TransactionFormPage'),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+  {
+    path: '/transaction/:id',
+    loader: () =>
+      import('src/view/transaction/view/TransactionViewPage'),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+
 
   // record routes
   {

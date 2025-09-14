@@ -318,8 +318,6 @@ const en = {
       },
     },
 
-  
-
     spot: {
       menu: 'Spot Orders',
       list: {
@@ -376,127 +374,124 @@ const en = {
       },
     },
 
-
     futures: {
-  menu: 'Futures Orders',
-  list: {
-    title: 'Futures Order List',
-  },
-  fields: {
-    id: 'ID',
-    futuresAmount: 'Futures Amount',
-    contractDuration: 'Contract Duration',
-    status: 'Futures Status',
-    direction: 'Direction',
-    openPositionPrice: 'Open Position Price',
-    openPositionTime: 'Open Position Time',
-    closePositionPrice: 'Close Position Price',
-    closePositionTime: 'Close Position Time',
-    profitAndLoss: 'Profit And Loss Amount',
-    leverage: 'Leverage',
-    control: 'Control',
-    operate: 'Operate',
-    auditor: 'Auditor',
-    createdBy: 'Created By',
-    updatedBy: 'Updated By',
-    tenant: 'Tenant',
-    importHash: 'Import Hash',
-    profitAndLossAmount	:"profitAndLossAmount",
-   
-  },
-  enumerators: {
-    direction: {
-      BUY: 'Buy',
-      SELL: 'Sell',
+      menu: 'Futures Orders',
+      list: {
+        title: 'Futures Order List',
+      },
+      fields: {
+        id: 'ID',
+        futuresAmount: 'Futures Amount',
+        contractDuration: 'Contract Duration',
+        status: 'Futures Status',
+        direction: 'Direction',
+        openPositionPrice: 'Open Position Price',
+        openPositionTime: 'Open Position Time',
+        closePositionPrice: 'Close Position Price',
+        closePositionTime: 'Close Position Time',
+        profitAndLoss: 'Profit And Loss Amount',
+        leverage: 'Leverage',
+        control: 'Control',
+        operate: 'Operate',
+        auditor: 'Auditor',
+        createdBy: 'Created By',
+        updatedBy: 'Updated By',
+        tenant: 'Tenant',
+        importHash: 'Import Hash',
+        profitAndLossAmount: 'profitAndLossAmount',
+      },
+      enumerators: {
+        direction: {
+          BUY: 'Buy',
+          SELL: 'Sell',
+        },
+        control: {
+          normal: 'Normal',
+          loss: 'Loss',
+          profit: 'Profit',
+        },
+        operate: {
+          high: 'High',
+          low: 'Low',
+        },
+        status: {
+          open: 'Open',
+          closed: 'Closed',
+        },
+      },
+      new: {
+        title: 'Add New Futures Order',
+      },
+      edit: {
+        title: 'Edit Futures Order',
+      },
+      view: {
+        title: 'Futures Order Details',
+      },
+      create: {
+        success: 'Futures order successfully saved',
+      },
+      update: {
+        success: 'Futures order successfully updated',
+      },
+      destroy: {
+        success: 'Futures order successfully deleted',
+      },
+      destroyAll: {
+        success: 'Futures orders successfully deleted',
+      },
     },
-    control: {
-      normal: 'Normal',
-      loss: 'Loss',
-      profit: 'Profit',
+    stacking: {
+      menu: 'Staking Orders',
+      list: {
+        title: 'Staking Order List',
+      },
+      fields: {
+        id: 'ID',
+        user: 'User',
+        currency: 'Currency',
+        amount: 'Amount',
+        apy: 'APY (%)',
+        minimumStake: 'Minimum Stake',
+        unstakingPeriod: 'Unstaking Period (days)',
+        status: 'Status',
+        startDate: 'Start Date',
+        endDate: 'End Date',
+        earnedRewards: 'Earned Rewards',
+        createdBy: 'Created By',
+        updatedBy: 'Updated By',
+        tenant: 'Tenant',
+        importHash: 'Import Hash',
+      },
+      enumerators: {
+        status: {
+          active: 'Active',
+          completed: 'Completed',
+          cancelled: 'Cancelled',
+        },
+      },
+      new: {
+        title: 'Add New Staking Order',
+      },
+      edit: {
+        title: 'Edit Staking Order',
+      },
+      view: {
+        title: 'Staking Order Details',
+      },
+      create: {
+        success: 'Staking order successfully saved',
+      },
+      update: {
+        success: 'Staking order successfully updated',
+      },
+      destroy: {
+        success: 'Staking order successfully deleted',
+      },
+      destroyAll: {
+        success: 'Staking orders successfully deleted',
+      },
     },
-    operate: {
-      high: 'High',
-      low: 'Low',
-    },
-    status: {
-      open: 'Open',
-      closed: 'Closed',
-    },
-  },
-  new: {
-    title: 'Add New Futures Order',
-  },
-  edit: {
-    title: 'Edit Futures Order',
-  },
-  view: {
-    title: 'Futures Order Details',
-  },
-  create: {
-    success: 'Futures order successfully saved',
-  },
-  update: {
-    success: 'Futures order successfully updated',
-  },
-  destroy: {
-    success: 'Futures order successfully deleted',
-  },
-  destroyAll: {
-    success: 'Futures orders successfully deleted',
-  },
-},
-stacking: {
-  menu: 'Staking Orders',
-  list: {
-    title: 'Staking Order List',
-  },
-  fields: {
-    id: 'ID',
-    user: 'User',
-    currency: 'Currency',
-    amount: 'Amount',
-    apy: 'APY (%)',
-    minimumStake: 'Minimum Stake',
-    unstakingPeriod: 'Unstaking Period (days)',
-    status: 'Status',
-    startDate: 'Start Date',
-    endDate: 'End Date',
-    earnedRewards: 'Earned Rewards',
-    createdBy: 'Created By',
-    updatedBy: 'Updated By',
-    tenant: 'Tenant',
-    importHash: 'Import Hash',
-  },
-  enumerators: {
-    status: {
-      active: 'Active',
-      completed: 'Completed',
-      cancelled: 'Cancelled',
-    },
-  },
-  new: {
-    title: 'Add New Staking Order',
-  },
-  edit: {
-    title: 'Edit Staking Order',
-  },
-  view: {
-    title: 'Staking Order Details',
-  },
-  create: {
-    success: 'Staking order successfully saved',
-  },
-  update: {
-    success: 'Staking order successfully updated',
-  },
-  destroy: {
-    success: 'Staking order successfully deleted',
-  },
-  destroyAll: {
-    success: 'Staking orders successfully deleted',
-  },
-},
-
 
     vip: {
       menu: 'Vip',
@@ -2480,6 +2475,10 @@ stacking: {
         updatedAt: 'Updated at',
         createdAtRange: 'Created at',
         datetransaction: 'Date transaction',
+        asset: 'Asset',
+        relatedAsset: 'RelatedAsset',
+        direction: 'Direction',
+        dateTransaction: 'Date Transaction',
       },
       enumerators: {
         status: {
@@ -2490,6 +2489,12 @@ stacking: {
         type: {
           withdraw: 'withdraw',
           deposit: 'deposit',
+          convert_in: 'Convert In',
+          convert_out: 'Convert Out',
+        },
+        direction: {
+          in: 'in',
+          out: 'out',
         },
       },
       placeholders: {},

@@ -20,18 +20,10 @@ export default class TransactionService {
 
     try {
 
-      // await this.checkpermission(this.options)
-      await this.checkSolde(data, { ...this.options });
+      // // await this.checkpermission(this.options)
+      // await this.checkSolde(data, { ...this.options });
 
-      const values = {
-        status: data.status,
-        date: data.date,
-        user: data.user,
-        type: data.type,
-        amount: data.amount,
-        vip: data.vip,
-      };
-      const record = await TransactionRepository.create(values, {
+      const record = await TransactionRepository.create(data, {
         ...this.options,
         session,
       });

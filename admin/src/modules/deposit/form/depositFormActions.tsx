@@ -100,6 +100,32 @@ const vipFormActions = {
       });
     }
   },
+
+   Update: (id, values,) => async (dispatch, getState) => {
+    try {
+      dispatch({
+        type: vipFormActions.UPDATE_STARTED,
+      });
+
+      await vipService.updateStatus(id, values);
+
+      dispatch({
+        type: vipFormActions.UPDATE_SUCCESS,
+      });
+
+      Message.success(
+        i18n('entities.deposit.update.success'),
+      );
+
+      getHistory().push('/deposit');
+    } catch (error) {
+      Errors.handle(error);
+
+      dispatch({
+        type: vipFormActions.UPDATE_ERROR,
+      });
+    }
+  },
 };
 
 export default vipFormActions;

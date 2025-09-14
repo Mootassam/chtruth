@@ -1,7 +1,7 @@
 import PermissionChecker from "../../services/user/permissionChecker";
 import ApiResponseHandler from "../apiResponseHandler";
 import Permissions from "../../security/permissions";
-import DepesoitServices from "../../services/depoistServices";
+import DepositeServices from "../../services/depositServices";
 
 export default (io) => async (req, res, next) => {
   try {
@@ -9,7 +9,7 @@ export default (io) => async (req, res, next) => {
     //   Permissions.values.categoryRead,
     // );
 
-    const payload = await new DepesoitServices(req).update(
+    const payload = await new DepositeServices(req).update(
       req.params.id,
       req.body.data,
       io

@@ -17,6 +17,21 @@ export default class depositService {
     return response.data;
   }
 
+  static async updateStatus(id, data) {
+    const body = {
+      id,
+      data,
+    };
+
+    const tenantId = AuthCurrentTenant.get();
+    const response = await authAxios.put(
+      `/tenant/${tenantId}/depositupdate/${id}`,
+      body,
+    );
+
+    return response.data;
+  }
+
   static async destroyAll(ids) {
     const params = {
       ids,

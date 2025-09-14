@@ -7,7 +7,6 @@ import FileRepository from "./fileRepository";
 import Wallet from "../models/wallet";
 
 class WalletRepository {
-  
   static async create(data, options: IRepositoryOptions) {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
     const currentUser = MongooseRepository.getCurrentUser(options);
@@ -33,10 +32,7 @@ class WalletRepository {
     return this.findById(record.id, options);
   }
 
-
-   static async createMobile(data, options: IRepositoryOptions) {
-
-
+  static async createMobile(data, options: IRepositoryOptions) {
     const [record] = await Wallet(options.database).create(
       [
         {
@@ -56,7 +52,7 @@ class WalletRepository {
       options
     );
 
-    return this.findByIdMobile(record.id,data.tenant, options);
+    return this.findByIdMobile(record.id, data.tenant, options);
   }
   static async update(id, data, options: IRepositoryOptions) {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
@@ -70,7 +66,6 @@ class WalletRepository {
       throw new Error404();
     }
 
-
     await Wallet(options.database).updateOne(
       { _id: id },
       {
@@ -83,6 +78,42 @@ class WalletRepository {
     await this._createAuditLog(AuditLogRepository.UPDATE, id, data, options);
 
     record = await this.findById(id, options);
+
+    return record;
+  }
+
+  static async updateAmount(id, data, options: IRepositoryOptions) {
+    const currentTenant = MongooseRepository.getCurrentTenant(options);
+    // let record = await MongooseRepository.wrapWithSessionIfExists(
+    //   Wallet(options.database).findByUser(id),
+    //   options
+    // );
+console.log('====================================');
+console.log(id);
+console.log('====================================');
+    // if (!record || String(record.tenant) !== String(currentTenant.id)) {
+    //   throw new Error404();
+    // }
+
+const record = await Wallet(options.database).find({
+  user: id,
+  symbol: data.rechargechannel.toUpperCase(),
+});
+
+
+const rows = await Wallet(options.database).updateOne(
+  { user: id,   symbol: data.rechargechannel.toUpperCase() }, // filter
+  {
+    $set: {
+      amount: data.amount,
+      updatedBy: MongooseRepository.getCurrentUser(options).id,
+    },
+  }, // update
+  options // options
+);
+
+console.log(record);
+
 
     return record;
   }
@@ -134,8 +165,19 @@ class WalletRepository {
     return this._fillFileDownloadUrls(record);
   }
 
-    static async findByIdMobile(id, tenenant, options: IRepositoryOptions) {
+    static async findByUser(id, options: IRepositoryOptions) {
+    const currentTenant = MongooseRepository.getCurrentTenant(options);
 
+ let record = await Wallet(options.database).find({user:id}).populate('user')
+
+    if (!record || String(record.tenant) !== String(currentTenant.id)) {
+      throw new Error404();
+    }
+
+    return this._fillFileDownloadUrls(record);
+  }
+
+  static async findByIdMobile(id, tenenant, options: IRepositoryOptions) {
     let record = await MongooseRepository.wrapWithSessionIfExists(
       Wallet(options.database)
         .findById(id)
@@ -242,7 +284,7 @@ class WalletRepository {
 
     return records.map((record) => ({
       id: record.id,
-      label: record.title,
+      label: record.coinName,
     }));
   }
 
@@ -270,11 +312,14 @@ class WalletRepository {
     return output;
   }
 
-  static async createDefaultAssets(newUser,tenantId, options: IRepositoryOptions) {
-console.log("createDefaultAssets",tenantId);
+  static async createDefaultAssets(
+    newUser,
+    tenantId,
+    options: IRepositoryOptions
+  ) {
+    console.log("createDefaultAssets", tenantId);
 
-    
-const defaultWallets = [
+    const defaultWallets = [
       {
         user: newUser.id,
         symbol: "BTC",
@@ -283,7 +328,7 @@ const defaultWallets = [
         status: "available",
         tenant: tenantId,
         createdBy: newUser,
-        updatedBy: newUser
+        updatedBy: newUser,
       },
       {
         user: newUser.id,
@@ -293,7 +338,7 @@ const defaultWallets = [
         status: "available",
         tenant: tenantId,
         createdBy: newUser,
-        updatedBy: newUser
+        updatedBy: newUser,
       },
       {
         user: newUser.id,
@@ -303,7 +348,7 @@ const defaultWallets = [
         status: "available",
         tenant: tenantId,
         createdBy: newUser,
-        updatedBy: newUser
+        updatedBy: newUser,
       },
       {
         user: newUser.id,
@@ -313,7 +358,7 @@ const defaultWallets = [
         status: "available",
         tenant: tenantId,
         createdBy: newUser,
-        updatedBy: newUser
+        updatedBy: newUser,
       },
       {
         user: newUser.id,
@@ -323,8 +368,8 @@ const defaultWallets = [
         status: "available",
         tenant: tenantId,
         createdBy: newUser,
-        updatedBy: newUser
-      }
+        updatedBy: newUser,
+      },
     ];
 
     const createdWallets = [];
@@ -332,7 +377,7 @@ const defaultWallets = [
       const asset = await this.createMobile(WalletData, options);
       createdWallets.push(asset);
     }
-    
+
     return createdWallets;
   }
 }

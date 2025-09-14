@@ -1,322 +1,548 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import SubHeader from "src/view/shared/Header/SubHeader";
 import { useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import assetsActions from 'src/modules/assets/view/assetsViewActions';
+import assetsSelectors from 'src/modules/assets/view/assetsViewSelectors';
+import transactionListSelector from "src/modules/transaction/list/transactionListSelectors";
+import transactionListActions from "src/modules/transaction/list/transactionListActions";
 
-function assetsDetail() {
+function AssetsDetail() {
     const { id } = useParams<{ id: string }>();
-  
-  return (
-    <div className="container">
-      <SubHeader title="Detail" />
-      <div className="asset-card">
-        <img
-          src={`https://images.weserv.nl/?url=https://bin.bnbstatic.com/static/assets/logos/${id}.png`}
-          style={{ width: 60, height: 60 }}
-          alt={id}
-          loading="lazy"
-        />
-        <div className="asset-name">Bitcoin</div>
-        <div className="asset-amount">0.2543 {id}</div>
-        <div className="asset-value">$10,245.67</div>
-        <div className="price-change">
-          <i className="fas fa-arrow-up" />
-          +1.46% Today
+    const dispatch = useDispatch();
+    const details = useSelector(assetsSelectors.selectRecord);
+    const transaction = useSelector(transactionListSelector.selectRows);
+    const [filterModalOpen, setFilterModalOpen] = useState(false);
+    const [filters, setFilters] = useState({
+        status: 'all',
+        type: 'all',
+        direction: 'all',
+        startDate: '',
+        endDate: ''
+    });
+    useEffect(() => {
+        dispatch(assetsActions.doFind(id));
+      dispatch(transactionListActions.doFetch(id));
+
+    }, [dispatch, id,]);
+
+    // Filter transactions based on active filters
+    const filteredTransactions = transaction.filter(tx => {
+        if (filters.status !== 'all' && tx.status !== filters.status) return false;
+        if (filters.type !== 'all' && tx.type !== filters.type) return false;
+        if (filters.direction !== 'all' && tx.direction !== filters.direction) return false;
+        if (filters.startDate && new Date(tx.dateTransaction) < new Date(filters.startDate)) return false;
+        if (filters.endDate && new Date(tx.dateTransaction) > new Date(filters.endDate)) return false;
+        return true;
+    });
+
+    // Format date function
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        const now = new Date();
+        const isToday = date.toDateString() === now.toDateString();
+        const isYesterday = new Date(now.setDate(now.getDate() - 1)).toDateString() === date.toDateString();
+        
+        if (isToday) return `Today, ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+        if (isYesterday) return `Yesterday, ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+        
+        return date.toLocaleDateString([], { 
+            month: 'short', 
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    };
+
+    // Get transaction icon and type text
+    const getTransactionConfig = (type, direction, relatedAsset) => {
+        const config = {
+            icon: 'fa-exchange-alt',
+            typeText: 'Transaction',
+            iconClass: 'swap'
+        };
+
+        if (type === 'deposit') {
+            config.icon = direction === 'in' ? 'fa-arrow-down' : 'fa-arrow-up';
+            config.typeText = direction === 'in' ? 'Deposit' : 'Withdrawal';
+            config.iconClass = direction === 'in' ? 'deposit' : 'withdraw';
+        }
+
+        if (type === 'convert_in') {
+            config.typeText = relatedAsset ? `Converted from ${relatedAsset}` : 'Conversion';
+        }
+
+        // Handle withdrawal specifically
+        if (type === 'withdraw') {
+            config.icon = 'fa-arrow-up';
+            config.typeText = 'Withdrawal';
+            config.iconClass = 'withdraw';
+        }
+
+        return config;
+    };
+
+    const resetFilters = () => {
+        setFilters({
+            status: 'all',
+            type: 'all',
+            direction: 'all',
+            startDate: '',
+            endDate: ''
+        });
+    };
+
+    return (
+        <div className="container">
+            <SubHeader title="Detail" />
+            <div className="asset-card">
+                <img
+                    src={`https://images.weserv.nl/?url=https://bin.bnbstatic.com/static/assets/logos/${details?.symbol}.png`}
+                    style={{ width: 60, height: 60 }}
+                    alt={details?.symbol}
+                    loading="lazy"
+                />
+                <div className="asset-name">{details?.coinName}</div>
+                <div className="asset-amount">{details?.amount} {details?.symbol}</div>
+                {/* <div className="asset-value">$10,245.67</div>
+                <div className="price-change">
+                    <i className="fas fa-arrow-up" />
+                    +1.46% Today
+                </div> */}
+            </div>
+            
+            <div className="transaction-history">
+                <div className="section-header">
+                    <div className="section-title">Transaction History</div>
+                    <div className="filter-button" onClick={() => setFilterModalOpen(true)}>
+                        <i className="fas fa-filter" />
+                        Filter
+                    </div>
+                </div>
+                <div className="transaction-list">
+                    {filteredTransactions?.length > 0 ? (
+                        filteredTransactions.map((tx) => {
+                            const { icon, typeText, iconClass } = getTransactionConfig(
+                                tx.type,
+                                tx.direction,
+                                tx.relatedAsset
+                            );
+                            
+                            return (
+                                <div className="transaction-item" key={tx._id}>
+                                    <div className="transaction-info">
+                                        <div className={`transaction-icon ${iconClass}`}>
+                                            <i className={`fas ${icon}`} />
+                                        </div>
+                                        <div className="transaction-details">
+                                            <div className="transaction-type">{typeText}</div>
+                                            <div className="transaction-date">
+                                                {formatDate(tx.dateTransaction)}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="transaction-amount">
+                                        <div className="transaction-value">
+                                            {tx.direction === 'in' ? '+' : '-'}
+                                            {tx.amount} {tx.asset}
+                                        </div>
+                                        <div className={`transaction-status ${
+                                            tx.status === 'pending' ? 'pending' : ''
+                                        }`}>
+                                            {tx.status.charAt(0).toUpperCase() + tx.status.slice(1)}
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        })
+                    ) : (
+                        <div className="no-transactions">No transactions found</div>
+                    )}
+                </div>
+            </div>
+
+            {/* Filter Modal */}
+            {filterModalOpen && (
+                <div className="modal-backdrop" onClick={() => setFilterModalOpen(false)}>
+                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h3>Filter Transactions</h3>
+                            <span className="close" onClick={() => setFilterModalOpen(false)}>&times;</span>
+                        </div>
+                        <div className="modal-body">
+                            <div className="filter-group">
+                                <label>Status</label>
+                                <select 
+                                    value={filters.status} 
+                                    onChange={(e) => setFilters({...filters, status: e.target.value})}
+                                >
+                                    <option value="all">All Statuses</option>
+                                    <option value="success">Completed</option>
+                                    <option value="pending">Pending</option>
+                                </select>
+                            </div>
+                            <div className="filter-group">
+                                <label>Type</label>
+                                <select 
+                                    value={filters.type} 
+                                    onChange={(e) => setFilters({...filters, type: e.target.value})}
+                                >
+                                    <option value="all">All Types</option>
+                                    <option value="deposit">Deposit</option>
+                                    <option value="withdraw">Withdrawal</option>
+                                    <option value="convert_in">Conversion</option>
+                                </select>
+                            </div>
+                            <div className="filter-group">
+                                <label>Direction</label>
+                                <select 
+                                    value={filters.direction} 
+                                    onChange={(e) => setFilters({...filters, direction: e.target.value})}
+                                >
+                                    <option value="all">Both Directions</option>
+                                    <option value="in">Incoming</option>
+                                    <option value="out">Outgoing</option>
+                                </select>
+                            </div>
+                            <div className="filter-group">
+                                <label>Start Date</label>
+                                <input 
+                                    type="date" 
+                                    value={filters.startDate}
+                                    onChange={(e) => setFilters({...filters, startDate: e.target.value})}
+                                />
+                            </div>
+                            <div className="filter-group">
+                                <label>End Date</label>
+                                <input 
+                                    type="date" 
+                                    value={filters.endDate}
+                                    onChange={(e) => setFilters({...filters, endDate: e.target.value})}
+                                />
+                            </div>
+                        </div>
+                        <div className="modal-footer">
+                            <button className="btn-secondary" onClick={resetFilters}>Reset Filters</button>
+                            <button className="btn-primary" onClick={() => setFilterModalOpen(false)}>Apply Filters</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            <div className="action-buttons">
+                <div className="action-button deposit-button">Deposit</div>
+                <div className="action-button withdraw-button">Withdraw</div>
+            </div>
+
+            <style>{`
+                .container {
+                    max-width: 400px;
+                    margin: 0 auto;
+                    position: relative;
+                }
+                
+                .asset-card {
+                    background: linear-gradient(135deg, #2A2A2A 0%, #1A1A1A 100%);
+                    border-radius: 16px;
+                    padding: 20px;
+                    margin-bottom: 25px;
+                    text-align: center;
+                }
+                
+                .asset-name {
+                    font-size: 22px;
+                    font-weight: bold;
+                    margin-bottom: 5px;
+                }
+                
+                .asset-amount {
+                    font-size: 28px;
+                    font-weight: bold;
+                    margin-bottom: 5px;
+                }
+                
+                .asset-value {
+                    color: #AAAAAA;
+                    font-size: 16px;
+                    margin-bottom: 15px;
+                }
+                
+                .price-change {
+                    color: #F3BA2F;
+                    font-size: 14px;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    gap: 5px;
+                }
+                
+                .transaction-history {
+                    margin-bottom: 80px;
+                }
+                
+                .section-header {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 15px;
+                }
+                
+                .section-title {
+                    font-weight: bold;
+                    font-size: 18px;
+                }
+                
+                .filter-button {
+                    color: #CCCCCC;
+                    font-size: 14px;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    gap: 5px;
+                }
+                
+                .transaction-list {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 12px;
+                }
+                
+                .transaction-item {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    padding: 15px;
+                    background-color: #1A1A1A;
+                    border-radius: 12px;
+                    cursor: pointer;
+                    transition: background-color 0.2s ease;
+                }
+                
+                .transaction-item:hover {
+                    background-color: #2A2A2A;
+                }
+                
+                .transaction-info {
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                }
+                
+                .transaction-icon {
+                    width: 40px;
+                    height: 40px;
+                    border-radius: 50%;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    font-size: 16px;
+                }
+                
+                .transaction-icon.deposit {
+                    background-color: #00C076;
+                    color: #000;
+                }
+                
+                .transaction-icon.withdraw {
+                    background-color: #FF6838;
+                    color: #000;
+                }
+                
+                .transaction-icon.swap {
+                    background-color: #627EEA;
+                    color: #FFF;
+                }
+                
+                .transaction-details {
+                    display: flex;
+                    flex-direction: column;
+                }
+                
+                .transaction-type {
+                    font-weight: bold;
+                    margin-bottom: 4px;
+                }
+                
+                .transaction-date {
+                    color: #AAAAAA;
+                    font-size: 12px;
+                }
+                
+                .transaction-amount {
+                    text-align: right;
+                }
+                
+                .transaction-value {
+                    font-weight: bold;
+                    margin-bottom: 4px;
+                }
+                
+                .transaction-status {
+                    color: #2ff378;
+                    font-size: 12px;
+                }
+                
+                .transaction-status.pending {
+                    color: #F3BA2F;
+                }
+                
+                .no-transactions {
+                    text-align: center;
+                    padding: 30px;
+                    color: #AAAAAA;
+                    font-style: italic;
+                }
+                
+                .action-buttons {
+                    display: flex;
+                    gap: 15px;
+                    position: fixed;
+                
+                    left: 0;
+                    right: 0;
+                    max-width: 400px;
+                    margin: 0 auto;
+                
+                }
+                
+                .action-button {
+                    flex: 1;
+                    padding: 16px;
+                    border-radius: 12px;
+                    font-weight: bold;
+                    text-align: center;
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+                }
+                
+                .deposit-button {
+                    background-color: #F3BA2F;
+                    color: #000;
+                }
+                
+                .withdraw-button {
+                    background-color: #2A2A2A;
+                    color: #FFF;
+                    border: 1px solid #444;
+                }
+                
+                .action-button:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+                }
+                
+                /* Modal Styles */
+                .modal-backdrop {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background-color: rgba(0, 0, 0, 0.4);
+                    backdrop-filter: blur(15px);
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    z-index: 1000;
+                }
+                
+                .modal-content {
+                    background-color: #1A1A1A;
+                    border-radius: 16px;
+                    width: 90%;
+                    max-width: 400px;
+                    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+                    overflow: hidden;
+                    animation: modal-appear 0.3s ease;
+                }
+                
+                @keyframes modal-appear {
+                    from {
+                        opacity: 0;
+                        transform: translateY(-20px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+                
+                .modal-header {
+                    padding: 20px;
+                    border-bottom: 1px solid #2A2A2A;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                }
+                
+                .modal-header h3 {
+                    margin: 0;
+                    font-size: 18px;
+                }
+                
+                .close {
+                    font-size: 24px;
+                    cursor: pointer;
+                    color: #AAAAAA;
+                }
+                
+                .close:hover {
+                    color: #FFF;
+                }
+                
+                .modal-body {
+                    padding: 20px;
+                }
+                
+                .filter-group {
+                    margin-bottom: 15px;
+                }
+                
+                .filter-group label {
+                    display: block;
+                    margin-bottom: 5px;
+                    color: #CCCCCC;
+                    font-size: 14px;
+                }
+                
+                .filter-group select, .filter-group input {
+                    width: 100%;
+                    padding: 10px;
+                    border-radius: 8px;
+                    background-color: #2A2A2A;
+                    border: 1px solid #444;
+                    color: #FFF;
+                }
+                
+                .modal-footer {
+                    padding: 20px;
+                    border-top: 1px solid #2A2A2A;
+                    display: flex;
+                    justify-content: space-between;
+                    gap: 10px;
+                }
+                
+                .modal-footer button {
+                    flex: 1;
+                    padding: 12px;
+                    border-radius: 8px;
+                    font-weight: bold;
+                    cursor: pointer;
+                    border: none;
+                }
+                
+                .btn-secondary {
+                    background-color: #2A2A2A;
+                    color: #FFF;
+                }
+                
+                .btn-primary {
+                    background-color: #F3BA2F;
+                    color: #000;
+                }
+            `}</style>
         </div>
-      </div>
-      <div className="transaction-history">
-        <div className="section-header">
-          <div className="section-title">Transaction History</div>
-          <div className="filter-button">
-            <i className="fas fa-filter" />
-            Filter
-          </div>
-        </div>
-        <div className="transaction-list">
-          <div className="transaction-item">
-            <div className="transaction-info">
-              <div className="transaction-icon deposit">
-                <i className="fas fa-arrow-down" />
-              </div>
-              <div className="transaction-details">
-                <div className="transaction-type">Deposit</div>
-                <div className="transaction-date">Today, 10:23 AM</div>
-              </div>
-            </div>
-            <div className="transaction-amount">
-              <div className="transaction-value">+0.025 BTC</div>
-              <div className="transaction-status">Completed</div>
-            </div>
-          </div>
-          <div className="transaction-item">
-            <div className="transaction-info">
-              <div className="transaction-icon withdraw">
-                <i className="fas fa-arrow-up" />
-              </div>
-              <div className="transaction-details">
-                <div className="transaction-type">Withdrawal</div>
-                <div className="transaction-date">Yesterday, 2:45 PM</div>
-              </div>
-            </div>
-            <div className="transaction-amount">
-              <div className="transaction-value">-0.100 BTC</div>
-              <div className="transaction-status pending">Pending</div>
-            </div>
-          </div>
-          <div className="transaction-item">
-            <div className="transaction-info">
-              <div className="transaction-icon swap">
-                <i className="fas fa-exchange-alt" />
-              </div>
-              <div className="transaction-details">
-                <div className="transaction-type">Converted to ETH</div>
-                <div className="transaction-date">Oct 12, 3:20 PM</div>
-              </div>
-            </div>
-            <div className="transaction-amount">
-              <div className="transaction-value">-0.050 BTC</div>
-              <div className="transaction-status">Completed</div>
-            </div>
-          </div>
-          <div className="transaction-item">
-            <div className="transaction-info">
-              <div className="transaction-icon deposit">
-                <i className="fas fa-arrow-down" />
-              </div>
-              <div className="transaction-details">
-                <div className="transaction-type">Deposit</div>
-                <div className="transaction-date">Oct 10, 9:15 AM</div>
-              </div>
-            </div>
-            <div className="transaction-amount">
-              <div className="transaction-value">+0.1793 BTC</div>
-              <div className="transaction-status">Completed</div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="action-buttons">
-        <div className="action-button deposit-button">Deposit</div>
-        <div className="action-button withdraw-button">Withdraw</div>
-      </div>
-      <style>{` 
-        .asset-title {
-            font-size: 20px;
-            font-weight: bold;
-        }
-        
-        .search-icon {
-            color: #AAAAAA;
-            font-size: 20px;
-        }
-        
-        .asset-card {
-            background: linear-gradient(135deg, #2A2A2A 0%, #1A1A1A 100%);
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 25px;
-            text-align: center;
-        }
-        
-        .asset-icon {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 0 auto 15px;
-            font-size: 28px;
-            background-color: #F3BA2F;
-            color: #000;
-        }
-        
-        .asset-name {
-            font-size: 22px;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-        
-        .asset-amount {
-            font-size: 28px;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-        
-        .asset-value {
-            color: #AAAAAA;
-            font-size: 16px;
-            margin-bottom: 15px;
-        }
-        
-        .price-change {
-            color: #00C076;
-            font-size: 14px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 5px;
-        }
-        
-        .price-change.negative {
-            color: #FF6838;
-        }
-        
-        .transaction-history {
-            margin-bottom: 20px;
-        }
-        
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        
-        .section-title {
-            font-weight: bold;
-            font-size: 18px;
-        }
-        
-        .filter-button {
-            color: #CCCCCC;
-            font-size: 14px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        
-        .transaction-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        
-        .transaction-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px;
-            background-color: #1A1A1A;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: background-color 0.2s ease;
-        }
-        
-        .transaction-item:hover {
-            background-color: #2A2A2A;
-        }
-        
-        .transaction-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        
-        .transaction-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 16px;
-        }
-        
-        .transaction-icon.deposit {
-            background-color: #00C076;
-            color: #000;
-        }
-        
-        .transaction-icon.withdraw {
-            background-color: #FF6838;
-            color: #000;
-        }
-        
-        .transaction-icon.swap {
-            background-color: #627EEA;
-            color: #FFF;
-        }
-        
-        .transaction-details {
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .transaction-type {
-            font-weight: bold;
-            margin-bottom: 4px;
-        }
-        
-        .transaction-date {
-            color: #AAAAAA;
-            font-size: 12px;
-        }
-        
-        .transaction-amount {
-            text-align: right;
-        }
-        
-        .transaction-value {
-            font-weight: bold;
-            margin-bottom: 4px;
-        }
-        
-        .transaction-status {
-            color: #00C076;
-            font-size: 12px;
-        }
-        
-        .transaction-status.failed {
-            color: #FF6838;
-        }
-        
-        .transaction-status.pending {
-            color: #F3BA2F;
-        }
-        
-        .action-buttons {
-            display: flex;
-            gap: 15px;
-            position: fixed;
-            max-width: 400px;
-            margin: 0 auto;
-        }
-        
-        .action-button {
-            flex: 1;
-            padding: 16px;
-            border-radius: 12px;
-            font-weight: bold;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        
-        .deposit-button {
-            background-color: #00C076;
-            color: #000;
-        }
-        
-        .withdraw-button {
-            background-color: #2A2A2A;
-            color: #FFF;
-            border: 1px solid #444;
-        }
-        
-        .action-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-        }
-        
-        .no-transactions {
-            text-align: center;
-            padding: 30px;
-            color: #AAAAAA;
-            font-style: italic;
-        }`}</style>
-    </div>
-  );
+    );
 }
 
-export default assetsDetail;
+export default AssetsDetail;

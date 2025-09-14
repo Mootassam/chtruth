@@ -33,12 +33,12 @@ function DepositListTable(props) {
   const doOpenDestroyConfirmModal = (id) => setRecordIdToDestroy(id);
   const doCloseDestroyConfirmModal = () => setRecordIdToDestroy(null);
 
-  const onSubmit = (id, values, user) => {
+  const onSubmit = (row, values) => {
     const data = {
-      user: user,
+      ...row,
       status: values,
     };
-    dispatch(depositActions.doUpdate(id, data));
+    dispatch(depositActions.Update(row.id,data));
   };
 
   const doChangeSort = (field) => {
@@ -229,13 +229,13 @@ function DepositListTable(props) {
                       <div>
                         <button
                           className="btn-action edit"
-                          onClick={() => onSubmit(row.id, 'success', row.user.id)}
+                          onClick={() => onSubmit(row,'success')}
                         >
                           Pass
                         </button>
                         <button
                           className="btn-action delete"
-                          onClick={() => onSubmit(row.id, 'canceled', row.user.id)}
+                          onClick={() => onSubmit(row, 'canceled')}
                         >
                           Rejection
                         </button>

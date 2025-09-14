@@ -13,9 +13,9 @@ class TransactionRepository {
   static async create(data, options: IRepositoryOptions) {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
     const currentUser = MongooseRepository.getCurrentUser(options);
-    if (data.type === "withdraw") {
-      this.NewSolde(data, options);
-    }
+    console.log("====================================");
+    console.log(data);
+    console.log("====================================");
     const [record] = await Transaction(options.database).create(
       [
         {
@@ -122,8 +122,6 @@ class TransactionRepository {
     );
   }
 
-
-
   static async findById(id, options: IRepositoryOptions) {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
 
@@ -143,13 +141,22 @@ class TransactionRepository {
     options: IRepositoryOptions
   ) {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
+    const currentUser = MongooseRepository.getCurrentUser(options);
 
     let criteriaAnd: any = [];
 
     criteriaAnd.push({
       tenant: currentTenant.id,
     });
+   
 
+    //   criteriaAnd.push({
+    //     user: currentUser.id,
+    //   });
+
+    // criteriaAnd.push({
+    //     asset: filter,
+    //   });
     if (filter) {
       if (filter.id) {
         criteriaAnd.push({
@@ -220,8 +227,7 @@ class TransactionRepository {
       .find(criteria)
       .skip(skip)
       .limit(limitEscaped)
-      .sort(sort)
-      .populate("user");
+      .sort(sort);
 
     const count = await Transaction(options.database).countDocuments(criteria);
 
@@ -229,6 +235,7 @@ class TransactionRepository {
 
     return { rows, count };
   }
+
 
   static async findAndCountByUser(
     { filter, limit = 0, offset = 0, orderBy = "" },
@@ -239,26 +246,35 @@ class TransactionRepository {
 
     let criteriaAnd: any = [];
 
-    const search = JSON.parse(filter);
-
     criteriaAnd.push({
       tenant: currentTenant.id,
-      user: currentUser.id,
     });
+    if (filter) {
+      criteriaAnd.push({
+        wallet: filter,
+      });
+    }
 
-    if (search) {
-      if (search.id) {
+    //   criteriaAnd.push({
+    //     user: currentUser.id,
+    //   });
+
+    // criteriaAnd.push({
+    //     asset: filter,
+    //   });
+    if (filter) {
+      if (filter.id) {
         criteriaAnd.push({
           ["_id"]: MongooseQueryUtils.uuid(filter.id),
         });
       }
-      if (search.user) {
+      if (filter.user) {
         criteriaAnd.push({
           user: filter.user,
         });
       }
 
-      if (search.amount) {
+      if (filter.amount) {
         criteriaAnd.push({
           amount: {
             $regex: MongooseQueryUtils.escapeRegExp(filter.amount),
@@ -267,7 +283,7 @@ class TransactionRepository {
         });
       }
 
-      if (search.status) {
+      if (filter.status) {
         criteriaAnd.push({
           status: {
             $regex: MongooseQueryUtils.escapeRegExp(filter.status),
@@ -276,17 +292,17 @@ class TransactionRepository {
         });
       }
 
-      if (search.type) {
+      if (filter.type) {
         criteriaAnd.push({
           type: {
-            $regex: MongooseQueryUtils.escapeRegExp(search.type),
+            $regex: MongooseQueryUtils.escapeRegExp(filter.type),
             $options: "i",
           },
         });
       }
 
-      if (search.datetransaction) {
-        const [start, end] = search.datetransaction;
+      if (filter.datetransaction) {
+        const [start, end] = filter.datetransaction;
 
         if (start !== undefined && start !== null && start !== "") {
           criteriaAnd.push({
@@ -314,10 +330,9 @@ class TransactionRepository {
 
     let rows = await Transaction(options.database)
       .find(criteria)
-      // .skip(skip)
-      // .limit(limitEscaped)
-      .sort(sort)
-      .populate("user");
+      .skip(skip)
+      .limit(limitEscaped)
+      .sort(sort);
 
     const count = await Transaction(options.database).countDocuments(criteria);
 
@@ -325,6 +340,8 @@ class TransactionRepository {
 
     return { rows, count };
   }
+  
+
 
   static async findAllAutocomplete(search, limit, options: IRepositoryOptions) {
     const currentTenant = MongooseRepository.getCurrentTenant(options);

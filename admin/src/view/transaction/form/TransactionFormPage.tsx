@@ -5,23 +5,18 @@ import { i18n } from 'src/i18n';
 import actions from 'src/modules/transaction/form/transactionFormActions';
 import selectors from 'src/modules/transaction/form/transactionFormSelectors';
 import { getHistory } from 'src/modules/store';
-import CouponsForm from 'src/view/transaction/form/TransactionForm';
+import TransactionForm from 'src/view/transaction/form/TransactionForm';
 import ContentWrapper from 'src/view/layout/styles/ContentWrapper';
-import Breadcrumb from 'src/view/shared/Breadcrumb';
 import Spinner from 'src/view/shared/Spinner';
 import PageTitle from 'src/view/shared/styles/PageTitle';
 
-function TransactionFormPage(props) {
+function TransactionFormPage() {
   const [dispatched, setDispatched] = useState(false);
   const dispatch = useDispatch();
   const match = useRouteMatch();
 
-  const initLoading = useSelector(
-    selectors.selectInitLoading,
-  );
-  const saveLoading = useSelector(
-    selectors.selectSaveLoading,
-  );
+  const initLoading = useSelector(selectors.selectInitLoading);
+  const saveLoading = useSelector(selectors.selectSaveLoading);
   const record = useSelector(selectors.selectRecord);
 
   const isEditing = Boolean(match.params.id);
@@ -44,21 +39,13 @@ function TransactionFormPage(props) {
 
   return (
     <>
-      {/* <Breadcrumb
-        items={[
-          [i18n('dashboard.menu'), '/'],
-          [i18n('entities.transaction.menu'), '/transaction'],
-          [title],
-        ]}
-      /> */}
-
       <ContentWrapper>
         <PageTitle>{title}</PageTitle>
 
         {initLoading && <Spinner />}
 
         {dispatched && !initLoading && (
-          <CouponsForm
+          <TransactionForm
             saveLoading={saveLoading}
             initLoading={initLoading}
             record={record}

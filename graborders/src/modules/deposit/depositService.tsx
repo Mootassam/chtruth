@@ -17,6 +17,8 @@ export default class depositService {
     return response.data;
   }
 
+
+
   static async destroyAll(ids) {
     const params = {
       ids,

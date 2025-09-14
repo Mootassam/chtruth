@@ -5,6 +5,7 @@ import Error404 from "../../errors/Error404";
 import { IRepositoryOptions } from "./IRepositoryOptions";
 import FileRepository from "./fileRepository";
 import Deposit from "../models/deposit";
+import WalletRepository from "./assetsRepository";
 
 class DepositRepository {
   static async create(data, options: IRepositoryOptions) {
@@ -50,6 +51,7 @@ class DepositRepository {
       { _id: id },
       {
         ...data,
+        auditor: MongooseRepository.getCurrentUser(options).id,
         updatedBy: MongooseRepository.getCurrentUser(options).id,
       },
       options
@@ -60,6 +62,26 @@ class DepositRepository {
     record = await this.findById(id, options);
 
     return record;
+  }
+
+  static async updateStatus(id, data, io, options: IRepositoryOptions) {
+console.log('====================================');
+console.log(id);
+console.log('====================================');
+
+
+    await Deposit(options.database).updateOne(
+      { _id: id },
+      {
+        $set: {
+          status: data.status,
+          accepttime: new Date(), // ✅ store current time
+          auditor: MongooseRepository.getCurrentUser(options).id,
+          updatedBy: MongooseRepository.getCurrentUser(options).id,
+        },
+      },
+      options
+    );
   }
 
   static async destroy(id, options: IRepositoryOptions) {
