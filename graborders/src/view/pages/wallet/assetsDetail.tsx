@@ -11,6 +11,7 @@ function AssetsDetail() {
     const { id } = useParams<{ id: string }>();
     const dispatch = useDispatch();
     const details = useSelector(assetsSelectors.selectRecord);
+    const loading = useSelector(assetsSelectors.selectLoading)
     const transaction = useSelector(transactionListSelector.selectRows);
     const [filterModalOpen, setFilterModalOpen] = useState(false);
     const [filters, setFilters] = useState({
@@ -20,11 +21,14 @@ function AssetsDetail() {
         startDate: '',
         endDate: ''
     });
-    useEffect(() => {
-        dispatch(assetsActions.doFind(id));
-      dispatch(transactionListActions.doFetch(id));
 
-    }, [dispatch, id,]);
+
+    useEffect(() => {
+        Promise.all([
+            dispatch(assetsActions.doFind(id)),
+            dispatch(transactionListActions.doFetch(id))
+        ])
+    }, [dispatch, id]);
 
     // Filter transactions based on active filters
     const filteredTransactions = transaction.filter(tx => {
@@ -95,21 +99,26 @@ function AssetsDetail() {
     return (
         <div className="container">
             <SubHeader title="Detail" />
-            <div className="asset-card">
-                <img
-                    src={`https://images.weserv.nl/?url=https://bin.bnbstatic.com/static/assets/logos/${details?.symbol}.png`}
-                    style={{ width: 60, height: 60 }}
-                    alt={details?.symbol}
-                    loading="lazy"
-                />
-                <div className="asset-name">{details?.coinName}</div>
-                <div className="asset-amount">{details?.amount} {details?.symbol}</div>
-                {/* <div className="asset-value">$10,245.67</div>
-                <div className="price-change">
-                    <i className="fas fa-arrow-up" />
-                    +1.46% Today
-                </div> */}
-            </div>
+            
+            {/* Asset Card with Loading Placeholder */}
+            {loading ? (
+                <div className="asset-card-placeholder">
+                    <div className="shimmer-circle"></div>
+                    <div className="shimmer-line medium"></div>
+                    <div className="shimmer-line large"></div>
+                </div>
+            ) : (
+                <div className="asset-card">
+                    <img
+                        src={`https://images.weserv.nl/?url=https://bin.bnbstatic.com/static/assets/logos/${details?.symbol}.png`}
+                        style={{ width: 60, height: 60 }}
+                        alt={details?.symbol}
+                        loading="lazy"
+                    />
+                    <div className="asset-name">{details?.coinName}</div>
+                    <div className="asset-amount">{details?.amount} {details?.symbol}</div>
+                </div>
+            )}
             
             <div className="transaction-history">
                 <div className="section-header">
@@ -119,8 +128,27 @@ function AssetsDetail() {
                         Filter
                     </div>
                 </div>
+                
+                {/* Transaction List with Loading Placeholder */}
                 <div className="transaction-list">
-                    {filteredTransactions?.length > 0 ? (
+                    {loading ? (
+                        // Show 5 placeholder items while loading
+                        Array.from({ length: 5 }).map((_, index) => (
+                            <div className="transaction-item-placeholder" key={index}>
+                                <div className="transaction-info-placeholder">
+                                    <div className="shimmer-circle"></div>
+                                    <div className="transaction-details-placeholder">
+                                        <div className="shimmer-line medium"></div>
+                                        <div className="shimmer-line small"></div>
+                                    </div>
+                                </div>
+                                <div className="transaction-amount-placeholder">
+                                    <div className="shimmer-line medium"></div>
+                                    <div className="shimmer-line small"></div>
+                                </div>
+                            </div>
+                        ))
+                    ) : filteredTransactions?.length > 0 ? (
                         filteredTransactions.map((tx) => {
                             const { icon, typeText, iconClass } = getTransactionConfig(
                                 tx.type,
@@ -156,7 +184,14 @@ function AssetsDetail() {
                             );
                         })
                     ) : (
-                        <div className="no-transactions">No transactions found</div>
+                        <div className="no-transactions-container">
+                            <div className="no-transactions-icon">
+                                <i className="fas fa-file-invoice-dollar"></i>
+                            </div>
+                            <h3>No Transactions Yet</h3>
+                            <p>Your transaction history will appear here once you start trading.</p>
+                        
+                        </div>
                     )}
                 </div>
             </div>
@@ -235,6 +270,181 @@ function AssetsDetail() {
             </div>
 
             <style>{`
+                /* Shimmer animation for loading placeholders */
+                @keyframes shimmer {
+                    0% {
+                        background-position: -468px 0;
+                    }
+                    100% {
+                        background-position: 468px 0;
+                    }
+                }
+                
+                .shimmer {
+                    animation-duration: 1.5s;
+                    animation-fill-mode: forwards;
+                    animation-iteration-count: infinite;
+                    animation-name: shimmer;
+                    animation-timing-function: linear;
+                    background: #2A2A2A;
+                    background: linear-gradient(to right, #2A2A2A 8%, #333333 18%, #2A2A2A 33%);
+                    background-size: 800px 104px;
+                    position: relative;
+                    border-radius: 4px;
+                }
+                
+                .shimmer-circle {
+                    width: 60px;
+                    height: 60px;
+                    border-radius: 50%;
+                    margin: 0 auto 15px;
+                    background: #2A2A2A;
+                    background: linear-gradient(to right, #2A2A2A 8%, #333333 18%, #2A2A2A 33%);
+                    background-size: 800px 104px;
+                    animation: shimmer 1.5s infinite linear;
+                }
+                
+                .shimmer-line {
+                    height: 16px;
+                    margin: 8px auto;
+                    background: #2A2A2A;
+                    background: linear-gradient(to right, #2A2A2A 8%, #333333 18%, #2A2A2A 33%);
+                    background-size: 800px 104px;
+                    animation: shimmer 1.5s infinite linear;
+                    border-radius: 4px;
+                }
+                
+                .shimmer-line.small {
+                    width: 60%;
+                    height: 12px;
+                }
+                
+                .shimmer-line.medium {
+                    width: 70%;
+                }
+                
+                .shimmer-line.large {
+                    width: 80%;
+                    height: 24px;
+                }
+                
+                .asset-card-placeholder {
+                    background: linear-gradient(135deg, #2A2A2A 0%, #1A1A1A 100%);
+                    border-radius: 16px;
+                    padding: 20px;
+                    margin-bottom: 25px;
+                    text-align: center;
+                }
+                
+                .transaction-item-placeholder {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    padding: 15px;
+                    background-color: #1A1A1A;
+                    border-radius: 12px;
+                }
+                
+                .transaction-info-placeholder {
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                }
+                
+                .transaction-details-placeholder {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 8px;
+                }
+                
+                .transaction-amount-placeholder {
+                    text-align: right;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 8px;
+                }
+                
+                /* Enhanced No Transactions State */
+                .no-transactions-container {
+                    text-align: center;
+                    padding: 40px 20px;
+                    background: linear-gradient(135deg, #1A1A1A 0%, #2A2A2A 100%);
+                    border-radius: 16px;
+                    margin: 20px 0;
+                }
+                
+                .no-transactions-icon {
+                    font-size: 60px;
+                    color: #F3BA2F;
+                    margin-bottom: 20px;
+                    animation: pulse 2s infinite;
+                }
+                
+                .no-transactions-container h3 {
+                    font-size: 24px;
+                    margin-bottom: 10px;
+                    color: #FFFFFF;
+                }
+                
+                .no-transactions-container p {
+                    color: #AAAAAA;
+                    margin-bottom: 30px;
+                    line-height: 1.5;
+                    max-width: 300px;
+                    margin-left: auto;
+                    margin-right: auto;
+                }
+                
+                .no-transactions-actions {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 12px;
+                    max-width: 250px;
+                    margin: 0 auto;
+                }
+                
+                .no-transactions-actions .action-button {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 10px;
+                    padding: 12px 20px;
+                    border-radius: 12px;
+                    font-weight: bold;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                }
+                
+                .no-transactions-actions .deposit-button {
+                    background-color: #F3BA2F;
+                    color: #000000;
+                }
+                
+                .no-transactions-actions .trade-button {
+                    background-color: #627EEA;
+                    color: #FFFFFF;
+                }
+                
+                .no-transactions-actions .action-button:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+                }
+                
+                @keyframes pulse {
+                    0% {
+                        transform: scale(1);
+                        opacity: 1;
+                    }
+                    50% {
+                        transform: scale(1.05);
+                        opacity: 0.8;
+                    }
+                    100% {
+                        transform: scale(1);
+                        opacity: 1;
+                    }
+                }
+                
                 .container {
                     max-width: 400px;
                     margin: 0 auto;
@@ -339,7 +549,7 @@ function AssetsDetail() {
                 }
                 
                 .transaction-icon.deposit {
-                    background-color: #00C076;
+                    background-color: #F3BA2F;
                     color: #000;
                 }
                 
@@ -386,23 +596,16 @@ function AssetsDetail() {
                     color: #F3BA2F;
                 }
                 
-                .no-transactions {
-                    text-align: center;
-                    padding: 30px;
-                    color: #AAAAAA;
-                    font-style: italic;
-                }
-                
                 .action-buttons {
                     display: flex;
                     gap: 15px;
                     position: fixed;
-                
+                    bottom: 20px;
                     left: 0;
                     right: 0;
                     max-width: 400px;
                     margin: 0 auto;
-                
+                    padding: 0 15px;
                 }
                 
                 .action-button {
