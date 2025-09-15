@@ -10,8 +10,8 @@ if (getConfig().FILE_STORAGE_PROVIDER === 'aws') {
   FileStorage = require('./awsFileStorage').default;
 }
 
-if (getConfig().FILE_STORAGE_PROVIDER === '162.213.249.168') {
-  FileStorage = require('./162.213.249.168FileStorage').default;
+if (getConfig().FILE_STORAGE_PROVIDER === 'localhost') {
+  FileStorage = require('./localhostFileStorage').default;
 }
 
 export default FileStorage;
