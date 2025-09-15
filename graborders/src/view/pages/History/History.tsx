@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import SubHeader from "src/view/shared/Header/SubHeader";
 import { useDispatch, useSelector } from "react-redux";
 import assetsActions from "src/modules/assets/view/assetsViewActions";
@@ -6,138 +6,79 @@ import assetsSelectors from "src/modules/assets/view/assetsViewSelectors";
 import transactionListSelector from "src/modules/transaction/list/transactionListSelectors";
 import transactionListActions from "src/modules/transaction/list/transactionListActions";
 
-// Sample transaction data
-const sampleTransactions = [
-  {
-    id: 1,
-    type: "deposit",
-    amount: "0.025",
-    currency: "BTC",
-    date: new Date(),
-    status: "completed",
-    description: "Deposit",
-  },
-  {
-    id: 2,
-    type: "withdrawal",
-    amount: "1.5",
-    currency: "ETH",
-    date: new Date(Date.now() - 24 * 60 * 60 * 1000), // Yesterday
-    status: "completed",
-    description: "Withdrawal",
-  },
-  {
-    id: 3,
-    type: "deposit",
-    amount: "2,500",
-    currency: "USDT",
-    date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2 days ago
-    status: "completed",
-    description: "Deposit",
-  },
-  {
-    id: 4,
-    type: "withdrawal",
-    amount: "0.5",
-    currency: "BTC",
-    date: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000), // 4 days ago
-    status: "pending",
-    description: "Withdrawal",
-  },
-  {
-    id: 5,
-    type: "withdrawal",
-    amount: "3.25",
-    currency: "ETH",
-    date: new Date(Date.now() - 9 * 24 * 60 * 60 * 1000), // 9 days ago
-    status: "failed",
-    description: "Withdrawal",
-  },
-];
-
 function History() {
-    const dispatch = useDispatch();
+  const dispatch = useDispatch();
 
-  const [transactions, setTransactions] = useState(sampleTransactions);
-  const [filteredTransactions, setFilteredTransactions] =
-    useState(sampleTransactions);
   const [typeFilter, setTypeFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
-  const [timeFilter, setTimeFilter] = useState("today");
+  const [timeFilter, setTimeFilter] = useState("all");
   const Transactionloading = useSelector(transactionListSelector.selectLoading);
-        const transaction = useSelector(transactionListSelector.selectRows);
-
+  const transaction = useSelector(transactionListSelector.selectRows);
 
   useEffect(() => {
-    Promise.all([dispatch(transactionListActions.doFetch())]);
+    dispatch(transactionListActions.doFetch());
   }, [dispatch]);
+
   // Filter transactions based on selected filters
-  useEffect(() => {
-    let result = transactions;
+  const filteredTransactions = useMemo(() => {
+    if (!transaction) return [];
 
-    // Apply type filter
-    if (typeFilter !== "all") {
-      result = result.filter((transaction) =>
-        typeFilter === "deposits"
-          ? transaction.type === "deposit"
-          : transaction.type === "withdrawal"
-      );
-    }
+    return transaction.filter((tx) => {
+      // Apply type filter
+      if (typeFilter !== "all") {
+        const typeMatch = 
+          typeFilter === "deposits" ? tx.type === "deposit" : 
+          typeFilter === "withdrawals" ? tx.type === "withdraw" : true;
+        if (!typeMatch) return false;
+      }
 
-    // Apply status filter
-    if (statusFilter !== "all") {
-      result = result.filter(
-        (transaction) => transaction.status === statusFilter
-      );
-    }
+      // Apply status filter
+      if (statusFilter !== "all" && tx.status !== statusFilter) {
+        return false;
+      }
 
-    // Apply time filter
-    const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      // Apply time filter
+      if (timeFilter !== "all") {
+        const now = new Date();
+        const transactionDate = new Date(tx.dateTransaction);
+        
+        switch (timeFilter) {
+          case "today":
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            return transactionDate >= today;
+          
+          case "week":
+            const oneWeekAgo = new Date(now);
+            oneWeekAgo.setDate(now.getDate() - 7);
+            return transactionDate >= oneWeekAgo;
+          
+          case "month":
+            const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+            return transactionDate >= firstDayOfMonth;
+          
+          case "year":
+            const firstDayOfYear = new Date(now.getFullYear(), 0, 1);
+            return transactionDate >= firstDayOfYear;
+          
+          default:
+            return true;
+        }
+      }
 
-    switch (timeFilter) {
-      case "today":
-        result = result.filter(
-          (transaction) => new Date(transaction.date) >= today
-        );
-        break;
-      case "week":
-        const weekAgo = new Date(today);
-        weekAgo.setDate(weekAgo.getDate() - 7);
-        result = result.filter(
-          (transaction) => new Date(transaction.date) >= weekAgo
-        );
-        break;
-      case "month":
-        const monthAgo = new Date(today);
-        monthAgo.setMonth(monthAgo.getMonth() - 1);
-        result = result.filter(
-          (transaction) => new Date(transaction.date) >= monthAgo
-        );
-        break;
-      case "year":
-        const yearAgo = new Date(today);
-        yearAgo.setFullYear(yearAgo.getFullYear() - 1);
-        result = result.filter(
-          (transaction) => new Date(transaction.date) >= yearAgo
-        );
-        break;
-      default:
-        // "all time" - no filtering needed
-        break;
-    }
-
-    setFilteredTransactions(result);
-  }, [typeFilter, statusFilter, timeFilter, transactions]);
+      return true;
+    });
+  }, [transaction, typeFilter, statusFilter, timeFilter]);
 
   // Format date based on how recent it is
   const formatDate = (date) => {
     const transactionDate = new Date(date);
     const now = new Date();
     const isToday = transactionDate.toDateString() === now.toDateString();
-    const isYesterday =
-      new Date(now.setDate(now.getDate() - 1)).toDateString() ===
-      transactionDate.toDateString();
+    
+    // Reset now date after checking today
+    const yesterday = new Date(now);
+    yesterday.setDate(now.getDate() - 1);
+    const isYesterday = transactionDate.toDateString() === yesterday.toDateString();
 
     if (isToday) {
       return `Today, ${transactionDate.toLocaleTimeString([], {
@@ -157,6 +98,11 @@ function History() {
         minute: "2-digit",
       });
     }
+  };
+
+  // Handle status filter toggle
+  const handleStatusFilter = (status) => {
+    setStatusFilter(statusFilter === status ? "all" : status);
   };
 
   return (
@@ -188,13 +134,13 @@ function History() {
         >
           Withdrawals
         </button>
+        
+        {/* Status Filters */}
         <button
           className={`filter-option ${
-            statusFilter === "completed" ? "active" : ""
+            statusFilter === "success" ? "active" : ""
           }`}
-          onClick={() =>
-            setStatusFilter(statusFilter === "completed" ? "all" : "completed")
-          }
+          onClick={() => handleStatusFilter("success")}
         >
           Completed
         </button>
@@ -202,16 +148,28 @@ function History() {
           className={`filter-option ${
             statusFilter === "pending" ? "active" : ""
           }`}
-          onClick={() =>
-            setStatusFilter(statusFilter === "pending" ? "all" : "pending")
-          }
+          onClick={() => handleStatusFilter("pending")}
         >
           Pending
+        </button>
+        <button
+          className={`filter-option ${
+            statusFilter === "canceled" ? "active" : ""
+          }`}
+          onClick={() => handleStatusFilter("canceled")}
+        >
+          Canceled
         </button>
       </div>
 
       {/* Time Filter */}
       <div className="time-filter">
+        <div
+          className={`time-option ${timeFilter === "all" ? "active" : ""}`}
+          onClick={() => setTimeFilter("all")}
+        >
+          All Time
+        </div>
         <div
           className={`time-option ${timeFilter === "today" ? "active" : ""}`}
           onClick={() => setTimeFilter("today")}
@@ -236,18 +194,12 @@ function History() {
         >
           Year
         </div>
-        <div
-          className={`time-option ${timeFilter === "all" ? "active" : ""}`}
-          onClick={() => setTimeFilter("all")}
-        >
-          All Time
-        </div>
       </div>
 
       {/* Transaction List */}
       <div className="transaction-list">
-        {transaction.length > 0 ? (
-          transaction.map((transaction) => (
+        {filteredTransactions.length > 0 ? (
+          filteredTransactions.map((transaction) => (
             <div className="transaction-item" key={transaction.id}>
               <div className="transaction-info">
                 <div className={`transaction-icon ${transaction.type}`}>
