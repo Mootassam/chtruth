@@ -2,6 +2,7 @@ import Error400 from "../errors/Error400";
 import MongooseRepository from "../database/repositories/mongooseRepository";
 import { IServiceOptions } from "./IServiceOptions";
 import RechargeRepository from "../database/repositories/rechargeRepository";
+import WalletRepository from "../database/repositories/assetsRepository";
 
 export default class kycServicess {
   options: IServiceOptions;
@@ -64,6 +65,34 @@ export default class kycServicess {
     }
   }
 
+
+    async updateStatus(id, data, io) {
+    const session = await MongooseRepository.createSession(
+      this.options.database
+    );
+
+
+    try {
+
+      const record = await RechargeRepository.updateStatus(id, data, io, {
+        ...this.options,
+        session,
+      });
+  
+
+      await MongooseRepository.commitTransaction(session);
+    } catch (error) {
+      await MongooseRepository.abortTransaction(session);
+
+      MongooseRepository.handleUniqueFieldError(
+        error,
+        this.options.language,
+        "vip"
+      );
+
+      throw error;
+    }
+  }
   async destroyAll(ids) {
     const session = await MongooseRepository.createSession(
       this.options.database

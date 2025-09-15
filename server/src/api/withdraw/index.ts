@@ -1,4 +1,4 @@
-export default (app) => {
+export default (app,io) => {
   app.post(
     `/tenant/:tenantId/withdraw`,
     require('./withdrawCreate').default,
@@ -6,6 +6,11 @@ export default (app) => {
   app.put(
     `/tenant/:tenantId/withdraw/:id`,
     require('./withdrawUpdate').default,
+  );
+
+  app.put(
+    `/tenant/:tenantId/withdrawUpdateStatus/:id`,
+    require("./withdrawUpdateStatus").default(io)
   );
   app.post(
     `/tenant/:tenantId/withdraw/import`,

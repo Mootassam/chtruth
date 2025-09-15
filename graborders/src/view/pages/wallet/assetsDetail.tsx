@@ -179,7 +179,7 @@ const loading = assetLoading || Transactionloading ;
                                             {tx.amount} {tx.asset}
                                         </div>
                                         <div className={`transaction-status ${
-                                            tx.status === 'pending' ? 'pending' : ''
+                                            tx.status === 'pending' ? 'pending' : tx.status ==="canceled" ? 'canceled' :''
                                         }`}>
                                             {tx.status.charAt(0).toUpperCase() + tx.status.slice(1)}
                                         </div>
@@ -599,6 +599,10 @@ const loading = assetLoading || Transactionloading ;
                 .transaction-status.pending {
                     color: #F3BA2F;
                 }
+
+                .transaction-status.canceled {
+                  color: #FF6838;
+                 }
                 
                 .action-buttons {
                     display: flex;

@@ -33,13 +33,14 @@ function WithdrawListTable(props) {
   const doOpenDestroyConfirmModal = (id) => setRecordIdToDestroy(id);
   const doCloseDestroyConfirmModal = () => setRecordIdToDestroy(null);
 
-  const onSubmit = (id, values, user) => {
+  const onSubmit = (row, values) => {
     const data = {
-      user: user,
+      ...row,
       status: values,
     };
-    dispatch(WithdrawActions.doUpdate(id, data));
+    dispatch(WithdrawActions.Update(row.id,data));
   };
+
 
   const doChangeSort = (field) => {
     const order = sorter.field === field && sorter.order === 'ascend' ? 'descend' : 'ascend';
@@ -200,7 +201,7 @@ function WithdrawListTable(props) {
               </tr>
             )}
             {!loading &&
-              rows.map((row) => (
+              rows.map((row, index) => (
                 <tr key={row.id} className="table-row">
                   <td className="checkbox-column">
                     <div className="checkbox-wrapper">
@@ -229,13 +230,13 @@ function WithdrawListTable(props) {
                       <div>
                         <button
                           className="btn-action edit"
-                          onClick={() => onSubmit(row.id, 'success', row.user.id)}
+                          onClick={() => onSubmit(row,'success')}
                         >
                           Pass
                         </button>
                         <button
                           className="btn-action delete"
-                          onClick={() => onSubmit(row.id, 'canceled', row.user.id)}
+                          onClick={() => onSubmit(row,'canceled')}
                         >
                           Rejection
                         </button>

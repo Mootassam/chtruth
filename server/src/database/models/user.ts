@@ -30,9 +30,11 @@ export default (database) => {
         type: String,
       },
 wallet: {
-  tether: { address: "" },
-  btc: { address: "" },
-  eth: { address: "" }, 
+  USDT: { address: "" },
+  BTC: { address: "" },
+  ETH: { address: "" }, 
+  SOL:{address:""},
+  XRP:{address:""}
 },
 
 

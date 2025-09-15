@@ -17,22 +17,6 @@ export default class withdrawService {
     return response.data;
   }
 
-
-  
-  static async updateStatus(id, data) {
-    const body = {
-      id,
-      data,
-    };
-
-    const tenantId = AuthCurrentTenant.get();
-    const response = await authAxios.put(
-      `/tenant/${tenantId}/withdrawUpdateStatus/${id}`,
-      body,
-    );
-
-    return response.data;
-  }
   static async destroyAll(ids) {
     const params = {
       ids,

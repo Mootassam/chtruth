@@ -28,6 +28,20 @@ function WirthdrawAddress() {
       symbol: "USDT",
       id: "tether",
     },
+        {
+      path: "/formwithdrawaddress/SOL",
+      label: "Solana",
+      icon: "fas fa-chevron-right",
+      symbol: "SOL",
+      id: "SOL",
+    },
+           {
+      path: "/formwithdrawaddress/XRP",
+      label: "Solana",
+      icon: "fas fa-chevron-right",
+      symbol: "XRP",
+      id: "XRP",
+    },
   ];
   return (
     <div className="container">

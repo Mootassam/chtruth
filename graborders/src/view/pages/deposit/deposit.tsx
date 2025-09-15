@@ -155,27 +155,31 @@ function Deposit() {
       <FormProvider {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <div className="amountSection">
-            <FieldFormItem
-              name="amount"
-              type="text"
-              label="Deposit amount"
-              className="form-input"
-              className1="form-group"
-              className2="form-label"
-              className3="password-input-container"
-              placeholder="0.00"
-            />
+           
 
-            <FieldFormItem
-              name="txid"
-              type="text"
-              label="Transaction ID (TXID)"
-              className="form-input"
-              className1="form-group"
-              className2="form-label"
-              className3="password-input-container"
-              placeholder="Enter The TXID"
-            />
+               <FieldFormItem
+                          name="amount"
+                          type="text"
+                          label="Deposit amount"
+                          className="textField"
+                          className1="inputField"
+                          className2="inputLabel"
+                          className3="inputWrapper"
+                          placeholder="Enter The Deposit Amount"
+                        />
+
+                        <FieldFormItem
+                          name="txid"
+                          type="text"
+                          label="Transaction ID (TXID)"
+                          className="textField"
+                          className1="inputField"
+                          className2="inputLabel"
+                          className3="inputWrapper"
+                          placeholder="Enter The TXID"
+                        />
+       
+
           </div>
           
           {/* Warning Section */}

@@ -5,11 +5,13 @@ import Error404 from "../../errors/Error404";
 import { IRepositoryOptions } from "./IRepositoryOptions";
 import FileRepository from "./fileRepository";
 import Withdraw from "../models/withdraw";
+import assets from "../models/wallet";
+import transaction from "../models/transaction";
+
 
 class WithdrawRepository {
   static async create(data, options: IRepositoryOptions) {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
-
     const currentUser = MongooseRepository.getCurrentUser(options);
 
     const [record] = await Withdraw(options.database).create(
@@ -24,14 +26,45 @@ class WithdrawRepository {
       options
     );
 
-    await this._createAuditLog(
-      AuditLogRepository.CREATE,
-      record.id,
-      data,
+    const WalletModel = assets(options.database);
+    const TransactionModel = options.database.model("transaction");
+
+    // 1️⃣ Fetch the user's wallet for the given asset
+    let wallet = await WalletModel.findOne({
+      user: currentUser.id,
+      symbol: data.currency,
+    });
+
+    if (!wallet) {
+      throw new Error("Wallet not found for this asset");
+    }
+
+    // 2️⃣ Reduce balance immediately (hold funds while withdrawal is pending)
+    await WalletModel.updateOne(
+      { _id: wallet.id },
+      {
+        $inc: { amount: -data.totalAmount }, // reduce balance
+        updatedBy: currentUser.id,
+      },
       options
     );
 
-    return this.findById(record.id, options);
+    // 3️⃣ Create a transaction log
+    await TransactionModel.create({
+      type: "withdraw",
+      wallet: wallet.id,
+      asset: wallet.symbol,
+      amount: data.totalAmount,
+      referenceId: record.id,
+      direction: "out",
+      status: "pending", // withdrawal starts as pending
+      user: currentUser.id,
+      tenant: currentTenant.id,
+      createdBy: currentUser.id,
+      updatedBy: currentUser.id,
+    });
+
+    return wallet;
   }
 
   static async update(id, data, io, options: IRepositoryOptions) {
@@ -61,6 +94,54 @@ class WithdrawRepository {
 
     return record;
   }
+
+  static async updateStatus(id, data, io, options: IRepositoryOptions) {
+    const currentUser = MongooseRepository.getCurrentUser(options);
+
+    // ✅ Update withdrawal status
+    await Withdraw(options.database).updateOne(
+      { _id: id },
+      {
+        $set: {
+          status: data.status,
+          acceptime: new Date(),
+          auditor: currentUser.id,
+          updatedBy: currentUser.id,
+        },
+      },
+      options
+    );
+
+    // ✅ Sync transaction status
+    await transaction(options.database).updateOne(
+      { referenceId: id },
+      {
+        $set: {
+          status: data.status,
+          updatedBy: currentUser.id,
+        },
+      },
+      options
+    );
+
+    // ❌ If rejected → refund user balance
+ if (data.status === "canceled") {
+  const withdrawRecord = await Withdraw(options.database).findById(id);
+  const WalletModel = assets(options.database);
+
+  if (!withdrawRecord) {
+    throw new Error("Withdraw record not found");
+  }
+
+  await WalletModel.updateOne(
+    { user: withdrawRecord.createdBy, symbol: withdrawRecord.currency },
+    { $inc: { amount: withdrawRecord.totalAmount } }, // refund balance
+    options
+  );
+}
+
+  }
+
 
   static async destroy(id, options: IRepositoryOptions) {
     const currentTenant = MongooseRepository.getCurrentTenant(options);

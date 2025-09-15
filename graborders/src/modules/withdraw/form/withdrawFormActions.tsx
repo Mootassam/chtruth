@@ -3,7 +3,7 @@ import vipService from 'src/modules/withdraw/withdrawService';
 import Errors from 'src/modules/shared/error/errors';
 import Message from 'src/view/shared/message';
 import { getHistory } from 'src/modules/store';
-import { i18n } from 'src/i18n';
+import { i18n } from '../../../i18n';
 
 const prefix = 'COUPONS_FORM';
 
@@ -89,31 +89,6 @@ const vipFormActions = {
 
       Message.success(
         i18n('entities.vip.update.success'),
-      );
-
-      getHistory().push('/withdraw');
-    } catch (error) {
-      Errors.handle(error);
-
-      dispatch({
-        type: vipFormActions.UPDATE_ERROR,
-      });
-    }
-  },
-   Update: (id, values) => async (dispatch, getState) => {
-    try {
-      dispatch({
-        type: vipFormActions.UPDATE_STARTED,
-      });
-
-      await vipService.updateStatus(id, values);
-
-      dispatch({
-        type: vipFormActions.UPDATE_SUCCESS,
-      });
-
-      Message.success(
-        i18n('entities.withdraw.update.success'),
       );
 
       getHistory().push('/withdraw');

@@ -157,7 +157,7 @@ static async updateWalletAddress(value, options: IRepositoryOptions) {
   }
 
   // Ensure supported currency
-  const allowedCurrencies = ['tether', 'btc', 'eth'];
+  const allowedCurrencies = ['USDT', 'BTC', 'ETH','SOL','XRP'];
   if (!allowedCurrencies.includes(currency)) {
     throw new Error405('Unsupported currency');
   }

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import SubHeader from "src/view/shared/Header/SubHeader";
 import { useParams } from "react-router-dom";
@@ -9,36 +9,68 @@ import { useDispatch, useSelector } from "react-redux";
 import authSelectors from "src/modules/auth/authSelectors";
 import { useForm, FormProvider } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import actions from "src/modules/withdraw/form/withdrawFormActions";
+import FieldFormItem from "src/shared/form/FieldFormItem";
+import assetsListSelectors from "src/modules/assets/list/assetsListSelectors";
 
 const schema = yup.object().shape({
-  user: yupFormSchemas.relationToOne(i18n("entities.vip.fields.title"), {}),
-  Documenttype: yupFormSchemas.string(i18n("Document Type"), {}),
-  realname: yupFormSchemas.string(i18n("Full Name"), {}),
-  idnumer: yupFormSchemas.string(i18n("Id Numer"), {}),
+  orderNo: yupFormSchemas.string(i18n("entities.withdraw.fields.orderNo")),
+  currency: yupFormSchemas.string(i18n("entities.withdraw.fields.currency")),
+  withdrawAmount: yupFormSchemas.decimal(
+    i18n("entities.withdraw.fields.withdrawAmount"),
+    { required: true }
+  ),
+  fee: yupFormSchemas.decimal(i18n("entities.withdraw.fields.fee")),
+  totalAmount: yupFormSchemas.decimal(
+    i18n("entities.withdraw.fields.totalAmount"),
+
+  ),
+  auditor: yupFormSchemas.relationToOne(
+    i18n("entities.withdraw.fields.auditor")
+  ),
+  acceptTime: yupFormSchemas.datetime(
+    i18n("entities.withdraw.fields.acceptTime")
+  ),
+  status: yupFormSchemas.enumerator(i18n("entities.withdraw.fields.status"), {
+    options: ["pending", "canceled", "success"],
+  }),
 });
 
 function Withdraw() {
   const dispatch = useDispatch();
   const currentUser = useSelector(authSelectors.selectCurrentUser);
-  
-  // Check if user has any wallet
-  const hasAnyWallet = currentUser.wallet && 
-    Object.values(currentUser.wallet).some(val => val !== null && val !== "");
-  
-  const [selected, setSelected] = useState("");
-  
-  // Check if user has a wallet for the selected currency
-  const selectedCurrencyHasWallet = Object.values(
-    currentUser.wallet || {}
-  ).some((currency) => 
-    (currency as { address?: string }).address?.trim() !== ""
-  );
+  const assets = useSelector(assetsListSelectors.selectRows);
 
+  const [selected, setSelected] = useState("");
+  const [item, setItem] = useState(null);
+
+  useEffect(() => {
+    if (selected && assets.length) {
+      const foundItem = assets.find((asset) => asset.symbol === selected);
+      setItem(foundItem);
+    } else {
+      setItem(null);
+    }
+  }, [selected, assets]);
+
+  // Check if user has any wallet
+  const hasAnyWallet =
+    currentUser.wallet &&
+    Object.values(currentUser.wallet).some(
+      (val) => val && val.address && val.address.trim() !== ""
+    );
+
+ 
   const [initialValues] = useState(() => {
     return {
-      user: currentUser || [],
-      Documenttype: document,
-      realname: "",
+      orderNo: "",
+      currency: "",
+      withdrawAmount: "",
+      fee: "",
+      totalAmount: "",
+      auditor: "",
+      acceptTime: "",
+      status: "pending",
     };
   });
 
@@ -49,39 +81,42 @@ function Withdraw() {
   });
 
   const onSubmit = (values) => {
-    const data = {
-      user: currentUser,
-      Documenttype: document,
-      ...values,
-    };
-    alert("values");
-    // dispatch(actions.doCreate(data));
+    // Generate order number in format: RE + YYYYMMDD + 7 random digits
+    const now = new Date();
+
+    // Format date as YYYYMMDD
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const day = String(now.getDate()).padStart(2, "0");
+    const dateStr = `${year}${month}${day}`;
+
+    // Generate 7 random digits
+    const randomDigits = Math.floor(Math.random() * 10000000)
+      .toString()
+      .padStart(7, "0");
+
+    // Create order number
+    values.orderNo = `RE${dateStr}${randomDigits}`;
+    values.currency = selected;
+values.totalAmount = values.withdrawAmount
+    dispatch(actions.doCreate(values));
+
+    // Reset form fields after submission
+    form.reset(initialValues);
+    setSelected("");
   };
 
-  const currencyOptions  = [
-    {
-      id: "btc",
-      icon: "fab fa-btc",
-      label: "Bitcoin",
-      color: "#F3BA2F",
-    },
-    {
-      id: "eth",
-      icon: "fab fa-ethereum",
-      label: "Ethereum",
-      color: "#627EEA",
-    },
-    {
-      id: "tether",
-      icon: "fas fa-dollar-sign",
-      label: "USDT",
-      color: "#26A17B",
-    },
+  const currencyOptions = [
+    { id: "BTC", name: "Bitcoin", icon: "fab fa-btc", color: "#F3BA2F" },
+    { id: "ETH", name: "Ethereum", icon: "fab fa-ethereum", color: "#627EEA" },
+    { id: "USDT", name: "Tether", icon: "fas fa-dollar-sign", color: "#26A17B" },
+    { id: "SOL", name: "Solana", icon: "fas fa-bolt", color: "#00FFA3" },
+    { id: "XRP", name: "Ripple", icon: "fas fa-exchange-alt", color: "#23292F" }
   ];
 
   // Get selected currency data
-  const selectedCurrencyData = useMemo(() => 
-    currencyOptions.find(currency => currency.id === selected), 
+  const selectedCurrencyData = useMemo(
+    () => currencyOptions.find((currency) => currency.id === selected),
     [selected]
   );
 
@@ -90,183 +125,198 @@ function Withdraw() {
       {/* Header Section */}
       <SubHeader title="Withdraw Crypto" />
       <div className="container">
-
-      {/* No Wallet Message or Form */}
-      {!hasAnyWallet ? (
-        <div className="noWalletSection">
-          <div className="noWalletCard">
-            <div className="noWalletIcon">
-              <i className="fas fa-wallet"></i>
-            </div>
-            <h3>No Wallet Address Found</h3>
-            <p>
-              You haven't added any wallet addresses yet. 
-              Please add a withdrawal address to proceed with your transaction.
-            </p>
-            <Link to="/withdrawaddress" className="addWalletBtn">
-              <i className="fas fa-plus"></i>
-              Add Wallet Address
-            </Link>
-            <div className="securityNotice">
-              <div className="securityHeader">
-                <i className="fas fa-shield-alt securityIcon" />
-                <div className="securityTitle">Security First</div>
+        {/* No Wallet Message or Form */}
+        {!hasAnyWallet ? (
+          <div className="noWalletSection">
+            <div className="noWalletCard">
+              <div className="noWalletIcon">
+                <i className="fas fa-wallet"></i>
               </div>
-              <div className="securityText">
-                For your security, we require a verified withdrawal address for each cryptocurrency.
-                This helps prevent errors and ensures your funds reach the correct destination.
+              <h3>No Wallet Address Found</h3>
+              <p>
+                You haven't added any wallet addresses yet. Please add a
+                withdrawal address to proceed with your transaction.
+              </p>
+              <Link to="/withdrawaddress" className="addWalletBtn">
+                <i className="fas fa-plus"></i>
+                Add Wallet Address
+              </Link>
+              <div className="securityNotice">
+                <div className="securityHeader">
+                  <i className="fas fa-shield-alt securityIcon" />
+                  <div className="securityTitle">Security First</div>
+                </div>
+                <div className="securityText">
+                  For your security, we require a verified withdrawal address
+                  for each cryptocurrency. This helps prevent errors and ensures
+                  your funds reach the correct destination.
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      ) : (
-        /* Form Section */
-        <>
-          {/* Currency Selection - Changed to Dropdown */}
-          <div className="currencySection">
-            <div className="sectionHeading">Select Currency</div>
-            <div className="currencyDropdownContainer">
-              <select 
-                className="currencyDropdown"
-                value={selected}
-                onChange={(e) => setSelected(e.target.value)}
-              >
-                <option value="">Select a currency</option>
-                {currencyOptions.map((currency) => {
-                  const hasWallet = !!currentUser.wallet?.[currency.id];
-                  return (
-                    <option 
-                      key={currency.id} 
-                      value={currency.id}
-                      disabled={!hasWallet}
-                    >
-                      {currency.label}
-                    </option>
-                  );
-                })}
-              </select>
-              {selected && (
-                <div className="currencyDropdownIcon" style={{ color: selectedCurrencyData.color }}>
-                  <i className={selectedCurrencyData.icon} />
+        ) : (
+          /* Form Section */
+          <>
+            {/* Currency Selection - Changed to Dropdown */}
+            <div className="currencySection">
+              <div className="sectionHeading">Select Currency</div>
+              <div className="currencyDropdownContainer">
+                <select
+                  className="currencyDropdown"
+                  value={selected}
+                  onChange={(e) => setSelected(e.target.value)}
+                >
+                  <option value="">Select a currency</option>
+                  {currencyOptions.map((currency) => {
+{}
+console.log('====================================');
+console.log(currentUser.wallet);
+console.log('====================================');
+                    const hasWallet =
+                      currentUser.wallet &&
+                      currentUser.wallet[currency.id] &&
+                      currentUser.wallet[currency.id].address;
+                      {currentUser.wallet[currency.id]}
+               
+                    return (
+                      <option
+                        key={currency.id}
+                        value={currency.id}
+                        disabled={!hasWallet}
+                      >
+                        {currency.name}
+                      </option>
+                    );
+                  })}
+                </select>
+                {selected && (
+                  <div
+                    className="currencyDropdownIcon"
+                    style={{ color: selectedCurrencyData.color }}
+                  >
+                    <i className={selectedCurrencyData.icon} />
+                  </div>
+                )}
+              </div>
+              {!selected && (
+                <div className="dropdownHint">
+                  Please select a currency to continue
                 </div>
               )}
             </div>
-            {!selected && (
-              <div className="dropdownHint">Please select a currency to continue</div>
-            )}
-          </div>
-          
-          {selected && (
-            <FormProvider {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)}>
-                <div className="formSection">
-                  {/* Withdrawal Address */}
-                  <div className="inputField">
-                    <label className="inputLabel">Withdrawal Address</label>
-                    <div className="inputWrapper">
-                      <input
-                        type="text"
-                        className="textField "
-                        id="withdrawalAddress"
-                        placeholder="Enter wallet address "
-                        value={currentUser?.wallet[selected]?.address || ''}
-                        disabled
-                      />
-                      <div className="networkInfo" id="networkDetails">
-                        Network: {selectedCurrencyData.label} ({selected.toUpperCase()})
-                      </div>
-                    </div>
-                  </div>
-                  {/* Amount */}
-                  <div className="inputField">
-                    <label className="inputLabel">Withdrawal Amount</label>
-                    <div className="inputWrapper">
-                      <div className="amountRow">
+
+            {selected && (
+              <FormProvider {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)}>
+                  <div className="formSection">
+                    {/* Withdrawal Address */}
+                    <div className="inputField">
+                      <label className="inputLabel">Withdrawal Address</label>
+                      <div className="inputWrapper">
                         <input
-                          className="amountField"
-                          id="amountInput"
-                          placeholder={0.0}
+                          type="text"
+                          className="textField "
+                          id="withdrawalAddress"
+                          placeholder="Enter wallet address "
+                          value={currentUser.wallet[selected]?.address || ""}
+                          disabled
                         />
-                        <button className="maxBtn" id="maxBtn">
-                          MAX
-                        </button>
-                      </div>
-                      <div className="balanceText">
-                        Available: <span id="availableBalance">0.2543 {selected.toUpperCase()}</span>
+                        <div className="networkInfo" id="networkDetails">
+                          Network: {selectedCurrencyData.label} (
+                          {selected.toUpperCase()})
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  {/* Withdrawal Password */}
-                  <div className="inputField">
-                    <label className="inputLabel">Withdrawal Password</label>
-                    <div className="inputWrapper">
-                      <input
-                        type="password"
-                        className="textField"
-                        id="withdrawalPassword"
-                        placeholder="Enter withdrawal password"
-                      />
-                    </div>
-                  </div>
-                  {/* Fee Information */}
-                  <div className="feeContainer">
-                    <div className="feeRow">
-                      <div className="feeLabel">Minimum withdrawal</div>
-                      <div className="feeValue" id="minWithdrawal">
-                        0.001 {selected.toUpperCase()}
+                    {/* Amount */}
+                    <div className="inputField">
+                      <label className="inputLabel">Withdrawal Amount</label>
+                      <div className="inputWrapper">
+                        <FieldFormItem
+                          name="withdrawAmount"
+                          type="number"
+                          className="amountField"
+                          placeholder="0.0"
+                        />
+                        <div className="balanceText">
+                          Available:{" "}
+                          <span id="availableBalance">
+                            {item ? item?.amount : 0} {selected.toUpperCase()}
+                          </span>
+                        </div>
                       </div>
                     </div>
-                    <div className="feeRow">
-                      <div className="feeLabel">Network fee</div>
-                      <div className="feeValue" id="networkFee">
-                        0.0005 {selected.toUpperCase()}
+                    {/* Withdrawal Password */}
+                    <div className="inputField">
+                      <label className="inputLabel">Withdrawal Password</label>
+                      <div className="inputWrapper">
+                        <input
+                          type="password"
+                          className="textField"
+                          placeholder="Enter withdrawal password"
+                        />
                       </div>
                     </div>
-                    <div className="feeRow">
-                      <div className="feeLabel">Service fee</div>
-                      <div className="feeValue" id="serviceFee">
-                        0.0001 {selected.toUpperCase()}
-                      </div>
-                    </div>
-                    <div className="feeRow receiveAmount">
-                      <div className="feeLabel">You will receive</div>
-                      <div className="feeValue" id="receiveAmount">
-                        0.0000 {selected.toUpperCase()}
-                      </div>
-                    </div>
-                  </div>
-                  {/* Security Notice */}
-                  <div className="securityNotice">
-                    <div className="securityHeader">
-                      <i className="fas fa-shield-alt securityIcon" />
-                      <div className="securityTitle">Security Verification</div>
-                    </div>
-                    <div className="securityText">
-                      For your security, withdrawals require password confirmation and
-                      may be subject to review. Withdrawals to incorrect addresses
-                      cannot be reversed.
-                    </div>
-                  </div>
-                  {/* Withdraw Button */}
-                  <button
-                    className="withdrawBtn"
-                    id="withdrawBtn"
-                    onClick={form.handleSubmit(onSubmit)}
-                  >
-                    Confirm Withdrawal
-                  </button>
-                </div>
-              </form>
-            </FormProvider>
-          )}
-        </>
-      )}
 
-      {/* Toast Notification */}
-      <div className="toastMsg" id="toastNotification">
-        Withdrawal address copied!
-      </div>
+                    {/* Fee Information */}
+                    <div className="feeContainer">
+                      <div className="feeRow">
+                        <div className="feeLabel">Minimum withdrawal</div>
+                        <div className="feeValue" id="minWithdrawal">
+                          0.001 {selected.toUpperCase()}
+                        </div>
+                      </div>
+                      <div className="feeRow">
+                        <div className="feeLabel">Network fee</div>
+                        <div className="feeValue" id="networkFee">
+                          0.0005 {selected.toUpperCase()}
+                        </div>
+                      </div>
+                      <div className="feeRow">
+                        <div className="feeLabel">Service fee</div>
+                        <div className="feeValue" id="serviceFee">
+                          0.0001 {selected.toUpperCase()}
+                        </div>
+                      </div>
+                      <div className="feeRow receiveAmount">
+                        <div className="feeLabel">You will receive</div>
+                        <div className="feeValue" id="receiveAmount">
+                          0.0000 {selected.toUpperCase()}
+                        </div>
+                      </div>
+                    </div>
+                    {/* Security Notice */}
+                    <div className="securityNotice">
+                      <div className="securityHeader">
+                        <i className="fas fa-shield-alt securityIcon" />
+                        <div className="securityTitle">
+                          Security Verification
+                        </div>
+                      </div>
+                      <div className="securityText">
+                        For your security, withdrawals require password
+                        confirmation and may be subject to review. Withdrawals
+                        to incorrect addresses cannot be reversed.
+                      </div>
+                    </div>
+                    {/* Withdraw Button */}
+                    <button
+                      type="submit"
+                      className="withdrawBtn"
+                      id="withdrawBtn"
+                    >
+                      Confirm Withdrawal
+                    </button>
+                  </div>
+                </form>
+              </FormProvider>
+            )}
+          </>
+        )}
 
+        {/* Toast Notification */}
+        <div className="toastMsg" id="toastNotification">
+          Withdrawal address copied!
+        </div>
       </div>
 
       <style>{`
@@ -413,30 +463,15 @@ function Withdraw() {
           margin-top: 8px;
         }
         
-        .amountRow {
-          display: flex;
-          align-items: center;
-          margin-bottom: 8px;
-        }
-        
         .amountField {
-          flex: 1;
+          width: 100%;
           background: transparent;
           border: none;
           color: #FFFFFF;
           font-size: 20px;
           font-weight: bold;
           outline: none;
-        }
-        
-        .maxBtn {
-          background-color: #1A1A1A;
-          color: #F3BA2F;
-          border: none;
-          border-radius: 6px;
-          padding: 6px 12px;
-          font-size: 14px;
-          cursor: pointer;
+          margin-bottom: 8px;
         }
         
         .balanceText {

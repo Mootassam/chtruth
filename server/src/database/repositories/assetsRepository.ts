@@ -380,7 +380,7 @@ static async convertAsset(data, options: IRepositoryOptions) {
 
     return records.map((record) => ({
       id: record.id,
-      label: record.coinName,
+      label: record.symbol,
     }));
   }
 
