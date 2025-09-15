@@ -62,7 +62,7 @@ const vipFormActions = {
       });
 
       Message.success(
-        i18n('entities.vip.create.success'),
+        i18n('entities.withdraw.create.success'),
       );
 
       getHistory().push('/withdraw');
@@ -88,7 +88,7 @@ const vipFormActions = {
       });
 
       Message.success(
-        i18n('entities.vip.update.success'),
+        i18n('entities.withdraw.update.success'),
       );
 
       getHistory().push('/withdraw');

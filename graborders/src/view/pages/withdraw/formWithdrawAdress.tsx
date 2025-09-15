@@ -12,9 +12,29 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import FieldFormItem from "src/shared/form/FieldFormItem";
 import actions from "src/modules/user/form/userFormActions";
 const currencyType = [
-  { icon: "fab fa-bitcoin", label: "BTC (Bitcoin)", id: "btc",symbol:"BTC" },
-  { icon: "fab fa-ethereum", label: "ETH (Ethereum)", id: "eth", symbol:"ETH" },
-  { icon: "fas fa-chevron-right", label: "USDT (Tether)", id: "tether", symbol:"USDT" },
+  { icon: "fab fa-bitcoin", label: "BTC (Bitcoin)", id: "BTC", symbol: "BTC" },
+  {
+    icon: "fab fa-ethereum",
+    label: "ETH (Ethereum)",
+    id: "ETH",
+    symbol: "ETH",
+  },
+  {
+    icon: "fas fa-chevron-right",
+    label: "USDT (Tether)",
+    id: "USDT",
+    symbol: "USDT",
+  },
+  {
+    label: "Solana",
+    symbol: "SOL",
+    id: "SOL",
+  },
+  {
+    label: "Solana",
+    symbol: "XRP",
+    id: "XRP",
+  },
 ];
 
 const schema = yup.object().shape({
@@ -32,12 +52,14 @@ function formWithdrawAdress() {
   const dispatch = useDispatch();
   const currentUser = useSelector(authSelectors.selectCurrentUser);
 
-
-  const [initialValues] = useState(() => 
-  {
+  const [initialValues] = useState(() => {
     return {
       currency: id,
-      address: currentUser &&  currentUser.wallet && currentUser?.wallet[id]?.address ||  "",
+      address:
+        (currentUser &&
+          currentUser.wallet &&
+          currentUser?.wallet[id]?.address) ||
+        "",
       password: "",
     };
   });
@@ -49,7 +71,7 @@ function formWithdrawAdress() {
   });
 
   const onSubmit = (values) => {
-    values.currency = id
+    values.currency = id;
     dispatch(actions.UpdateWalletAdress(values));
   };
 
@@ -64,12 +86,11 @@ function formWithdrawAdress() {
 
         {selected.map((item) => (
           <div className="selected-currency">
-                  <img
-                  src={`https://images.weserv.nl/?url=https://bin.bnbstatic.com/static/assets/logos/${item.symbol}.png`}
-                  style={{ width: 26, height: 26 }}
-                  alt={item.symbol}
-                
-                />
+            <img
+              src={`https://images.weserv.nl/?url=https://bin.bnbstatic.com/static/assets/logos/${item.symbol}.png`}
+              style={{ width: 26, height: 26 }}
+              alt={item.symbol}
+            />
             <div className="currency-name">{item.label}</div>
           </div>
         ))}

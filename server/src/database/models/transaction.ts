@@ -19,7 +19,7 @@ export default (database) => {
       },
      referenceId: {
         type: Schema.Types.ObjectId,
-        required: true,
+      
       },
       // ✅ Which coin (BTC, ETH, USDT, etc.)
       wallet: {

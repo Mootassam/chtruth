@@ -44,9 +44,13 @@ function Signup() {
       required: true,
  
     }),
-    invitationcode: yupFormSchemas.string(i18n("user.fields.invitationcode"), {
+      invitationcode: yupFormSchemas.string(i18n("user.fields.invitationcode"), {
       required: true,
     }),
+    withdrawPassword: yupFormSchemas.string(i18n("user.fields.withdrawPassword"), {
+      required: true,
+    }),
+
     captcha: yup
       .string()
       .required(i18n("user.fields.captcha"))
@@ -63,6 +67,7 @@ function Signup() {
       password: "",
       newPasswordConfirmation: "",
       phoneNumber: "",
+      withdrawPassword:"",
       invitationcode: "",
       captcha: "",
     },
@@ -88,13 +93,13 @@ function Signup() {
 
   const onSubmit = useCallback((data) => {
     // Captcha validation is already handled by yup schema
-    const { email, password, phoneNumber, invitationcode } = data;
+    const { email, password, phoneNumber,withdrawPassword, invitationcode } = data;
     dispatch(
       actions.doRegisterEmailAndPassword(
         email,
         password,
         phoneNumber,
-        "", // withdrawPassword
+  withdrawPassword,
         invitationcode
       )
     );
@@ -184,7 +189,14 @@ function Signup() {
             autoComplete="new-password"
             label="Confirm Password"
           />
-
+   <InputFormItem
+            type="text"
+            name="withdrawPassword"
+            placeholder="Enter the withdraw Password"
+            className="text-input"
+            externalErrorMessage={errorMessage}
+            label="withdraw Password"
+          />
           <InputFormItem
             type="text"
             name="invitationcode"
@@ -193,6 +205,7 @@ function Signup() {
             externalErrorMessage={errorMessage}
             label="Invitation Code"
           />
+       
 
           <button 
             className="signup-button" 

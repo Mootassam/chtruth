@@ -8,25 +8,25 @@ function WirthdrawAddress() {
 
   const currencyOptions = [
     {
-      path: "/formwithdrawaddress/btc",
+      path: "/formwithdrawaddress/BTC",
       label: "BTC (Bitcoin)",
       icon: "fab fa-bitcoin",
       symbol: "BTC",
-      id: "btc",
+      id: "BTC",
     },
     {
-      path: "/formwithdrawaddress/eth",
+      path: "/formwithdrawaddress/ETH",
       label: "ETH (Ethereum)",
       icon: "fab fa-ethereum",
       symbol: "ETH",
-      id: "eth",
+      id: "ETH",
     },
     {
-      path: "/formwithdrawaddress/tether",
+      path: "/formwithdrawaddress/USDT",
       label: "USDT (Tether)",
       icon: "fas fa-chevron-right",
       symbol: "USDT",
-      id: "tether",
+      id: "USDT",
     },
         {
       path: "/formwithdrawaddress/SOL",

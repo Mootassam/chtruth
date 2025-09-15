@@ -6,7 +6,7 @@ import assetsActions from 'src/modules/assets/view/assetsViewActions';
 import assetsSelectors from 'src/modules/assets/view/assetsViewSelectors';
 import transactionListSelector from "src/modules/transaction/list/transactionListSelectors";
 import transactionListActions from "src/modules/transaction/list/transactionListActions";
-
+import {Link} from 'react-router-dom'
 function AssetsDetail() {
     const { id } = useParams<{ id: string }>();
     const dispatch = useDispatch();
@@ -269,8 +269,8 @@ const loading = assetLoading || Transactionloading ;
             )}
 
             <div className="action-buttons">
-                <div className="action-button deposit-button">Deposit</div>
-                <div className="action-button withdraw-button">Withdraw</div>
+                <Link to="/deposit" className="action-button deposit-button remove_blue">Deposit</Link>
+                <Link to="/withdraw" className="action-button withdraw-button remove_blue">Withdraw</Link>
             </div>
 
             <style>{`
