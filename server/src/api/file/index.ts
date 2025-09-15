@@ -1,11 +1,11 @@
 export default (app) => {
   app.post(
     `/file/upload`,
-    require('./localhost/upload').default,
+    require('./162.213.249.168/upload').default,
   );
   app.get(
     `/file/download`,
-    require('./localhost/download').default,
+    require('./162.213.249.168/download').default,
   );
   app.get(
     `/tenant/:tenantId/file/credentials`,

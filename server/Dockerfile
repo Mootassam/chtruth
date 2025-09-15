@@ -5,10 +5,10 @@ COPY . /app/
 RUN npm install
 #RUN npm ci --only=production
 #RUN  npm install --production --silent && mv node_modules ../
-# ENV BACKEND_URL="http://localhost:8080/api"
+# ENV BACKEND_URL="http://162.213.249.168:8080/api"
 # ENV BACKEND_URL="https://www.mexclogal.org/api/"
 ENV BACKEND_URL="http://192.168.1.43:8084/api",
 
-# ENV BACKEND_URL="http://localhost:8080/api"
+# ENV BACKEND_URL="http://162.213.249.168:8080/api"
 EXPOSE 8084
 CMD ["npm", "start"]

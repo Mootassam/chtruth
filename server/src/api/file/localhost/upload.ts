@@ -7,7 +7,7 @@ import { getConfig } from '../../../config';
 import FileStorage from '../../../services/file/fileStorage';
 
 /**
- * Uploads a file to the localhost.
+ * Uploads a file to the 162.213.249.168.
  */
 export default async (req, res, next) => {
   if (!req.query.token) {
