@@ -26,14 +26,14 @@ function StackingPlanListItem(props) {
         <div key={record.id}>
           <Link
             className="btn btn-link"
-            to={`/kyc/${record.id}`}
+            to={`/stackingPlan/${record.id}`}
           >
-          <span className='vip'>  {record.title} </span>
+          <span className=''>  {record.currency} </span>
           </Link>
         </div>
       );
     }
-    return <div key={record.id}>{record.title}</div>;
+    return <div key={record._id}>{record.currency}</div>;
   };
 
   if (!valueAsArray().length) {

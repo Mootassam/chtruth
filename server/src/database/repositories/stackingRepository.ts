@@ -153,8 +153,8 @@ class StackingRepository {
       .skip(skip)
       .limit(limitEscaped)
       .sort(sort)
-      .populate("user")
-      .populate("createdBy");
+      .populate("plan")
+      .populate("user");
 
     const count = await Stacking(options.database).countDocuments(criteria);
 

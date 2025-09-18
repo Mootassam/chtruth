@@ -1,7 +1,7 @@
 import { log } from "node:console";
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import stackingListActions from 'src/modules/stacking/list/stackingListActions'
+import stackingListActions from 'src/modules/stackingPlan/list/stackingPlanListActions'
 import stackingListSelectros from 'src/modules/stacking/list/stackingListSelectors'
 import Currency from './../../shared/utils/Currency';
 function StackingPage() {

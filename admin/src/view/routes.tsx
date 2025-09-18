@@ -669,7 +669,7 @@ const privateRoutes = [
 
     path: '/stackingPlan/:id',
     loader: () =>
-      import('src/view/stacking/view/stackingViewPage'),
+      import('src/view/stackingPlan/view/stackingPlanViewPage'),
     permissionRequired: permissions.categoryRead,
     exact: true,
   },

@@ -52,7 +52,7 @@ const privateRoutes = [
   },
   {
     path: "/wallets",
-    loader: () => import("src/view/pages/wallet/Wallet"),
+    loader: () => import("src/view/pages/wallet/wallet"),
     permissionRequired: permissions.categoryRead,
     exact: true,
   },

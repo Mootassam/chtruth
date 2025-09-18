@@ -200,7 +200,7 @@ class StackingRepository {
 
     return records.map((record) => ({
       id: record.id,
-      label: record.title,
+      label: record.currency,
     }));
   }
 

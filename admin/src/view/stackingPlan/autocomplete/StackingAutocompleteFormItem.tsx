@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import CouponsService from 'src/modules/kyc/kycService';
+import CouponsService from 'src/modules/stackingPlan/stackingPlanService';
 import CouponsFormModal from 'src/view/kyc/form/KycFormModal';
 import AutocompleteInMemoryFormItem from 'src/view/shared/form/items/AutocompleteInMemoryFormItem';
 import { useFormContext } from 'react-hook-form';

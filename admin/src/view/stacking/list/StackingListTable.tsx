@@ -11,6 +11,7 @@ import ConfirmModal from 'src/view/shared/modals/ConfirmModal';
 import Spinner from 'src/view/shared/Spinner';
 import Pagination from 'src/view/shared/table/Pagination';
 import UserListItem from 'src/view/user/list/UserListItem';
+import StackingPlanListItem from 'src/view/stackingPlan/list/StackingPlanListItem';
 
 function StackingListTable() {
   const [recordIdToDestroy, setRecordIdToDestroy] = useState(null);
@@ -229,16 +230,20 @@ function StackingListTable() {
                   <td className="table-cell">
                     <UserListItem value={row.user} />
                   </td>
-                  <td className="table-cell">{row.currency}</td>
+                  <td className="table-cell">
+                    
+                       <StackingPlanListItem value={row.plan} />
+                    
+                    {row.currency}</td>
                   <td className="table-cell numeric">{row.amount}</td>
 
                   {/* ✅ Changed from row.apy → row.dailyRate */}
                   <td className="table-cell numeric">
-                    {row.dailyRate}%
+                    {row?.plan?.dailyRate}%
                   </td>
 
                   <td className="table-cell numeric">
-                    {row.minimumStake}
+                    {row?.plan?.minimumStake}
                   </td>
                   <td className="table-cell numeric">
                     {row.unstakingPeriod} days
