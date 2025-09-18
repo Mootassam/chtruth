@@ -1,6 +1,6 @@
 import { createSelector } from 'reselect';
 
-const selectRaw = (state) => state.vip.list;
+const selectRaw = (state) => state.plan.list;
 
 const selectLoading = createSelector(
   [selectRaw],
@@ -15,7 +15,8 @@ const selectExportLoading = createSelector(
 const selectRows = createSelector(
   [selectRaw],
   (raw) => raw.rows,
-);
+)
+
 
 const selectCount = createSelector(
   [selectRaw],

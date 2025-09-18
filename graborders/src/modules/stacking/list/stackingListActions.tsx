@@ -3,9 +3,9 @@ import selectors from 'src/modules/stacking/list/stackingListSelectors';
 import { i18n } from '../../../i18n';
 import Errors from 'src/modules/shared/error/errors';
 
-const prefix = 'VIP_LIST';
+const prefix = 'STACKING_LIST';
 
-const vipListActions = {
+const stackingListActions = {
 
   FETCH_STARTED: `${prefix}_FETCH_STARTED`,
   FETCH_SUCCESS: `${prefix}_FETCH_SUCCESS`,
@@ -25,29 +25,29 @@ const vipListActions = {
 
   doClearAllSelected() {
     return {
-      type: vipListActions.CLEAR_ALL_SELECTED,
+      type: stackingListActions.CLEAR_ALL_SELECTED,
     };
   },
 
   doToggleAllSelected() {
     return {
-      type: vipListActions.TOGGLE_ALL_SELECTED,
+      type: stackingListActions.TOGGLE_ALL_SELECTED,
     };
   },
 
   doToggleOneSelected(id) {
     return {
-      type: vipListActions.TOGGLE_ONE_SELECTED,
+      type: stackingListActions.TOGGLE_ONE_SELECTED,
       payload: id,
     };
   },
 
   doReset: () => async (dispatch) => {
     dispatch({
-      type: vipListActions.RESETED,
+      type: stackingListActions.RESETED,
     });
 
-    dispatch(vipListActions.doFetch());
+    dispatch(stackingListActions.doFetch());
   },
 
  
@@ -55,19 +55,19 @@ const vipListActions = {
   doChangePagination:
     (pagination) => async (dispatch, getState) => {
       dispatch({
-        type: vipListActions.PAGINATION_CHANGED,
+        type: stackingListActions.PAGINATION_CHANGED,
         payload: pagination,
       });
-      dispatch(vipListActions.doFetchCurrentFilter());
+      dispatch(stackingListActions.doFetchCurrentFilter());
     },
 
   doChangeSort: (sorter) => async (dispatch, getState) => {
     dispatch({
-      type: vipListActions.SORTER_CHANGED,
+      type: stackingListActions.SORTER_CHANGED,
       payload: sorter,
     });
 
-    dispatch(vipListActions.doFetchCurrentFilter());
+    dispatch(stackingListActions.doFetchCurrentFilter());
   },
 
   doFetchCurrentFilter:
@@ -77,7 +77,7 @@ const vipListActions = {
         getState(),
       );
       dispatch(
-        vipListActions.doFetch(filter, rawFilter, true),
+        stackingListActions.doFetch(filter, rawFilter, true),
       );
     },
 
@@ -86,7 +86,7 @@ const vipListActions = {
     async (dispatch, getState) => {
       try {
         dispatch({
-          type: vipListActions.FETCH_STARTED,
+          type: stackingListActions.FETCH_STARTED,
           payload: { filter, rawFilter, keepPagination },
         });
         const response = await stackingService.list(
@@ -95,8 +95,10 @@ const vipListActions = {
           selectors.selectLimit(getState()),
           selectors.selectOffset(getState()),
         );
+
+   
         dispatch({
-          type: vipListActions.FETCH_SUCCESS,
+          type: stackingListActions.FETCH_SUCCESS,
           payload: {
             rows: response.rows,
             count: response.count,
@@ -105,10 +107,10 @@ const vipListActions = {
       } catch (error) {
         Errors.handle(error);
         dispatch({
-          type: vipListActions.FETCH_ERROR,
+          type: stackingListActions.FETCH_ERROR,
         });
       }
     },
 };
 
-export default vipListActions;
+export default stackingListActions;

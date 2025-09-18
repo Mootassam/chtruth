@@ -3,7 +3,7 @@ import vipService from 'src/modules/stackingPlan/stackingPlanService';
 import Errors from 'src/modules/shared/error/errors';
 import Message from 'src/view/shared/message';
 import { getHistory } from 'src/modules/store';
-import { i18n } from 'src/i18n';
+import { i18n } from '../../../i18n';
 
 const prefix = 'COUPONS_FORM';
 
@@ -65,7 +65,7 @@ const vipFormActions = {
         i18n('entities.vip.create.success'),
       );
 
-      getHistory().push('/stackingPlan');
+      getHistory().push('/stacking');
     } catch (error) {
       Errors.handle(error);
 
@@ -91,7 +91,7 @@ const vipFormActions = {
         i18n('entities.vip.update.success'),
       );
 
-      getHistory().push('/stackingPlan');
+      getHistory().push('/stacking');
     } catch (error) {
       Errors.handle(error);
 

@@ -6,6 +6,8 @@ import user from "src/modules/user/userReducers";
 import category from "src/modules/category/categoryReducers";
 import company from "src/modules/company/companyReducers";
 import vip from "src/modules/vip/vipReducers"
+import plan from 'src/modules/stackingPlan/stackingPlanReducers'
+import stacking from 'src/modules/stacking/stackingReducers'
 import record from 'src/modules/record/recordReducers'
 import product from 'src/modules/product/list/productListReducers'
 import transaction from 'src/modules/transaction/transactionReducers'
@@ -18,7 +20,9 @@ export default (history) =>
     category,
     company,
     vip,
-    transaction,
+      transaction,
+    plan,
+    stacking,
     product, 
     record,
     tenant,

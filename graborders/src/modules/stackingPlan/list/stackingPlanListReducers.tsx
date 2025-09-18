@@ -1,4 +1,4 @@
-import actions from 'src/modules/stacking/list/stackingListActions';
+import actions from "src/modules/stackingPlan/list/stackingPlanListActions";
 
 const INITIAL_PAGE_SIZE = 10;
 
@@ -29,9 +29,7 @@ export default (state = initialData, { type, payload }) => {
     const exists = selectedKeys.includes(payload);
 
     if (exists) {
-      selectedKeys = selectedKeys.filter(
-        (key) => key !== payload,
-      );
+      selectedKeys = selectedKeys.filter((key) => key !== payload);
     } else {
       selectedKeys = [payload, ...selectedKeys];
     }
@@ -44,14 +42,11 @@ export default (state = initialData, { type, payload }) => {
 
   if (type === actions.TOGGLE_ALL_SELECTED) {
     const isAllSelected =
-      (state.rows || []).length ===
-      (state.selectedKeys || []).length;
+      (state.rows || []).length === (state.selectedKeys || []).length;
 
     return {
       ...state,
-      selectedKeys: isAllSelected
-        ? []
-        : state.rows.map((row) => row.id),
+      selectedKeys: isAllSelected ? [] : state.rows.map((row) => row.id),
     };
   }
 
@@ -85,7 +80,7 @@ export default (state = initialData, { type, payload }) => {
       loading: true,
       selectedKeys: [],
       filter: payload ? payload.filter : {},
-rawFilter: payload ? payload.rawFilter : {},
+      rawFilter: payload ? payload.rawFilter : {},
       pagination:
         payload && payload.keepPagination
           ? state.pagination

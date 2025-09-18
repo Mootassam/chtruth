@@ -10,21 +10,18 @@ import { useForm, FormProvider } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { QRCodeCanvas } from "qrcode.react";
 import FieldFormItem from "src/shared/form/FieldFormItem";
-import actions from 'src/modules/deposit/form/depositFormActions';
+import actions from "src/modules/deposit/form/depositFormActions";
 
 const schema = yup.object().shape({
-  orderno: yupFormSchemas.string(
-    i18n('entities.deposit.fields.orderno'),
-  ),
-  amount: yupFormSchemas.decimal(
-    i18n('entities.deposit.fields.amount'),{required:true}
-  ),
-  txid: yupFormSchemas.string(
-    i18n('entities.deposit.fields.txid'),{required:true}
-    
-  ),
+  orderno: yupFormSchemas.string(i18n("entities.deposit.fields.orderno")),
+  amount: yupFormSchemas.decimal(i18n("entities.deposit.fields.amount"), {
+    required: true,
+  }),
+  txid: yupFormSchemas.string(i18n("entities.deposit.fields.txid"), {
+    required: true,
+  }),
   rechargechannel: yupFormSchemas.string(
-    i18n('entities.deposit.fields.rechargechannel'),
+    i18n("entities.deposit.fields.rechargechannel")
   ),
 });
 
@@ -35,52 +32,54 @@ function Deposit() {
 
   const [initialValues] = useState(() => {
     return {
-      orderno: '',
+      orderno: "",
       amount: "",
-      txid: '',
+      txid: "",
       rechargechannel: "",
       rechargetime: "",
-      status: 'pending',
+      status: "pending",
     };
   });
 
   const form = useForm({
     resolver: yupResolver(schema),
-    mode: 'all',
+    mode: "all",
     defaultValues: initialValues,
   });
 
   const onSubmit = (values) => {
     // Generate order number in format: RE + YYYYMMDD + 7 random digits
     const now = new Date();
-    
+
     // Format date as YYYYMMDD
     const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const day = String(now.getDate()).padStart(2, "0");
     const dateStr = `${year}${month}${day}`;
-    
+
     // Generate 7 random digits
-    const randomDigits = Math.floor(Math.random() * 10000000).toString().padStart(7, '0');
-    
+    const randomDigits = Math.floor(Math.random() * 10000000)
+      .toString()
+      .padStart(7, "0");
+
     // Create order number
     values.orderno = `RE${dateStr}${randomDigits}`;
-    
+
     // Set recharge time to current date and time
     values.rechargetime = now.toISOString();
-    
+
     values.rechargechannel = selectedNetwork;
-    
+
     dispatch(actions.doCreate(values));
-    
+
     // Reset form fields after submission
     form.reset({
-      orderno: '',
+      orderno: "",
       amount: "",
-      txid: '',
+      txid: "",
       rechargechannel: "",
       rechargetime: "",
-      status: 'pending',
+      status: "pending",
     });
   };
 
@@ -88,13 +87,23 @@ function Deposit() {
   const networks = [
     { id: "btc", name: "Bitcoin", icon: "fab fa-btc", color: "#F3BA2F" },
     { id: "eth", name: "Ethereum", icon: "fab fa-ethereum", color: "#627EEA" },
-    { id: "usdt", name: "Tether", icon: "fas fa-dollar-sign", color: "#26A17B" },
+    {
+      id: "usdt",
+      name: "Tether",
+      icon: "fas fa-dollar-sign",
+      color: "#26A17B",
+    },
     { id: "sol", name: "Solana", icon: "fas fa-bolt", color: "#00FFA3" },
-    { id: "xrp", name: "Ripple", icon: "fas fa-exchange-alt", color: "#23292F" }
+    {
+      id: "xrp",
+      name: "Ripple",
+      icon: "fas fa-exchange-alt",
+      color: "#23292F",
+    },
   ];
 
-  const selectedNetworkData = useMemo(() => 
-    networks.find(network => network.id === selectedNetwork), 
+  const selectedNetworkData = useMemo(
+    () => networks.find((network) => network.id === selectedNetwork),
     [selectedNetwork]
   );
 
@@ -107,12 +116,12 @@ function Deposit() {
     <div className="depositContainer">
       {/* Header Section */}
       <SubHeader title="Deposit Crypto" />
-      
+
       {/* Network Selection - Changed to Dropdown */}
       <div className="networkSection">
         <div className="sectionHeading">Select Network</div>
         <div className="networkDropdownContainer">
-          <select 
+          <select
             className="networkDropdown"
             value={selectedNetwork}
             onChange={handleNetworkSelect}
@@ -123,12 +132,15 @@ function Deposit() {
               </option>
             ))}
           </select>
-          <div className="networkDropdownIcon" style={{ color: selectedNetworkData.color }}>
+          <div
+            className="networkDropdownIcon"
+            style={{ color: selectedNetworkData.color }}
+          >
             <i className={selectedNetworkData.icon} />
           </div>
         </div>
       </div>
-      
+
       {/* QR Code Section */}
       <div className="qrSection">
         <QRCodeCanvas
@@ -150,38 +162,34 @@ function Deposit() {
           </button>
         </div>
       </div>
-      
+
       {/* Form Section */}
       <FormProvider {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <div className="amountSection">
-           
+            <FieldFormItem
+              name="amount"
+              type="text"
+              label="Deposit amount"
+              className="textField"
+              className1="inputField"
+              className2="inputLabel"
+              className3="inputWrapper"
+              placeholder="Enter The Deposit Amount"
+            />
 
-               <FieldFormItem
-                          name="amount"
-                          type="text"
-                          label="Deposit amount"
-                          className="textField"
-                          className1="inputField"
-                          className2="inputLabel"
-                          className3="inputWrapper"
-                          placeholder="Enter The Deposit Amount"
-                        />
-
-                        <FieldFormItem
-                          name="txid"
-                          type="text"
-                          label="Transaction ID (TXID)"
-                          className="textField"
-                          className1="inputField"
-                          className2="inputLabel"
-                          className3="inputWrapper"
-                          placeholder="Enter The TXID"
-                        />
-       
-
+            <FieldFormItem
+              name="txid"
+              type="text"
+              label="Transaction ID (TXID)"
+              className="textField"
+              className1="inputField"
+              className2="inputLabel"
+              className3="inputWrapper"
+              placeholder="Enter The TXID"
+            />
           </div>
-          
+
           {/* Warning Section */}
           <div className="warningBox">
             <div className="warningHeader">
@@ -194,18 +202,14 @@ function Deposit() {
               permanent loss of your assets, which cannot be recovered.
             </div>
           </div>
-          
+
           {/* Deposit Button */}
-          <button
-            type="submit"
-            className="depositBtn"
-            id="depositBtn"
-          >
+          <button type="submit" className="depositBtn" id="depositBtn">
             Confirm Deposit
           </button>
         </form>
       </FormProvider>
-      
+
       {/* Network Details */}
       <div className="networkDetails">
         <div className="detailRow">
@@ -223,7 +227,7 @@ function Deposit() {
           <div className="detailValue">10-30 minutes</div>
         </div>
       </div>
-      
+
       {/* Toast Notification */}
       <div className="toastMsg" id="toast">
         Address copied to clipboard!
