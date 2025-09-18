@@ -1,4 +1,4 @@
-import listActions from 'src/modules/transaction/list/transactionListActions';
+import listActions from 'src/modules/message/list/messageListActions';
 import vipService from 'src/modules/message/messageService';
 import Errors from 'src/modules/shared/error/errors';
 import { i18n } from 'src/i18n';

@@ -5,7 +5,7 @@ import { i18n } from 'src/i18n';
 import actions from 'src/modules/stacking/form/stackingFormActions';
 import selectors from 'src/modules/stacking/form/stackingFormSelectors';
 import { getHistory } from 'src/modules/store';
-import StackingForm from 'src/view/stacking/form/StackingForm';
+import StackingForm from 'src/view/stacking/form/stackingForm';
 import ContentWrapper from 'src/view/layout/styles/ContentWrapper';
 import Breadcrumb from 'src/view/shared/Breadcrumb';
 import Spinner from 'src/view/shared/Spinner';

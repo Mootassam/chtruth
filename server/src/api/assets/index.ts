@@ -23,6 +23,11 @@ export default (app) => {
     `/tenant/:tenantId/assets`,
     require('./AssetsList').default,
   );
+
+    app.get(
+    `/tenant/:tenantId/assetsmobile`,
+    require('./AssetsListMobile').default,
+  );
   app.get(
     `/tenant/:tenantId/assets/:id`,
     require('./AssetsFind').default,

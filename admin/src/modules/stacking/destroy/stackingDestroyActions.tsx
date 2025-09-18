@@ -1,5 +1,5 @@
-import listActions from 'src/modules/transaction/list/transactionListActions';
-import vipService from 'src/modules/stacking/stackingService';
+import listActions from 'src/modules/stacking/list/stackingListActions';
+import vipService from 'src/modules/stackingPlan/stackingPlanService';
 import Errors from 'src/modules/shared/error/errors';
 import { i18n } from 'src/i18n';
 import { getHistory } from 'src/modules/store';

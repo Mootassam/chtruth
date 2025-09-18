@@ -451,10 +451,12 @@ const en = {
       fields: {
         id: 'ID',
         user: 'User',
+        plan: 'Plan',
         currency: 'Currency',
         amount: 'Amount',
-        apy: 'APY (%)',
+        dailyRate: 'Daily Rate (%)', // ✅ replaced apy → dailyRate
         minimumStake: 'Minimum Stake',
+        maxStake: 'Maximum Stake', // ✅ new field
         unstakingPeriod: 'Unstaking Period (days)',
         status: 'Status',
         startDate: 'Start Date',
@@ -492,6 +494,58 @@ const en = {
       },
       destroyAll: {
         success: 'Staking orders successfully deleted',
+      },
+    },
+    stackingPlan: {
+      menu: 'Stacking Plan',
+      list: {
+        title: 'Stacking Plan List',
+      },
+      fields: {
+        id: 'ID',
+        user: 'User',
+        currency: 'Currency',
+        amount: 'Amount',
+        dailyRate: 'Daily Rate (%)', // ✅ replaced apy → dailyRate
+        minimumStake: 'Minimum Stake',
+        maxStake: 'Maximum Stake', // ✅ new field
+        unstakingPeriod: 'Unstaking Period (days)',
+        status: 'Status',
+        startDate: 'Start Date',
+        endDate: 'End Date',
+        earnedRewards: 'Earned Rewards',
+        createdBy: 'Created By',
+        updatedBy: 'Updated By',
+        tenant: 'Tenant',
+        importHash: 'Import Hash',
+      },
+      enumerators: {
+        status: {
+          active: 'Active',
+          completed: 'Completed',
+          cancelled: 'Cancelled',
+        },
+      },
+      new: {
+        title: 'Add New Stacking Order',
+      },
+      edit: {
+        title: 'Edit Stacking Order',
+      },
+      view: {
+        title: 'Stacking Order Details',
+      },
+      create: {
+        success: 'Stacking order successfully saved',
+      },
+      update: {
+        success: 'Stacking order successfully updated',
+      },
+      destroy: {
+        success: 'Stacking order successfully deleted',
+      },
+      destroyAll: {
+        success: 'Stacking orders successfully deleted',
       },
     },
 
@@ -3285,6 +3339,7 @@ const en = {
 
   dashboard: {
     home: 'Home',
+    plan: 'Stacking Plan',
     users: 'Users',
     userManagement: 'User Management',
     kyc: 'KYC',

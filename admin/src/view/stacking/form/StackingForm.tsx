@@ -9,30 +9,19 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import InputFormItem from 'src/view/shared/form/items/InputFormItem';
 import UserAutocompleteFormItem from 'src/view/user/autocomplete/UserAutocompleteFormItem';
 import SelectFormItem from 'src/view/shared/form/items/SelectFormItem';
+import StackingPlanAutocompleteFormItem from 'src/view/stackingPlan/autocomplete/StackingAutocompleteFormItem';
 
 const schema = yup.object().shape({
   user: yupFormSchemas.relationToOne(
     i18n('entities.stacking.fields.user'),
     { required: true },
   ),
-  currency: yupFormSchemas.string(
-    i18n('entities.stacking.fields.currency'),
+  plan: yupFormSchemas.relationToOne(
+    i18n('entities.stacking.fields.plan'),
     { required: true },
   ),
   amount: yupFormSchemas.decimal(
     i18n('entities.stacking.fields.amount'),
-    { required: true },
-  ),
-  apy: yupFormSchemas.decimal(
-    i18n('entities.stacking.fields.apy'),
-    { required: true },
-  ),
-  minimumStake: yupFormSchemas.decimal(
-    i18n('entities.stacking.fields.minimumStake'),
-    { required: true },
-  ),
-  unstakingPeriod: yupFormSchemas.integer(
-    i18n('entities.stacking.fields.unstakingPeriod'),
     { required: true },
   ),
   status: yupFormSchemas.enumerator(
@@ -55,20 +44,25 @@ const schema = yup.object().shape({
   ),
 });
 
-
 function StackingForm(props) {
+  const formatDateTime = (date) => {
+    if (!date) return '';
+    const d = new Date(date);
+    const pad = (n) => n.toString().padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(
+      d.getDate(),
+    )}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  };
+
   const [initialValues] = useState(() => {
     const record = props.record || {};
     return {
       user: record.user || null,
-      currency: record.currency || '',
+      plan: record.plan || null,
       amount: record.amount,
-      apy: record.apy,
-      minimumStake: record.minimumStake,
-      unstakingPeriod: record.unstakingPeriod,
       status: record.status || 'active',
-      startDate: record.startDate,
-      endDate: record.endDate,
+      startDate: formatDateTime(record.startDate),
+      endDate: formatDateTime(record.endDate),
       earnedRewards: record.earnedRewards,
     };
   });
@@ -94,6 +88,7 @@ function StackingForm(props) {
       <FormProvider {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <div className="row">
+            {/* User */}
             <div className="col-lg-6 col-md-8 col-12">
               <UserAutocompleteFormItem
                 name="user"
@@ -102,14 +97,16 @@ function StackingForm(props) {
               />
             </div>
 
+            {/* Plan */}
             <div className="col-lg-6 col-md-8 col-12">
-              <InputFormItem
-                name="currency"
-                label={i18n('entities.stacking.fields.currency')}
+              <StackingPlanAutocompleteFormItem
+                name="plan"
+                label={i18n('entities.stacking.fields.plan')}
                 required={true}
               />
             </div>
 
+            {/* Amount */}
             <div className="col-lg-6 col-md-8 col-12">
               <InputFormItem
                 name="amount"
@@ -119,46 +116,36 @@ function StackingForm(props) {
               />
             </div>
 
-            <div className="col-lg-6 col-md-8 col-12">
-              <InputFormItem
-                name="apy"
-                label={i18n('entities.stacking.fields.apy')}
-                required={true}
-                type="number"
-              />
-            </div>
-
-            <div className="col-lg-6 col-md-8 col-12">
-              <InputFormItem
-                name="minimumStake"
-                label={i18n('entities.stacking.fields.minimumStake')}
-                required={true}
-                type="number"
-              />
-            </div>
-
-            <div className="col-lg-6 col-md-8 col-12">
-              <InputFormItem
-                name="unstakingPeriod"
-                label={i18n('entities.stacking.fields.unstakingPeriod')}
-                required={true}
-                type="number"
-              />
-            </div>
-
+            {/* Status */}
             <div className="col-lg-6 col-md-8 col-12">
               <SelectFormItem
                 name="status"
                 label={i18n('entities.stacking.fields.status')}
                 options={[
-                  { value: 'active', label: i18n('entities.stacking.enumerators.status.active') },
-                  { value: 'completed', label: i18n('entities.stacking.enumerators.status.completed') },
-                  { value: 'cancelled', label: i18n('entities.stacking.enumerators.status.cancelled') },
+                  {
+                    value: 'active',
+                    label: i18n(
+                      'entities.stacking.enumerators.status.active',
+                    ),
+                  },
+                  {
+                    value: 'completed',
+                    label: i18n(
+                      'entities.stacking.enumerators.status.completed',
+                    ),
+                  },
+                  {
+                    value: 'cancelled',
+                    label: i18n(
+                      'entities.stacking.enumerators.status.cancelled',
+                    ),
+                  },
                 ]}
                 required={true}
               />
             </div>
 
+            {/* Start Date */}
             <div className="col-lg-6 col-md-8 col-12">
               <InputFormItem
                 name="startDate"
@@ -167,6 +154,7 @@ function StackingForm(props) {
               />
             </div>
 
+            {/* End Date */}
             <div className="col-lg-6 col-md-8 col-12">
               <InputFormItem
                 name="endDate"
@@ -175,6 +163,7 @@ function StackingForm(props) {
               />
             </div>
 
+            {/* Earned Rewards */}
             <div className="col-lg-6 col-md-8 col-12">
               <InputFormItem
                 name="earnedRewards"

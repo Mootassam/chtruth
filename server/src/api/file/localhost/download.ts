@@ -2,7 +2,7 @@ import FileStorage from '../../../services/file/fileStorage';
 import ApiResponseHandler from '../../apiResponseHandler';
 
 /**
- * Download a file from 162.213.249.168.
+ * Download a file from localhost.
  */
 export default async (req, res, next) => {
   try {

@@ -1,12 +1,14 @@
+
+
 import React from 'react';
 
 import { i18n } from 'src/i18n';
 import ContentWrapper from 'src/view/layout/styles/ContentWrapper';
 import PageTitle from 'src/view/shared/styles/PageTitle';
 import { Col, Container, Row } from 'react-bootstrap';
-import StackingListToolbar from 'src/view/stacking/list/StackingListToolbar';
-import StackingListTable from 'src/view/stacking/list/StackingListTable';
-import StackingListFilter from 'src/view/stacking/list/StackingListFilter';
+import StackingListToolbar from 'src/view/stacking/list/stackingListToolbar';
+import StackingListTable from 'src/view/stacking/list/stackingListTable';
+import StackingListFilter from 'src/view/stacking/list/stackingListFilter';
 
 function StackingListPage(props) {
   return (

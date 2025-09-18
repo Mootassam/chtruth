@@ -89,6 +89,7 @@ require("./assets").default(routes, io);
 
 require("./withdraw").default(routes, io);
 require("./stacking").default(routes, io);
+require("./stackingPlan").default(routes, io);
 require("./spot").default(routes, io);
 require("./futures").default(routes, io);
 require("./userMessage").default(routes, io);

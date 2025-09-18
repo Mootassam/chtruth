@@ -1,14 +1,14 @@
-const backendUrl = `http://162.213.249.168:8080/api`;
+const backendUrl = `http://localhost:8080/api`;
 
 // SwaggerUI Documentation URL
 // Leave black if documentation should be hidden
-const apiDocumentationUrl = `http://162.213.249.168:8080/documentation`;
+const apiDocumentationUrl = `http://localhost:8080/documentation`;
 
 /**
  * Frontend Url.
  */
 const frontendUrl = {
-  host: '162.213.249.168:3000',
+  host: 'localhost:3000',
   protocol: 'http',
 };
 

@@ -1,8 +1,14 @@
-import React, { useState } from "react";
-
+import { log } from "node:console";
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import stackingListActions from 'src/modules/stacking/list/stackingListActions'
+import stackingListSelectros from 'src/modules/stacking/list/stackingListSelectors'
+import Currency from './../../shared/utils/Currency';
 function StackingPage() {
   const [activeTab, setActiveTab] = useState("options");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const dispatch = useDispatch(); 
+  const listStacking = useSelector(stackingListSelectros.selectRows)
   const [modalData, setModalData] = useState({
     crypto: "",
     apy: "",
@@ -34,6 +40,14 @@ function StackingPage() {
     const apy = parseFloat(modalData.apy);
     return (amount * (apy / 100)).toFixed(4);
   };
+
+
+useEffect(() => {
+  dispatch(stackingListActions.doFetch())
+  return () => {
+    
+  };
+}, []);
 
   return (
     <div className="stacking-container">
@@ -75,77 +89,49 @@ function StackingPage() {
       {/* Staking Options */}
       {activeTab === "options" && (
         <div className="stacking-options">
-          <div className="stacking-option-card">
-            <div className="stacking-option-header">
-              <div className="stacking-option-icon stacking-eth-icon">
-                <i className="fab fa-ethereum" />
-              </div>
-              <div className="stacking-option-name">Ethereum</div>
-              <div className="stacking-option-apy">5.2% APY</div>
-            </div>
-            <div className="stacking-option-details">
-              <div className="stacking-detail-label">Minimum Stake</div>
-              <div className="stacking-detail-value">0.1 ETH</div>
-            </div>
-            <div className="stacking-option-details">
-              <div className="stacking-detail-label">Unstaking Period</div>
-              <div className="stacking-detail-value">7 days</div>
-            </div>
-            <div
-              className="stacking-stake-button"
-              onClick={() => openStakeModal('Ethereum', '5.2', 2.5, 0.1, 'ETH')}
-            >
-              Stake ETH
-            </div>
-          </div>
+{listStacking.map((item) => (
+  <div className="stacking-option-card" key={item.currency}>
+    <div className="stacking-option-header">
+      <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+        <img
+          src={`https://images.weserv.nl/?url=https://bin.bnbstatic.com/static/assets/logos/${item.currency}.png`}
+          style={{ width: 30, height: 30 }}
+          alt={item.currency}
+        />
+        <div className="stacking-option-name">{item.currency}</div>
+      </div>
+      <div className="stacking-option-apy">{item.dailyRate}% Daily</div> {/* changed from APY */}
+    </div>
 
-          <div className="stacking-option-card">
-            <div className="stacking-option-header">
-              <div className="stacking-option-icon stacking-btc-icon">
-                <i className="fab fa-btc" />
-              </div>
-              <div className="stacking-option-name">Bitcoin</div>
-              <div className="stacking-option-apy">3.8% APY</div>
-            </div>
-            <div className="stacking-option-details">
-              <div className="stacking-detail-label">Minimum Stake</div>
-              <div className="stacking-detail-value">0.01 BTC</div>
-            </div>
-            <div className="stacking-option-details">
-              <div className="stacking-detail-label">Unstaking Period</div>
-              <div className="stacking-detail-value">14 days</div>
-            </div>
-            <div
-              className="stacking-stake-button"
-              onClick={() => openStakeModal('Bitcoin', '3.8', 0.125, 0.01, 'BTC')}
-            >
-              Stake BTC
-            </div>
-          </div>
+    <div className="stacking-option-details">
+      <div className="stacking-detail-label">Minimum Stake</div>
+      <div className="stacking-detail-value">{item.minimumStake} {item.currency}</div>
+    </div>
 
-          <div className="stacking-option-card">
-            <div className="stacking-option-header">
-              <div className="stacking-option-icon stacking-bnb-icon">
-                <i className="fas fa-coins" />
-              </div>
-              <div className="stacking-option-name">BNB</div>
-              <div className="stacking-option-apy">7.5% APY</div>
-            </div>
-            <div className="stacking-option-details">
-              <div className="stacking-detail-label">Minimum Stake</div>
-              <div className="stacking-detail-value">1 BNB</div>
-            </div>
-            <div className="stacking-option-details">
-              <div className="stacking-detail-label">Unstaking Period</div>
-              <div className="stacking-detail-value">3 days</div>
-            </div>
-            <div
-              className="stacking-stake-button"
-              onClick={() => openStakeModal('BNB', '7.5', 15.5, 1, 'BNB')}
-            >
-              Stake BNB
-            </div>
-          </div>
+    <div className="stacking-option-details">
+      <div className="stacking-detail-label">Unstaking Period</div>
+      <div className="stacking-detail-value">{item.unstakingPeriod} days</div>
+    </div>
+
+    <div
+      className="stacking-stake-button"
+      onClick={() =>
+        openStakeModal(
+          item.currency,            // name
+          item.dailyRate,           // daily rate
+          item.earnedRewards,       // earned rewards or any value you want
+          item.minimumStake,        // minimum stake
+          item.currency             // currency
+        )
+      }
+    >
+      Stake {item.currency}
+    </div>
+  </div>
+))}
+
+
+          
         </div>
       )}
 

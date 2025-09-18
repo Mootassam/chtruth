@@ -97,7 +97,7 @@ class StackingRepository {
     let record = await MongooseRepository.wrapWithSessionIfExists(
       Stacking(options.database)
         .findById(id)
-        .populate("auditor")
+        .populate("user")
         .populate("createdBy"),
       options
     );
@@ -153,7 +153,7 @@ class StackingRepository {
       .skip(skip)
       .limit(limitEscaped)
       .sort(sort)
-      .populate("auditor")
+      .populate("user")
       .populate("createdBy");
 
     const count = await Stacking(options.database).countDocuments(criteria);

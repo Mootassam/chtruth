@@ -77,14 +77,14 @@ export default class depositService {
     const params = {
       filter,
       orderBy,
-      limit,
+      limit:50,
       offset,
     };
 
     const tenantId = AuthCurrentTenant.get();
 
     const response = await authAxios.get(
-      `/tenant/${tenantId}/assets`,
+      `/tenant/${tenantId}/assetsmobile`,
       {
         params,
       },

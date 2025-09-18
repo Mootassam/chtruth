@@ -33,7 +33,10 @@ function StackingListTable() {
   const doCloseDestroyConfirmModal = () => setRecordIdToDestroy(null);
 
   const doChangeSort = (field) => {
-    const order = sorter.field === field && sorter.order === 'ascend' ? 'descend' : 'ascend';
+    const order =
+      sorter.field === field && sorter.order === 'ascend'
+        ? 'descend'
+        : 'ascend';
     dispatch(actions.doChangeSort({ field, order }));
   };
 
@@ -46,8 +49,10 @@ function StackingListTable() {
     dispatch(destroyActions.doDestroy(id));
   };
 
-  const doToggleAllSelected = () => dispatch(actions.doToggleAllSelected());
-  const doToggleOneSelected = (id) => dispatch(actions.doToggleOneSelected(id));
+  const doToggleAllSelected = () =>
+    dispatch(actions.doToggleAllSelected());
+  const doToggleOneSelected = (id) =>
+    dispatch(actions.doToggleOneSelected(id));
 
   return (
     <div className="spot-list-container">
@@ -67,7 +72,7 @@ function StackingListTable() {
                   </div>
                 )}
               </th>
-              <th 
+              <th
                 className="sortable-header"
                 onClick={() => doChangeSort('user')}
               >
@@ -78,7 +83,7 @@ function StackingListTable() {
                   </span>
                 )}
               </th>
-              <th 
+              <th
                 className="sortable-header"
                 onClick={() => doChangeSort('currency')}
               >
@@ -89,7 +94,7 @@ function StackingListTable() {
                   </span>
                 )}
               </th>
-              <th 
+              <th
                 className="sortable-header"
                 onClick={() => doChangeSort('amount')}
               >
@@ -100,18 +105,21 @@ function StackingListTable() {
                   </span>
                 )}
               </th>
-              <th 
+
+              {/* ✅ Changed from apy → dailyRate */}
+              <th
                 className="sortable-header"
-                onClick={() => doChangeSort('apy')}
+                onClick={() => doChangeSort('dailyRate')}
               >
-                {i18n('entities.stacking.fields.apy')}
-                {sorter.field === 'apy' && (
+                {i18n('entities.stacking.fields.dailyRate')}
+                {sorter.field === 'dailyRate' && (
                   <span className="sort-icon">
                     {sorter.order === 'ascend' ? '↑' : '↓'}
                   </span>
                 )}
               </th>
-              <th 
+
+              <th
                 className="sortable-header"
                 onClick={() => doChangeSort('minimumStake')}
               >
@@ -122,7 +130,7 @@ function StackingListTable() {
                   </span>
                 )}
               </th>
-              <th 
+              <th
                 className="sortable-header"
                 onClick={() => doChangeSort('unstakingPeriod')}
               >
@@ -133,7 +141,7 @@ function StackingListTable() {
                   </span>
                 )}
               </th>
-              <th 
+              <th
                 className="sortable-header"
                 onClick={() => doChangeSort('earnedRewards')}
               >
@@ -144,7 +152,7 @@ function StackingListTable() {
                   </span>
                 )}
               </th>
-              <th 
+              <th
                 className="sortable-header"
                 onClick={() => doChangeSort('startDate')}
               >
@@ -155,7 +163,7 @@ function StackingListTable() {
                   </span>
                 )}
               </th>
-              <th 
+              <th
                 className="sortable-header"
                 onClick={() => doChangeSort('endDate')}
               >
@@ -166,7 +174,7 @@ function StackingListTable() {
                   </span>
                 )}
               </th>
-              <th 
+              <th
                 className="sortable-header"
                 onClick={() => doChangeSort('status')}
               >
@@ -186,7 +194,9 @@ function StackingListTable() {
                 <td colSpan={12} className="loading-cell">
                   <div className="loading-container">
                     <Spinner />
-                    <span className="loading-text">Loading data...</span>
+                    <span className="loading-text">
+                      Loading data...
+                    </span>
                   </div>
                 </td>
               </tr>
@@ -210,7 +220,9 @@ function StackingListTable() {
                         type="checkbox"
                         className="form-checkbox"
                         checked={selectedKeys.includes(row.id)}
-                        onChange={() => doToggleOneSelected(row.id)}
+                        onChange={() =>
+                          doToggleOneSelected(row.id)
+                        }
                       />
                     </div>
                   </td>
@@ -219,34 +231,54 @@ function StackingListTable() {
                   </td>
                   <td className="table-cell">{row.currency}</td>
                   <td className="table-cell numeric">{row.amount}</td>
-                  <td className="table-cell numeric">{row.apy}%</td>
-                  <td className="table-cell numeric">{row.minimumStake}</td>
-                  <td className="table-cell numeric">{row.unstakingPeriod} days</td>
-                  <td className="table-cell numeric">{row.earnedRewards}</td>
+
+                  {/* ✅ Changed from row.apy → row.dailyRate */}
+                  <td className="table-cell numeric">
+                    {row.dailyRate}%
+                  </td>
+
+                  <td className="table-cell numeric">
+                    {row.minimumStake}
+                  </td>
+                  <td className="table-cell numeric">
+                    {row.unstakingPeriod} days
+                  </td>
+                  <td className="table-cell numeric">
+                    {row.earnedRewards}
+                  </td>
                   <td className="table-cell">{row.startDate}</td>
                   <td className="table-cell">{row.endDate}</td>
                   <td className="table-cell">
-                    <span className={`status-badge ${
-                      row.status === 'active' ? 'active' : 
-                      row.status === 'completed' ? 'completed' : 
-                      'canceled'
-                    }`}>
+                    <span
+                      className={`status-badge ${
+                        row.status === 'active'
+                          ? 'active'
+                          : row.status === 'completed'
+                          ? 'completed'
+                          : 'canceled'
+                      }`}
+                    >
                       {row.status}
                     </span>
                   </td>
                   <td className="actions-cell">
                     <div className="actions-container">
                       {hasPermissionToEdit && (
-                        <Link className="btn-action edit" to={`/stacking/${row.id}/edit`}>
+                        <Link
+                          className="btn-action edit"
+                          to={`/stacking/${row.id}/edit`}
+                        >
                           <i className="fas fa-edit"></i>
                           <span>{i18n('common.edit')}</span>
                         </Link>
                       )}
                       {hasPermissionToDestroy && (
-                        <button 
-                          className="btn-action delete" 
-                          type="button" 
-                          onClick={() => doOpenDestroyConfirmModal(row.id)}
+                        <button
+                          className="btn-action delete"
+                          type="button"
+                          onClick={() =>
+                            doOpenDestroyConfirmModal(row.id)
+                          }
                         >
                           <i className="fas fa-trash"></i>
                           <span>{i18n('common.destroy')}</span>
@@ -261,7 +293,11 @@ function StackingListTable() {
       </div>
 
       <div className="pagination-container">
-        <Pagination onChange={doChangePagination} disabled={loading} pagination={pagination} />
+        <Pagination
+          onChange={doChangePagination}
+          disabled={loading}
+          pagination={pagination}
+        />
       </div>
 
       {recordIdToDestroy && (

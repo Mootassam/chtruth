@@ -1,4 +1,4 @@
-import listActions from 'src/modules/transaction/list/transactionListActions';
+import listActions from 'src/modules/kyc/list/kycListActions';
 import KycService from 'src/modules/kyc/kycService';
 import Errors from 'src/modules/shared/error/errors';
 import { i18n } from 'src/i18n';

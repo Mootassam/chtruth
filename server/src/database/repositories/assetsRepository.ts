@@ -342,7 +342,64 @@ static async convertAsset(data, options: IRepositoryOptions) {
 
     return { rows, count };
   }
+  static async findAndCountAllMobile(
+    { filter, limit = 0, offset = 0, orderBy = "" },
+    options: IRepositoryOptions
+  ) {
+    const currentTenant = MongooseRepository.getCurrentTenant(options);
+  const currentUser = MongooseRepository.getCurrentUser(options);
 
+    let criteriaAnd: any = [];
+
+    criteriaAnd.push({
+      tenant: currentTenant.id,
+    });
+
+      criteriaAnd.push({
+      user: currentUser.id,
+    });
+
+    if (filter) {
+      if (filter.id) {
+        criteriaAnd.push({
+          ["_id"]: MongooseQueryUtils.uuid(filter.id),
+        });
+      }
+
+      if (filter.user) {
+        criteriaAnd.push({
+          user: filter.user,
+        });
+      }
+
+      if (filter.idnumer) {
+        criteriaAnd.push({
+          idnumer: {
+            $regex: MongooseQueryUtils.escapeRegExp(filter.idnumer),
+            $options: "i",
+          },
+        });
+      }
+    }
+
+    const sort = MongooseQueryUtils.sort(orderBy || "createdAt_ASC");
+    const skip = Number(offset || 0) || undefined;
+    const limitEscaped = Number(limit || 0) || undefined;
+    const criteria = criteriaAnd.length ? { $and: criteriaAnd } : null;
+    let rows = await Wallet(options.database)
+      .find(criteria)
+      .skip(skip)
+      .limit(limitEscaped)
+      .sort(sort)
+      .populate("user")
+      .populate("createdBy");
+
+    const count = await Wallet(options.database).countDocuments(criteria);
+
+    rows = await Promise.all(rows.map(this._fillFileDownloadUrls));
+
+    return { rows, count };
+  }
   static async findAllAutocomplete(search, limit, options: IRepositoryOptions) {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
 

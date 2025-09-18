@@ -5,40 +5,25 @@ export default (database) => {
   try {
     return database.model("stacking");
   } catch (error) {
-    // continue, because model doesnt exist
+    // continue, because model doesn't exist
   }
-
- const StakingSchema = new Schema(
+const StackingSchema = new Schema(
     {
       user: {
         type: Schema.Types.ObjectId,
         ref: "user",
-        required: true,
+        required: true, // tracks which user made this stake
       },
 
-      currency: {
-        type: String,
-        required: true,
+      plan: {
+        type: Schema.Types.ObjectId,
+        ref: "stackingPlan",
+        required: true, // reference to the staking plan chosen
       },
 
       amount: {
         type: Number,
-        required: true,
-      },
-
-      apy: {
-        type: Number, // store as percent e.g., 5.2 for 5.2%
-        required: true,
-      },
-
-      minimumStake: {
-        type: Number,
-        required: true,
-      },
-
-      unstakingPeriod: {
-        type: Number, // in days
-        required: true,
+        required: true, // how much the user staked
       },
 
       status: {
@@ -53,12 +38,12 @@ export default (database) => {
       },
 
       endDate: {
-        type: Date,
+        type: Date, // calculated based on plan.unstakingPeriod
       },
 
       earnedRewards: {
         type: Number,
-        default: 0,
+        default: 0, // updated over time
       },
 
       tenant: {
@@ -67,34 +52,26 @@ export default (database) => {
         required: true,
       },
 
-      createdBy: {
-        type: Schema.Types.ObjectId,
-        ref: "user",
-      },
-
-      updatedBy: {
-        type: Schema.Types.ObjectId,
-        ref: "user",
-      },
-
+      createdBy: { type: Schema.Types.ObjectId, ref: "user" },
+      updatedBy: { type: Schema.Types.ObjectId, ref: "user" },
       importHash: { type: String },
     },
     { timestamps: true }
   );
 
 
-  StakingSchema.virtual("id").get(function () {
+  StackingSchema.virtual("id").get(function () {
     // @ts-ignore
     return this._id.toHexString();
   });
 
-  StakingSchema.set("toJSON", {
+  StackingSchema.set("toJSON", {
     getters: true,
   });
 
-  StakingSchema.set("toObject", {
+  StackingSchema.set("toObject", {
     getters: true,
   });
 
-  return database.model("stacking", StakingSchema);
+  return database.model("stacking", StackingSchema);
 };

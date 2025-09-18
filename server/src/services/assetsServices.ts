@@ -107,6 +107,14 @@ export default class AssetsServices {
     );
   }
 
+
+    async findAndCountAllMobile(args) {
+    return AssetRepository.findAndCountAllMobile(
+      args,
+      this.options,
+    );
+  }
+
   async import(data, importHash) {
     if (!importHash) {
       throw new Error400(

@@ -145,4 +145,14 @@ export default [
     className: 'menu-li side-menue sub-item',
     permissionRequired: permissions.categoryRead,
   },
+
+    {
+    id: 'mining-project',
+    path: '/stackingPlan',
+    exact: true,
+    icon: 'fas fa-digging',
+    label: i18n('dashboard.plan'),
+    className: 'menu-li side-menue sub-item',
+    permissionRequired: permissions.categoryRead,
+  },
 ].filter(Boolean);

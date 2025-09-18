@@ -592,7 +592,7 @@ const privateRoutes = [
   {
     path: '/stacking',
     loader: () =>
-      import('src/view/stacking/list/StackingListPage'),
+      import('src/view/stacking/list/stackingListPage'),
     permissionRequired: permissions.categoryRead,
     exact: true,
   },
@@ -600,7 +600,7 @@ const privateRoutes = [
   {
     path: '/stacking/new',
     loader: () =>
-      import('src/view/stacking/form/StackingFormPage'),
+      import('src/view/stacking/form/stackingFormPage'),
     permissionRequired: permissions.categoryRead,
     exact: true,
   },
@@ -608,7 +608,7 @@ const privateRoutes = [
     path: '/stacking/importer',
     loader: () =>
       import(
-        'src/view/stacking/importer/StackingImporterPage'
+        'src/view/stacking/importer/stackingImporterPage'
       ),
     permissionRequired: permissions.categoryRead,
     exact: true,
@@ -616,7 +616,7 @@ const privateRoutes = [
   {
     path: '/stacking/:id/edit',
     loader: () =>
-      import('src/view/stacking/form/StackingFormPage'),
+      import('src/view/stacking/form/stackingForm'),
     permissionRequired: permissions.categoryRead,
     exact: true,
   },
@@ -624,11 +624,55 @@ const privateRoutes = [
 
     path: '/stacking/:id',
     loader: () =>
-      import('src/view/stacking/view/StackingViewPage'),
+      import('src/view/stacking/view/stackingViewPage'),
     permissionRequired: permissions.categoryRead,
     exact: true,
   },
 
+
+
+  
+  // Stacking routes
+
+  {
+    path: '/stackingPlan',
+    loader: () =>
+      import('src/view/stackingPlan/list/StackingPlanListPage'),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+
+  {
+    path: '/stackingPlan/new',
+    loader: () =>
+      import('src/view/stackingPlan/form/StackingPlanFormPage'),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+  {
+    path: '/stacking/importer',
+    loader: () =>
+      import(
+        'src/view/stackingPlan/importer/stackingPlanImporterPage'
+      ),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+  {
+    path: '/stackingPlan/:id/edit',
+    loader: () =>
+      import('src/view/stackingPlan/form/StackingPlanFormPage'),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+  {
+
+    path: '/stackingPlan/:id',
+    loader: () =>
+      import('src/view/stacking/view/stackingViewPage'),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
 
   //  coupons routes
 
