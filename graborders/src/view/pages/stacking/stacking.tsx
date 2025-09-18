@@ -1,6 +1,6 @@
-import { log } from "node:console";
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useWatch } from 'react-hook-form';
 import stackingPlanListActions from "src/modules/stackingPlan/list/stackingPlanListActions";
 import stackingPlanListSelectros from "src/modules/stackingPlan/list/stackingPlanListSelectors";
 import stckingListSelectors from "src/modules/stacking/list/stackingListSelectors";
@@ -15,6 +15,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import stackingFormAction from "src/modules/stacking/form/stackingFormActions";
 import FieldFormItem from "src/shared/form/FieldFormItem";
 import authSelectors from "src/modules/auth/authSelectors";
+
 const schema = yup.object().shape({
   user: yupFormSchemas.relationToOne(i18n("entities.stacking.fields.user"), {}),
   plan: yupFormSchemas.relationToOne(i18n("entities.stacking.fields.plan"), {}),
@@ -37,6 +38,7 @@ const schema = yup.object().shape({
     {}
   ),
 });
+
 function StackingPage() {
   const [activeTab, setActiveTab] = useState("options");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -52,7 +54,7 @@ function StackingPage() {
     daily: "",
     balance: 0,
     min: 0,
-    max:0,
+    max: 0,
     symbol: "",
     plan: "",
     unstakingPeriod: "",
@@ -69,20 +71,80 @@ function StackingPage() {
       earnedRewards: "",
     };
   });
+  
   const form = useForm({
     resolver: yupResolver(schema),
     mode: "all",
     defaultValues: initialValues,
   });
 
+  // Use useWatch to get the amount field value from react-hook-form
+  const watchedAmount = useWatch({
+    control: form.control,
+    name: 'amount',
+    defaultValue: ''
+  });
+
+  // Update stakeAmount when the form field changes
+  useEffect(() => {
+    setStakeAmount(watchedAmount || '');
+  }, [watchedAmount]);
+
   const onSubmit = (values) => {
-    values.startDate = Date.now();
-    // values.endDate = modalData.unstakingPeriod
+    values.startDate = new Date();
+    
+    // Calculate the endDate by adding unstakingPeriod days to startDate
+    const endDate = new Date(values.startDate);
+    endDate.setDate(endDate.getDate() + parseInt(modalData.unstakingPeriod));
+    values.endDate = endDate.toISOString();
+
     values.status = "active";
     values.plan = modalData.plan;
     values.user = currentUser.id;
     dispatch(stackingFormAction.doCreate(values));
+    closeStakeModal();
   };
+
+  const calculateRewards = () => {
+    if (!stakeAmount || isNaN(stakeAmount) || stakeAmount <= 0) return "0";
+    
+    const amount = parseFloat(stakeAmount);
+    const dailyRate = parseFloat(modalData.daily);
+    const unstakingPeriod = parseFloat(modalData.unstakingPeriod);
+
+    // Total Reward = Amount * (Daily Rate / 100) * Unstaking Period
+    const totalReward = amount * (dailyRate / 100) * unstakingPeriod;
+    
+    return totalReward.toFixed(6);
+  };
+
+  const validateStake = () => {
+    const amount = parseFloat(stakeAmount);
+    const userBalance = balances[modalData.symbol] || 0;
+
+    // Check if input is a valid number
+    if (isNaN(amount) || amount <= 0) {
+      return { isValid: false, message: "Enter an amount" };
+    }
+
+    // Check if user has enough balance
+    if (amount > userBalance) {
+      return { isValid: false, message: "Insufficient balance" };
+    }
+
+    // Check if amount is within plan limits
+    if (amount < modalData.min) {
+      return { isValid: false, message: `Min: ${modalData.min}` };
+    }
+
+    if (amount > modalData.max) {
+      return { isValid: false, message: `Max: ${modalData.max}` };
+    }
+
+    // If all checks pass
+    return { isValid: true, message: "Confirm Stake" };
+  };
+
   const openStakeModal = (
     crypto,
     daily,
@@ -104,25 +166,16 @@ function StackingPage() {
       unstakingPeriod,
     });
     setIsModalOpen(true);
+    setStakeAmount(""); // Reset amount when opening modal
+    form.setValue('amount', ''); // Also reset the form value
   };
 
   const closeStakeModal = () => {
     setIsModalOpen(false);
     setStakeAmount("");
+    form.setValue('amount', ''); // Reset form value when closing modal
   };
 
-  const handleStake = () => {
-    // Handle stake logic here
-    alert(`Staking ${stakeAmount} ${modalData.symbol}`);
-    closeStakeModal();
-  };
-
-  const calculateRewards = () => {
-    if (!stakeAmount || isNaN(stakeAmount) || stakeAmount <= 0) return "0";
-    const amount = parseFloat(stakeAmount);
-    const apy = parseFloat(modalData.daily);
-    return (amount * (apy / 100)).toFixed(4);
-  };
   const [balances, setBalances] = useState<{ [key: string]: number }>({});
 
   const balance = (symbol?) => {
@@ -132,6 +185,7 @@ function StackingPage() {
     }, {});
     setBalances(formatted);
   };
+  
   useEffect(() => {
     dispatch(stackingPlanListActions.doFetch());
     dispatch(stackingListActions.doFetch());
@@ -139,6 +193,18 @@ function StackingPage() {
 
     return () => {};
   }, [dispatch]);
+
+  // Get validation result for the button
+  const validation = validateStake();
+  const isButtonDisabled = !validation.isValid;
+  const buttonText = validation.message;
+
+  const daysElpased =(item) => { 
+    const now = new Date()
+     const startDate = new Date(item.startDate);
+  const remaininig =  Math.floor((now.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24))
+return remaininig
+  }
 
   return (
     <div className="stacking-container">
@@ -200,8 +266,7 @@ function StackingPage() {
                 </div>
                 <div className="stacking-option-apy">
                   {item.dailyRate}% Daily
-                </div>{" "}
-                {/* changed from APY */}
+                </div>
               </div>
 
               <div className="stacking-option-details">
@@ -222,12 +287,12 @@ function StackingPage() {
                 className="stacking-stake-button"
                 onClick={() =>
                   openStakeModal(
-                    item.currency, // name
-                    item.dailyRate, // daily rate
-                    item.earnedRewards, // earned rewards or any value you want
-                    item.minimumStake, // minimum stake
+                    item.currency,
+                    item.dailyRate,
+                    item.earnedRewards,
+                    item.minimumStake,
                     item.maxStake,
-                    item.currency, // currency
+                    item.currency,
                     item.id,
                     item.unstakingPeriod
                   )
@@ -241,57 +306,61 @@ function StackingPage() {
       )}
 
       {/* Active Stakes */}
-      {activeTab === "active" && (
-        <div className="stacking-active-stakes">
-          <div className="stacking-section-title">
-            <span>Active Stakes</span>
-            <span className="stacking-view-all">View All</span>
-          </div>
-          {listStacking.map((item) => (
-            <div className="stacking-stake-item">
-              <div className="stacking-stake-header">
-                <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
-                  <img
-                    src={`https://images.weserv.nl/?url=https://bin.bnbstatic.com/static/assets/logos/${item?.plan?.currency}.png`}
-                    style={{ width: 25, height: 25 }}
-                    alt={item.currency}
-                  />
-                  <div className="stacking-stake-crypto">
-                    {item?.plan?.currency}
-                  </div>
-                </div>
-                <div className="stacking-stake-amount">
-                  {item.amount} {item?.plan?.currency}
-                </div>
-              </div>
-              <div className="stacking-stake-details">
-                <div className="stacking-stake-label">Daily</div>
-                <div className="stacking-stake-value">
-                  {item?.plan?.dailyRate}%
-                </div>
-              </div>
-              <div className="stacking-stake-details">
-                <div className="stacking-stake-label">Earned</div>
-                <div className="stacking-stake-value stacking-value-positive">
-                  0.12 ETH
-                </div>
-              </div>
-              <div className="stacking-stake-details">
-                <div className="stacking-stake-label">Duration</div>
-                <div className="stacking-stake-value">
-                  15/{item?.plan?.unstakingPeriod} days
-                </div>
-              </div>
-              <div className="stacking-progress-bar">
-                <div
-                  className="stacking-progress-fill"
-                  style={{ width: "50%" }}
-                />
+     {activeTab === "active" && (
+  <div className="stacking-active-stakes">
+    <div className="stacking-section-title">
+      <span>Active Stakes</span>
+      <span className="stacking-view-all">View All</span>
+    </div>
+    {listStacking.map((item) => {
+      const progressPercentage = Math.min(100, (daysElpased(item) / item?.plan?.unstakingPeriod) * 100);
+      
+      return (
+        <div className="stacking-stake-item" key={item.id}>
+          <div className="stacking-stake-header">
+            <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+              <img
+                src={`https://images.weserv.nl/?url=https://bin.bnbstatic.com/static/assets/logos/${item?.plan?.currency}.png`}
+                style={{ width: 25, height: 25 }}
+                alt={item.currency}
+              />
+              <div className="stacking-stake-crypto">
+                {item?.plan?.currency}
               </div>
             </div>
-          ))}
+            <div className="stacking-stake-amount">
+              {item.amount} {item?.plan?.currency}
+            </div>
+          </div>
+          <div className="stacking-stake-details">
+            <div className="stacking-stake-label">Daily</div>
+            <div className="stacking-stake-value">
+              {item?.plan?.dailyRate}%
+            </div>
+          </div>
+          <div className="stacking-stake-details">
+            <div className="stacking-stake-label">Earned</div>
+            <div className="stacking-stake-value stacking-value-positive">
+              {item.earnedRewards || 0} {item?.plan?.currency}
+            </div>
+          </div>
+          <div className="stacking-stake-details">
+            <div className="stacking-stake-label">Duration</div>
+            <div className="stacking-stake-value">
+              {daysElpased(item)}/{item?.plan?.unstakingPeriod} days
+            </div>
+          </div>
+          <div className="stacking-progress-bar">
+            <div
+              className="stacking-progress-fill"
+              style={{ width: `${progressPercentage}%` }}
+            />
+          </div>
         </div>
-      )}
+      );
+    })}
+  </div>
+)}
 
       {/* Stake Modal */}
       {isModalOpen && (
@@ -313,16 +382,17 @@ function StackingPage() {
                 <div className="stacking-input-group">
                   <FieldFormItem
                     name="amount"
-                    type="text"
+                    type="number"
                     label="Amount to Stake"
                     className="textField"
                     className1="inputField"
                     className2="inputLabel"
                     className3="inputWrapper"
                     placeholder="Enter The Amount"
+                    // No onChange needed - handled by useWatch
                   />
                   <div className="stacking-balance-info">
-                    Balance: <span>{balances[modalData.symbol]}</span>{" "}
+                    Balance: <span>{balances[modalData.symbol] || 0}</span>{" "}
                     <span>{modalData.symbol}</span>
                   </div>
                 </div>
@@ -344,18 +414,21 @@ function StackingPage() {
                     </span>
                   </div>
                   <div className="stacking-modal-detail">
-                    <span>Estimated Rewards</span>
+                    <span>Estimated Total Rewards</span>
                     <span>
-                      {calculateRewards()} {modalData.symbol}/year
+                      {calculateRewards()} {modalData.symbol}
                     </span>
                   </div>
                 </div>
-                <div
-                  onClick={form.handleSubmit(onSubmit)}
-                  className="stacking-modal-button"
+                <button
+                  type="submit"
+                  disabled={isButtonDisabled}
+                  className={`stacking-modal-button ${
+                    isButtonDisabled ? 'stacking-modal-button-disabled' : ''
+                  }`}
                 >
-                  Confirm Stake
-                </div>
+                  {buttonText}
+                </button>
               </form>
             </FormProvider>
           </div>
@@ -645,37 +718,6 @@ function StackingPage() {
           width: 65%;
         }
 
-        /* Bottom Navigation */
-        .stacking-bottom-nav {
-          position: fixed;
-          bottom: 0;
-          width: 100%;
-          max-width: 400px;
-          background-color: #000000;
-          display: flex;
-          justify-content: space-around;
-          padding: 15px 0;
-          border-top: 1px solid #2a2a2a;
-        }
-
-        .stacking-nav-item {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          color: #aaaaaa;
-          font-size: 12px;
-          cursor: pointer;
-        }
-
-        .stacking-nav-icon {
-          font-size: 20px;
-          margin-bottom: 4px;
-        }
-
-        .stacking-nav-active {
-          color: #f3ba2f;
-        }
-
         /* Modal */
         .stacking-modal-overlay {
           position: fixed;
@@ -771,10 +813,19 @@ function StackingPage() {
           font-weight: bold;
           cursor: pointer;
           transition: background-color 0.2s ease;
+          border: none;
+          width: 100%;
+          font-size: 16px;
         }
 
-        .stacking-modal-button:hover {
+        .stacking-modal-button:hover:not(:disabled) {
           background-color: #e0a91c;
+        }
+
+        .stacking-modal-button-disabled {
+          background-color: #2a2a2a !important;
+          color: #aaaaaa !important;
+          cursor: not-allowed !important;
         }
 
         @media (max-width: 350px) {

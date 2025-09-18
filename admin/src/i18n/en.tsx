@@ -511,6 +511,7 @@ const en = {
         maxStake: 'Maximum Stake', // ✅ new field
         unstakingPeriod: 'Unstaking Period (days)',
         status: 'Status',
+        estimatedRewards:"Estimated Rewards",
         startDate: 'Start Date',
         endDate: 'End Date',
         earnedRewards: 'Earned Rewards',

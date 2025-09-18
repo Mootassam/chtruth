@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
-import { i18n } from 'src/i18n';
-import yupFormSchemas from 'src/modules/shared/yup/yupFormSchemas';
-import ButtonIcon from 'src/view/shared/ButtonIcon';
-import FormWrapper from 'src/view/shared/styles/FormWrapper';
+import React, { useState, useEffect } from 'react';
+import { useForm, FormProvider, useWatch } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
+import FormWrapper from 'src/view/shared/styles/FormWrapper';
 import InputFormItem from 'src/view/shared/form/items/InputFormItem';
 import SelectFormItem from 'src/view/shared/form/items/SelectFormItem';
+import ButtonIcon from 'src/view/shared/ButtonIcon';
+import { i18n } from 'src/i18n';
+import yupFormSchemas from 'src/modules/shared/yup/yupFormSchemas';
 
 const schema = yup.object().shape({
   currency: yupFormSchemas.enumerator(
@@ -33,6 +33,10 @@ const schema = yup.object().shape({
     i18n('entities.stackingPlan.fields.unstakingPeriod'),
     { required: true },
   ),
+  estimatedRewards: yupFormSchemas.decimal(
+    i18n('entities.stackingPlan.fields.estimatedRewards'),
+    { required: false },
+  ),
   status: yupFormSchemas.enumerator(
     i18n('entities.stackingPlan.fields.status'),
     {
@@ -47,10 +51,11 @@ function StackingPlanForm(props) {
     const record = props.record || {};
     return {
       currency: record.currency || '',
-      dailyRate: record.dailyRate,
-      minimumStake: record.minimumStake,
-      maxStake: record.maxStake,
-      unstakingPeriod: record.unstakingPeriod,
+      dailyRate: record.dailyRate || 0,
+      minimumStake: record.minimumStake || 0,
+      maxStake: record.maxStake || 0,
+      unstakingPeriod: record.unstakingPeriod || 0,
+      estimatedRewards: record.estimatedRewards || 0,
       status: record.status || 'active',
     };
   });
@@ -61,15 +66,32 @@ function StackingPlanForm(props) {
     defaultValues: initialValues,
   });
 
+  // Watch dailyRate and unstakingPeriod
+  const dailyRate = useWatch({ control: form.control, name: 'dailyRate' });
+  const unstakingPeriod = useWatch({ control: form.control, name: 'unstakingPeriod' });
+
+  // Calculate estimated rewards automatically
+  useEffect(() => {
+    const dr = Number(dailyRate);
+    const period = Number(unstakingPeriod);
+
+    if (!isNaN(dr) && !isNaN(period) && dr >= 0 && period >= 0) {
+      const rewards = dr * period; // total % reward
+      form.setValue('estimatedRewards', rewards.toFixed(2), {
+        shouldValidate: true,
+        shouldDirty: true,
+      });
+    } else {
+      form.setValue('estimatedRewards', 0);
+    }
+  }, [dailyRate, unstakingPeriod, form]);
+
   const onSubmit = (values) => {
+
     props.onSubmit(props.record?.id, values);
   };
 
-  const onReset = () => {
-    Object.keys(initialValues).forEach((key) => {
-      form.setValue(key, initialValues[key]);
-    });
-  };
+  const onReset = () => form.reset(initialValues);
 
   return (
     <FormWrapper>
@@ -88,7 +110,7 @@ function StackingPlanForm(props) {
                   { value: 'BTC', label: 'BTC' },
                   { value: 'ETH', label: 'ETH' },
                 ]}
-                required={true}
+                required
               />
             </div>
 
@@ -96,8 +118,8 @@ function StackingPlanForm(props) {
               <InputFormItem
                 name="dailyRate"
                 label={i18n('entities.stackingPlan.fields.dailyRate')}
-                required={true}
                 type="number"
+                required
               />
             </div>
 
@@ -105,8 +127,8 @@ function StackingPlanForm(props) {
               <InputFormItem
                 name="minimumStake"
                 label={i18n('entities.stackingPlan.fields.minimumStake')}
-                required={true}
                 type="number"
+                required
               />
             </div>
 
@@ -114,8 +136,8 @@ function StackingPlanForm(props) {
               <InputFormItem
                 name="maxStake"
                 label={i18n('entities.stackingPlan.fields.maxStake')}
-                required={true}
                 type="number"
+                required
               />
             </div>
 
@@ -123,8 +145,17 @@ function StackingPlanForm(props) {
               <InputFormItem
                 name="unstakingPeriod"
                 label={i18n('entities.stackingPlan.fields.unstakingPeriod')}
-                required={true}
                 type="number"
+                required
+              />
+            </div>
+
+            <div className="col-lg-6 col-md-8 col-12">
+              <InputFormItem
+                name="estimatedRewards"
+                label={i18n('entities.stackingPlan.fields.estimatedRewards')}
+                type="number"
+                disabled
               />
             </div>
 
@@ -133,11 +164,11 @@ function StackingPlanForm(props) {
                 name="status"
                 label={i18n('entities.stackingPlan.fields.status')}
                 options={[
-                  { value: 'active', label: i18n('entities.stackingPlan.enumerators.status.active') },
-                  { value: 'completed', label: i18n('entities.stackingPlan.enumerators.status.completed') },
-                  { value: 'cancelled', label: i18n('entities.stackingPlan.enumerators.status.cancelled') },
+                  { value: 'active', label: 'Active' },
+                  { value: 'completed', label: 'Completed' },
+                  { value: 'cancelled', label: 'Cancelled' },
                 ]}
-                required={true}
+                required
               />
             </div>
           </div>
@@ -145,39 +176,34 @@ function StackingPlanForm(props) {
           <div className="form-buttons">
             <button
               className="btn btn-primary"
+              type="submit"
               disabled={props.saveLoading}
-              type="button"
-              onClick={form.handleSubmit(onSubmit)}
             >
-              <ButtonIcon
-                loading={props.saveLoading}
-                iconClass="far fa-save"
-              />
+              <ButtonIcon loading={props.saveLoading} iconClass="far fa-save" />
               &nbsp;{i18n('common.save')}
             </button>
 
             <button
               className="btn btn-light"
               type="button"
-              disabled={props.saveLoading}
               onClick={onReset}
+              disabled={props.saveLoading}
             >
               <i className="fas fa-undo"></i>
               &nbsp;{i18n('common.reset')}
             </button>
 
-            {props.onCancel ? (
+            {props.onCancel && (
               <button
                 className="btn btn-light"
                 type="button"
-                disabled={props.saveLoading}
                 onClick={() => props.onCancel()}
+                disabled={props.saveLoading}
               >
                 <i className="fas fa-times"></i>
                 &nbsp;{i18n('common.cancel')}
               </button>
-              
-            ) : null}
+            )}
           </div>
         </form>
       </FormProvider>

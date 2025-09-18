@@ -5,17 +5,28 @@ import Error404 from "../../errors/Error404";
 import { IRepositoryOptions } from "./IRepositoryOptions";
 import FileRepository from "./fileRepository";
 import Stacking from "../models/stacking";
+import StackingPlan from "../models/stackingPlan"; // Import the StackingPlan model
 
 class StackingRepository {
   static async create(data, options: IRepositoryOptions) {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
-
     const currentUser = MongooseRepository.getCurrentUser(options);
 
+    // Calculate endDate based on plan's unstakingPeriod
+    const plan = await StackingPlan(options.database).findById(data.plan);
+    if (!plan) {
+      throw new Error404();
+    }
+    
+
+    const endDate = new Date(data.startDate);
+    endDate.setDate(endDate.getDate() + plan.unstakingPeriod);
+    
     const [record] = await Stacking(options.database).create(
       [
         {
           ...data,
+          endDate,
           tenant: currentTenant.id,
           createdBy: currentUser.id,
           updatedBy: currentUser.id,
@@ -97,14 +108,16 @@ class StackingRepository {
     let record = await MongooseRepository.wrapWithSessionIfExists(
       Stacking(options.database)
         .findById(id)
-        .populate("user")
-        .populate("createdBy"),
+        .populate("plan"),
       options
     );
 
     if (!record || String(record.tenant) !== String(currentTenant.id)) {
       throw new Error404();
     }
+
+    // Process rewards and status on-demand when fetching a stacking
+    record = await this._processStacking(record, options);
 
     return this._fillFileDownloadUrls(record);
   }
@@ -134,6 +147,18 @@ class StackingRepository {
         });
       }
 
+      if (filter.plan) {
+        criteriaAnd.push({
+          plan: filter.plan,
+        });
+      }
+
+      if (filter.status) {
+        criteriaAnd.push({
+          status: filter.status,
+        });
+      }
+
       if (filter.idnumer) {
         criteriaAnd.push({
           idnumer: {
@@ -154,14 +179,90 @@ class StackingRepository {
       .limit(limitEscaped)
       .sort(sort)
       .populate("plan")
-      .populate("user");
+    
 
     const count = await Stacking(options.database).countDocuments(criteria);
 
+    // Process rewards and status for all rows
+    rows = await Promise.all(rows.map(row => this._processStacking(row, options)));
     rows = await Promise.all(rows.map(this._fillFileDownloadUrls));
+
 
     return { rows, count };
   }
+
+
+  // Process stacking rewards and status
+  static async _processStacking(record, options: IRepositoryOptions) {
+    // Only process active stackings
+    if (record.status !== 'active') {
+      return record;
+    }
+
+    const now = new Date();
+    const endDate = new Date(record.endDate);
+    
+    // Check if stacking has completed
+    if (now >= endDate) {
+      // Update status to completed
+      await Stacking(options.database).updateOne(
+        { _id: record._id },
+        {
+          status: 'completed',
+          updatedBy: MongooseRepository.getCurrentUser(options).id,
+        },
+        options
+      );
+      
+      // Update the record object
+      record.status = 'completed';
+      
+      // Create audit log
+      await this._createAuditLog(
+        AuditLogRepository.UPDATE,
+        record._id,
+        { status: 'completed' },
+        options
+      );
+      
+      return record;
+    }
+    
+    // Calculate rewards for active stacking
+    const startDate = new Date(record.startDate);
+    const daysElapsed = Math.floor((now.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+  
+    
+    // Calculate rewards based on daily rate and elapsed days
+    const dailyRate = record.plan.dailyRate;
+    const earnedRewards = record.amount * (dailyRate / 100) * daysElapsed;
+    // Update if rewards have changed
+    if (earnedRewards !== record.earnedRewards) {
+      await Stacking(options.database).updateOne(
+        { _id: record._id },
+        {
+          earnedRewards,
+          updatedBy: MongooseRepository.getCurrentUser(options).id,
+        },
+        options
+      );
+      
+
+      // Update the record object
+      record.earnedRewards = earnedRewards;
+      
+      // Create audit log
+      await this._createAuditLog(
+        AuditLogRepository.UPDATE,
+        record._id,
+        { earnedRewards },
+        options
+      );
+    }
+    
+    return record;
+  }
+
 
   static async findAllAutocomplete(search, limit, options: IRepositoryOptions) {
     const currentTenant = MongooseRepository.getCurrentTenant(options);

@@ -99,9 +99,7 @@ const FuturesModal: React.FC<FuturesModalProps> = ({ isOpen, onClose, direction 
             </div>
             <div className="pair-name">BTC/USDT</div>
           </div>
-          <button className="close-btn" onClick={onClose}>
-            <i className="fas fa-times"></i>
-          </button>
+         
         </div>
         
         {/* Trade in progress display */}
@@ -137,11 +135,7 @@ const FuturesModal: React.FC<FuturesModalProps> = ({ isOpen, onClose, direction 
                     New Trade
                   </button>
                 </>
-              ) : (
-                <button className="trade-action-btn secondary" onClick={onClose}>
-                  Cancel Trade
-                </button>
-              )}
+              ) : ""}
             </div>
           </div>
         )}

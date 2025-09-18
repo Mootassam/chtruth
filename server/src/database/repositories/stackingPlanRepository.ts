@@ -154,7 +154,6 @@ class StackingRepository {
       .limit(limitEscaped)
       .sort(sort)
       .populate("user")
-      .populate("createdBy");
 
     const count = await StackingPlan(options.database).countDocuments(criteria);
 

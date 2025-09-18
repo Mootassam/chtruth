@@ -8,7 +8,7 @@ export default (database) => {
     // continue, because model doesn't exist
   }
 
-const StackingPlanSchema = new Schema(
+  const StackingPlanSchema = new Schema(
     {
       currency: {
         type: String,
@@ -35,6 +35,7 @@ const StackingPlanSchema = new Schema(
         type: Number, // in days
         required: true,
       },
+  
 
       tenant: {
         type: Schema.Types.ObjectId,
