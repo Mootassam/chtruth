@@ -3,10 +3,10 @@ import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import stackingPlanListActions from "src/modules/stackingPlan/list/stackingPlanListActions";
 import stackingPlanListSelectros from "src/modules/stackingPlan/list/stackingPlanListSelectors";
-import stckingListSelectors from 'src/modules/stacking/list/stackingListSelectors'
+import stckingListSelectors from "src/modules/stacking/list/stackingListSelectors";
 import stackingListSelectors from "src/modules/stacking/list/stackingListSelectors";
 import stackingListActions from "src/modules/stacking/list/stackingListActions";
-import assetsListSelector from 'src/modules/assets/list/assetsListSelectors'
+import assetsListSelector from "src/modules/assets/list/assetsListSelectors";
 import yupFormSchemas from "src/modules/shared/yup/yupFormSchemas";
 import { i18n } from "../../../i18n";
 import * as yup from "yup";
@@ -18,7 +18,9 @@ import authSelectors from "src/modules/auth/authSelectors";
 const schema = yup.object().shape({
   user: yupFormSchemas.relationToOne(i18n("entities.stacking.fields.user"), {}),
   plan: yupFormSchemas.relationToOne(i18n("entities.stacking.fields.plan"), {}),
-  amount: yupFormSchemas.decimal(i18n("entities.stacking.fields.amount"), {required:true}),
+  amount: yupFormSchemas.decimal(i18n("entities.stacking.fields.amount"), {
+    required: true,
+  }),
   status: yupFormSchemas.enumerator(i18n("entities.stacking.fields.status"), {
     options: ["active", "completed", "cancelled"],
   }),
@@ -42,14 +44,15 @@ function StackingPage() {
   const listPlanStacking = useSelector(stackingPlanListSelectros.selectRows);
   const currentUser = useSelector(authSelectors.selectCurrentUser);
   const stackingActive = useSelector(stackingListSelectors.selectRows);
-const listStacking = useSelector(stckingListSelectors.selectRows); 
-const assets = useSelector(assetsListSelector.selectRows); 
+  const listStacking = useSelector(stckingListSelectors.selectRows);
+  const assets = useSelector(assetsListSelector.selectRows);
 
   const [modalData, setModalData] = useState({
     crypto: "",
     daily: "",
     balance: 0,
     min: 0,
+    max:0,
     symbol: "",
     plan: "",
     unstakingPeriod: "",
@@ -85,6 +88,7 @@ const assets = useSelector(assetsListSelector.selectRows);
     daily,
     balance,
     min,
+    max,
     symbol,
     plan,
     unstakingPeriod
@@ -94,6 +98,7 @@ const assets = useSelector(assetsListSelector.selectRows);
       daily,
       balance,
       min,
+      max,
       symbol,
       plan,
       unstakingPeriod,
@@ -120,24 +125,20 @@ const assets = useSelector(assetsListSelector.selectRows);
   };
   const [balances, setBalances] = useState<{ [key: string]: number }>({});
 
-  const balance =(symbol?) => { 
-   const formatted = assets.reduce(
-        (acc, item) => {
-          acc[item.symbol] = item.amount;
-          return acc;
-        },
-        {}
-      );
-        setBalances(formatted);
-  }
+  const balance = (symbol?) => {
+    const formatted = assets.reduce((acc, item) => {
+      acc[item.symbol] = item.amount;
+      return acc;
+    }, {});
+    setBalances(formatted);
+  };
   useEffect(() => {
     dispatch(stackingPlanListActions.doFetch());
     dispatch(stackingListActions.doFetch());
-    balance()
+    balance();
 
     return () => {};
   }, [dispatch]);
-
 
   return (
     <div className="stacking-container">
@@ -225,6 +226,7 @@ const assets = useSelector(assetsListSelector.selectRows);
                     item.dailyRate, // daily rate
                     item.earnedRewards, // earned rewards or any value you want
                     item.minimumStake, // minimum stake
+                    item.maxStake,
                     item.currency, // currency
                     item.id,
                     item.unstakingPeriod
@@ -248,19 +250,25 @@ const assets = useSelector(assetsListSelector.selectRows);
           {listStacking.map((item) => (
             <div className="stacking-stake-item">
               <div className="stacking-stake-header">
-                                <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
-                   <img
+                <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+                  <img
                     src={`https://images.weserv.nl/?url=https://bin.bnbstatic.com/static/assets/logos/${item?.plan?.currency}.png`}
                     style={{ width: 25, height: 25 }}
                     alt={item.currency}
                   />
-                <div className="stacking-stake-crypto">{item?.plan?.currency}</div>
+                  <div className="stacking-stake-crypto">
+                    {item?.plan?.currency}
+                  </div>
                 </div>
-                <div className="stacking-stake-amount">{item.amount} {item?.plan?.currency}</div>
+                <div className="stacking-stake-amount">
+                  {item.amount} {item?.plan?.currency}
+                </div>
               </div>
               <div className="stacking-stake-details">
                 <div className="stacking-stake-label">Daily</div>
-                <div className="stacking-stake-value">{item?.plan?.dailyRate}%</div>
+                <div className="stacking-stake-value">
+                  {item?.plan?.dailyRate}%
+                </div>
               </div>
               <div className="stacking-stake-details">
                 <div className="stacking-stake-label">Earned</div>
@@ -270,7 +278,9 @@ const assets = useSelector(assetsListSelector.selectRows);
               </div>
               <div className="stacking-stake-details">
                 <div className="stacking-stake-label">Duration</div>
-                <div className="stacking-stake-value">15/{item?.plan?.unstakingPeriod} days</div>
+                <div className="stacking-stake-value">
+                  15/{item?.plan?.unstakingPeriod} days
+                </div>
               </div>
               <div className="stacking-progress-bar">
                 <div
@@ -328,6 +338,12 @@ const assets = useSelector(assetsListSelector.selectRows);
                     </span>
                   </div>
                   <div className="stacking-modal-detail">
+                    <span>Maximum Stake</span>
+                    <span>
+                      {modalData.max} {modalData.symbol}
+                    </span>
+                  </div>
+                  <div className="stacking-modal-detail">
                     <span>Estimated Rewards</span>
                     <span>
                       {calculateRewards()} {modalData.symbol}/year
@@ -335,7 +351,7 @@ const assets = useSelector(assetsListSelector.selectRows);
                   </div>
                 </div>
                 <div
-                 onClick={form.handleSubmit(onSubmit)}
+                  onClick={form.handleSubmit(onSubmit)}
                   className="stacking-modal-button"
                 >
                   Confirm Stake
