@@ -3,7 +3,6 @@ import selectors from 'src/modules/withdraw/list/withdrawListSelectors';
 import { i18n } from 'src/i18n';
 import exporterFields from 'src/modules/withdraw/list/withdrawListExporterFields';
 import Errors from 'src/modules/shared/error/errors';
-import Exporter from 'src/modules/shared/exporter/exporter';
 
 const prefix = 'VIP_LIST';
 
@@ -70,11 +69,7 @@ const vipListActions = {
         null,
       );
 
-      new Exporter(
-        exporterFields,
-        i18n('entities.vip.exporterFileName'),
-      ).transformAndExportAsExcelFile(response.rows);
-
+ 
       dispatch({
         type: vipListActions.EXPORT_SUCCESS,
       });
@@ -127,7 +122,7 @@ const vipListActions = {
         const response = await withdrawService.list(
           filter,
           selectors.selectOrderBy(getState()),
-          selectors.selectLimit(getState()),
+    100,
           selectors.selectOffset(getState()),
         );
         dispatch({

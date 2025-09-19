@@ -138,11 +138,26 @@ function MyWallet() {
   }, []);
 
   // Pre-calculate asset values to minimize computation during render
-  const assetValues = useMemo(() => {
-    return listAssets.map(asset => {
+  const { assetValues, totalValue, portfolioChange, isLoadingTotal } = useMemo(() => {
+    if (isMarketDataLoading && Object.keys(marketData).length === 0) {
+      return { 
+        assetValues: [], 
+        totalValue: 0, 
+        portfolioChange: 0, 
+        isLoadingTotal: true 
+      };
+    }
+    
+    let totalCurrentValue = 0;
+    let totalPreviousValue = 0;
+    
+    const calculatedAssetValues = listAssets.map(asset => {
       if (asset.symbol === 'USDT') {
+        const value = parseFloat(asset.amount || "0");
+        totalCurrentValue += value;
+        totalPreviousValue += value; // USDT doesn't change in value
         return {
-          value: parseFloat(asset.amount || "0"),
+          value,
           change: 0,
           isPositive: true,
           marketPrice: 1
@@ -154,7 +169,14 @@ function MyWallet() {
       const marketPrice = parseFloat(ticker?.c || "0");
       const assetAmount = parseFloat(asset.amount || "0");
       const value = assetAmount * marketPrice;
+      
+      // Calculate the previous value based on the 24h change percentage
       const change = ticker ? parseFloat(ticker.P) : 0;
+      const previousValue = value / (1 + (change / 100));
+      
+      totalCurrentValue += value;
+      totalPreviousValue += previousValue;
+      
       const isPositive = change >= 0;
 
       return {
@@ -164,20 +186,19 @@ function MyWallet() {
         marketPrice
       };
     });
-  }, [listAssets, marketData]);
-
-  // Calculate total portfolio value using pre-calculated asset values
-  const { totalValue, isLoadingTotal } = useMemo(() => {
-    if (isMarketDataLoading && Object.keys(marketData).length === 0) {
-      return { totalValue: 0, isLoadingTotal: true };
-    }
     
-    const value = assetValues.reduce((total, assetValue) => {
-      return total + (assetValue.value || 0);
-    }, 0);
+    // Calculate portfolio change percentage
+    const portfolioChangeValue = totalPreviousValue > 0 
+      ? ((totalCurrentValue - totalPreviousValue) / totalPreviousValue) * 100 
+      : 0;
     
-    return { totalValue: value, isLoadingTotal: false };
-  }, [assetValues, isMarketDataLoading, marketData]);
+    return { 
+      assetValues: calculatedAssetValues, 
+      totalValue: totalCurrentValue, 
+      portfolioChange: portfolioChangeValue, 
+      isLoadingTotal: false 
+    };
+  }, [listAssets, marketData, isMarketDataLoading]);
 
   // Fetch assets only once on component mount
   useEffect(() => {
@@ -291,8 +312,8 @@ function MyWallet() {
                   maximumFractionDigits: 2
                 })}
               </div>
-              <div className="wallet-balance-change">
-                Real-time prices
+              <div className={`wallet-balance-change ${portfolioChange >= 0 ? 'positive' : 'negative'}`}>
+                {portfolioChange >= 0 ? '+' : ''}{portfolioChange.toFixed(2)}%
               </div>
             </>
           )}
@@ -461,8 +482,15 @@ function MyWallet() {
         }
 
         .wallet-balance-change {
-          color: #00C076;
           font-size: 14px;
+        }
+
+        .wallet-balance-change.positive {
+          color: #00C076;
+        }
+
+        .wallet-balance-change.negative {
+          color: #FF6838;
         }
 
         .quick-actions {

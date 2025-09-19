@@ -14,7 +14,7 @@ export default (database) => {
       // ✅ Deposit, Withdraw, Convert
       type: {
         type: String,
-        enum: ["deposit", "withdraw", "convert_in", "convert_out"],
+        enum: ["deposit", "withdraw", "convert_in", "convert_out","stacking"],
         required: true,
       },
      referenceId: {

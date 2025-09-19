@@ -4,7 +4,8 @@ import Errors from 'src/modules/shared/error/errors';
 import Message from 'src/view/shared/message';
 import { getHistory } from 'src/modules/store';
 import { i18n } from '../../../i18n';
-
+import listActions from 'src/modules/stacking/list/stackingListActions';
+import assetsListActions from 'src/modules/assets/list/assetsListActions'
 const prefix = 'COUPONS_FORM';
 
 const vipFormActions = {
@@ -64,7 +65,8 @@ const vipFormActions = {
       Message.success(
         i18n('entities.vip.create.success'),
       );
-
+      dispatch(listActions.doFetchCurrentFilter());
+dispatch(assetsListActions.doFetch())
       getHistory().push('/stacking');
     } catch (error) {
       Errors.handle(error);

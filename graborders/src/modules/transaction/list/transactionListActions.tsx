@@ -98,7 +98,7 @@ const transactionListActions = {
         const response = await TransactionService.list(
           filter,
           selectors.selectOrderBy(getState()),
-          selectors.selectLimit(getState()),
+          200,
           selectors.selectOffset(getState()),
         );
 

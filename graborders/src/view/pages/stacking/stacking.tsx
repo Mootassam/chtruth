@@ -15,6 +15,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import stackingFormAction from "src/modules/stacking/form/stackingFormActions";
 import FieldFormItem from "src/shared/form/FieldFormItem";
 import authSelectors from "src/modules/auth/authSelectors";
+import assetsActions from "src/modules/assets/list/assetsListActions"; // Import assets actions
 
 const schema = yup.object().shape({
   user: yupFormSchemas.relationToOne(i18n("entities.stacking.fields.user"), {}),
@@ -48,6 +49,7 @@ function StackingPage() {
   const stackingActive = useSelector(stackingListSelectors.selectRows);
   const listStacking = useSelector(stckingListSelectors.selectRows);
   const assets = useSelector(assetsListSelector.selectRows);
+  const [cryptoPrices, setCryptoPrices] = useState({});
 
   const [modalData, setModalData] = useState({
     crypto: "",
@@ -90,7 +92,7 @@ function StackingPage() {
     setStakeAmount(watchedAmount || '');
   }, [watchedAmount]);
 
-  const onSubmit = (values) => {
+  const onSubmit = async (values) => {
     values.startDate = new Date();
     
     // Calculate the endDate by adding unstakingPeriod days to startDate
@@ -101,8 +103,23 @@ function StackingPage() {
     values.status = "active";
     values.plan = modalData.plan;
     values.user = currentUser.id;
-    dispatch(stackingFormAction.doCreate(values));
-    closeStakeModal();
+    
+    try {
+      await dispatch(stackingFormAction.doCreate(values));
+      
+      // Refresh assets data after successful stake
+      dispatch(assetsActions.doFetch());
+      
+      // Update the local balances state immediately
+      setBalances(prev => ({
+        ...prev,
+        [modalData.symbol]: prev[modalData.symbol] - parseFloat(stakeAmount)
+      }));
+      
+      closeStakeModal();
+    } catch (error) {
+      console.error("Staking failed:", error);
+    }
   };
 
   const calculateRewards = () => {
@@ -185,14 +202,84 @@ function StackingPage() {
     }, {});
     setBalances(formatted);
   };
+
+  // Fetch cryptocurrency prices
+  const fetchCryptoPrices = async () => {
+    try {
+      // Get unique currencies from stacking plans
+      const currencies = [...new Set(listPlanStacking.map(plan => plan.currency))];
+      
+      // Fetch prices for each currency
+      const pricePromises = currencies.map(async (currency) => {
+        if (currency === 'USDT') return { currency, price: 1 };
+        
+        try {
+          const response = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${currency}USDT`);
+          const data = await response.json();
+          return { currency, price: parseFloat(data.price) };
+        } catch (error) {
+          console.error(`Error fetching price for ${currency}:`, error);
+          return { currency, price: 0 };
+        }
+      });
+      
+      const prices = await Promise.all(pricePromises);
+      const priceMap = {};
+      prices.forEach(item => {
+        priceMap[item.currency] = item.price;
+      });
+      
+      setCryptoPrices(priceMap);
+    } catch (error) {
+      console.error('Error fetching crypto prices:', error);
+    }
+  };
+
+  // Calculate total staked value in USD
+  const calculateTotalStakedValue = () => {
+    let total = 0;
+    
+    listStacking.forEach(stake => {
+      const currency = stake?.plan?.currency;
+      const amount = parseFloat(stake.amount) || 0;
+      const price = cryptoPrices[currency] || 0;
+      
+      total += amount * price;
+    });
+    
+    return total.toFixed(2);
+  };
+
+  // Calculate total earned rewards in USD
+  const calculateTotalEarnedRewards = () => {
+    let total = 0;
+    
+    listStacking.forEach(stake => {
+      const currency = stake?.plan?.currency;
+      const earned = parseFloat(stake.earnedRewards) || 0;
+      const price = cryptoPrices[currency] || 0;
+      
+      total += earned * price;
+    });
+    
+    return total.toFixed(2);
+  };
   
   useEffect(() => {
     dispatch(stackingPlanListActions.doFetch());
     dispatch(stackingListActions.doFetch());
+     dispatch(assetsActions.doFetch()); 
     balance();
 
     return () => {};
-  }, [dispatch]);
+  }, [dispatch ]);
+
+  // Fetch crypto prices when component mounts and when stacking data changes
+  useEffect(() => {
+    if (listPlanStacking.length > 0) {
+      fetchCryptoPrices();
+    }
+  }, [listPlanStacking]);
 
   // Get validation result for the button
   const validation = validateStake();
@@ -226,8 +313,8 @@ return remaininig
       {/* Staking Overview */}
       <div className="stacking-overview">
         <div className="stacking-label">Total Staked Balance</div>
-        <div className="stacking-balance">$3,425.80</div>
-        <div className="stacking-rewards-earned">+ $142.50 earned</div>
+        <div className="stacking-balance">${calculateTotalStakedValue()}</div>
+        <div className="stacking-rewards-earned">+ ${calculateTotalEarnedRewards()} earned</div>
       </div>
 
       {/* Toggle Section */}

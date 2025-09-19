@@ -604,17 +604,17 @@ const loading = assetLoading || Transactionloading ;
                   color: #FF6838;
                  }
                 
-                .action-buttons {
-                    display: flex;
-                    gap: 15px;
-                    position: fixed;
-                    bottom: 20px;
-                    left: 0;
-                    right: 0;
-                    max-width: 400px;
-                    margin: 0 auto;
-                    padding: 0 15px;
-                }
+                // .action-buttons {
+                //     display: flex;
+                //     gap: 15px;
+                //     position: fixed;
+                //     bottom: 20px;
+                //     left: 0;
+                //     right: 0;
+                //     max-width: 400px;
+                //     margin: 0 auto;
+                //     padding: 0 15px;
+                // }
                 
                 .action-button {
                     flex: 1;

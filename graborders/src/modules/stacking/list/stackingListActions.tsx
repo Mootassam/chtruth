@@ -92,7 +92,7 @@ const stackingListActions = {
         const response = await stackingService.list(
           filter,
           selectors.selectOrderBy(getState()),
-          selectors.selectLimit(getState()),
+          100,
           selectors.selectOffset(getState()),
         );
 
