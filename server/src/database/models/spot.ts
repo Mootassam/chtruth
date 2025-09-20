@@ -15,9 +15,14 @@ export default (database) => {
         required: true,
         unique: true,
       },
-
-      userAccount: {
+      orderType: {
         type: String,
+        enum: ["limit", "market"],
+        required: true,
+      },
+      userAccount: {
+        type: Schema.Types.ObjectId,
+        ref: "user",
         required: true,
       },
 
@@ -25,7 +30,11 @@ export default (database) => {
         type: String, // e.g., BTC/USDT
         required: true,
       },
-
+       status: {
+        type: String,
+        enum: ["pending", "completed","canceled"], // Direction of position
+        default: "pending",
+      }, 
       direction: {
         type: String,
         enum: ["BUY", "SELL"],

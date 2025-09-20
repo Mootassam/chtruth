@@ -9,6 +9,8 @@ import Spot from "../models/spot";
 
 class SpotRepository {
   static async create(data, options: IRepositoryOptions) {
+
+  console.log(data)
     const currentTenant = MongooseRepository.getCurrentTenant(options);
 
     const currentUser = MongooseRepository.getCurrentUser(options);

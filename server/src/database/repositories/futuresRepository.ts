@@ -8,10 +8,10 @@ import Futures from "../models/futures";
 
 class FuturesRepository {
   static async create(data, options: IRepositoryOptions) {
+
+
     const currentTenant = MongooseRepository.getCurrentTenant(options);
-
     const currentUser = MongooseRepository.getCurrentUser(options);
-
     const [record] = await Futures(options.database).create(
       [
         {

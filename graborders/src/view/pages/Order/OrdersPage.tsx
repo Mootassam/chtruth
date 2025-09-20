@@ -1,11 +1,18 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import SubHeader from "src/view/shared/Header/SubHeader";
-
+import { Link } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import spotListSelctors from "src/modules/spot/list/spotListSelectors";
+import sportListActions from "src/modules/spot/list/spotListActions";
+import sportFormActions from "src/modules/spot/form/spotFormActions";
 function OrdersPage() {
   const [activeFilter, setActiveFilter] = useState("ALL");
   const [searchTerm, setSearchTerm] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-
+  const listspot = useSelector(spotListSelctors.selectRows);
+  const listLoading =useSelector(spotListSelctors.selectLoading)
+  const count = useSelector(spotListSelctors.selectCount)
+  const dispatch = useDispatch();
   // Sample orders data
   const orders = [
     {
@@ -88,6 +95,11 @@ function OrdersPage() {
     }
   ];
 
+
+
+   useEffect(() => {
+    dispatch(sportListActions.doFetch());
+  }, []);
   // Filter orders based on active filter and search term
   const filteredOrders = orders.filter(order => {
     const matchesFilter = 
@@ -194,65 +206,128 @@ function OrdersPage() {
 
       {/* Orders List - Mobile Cards */}
       <div className="orders-list">
-        {filteredOrders.length > 0 ? (
-          filteredOrders.map(order => (
-            <div key={order.id} className="order-card">
-              <div className="order-card-header">
-                <div className="pair-action">
-                  <span className="pair">{order.pair}</span>
-                  <span 
-                    className="action-badge"
-                    style={{ color: getActionColor(order.action) }}
-                  >
-                    {order.action}
-                  </span>
-                </div>
-                <div className="date-time">
-                  <span className="date">{order.date}</span>
-                  <span className="time">{order.time}</span>
-                </div>
-              </div>
-              
-              <div className="order-details">
-                <div className="detail-row">
-                  <span className="label">Type</span>
-                  <span className="value">{order.type}</span>
-                </div>
-                
-                <div className="detail-row">
-                  <span className="label">Price</span>
-                  <span className="value">{formatNumber(order.orderPrice, 4)} USDT</span>
-                </div>
-                
-                <div className="detail-row">
-                  <span className="label">Amount</span>
-                  <span className="value">{order.orderAmount}</span>
-                </div>
-                
-                <div className="detail-row">
-                  <span className="label">Total</span>
-                  <span className="value total">{formatNumber(order.total)} USDT</span>
-                </div>
-              </div>
-              
-              <div className="order-card-footer">
-                <span 
-                  className="status-badge"
-                  style={{ color: getStatusColor(order.status) }}
-                >
-                  {order.status.replace("_", " ")}
-                </span>
-              </div>
-            </div>
-          ))
-        ) : (
-          <div className="no-orders">
-            <i className="fas fa-clipboard-list"></i>
-            <p>No orders found</p>
-            <span>Try adjusting your filters or search term</span>
+  {count > 0  ? (
+    listspot.map(order => (
+      <div key={order.id} className="order-card">
+        {/* Header */}
+        <div className="order-card-header">
+          <div className="pair-action">
+            <span className="pair">{order.tradingPair}</span>
+            <span
+              className="action-badge"
+              style={{ color: getActionColor(order.direction) }}
+            >
+              {order.direction}
+            </span>
           </div>
-        )}
+          <div className="date-time">
+            <span className="date">
+              {order.commissionTime
+                ? new Date(order.commissionTime).toLocaleDateString()
+                : ""}
+            </span>
+            <span className="time">
+              {order.commissionTime
+                ? new Date(order.commissionTime).toLocaleTimeString()
+                : ""}
+            </span>
+          </div>
+        </div>
+
+        {/* Order Details */}
+        <div className="order-details">
+          <div className="detail-row">
+            <span className="label">Type</span>
+            <span className="value">{order.orderType}</span>
+          </div>
+
+          <div className="detail-row">
+            <span className="label">Status</span>
+            <span
+              className="value"
+              style={{ color: getStatusColor(order.status) }}
+            >
+              {order.status}
+            </span>
+          </div>
+
+          <div className="detail-row">
+            <span className="label">Price</span>
+            <span className="value">
+              {formatNumber(order.commissionPrice, 4)} USDT
+            </span>
+          </div>
+
+          <div className="detail-row">
+            <span className="label">Amount</span>
+            <span className="value">{order.orderQuantity}</span>
+          </div>
+
+          <div className="detail-row">
+            <span className="label">Total (Entrusted)</span>
+            <span className="value total">
+              {formatNumber(order.entrustedValue)} USDT
+            </span>
+          </div>
+
+          <div className="detail-row">
+            <span className="label">Transaction Quantity</span>
+            <span className="value">{order.transactionQuantity ?? "-"}</span>
+          </div>
+
+          <div className="detail-row">
+            <span className="label">Transaction Value</span>
+            <span className="value">
+              {order.transactionValue
+                ? formatNumber(order.transactionValue)
+                : "-"}
+            </span>
+          </div>
+
+          <div className="detail-row">
+            <span className="label">Closing Price</span>
+            <span className="value">
+              {order.closingPrice ? formatNumber(order.closingPrice, 4) : "-"}
+            </span>
+          </div>
+
+          <div className="detail-row">
+            <span className="label">Handling Fee</span>
+            <span className="value">
+              {order.handlingFee ? formatNumber(order.handlingFee, 4) : "-"}
+            </span>
+          </div>
+
+          <div className="detail-row">
+            <span className="label">Closing Time</span>
+            <span className="value">
+              {order.closingTime
+                ? new Date(order.closingTime).toLocaleString()
+                : "-"}
+            </span>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="order-card-footer">
+          <span
+            className="status-badge"
+            style={{ color: getStatusColor(order.status) }}
+          >
+            {order.status}
+          </span>
+        </div>
       </div>
+    ))
+  ) : (
+    <div className="no-orders">
+      <i className="fas fa-clipboard-list"></i>
+      <p>No orders found</p>
+      <span>Try adjusting your filters or search term</span>
+    </div>
+  )}
+</div>
+
 
       <style>{`
         .orders-page {

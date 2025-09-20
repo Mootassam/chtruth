@@ -1,9 +1,15 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import CoinListModal from "src/shared/modal/CoinListModal";
 import { Link } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import spotListSelctors from "src/modules/spot/list/spotListSelectors";
+import sportListActions from "src/modules/spot/list/spotListActions";
+import sportFormActions from "src/modules/spot/form/spotFormActions";
 
 // Main Trade Component
 function Trade() {
+  const listspot = useSelector(spotListSelctors.selectRows);
+  const dispatch = useDispatch();
   const [selectedCoin, setSelectedCoin] = useState("BTCUSDT");
   const [marketPrice, setMarketPrice] = useState("51248.06");
   const [priceChangePercent, setPriceChangePercent] = useState("0.37");
@@ -17,62 +23,30 @@ function Trade() {
     bids: [],
   });
   const [isLoading, setIsLoading] = useState(true);
-  const [openOrders, setOpenOrders] = useState([
-    {
-      id: 1,
-      pair: "BTC/USDT",
-      action: "BUY",
-      date: "08/23",
-      time: "02:20:08",
-      status: "COMPLETED",
-      orderPrice: "117065.0000",
-      orderAmount: "0.000901",
-      filled: "100%",
-      total: "105.48",
-      type: "LIMIT",
-    },
-    {
-      id: 2,
-      pair: "ETH/USDT",
-      action: "SELL",
-      date: "08/24",
-      time: "14:35:22",
-      status: "PENDING",
-      orderPrice: "2850.50",
-      orderAmount: "1.25",
-      filled: "35%",
-      total: "3563.13",
-      type: "LIMIT",
-    },
-    {
-      id: 3,
-      pair: "SOL/USDT",
-      action: "BUY",
-      date: "08/24",
-      time: "09:15:47",
-      status: "PARTIALLY FILLED",
-      orderPrice: "102.75",
-      orderAmount: "15.50",
-      filled: "75%",
-      total: "1194.56",
-      type: "MARKET",
-    },
-  ]);
 
   const tickerWs = useRef(null);
   const depthWs = useRef(null);
 
+  // Generate a unique order number
+  const generateOrderNumber = useCallback(() => {
+    const timestamp = Date.now();
+    const random = Math.floor(Math.random() * 1000);
+    return `ORD-${timestamp}-${random}`;
+  }, []);
+
   // Simulate loading delay
   useEffect(() => {
+    dispatch(sportListActions.doFetch());
     const timer = setTimeout(() => {
       setIsLoading(false);
     }, 1500);
 
     return () => clearTimeout(timer);
-  }, []);
+  }, [dispatch]);
 
   // Format number with commas
   const formatNumber = (num, decimals = 2) => {
+    if (!num || isNaN(num)) return "0.00";
     return Number(num).toLocaleString(undefined, {
       minimumFractionDigits: decimals,
       maximumFractionDigits: decimals,
@@ -97,6 +71,11 @@ function Trade() {
       const data = JSON.parse(event.data);
       setMarketPrice(data.c);
       setPriceChangePercent(data.P);
+      
+      // Update price for market orders when market price changes
+      if (orderType === "MARKET") {
+        setPrice(data.c);
+      }
     };
 
     return () => {
@@ -104,7 +83,7 @@ function Trade() {
         tickerWs.current.close();
       }
     };
-  }, [selectedCoin]);
+  }, [selectedCoin, orderType]);
 
   // Setup WebSocket for order book data
   useEffect(() => {
@@ -145,14 +124,21 @@ function Trade() {
     };
   }, [selectedCoin]);
 
+  // Update price when switching to market orders
+  useEffect(() => {
+    if (orderType === "MARKET") {
+      setPrice(marketPrice);
+    }
+  }, [orderType, marketPrice]);
+
   // Calculate max amount for depth visualization
-  const calculateMaxAmount = () => {
+  const calculateMaxAmount = useCallback(() => {
     const allAmounts = [
       ...orderBook.asks.map((item) => parseFloat(item.amount)),
       ...orderBook.bids.map((item) => parseFloat(item.amount)),
     ];
     return Math.max(...allAmounts, 1); // Ensure at least 1 to avoid division by zero
-  };
+  }, [orderBook]);
 
   const maxAmount = calculateMaxAmount();
 
@@ -184,16 +170,16 @@ function Trade() {
   };
 
   const calculateTotal = () => {
-    if (!price || !quantity) return "0.00";
+    if (!price || !quantity || isNaN(price) || isNaN(quantity)) return "0.00";
     return (parseFloat(price) * parseFloat(quantity)).toFixed(2);
   };
 
   const handleIncrementPrice = () => {
-    setPrice((prevPrice) => (parseFloat(prevPrice) + 1).toString());
+    setPrice((prevPrice) => (parseFloat(prevPrice || 0) + 1).toString());
   };
 
   const handleDecrementPrice = () => {
-    if (parseFloat(price) > 1) {
+    if (parseFloat(price || 0) > 1) {
       setPrice((prevPrice) => (parseFloat(prevPrice) - 1).toString());
     }
   };
@@ -211,33 +197,110 @@ function Trade() {
   };
 
   const handlePlaceOrder = () => {
-    // In a real app, this would send the order to an exchange
-    alert(
-      `Placing ${activeTab.toUpperCase()} order: ${quantity} ${selectedCoin.replace(
-        "USDT",
-        ""
-      )} at $${price}`
-    );
+    // Validate inputs
+    if (!quantity || parseFloat(quantity) <= 0) {
+      alert("Please enter a valid quantity");
+      return;
+    }
+
+    if (orderType === "LIMIT" && (!price || parseFloat(price) <= 0)) {
+      alert("Please enter a valid price for limit orders");
+      return;
+    }
+
+    // Calculate values based on order type
+    const orderPrice = orderType === "MARKET" ? parseFloat(marketPrice) : parseFloat(price);
+    const orderQty = parseFloat(quantity);
+    const totalValue = orderPrice * orderQty;
+    
+    // Estimate handling fee (0.1% of transaction value)
+    const estimatedFee = totalValue * 0.001;
+
+    const orderData = {
+      orderNo: generateOrderNumber(),
+      orderType: orderType.toLowerCase(),
+      userAccount: "68cc173342e0243aac5a2bc9", // This should come from auth state
+      tradingPair: selectedCoin.replace("USDT", "/USDT"),
+      status: orderType === "MARKET" ? "completed" : "pending",
+      direction: activeTab.toUpperCase(),
+      delegateType: orderType,
+      delegateState: orderType === "MARKET" ? "Filled" : "Pending",
+      orderQuantity: orderQty,
+      commissionPrice: orderPrice,
+      entrustedValue: totalValue,
+      transactionQuantity: orderType === "MARKET" ? orderQty : 0,
+      transactionValue: orderType === "MARKET" ? totalValue : 0,
+      closingPrice: orderType === "MARKET" ? orderPrice : 0,
+      handlingFee: orderType === "MARKET" ? estimatedFee : 0,
+      commissionTime: new Date(),
+      closingTime: orderType === "MARKET" ? new Date() : null,
+      tenant: "tenant-id-here", // This should come from app state
+    };
+
+    dispatch(sportFormActions.doCreate(orderData));
+    
+    // Reset form for market orders
+    if (orderType === "MARKET") {
+      setQuantity("");
+    }
   };
 
   const handleOrderBookClick = (clickPrice) => {
-    setPrice(clickPrice);
+    if (orderType === "LIMIT") {
+      setPrice(clickPrice);
+    }
   };
 
   const handleCancelOrder = (orderId) => {
-    setOpenOrders(openOrders.filter((order) => order.id !== orderId));
+    // In a real app, this would dispatch an action to cancel the order
+    dispatch(sportListActions.doDelete(orderId));
   };
+
+  // Simulate order matching for limit orders
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (orderType === "LIMIT" && listspot.length > 0) {
+        // Check if any pending limit orders match the current market price
+        const updatedOrders = listspot.map(order => {
+          if (order.status === "pending" && order.orderType === "limit") {
+            const priceDiff = Math.abs(parseFloat(order.commissionPrice) - parseFloat(marketPrice));
+            const priceTolerance = parseFloat(marketPrice) * 0.001; // 0.1% tolerance
+            
+            if (priceDiff <= priceTolerance) {
+              // Update order to completed status
+              return {
+                ...order,
+                status: "completed",
+                delegateState: "Filled",
+                transactionQuantity: order.orderQuantity,
+                transactionValue: order.orderQuantity * order.commissionPrice,
+                closingPrice: marketPrice,
+                closingTime: new Date(),
+                handlingFee: order.orderQuantity * order.commissionPrice * 0.001
+              };
+            }
+          }
+          return order;
+        });
+        
+        // In a real app, you would dispatch an action to update the orders
+        // For this demo, we'll just log the changes
+        const changedOrders = updatedOrders.filter((order, index) => 
+          order.status !== listspot[index]?.status
+        );
+        
+        if (changedOrders.length > 0) {
+          console.log("Orders matched and filled:", changedOrders);
+          // In a real app: dispatch(updateOrdersAction(updatedOrders));
+        }
+      }
+    }, 5000); // Check every 5 seconds
+
+    return () => clearInterval(interval);
+  }, [listspot, marketPrice, orderType]);
 
   return (
     <div className="container">
-      {/* Loading Overlay */}
-      {/* {isLoading && (
-        <div className="loading-overlay">
-          <div className="loading-spinner"></div>
-          <div className="loading-text">Loading market data...</div>
-        </div>
-      )} */}
-
       {/* Header Section */}
       <div className="trade-header">
         <div className="trade-header-top">
@@ -316,42 +379,43 @@ function Trade() {
                   value={orderType}
                   onChange={(e) => setOrderType(e.target.value)}
                 >
-                  <option>LIMIT</option>
-                  <option>MARKET</option>
-                  <option>STOP-LIMIT</option>
+                  <option value="LIMIT">LIMIT</option>
+                  <option value="MARKET">MARKET</option>
                 </select>
               )}
             </div>
 
-            {/* Price Input */}
-            <div className="input-group">
-              <div className="input-label">Price (USDT)</div>
-              {isLoading ? (
-                <div className="skeleton-loading skeleton-input"></div>
-              ) : (
-                <div className="input-with-buttons">
-                  <input
-                    className="value-input"
-                    value={price}
-                    onChange={handlePriceChange}
-                  />
-                  <div className="value-buttons">
-                    <button
-                      className="value-button"
-                      onClick={handleIncrementPrice}
-                    >
-                      +
-                    </button>
-                    <button
-                      className="value-button"
-                      onClick={handleDecrementPrice}
-                    >
-                      -
-                    </button>
+            {/* Price Input - Only show for LIMIT orders */}
+            {orderType === "LIMIT" && (
+              <div className="input-group">
+                <div className="input-label">Price (USDT)</div>
+                {isLoading ? (
+                  <div className="skeleton-loading skeleton-input"></div>
+                ) : (
+                  <div className="input-with-buttons">
+                    <input
+                      className="value-input"
+                      value={price}
+                      onChange={handlePriceChange}
+                    />
+                    <div className="value-buttons">
+                      <button
+                        className="value-button"
+                        onClick={handleIncrementPrice}
+                      >
+                        +
+                      </button>
+                      <button
+                        className="value-button"
+                        onClick={handleDecrementPrice}
+                      >
+                        -
+                      </button>
+                    </div>
                   </div>
-                </div>
-              )}
-            </div>
+                )}
+              </div>
+            )}
 
             {/* Quantity Input */}
             <div className="input-group">
@@ -513,23 +577,29 @@ function Trade() {
             </div>
           </div>
 
-          {openOrders.length > 0 ? (
+          {listspot.length > 0 ? (
             <div className="orders-list">
-              {openOrders.map((order) => (
+              {listspot.map((order) => (
                 <div key={order.id} className="order-item">
                   <div className="order-main-info">
                     <div className="order-pair-action">
-                      <span className="order-pair">{order.pair}</span>
+                      <span className="order-pair">{order.tradingPair}</span>
                       <span
-                        className={`order-action ${order.action.toLowerCase()}`}
+                        className={`order-action ${order?.direction?.toLowerCase()}`}
                       >
-                        {order.action}
+                        {order.direction}
                       </span>
-                      <span className="order-type-badge">{order.type}</span>
+                      <span className="order-type-badge">{order.orderType}</span>
                     </div>
                     <div className="order-date">
-                      {order.date}{" "}
-                      <span className="order-time">{order.time}</span>
+                      {order.commissionTime
+                        ? new Date(order.commissionTime).toLocaleDateString()
+                        : ""}
+                      <span className="order-time">
+                        {order.commissionTime
+                          ? new Date(order.commissionTime).toLocaleTimeString()
+                          : ""}
+                      </span>
                     </div>
                   </div>
 
@@ -545,33 +615,30 @@ function Trade() {
                       </span>
                     </div>
 
-                  
-
                     <div className="order-detail">
                       <span className="detail-label">Price</span>
                       <span className="order-price-value">
-                        {formatNumber(order.orderPrice, 4)} USDT
+                        {formatNumber(order.commissionPrice, 4)} USDT
                       </span>
                     </div>
 
                     <div className="order-detail">
                       <span className="detail-label">Amount</span>
                       <span className="order-amount-value">
-                        {order.orderAmount} {order.pair.split("/")[0]}
+                        {order.orderQuantity} {order?.tradingPair?.split("/")[0]}
                       </span>
                     </div>
 
                     <div className="order-detail">
                       <span className="detail-label">Total</span>
                       <span className="order-total">
-                        {formatNumber(order.total)} USDT
+                        {formatNumber(order.entrustedValue)} USDT
                       </span>
                     </div>
                   </div>
 
                   <div className="order-actions">
-                    {order.status === "PENDING" ||
-                    order.status === "PARTIALLY FILLED" ? (
+                    {order.status === "PENDING" || order.status === "PARTIALLY FILLED" ? (
                       <button
                         className="cancel-order-btn"
                         onClick={() => handleCancelOrder(order.id)}
@@ -607,6 +674,7 @@ function Trade() {
         onClose={handleCloseCoinModal}
         onSelectCoin={handleSelectCoin}
       />
+
 
       <style>{`
         /* Trade Header Section */

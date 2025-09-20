@@ -9,11 +9,11 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import InputFormItem from 'src/view/shared/form/items/InputFormItem';
 import UserAutocompleteFormItem from 'src/view/user/autocomplete/UserAutocompleteFormItem';
 import SelectFormItem from 'src/view/shared/form/items/SelectFormItem';
-import spotEnumerators from 'src/modules/spot/spotEnumerators';
 
 const schema = yup.object().shape({
   orderNo: yupFormSchemas.string(i18n('entities.spot.fields.orderNo'), { required: true }),
-  userAccount: yupFormSchemas.string(i18n('entities.spot.fields.userAccount'), { required: true }),
+  orderType: yupFormSchemas.enumerator(i18n('entities.spot.fields.orderType'), { options: ['type', 'market'], required: true }),
+  userAccount: yupFormSchemas.relationToOne(i18n('entities.spot.fields.userAccount'), { required: true }),
   tradingPair: yupFormSchemas.string(i18n('entities.spot.fields.tradingPair'), { required: true }),
   direction: yupFormSchemas.enumerator(i18n('entities.spot.fields.direction'), { options: ['BUY', 'SELL'], required: true }),
   delegateType: yupFormSchemas.string(i18n('entities.spot.fields.delegateType'), { required: true }),
@@ -27,7 +27,7 @@ const schema = yup.object().shape({
   handlingFee: yupFormSchemas.decimal(i18n('entities.spot.fields.handlingFee')),
   commissionTime: yupFormSchemas.datetime(i18n('entities.spot.fields.commissionTime')),
   closingTime: yupFormSchemas.datetime(i18n('entities.spot.fields.closingTime')),
-  createdBy: yupFormSchemas.relationToOne(i18n('entities.spot.fields.createdBy')),
+  status: yupFormSchemas.enumerator(i18n('entities.spot.fields.status'), { options: ['pending', 'completed', 'canceled'], required: true }), // ✅ Added
 });
 
 function SpotForm(props) {
@@ -35,6 +35,7 @@ function SpotForm(props) {
     const record = props.record || {};
     return {
       orderNo: record.orderNo,
+      orderType: record.orderType,
       userAccount: record.userAccount,
       tradingPair: record.tradingPair,
       direction: record.direction,
@@ -49,7 +50,7 @@ function SpotForm(props) {
       handlingFee: record.handlingFee,
       commissionTime: record.commissionTime,
       closingTime: record.closingTime,
-      createdBy: record.createdBy || null,
+      status: record.status || 'OPEN', // ✅ Added default
     };
   });
 
@@ -64,7 +65,9 @@ function SpotForm(props) {
   };
 
   const onReset = () => {
-    Object.keys(initialValues).forEach((key) => form.setValue(key, initialValues[key]));
+    Object.keys(initialValues).forEach((key) =>
+      form.setValue(key, initialValues[key]),
+    );
   };
 
   return (
@@ -74,37 +77,93 @@ function SpotForm(props) {
           <div className="row g-3">
             {Object.keys(initialValues).map((field) => (
               <div key={field} className="col-lg-6 col-md-6 col-sm-12">
-                {field === 'createdBy' ? (
-                  <UserAutocompleteFormItem name={field} label={i18n(`entities.spot.fields.${field}`)} />
+                {field === 'userAccount' ? (
+                  <UserAutocompleteFormItem
+                    name={field}
+                    label={i18n(`entities.spot.fields.${field}`)}
+                  />
                 ) : field === 'direction' ? (
                   <SelectFormItem
                     name={field}
                     label={i18n(`entities.spot.fields.${field}`)}
-                    options={['BUY', 'SELL'].map((v) => ({ value: v, label: v }))}
+                    options={['BUY', 'SELL'].map((v) => ({
+                      value: v,
+                      label: v,
+                    }))}
+                  />
+                ) : field === 'orderType' ? (
+                  <SelectFormItem
+                    name={field}
+                    label={i18n(`entities.spot.fields.${field}`)}
+                    options={['type', 'market'].map((v) => ({
+                      value: v,
+                      label: v,
+                    }))}
+                  />
+                ) : field === 'status' ? ( // ✅ Render status
+                  <SelectFormItem
+                    name={field}
+                    label={i18n(`entities.spot.fields.${field}`)}
+                    options={['pending', 'completed', 'canceled'].map((v) => ({
+                      value: v,
+                      label: v,
+                    }))}
                   />
                 ) : field.includes('Time') ? (
-                  <InputFormItem name={field} label={i18n(`entities.spot.fields.${field}`)} type="datetime-local" />
-                ) : field.includes('Price') || field.includes('Quantity') || field.includes('Value') || field.includes('Fee') ? (
-                  <InputFormItem name={field} label={i18n(`entities.spot.fields.${field}`)} type="number" />
+                  <InputFormItem
+                    name={field}
+                    label={i18n(`entities.spot.fields.${field}`)}
+                    type="datetime-local"
+                  />
+                ) : field.includes('Price') ||
+                  field.includes('Quantity') ||
+                  field.includes('Value') ||
+                  field.includes('Fee') ? (
+                  <InputFormItem
+                    name={field}
+                    label={i18n(`entities.spot.fields.${field}`)}
+                    type="number"
+                  />
                 ) : (
-                  <InputFormItem name={field} label={i18n(`entities.spot.fields.${field}`)} />
+                  <InputFormItem
+                    name={field}
+                    label={i18n(`entities.spot.fields.${field}`)}
+                  />
                 )}
               </div>
             ))}
           </div>
 
           <div className="form-buttons d-flex flex-wrap gap-2 mt-3">
-            <button className="btn btn-primary" disabled={props.saveLoading} type="button" onClick={form.handleSubmit(onSubmit)}>
-              <ButtonIcon loading={props.saveLoading} iconClass="far fa-save" />
+            <button
+              className="btn btn-primary"
+              disabled={props.saveLoading}
+              type="button"
+              onClick={form.handleSubmit(onSubmit)}
+            >
+              <ButtonIcon
+                loading={props.saveLoading}
+                iconClass="far fa-save"
+              />
               &nbsp;{i18n('common.save')}
             </button>
 
-            <button className="btn btn-light" type="button" disabled={props.saveLoading} onClick={onReset}>
+            <button
+              className="btn btn-light"
+              type="button"
+              disabled={props.saveLoading}
+              onClick={onReset}
+            >
               <i className="fas fa-undo"></i>&nbsp;{i18n('common.reset')}
             </button>
 
             {props.onCancel && (
-              <button className="btn btn-light" type="button" disabled={props.saveLoading} onClick={props.onCancel}>
+              <button
+                className="btn btn-light"
+                type="button"
+                disabled={props.saveLoading}
+                onClick={props.onCancel}
+              >
                 <i className="fas fa-times"></i>&nbsp;{i18n('common.cancel')}
               </button>
             )}
