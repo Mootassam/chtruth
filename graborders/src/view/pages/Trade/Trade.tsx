@@ -219,7 +219,6 @@ function Trade() {
     const orderData = {
       orderNo: generateOrderNumber(),
       orderType: orderType.toLowerCase(),
-      userAccount: "68cc173342e0243aac5a2bc9", // This should come from auth state
       tradingPair: selectedCoin.replace("USDT", "/USDT"),
       status: orderType === "MARKET" ? "completed" : "pending",
       direction: activeTab.toUpperCase(),
@@ -234,11 +233,11 @@ function Trade() {
       handlingFee: orderType === "MARKET" ? estimatedFee : 0,
       commissionTime: new Date(),
       closingTime: orderType === "MARKET" ? new Date() : null,
-      tenant: "tenant-id-here", // This should come from app state
+
     };
 
     dispatch(sportFormActions.doCreate(orderData));
-    
+    dispatch(sportListActions.doFetch());
     // Reset form for market orders
     if (orderType === "MARKET") {
       setQuantity("");

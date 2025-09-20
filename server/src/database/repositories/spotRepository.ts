@@ -12,13 +12,13 @@ class SpotRepository {
 
   console.log(data)
     const currentTenant = MongooseRepository.getCurrentTenant(options);
-
     const currentUser = MongooseRepository.getCurrentUser(options);
-
+    
     const [record] = await Spot(options.database).create(
       [
         {
           ...data,
+          userAccount: currentUser.id,
           tenant: currentTenant.id,
           createdBy: currentUser.id,
           updatedBy: currentUser.id,

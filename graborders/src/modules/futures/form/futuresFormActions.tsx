@@ -45,7 +45,6 @@ const vipFormActions = {
         type: vipFormActions.INIT_ERROR,
       });
 
-      getHistory().push('/futures');
     }
   },
 
@@ -62,10 +61,9 @@ const vipFormActions = {
       });
 
       Message.success(
-        i18n('entities.vip.create.success'),
+        i18n('entities.futures.create.success'),
       );
 
-      getHistory().push('/futures');
     } catch (error) {
       Errors.handle(error);
 
@@ -88,10 +86,9 @@ const vipFormActions = {
       });
 
       Message.success(
-        i18n('entities.vip.update.success'),
+        i18n('entities.futures.update.success'),
       );
 
-      getHistory().push('/futures');
     } catch (error) {
       Errors.handle(error);
 

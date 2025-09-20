@@ -27,7 +27,6 @@ const vipFormActions = {
       });
 
       let record = {};
-
       const isEdit = Boolean(id);
 
       if (isEdit) {
@@ -38,6 +37,8 @@ const vipFormActions = {
         type: vipFormActions.INIT_SUCCESS,
         payload: record,
       });
+
+
     } catch (error) {
       Errors.handle(error);
 
@@ -45,7 +46,7 @@ const vipFormActions = {
         type: vipFormActions.INIT_ERROR,
       });
 
-      getHistory().push('/spot');
+   
     }
   },
 
@@ -60,12 +61,10 @@ const vipFormActions = {
       dispatch({
         type: vipFormActions.CREATE_SUCCESS,
       });
-
       Message.success(
-        i18n('entities.vip.create.success'),
+        i18n('entities.spot.create.success'),
       );
 
-      getHistory().push('/spot');
     } catch (error) {
       Errors.handle(error);
 
@@ -87,11 +86,12 @@ const vipFormActions = {
         type: vipFormActions.UPDATE_SUCCESS,
       });
 
+
       Message.success(
-        i18n('entities.vip.update.success'),
+        i18n('entities.spot.update.success'),
       );
 
-      getHistory().push('/spot');
+
     } catch (error) {
       Errors.handle(error);
 

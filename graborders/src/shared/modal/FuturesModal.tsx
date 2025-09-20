@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import futuresFormAction from "src/modules/futures/form/futuresFormActions";
+import { futuresListAction } from "src/modules/futures/list/futuresListActions";
 
 interface FuturesModalProps {
   isOpen: boolean;
@@ -73,7 +74,8 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
   }, [futuresAmount, availableBalance]);
 
   const startTrade = () => {
-    if (!direction || futuresAmount <= 0 || futuresAmount > availableBalance) return;
+    if (!direction || futuresAmount <= 0 || futuresAmount > availableBalance)
+      return;
 
     setTradeStatus("in-progress");
     setTimeLeft(parseInt(selectedDuration));
@@ -120,7 +122,7 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
   const create = () => {
     const currentPrice = parseFloat(marketPrice);
     const isWin = tradeResult === "win";
-    
+
     // Calculate close price based on direction and result
     let closePrice;
     if (direction === "up") {
@@ -128,16 +130,16 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
     } else {
       closePrice = isWin ? currentPrice * 0.95 : currentPrice * 1.05;
     }
-    
+
     // Calculate P&L based on direction and result
     let pnl;
     if (direction === "up") {
-      pnl = isWin 
-        ? futuresAmount * parseFloat(selectedLeverage) * 0.05 
+      pnl = isWin
+        ? futuresAmount * parseFloat(selectedLeverage) * 0.05
         : -futuresAmount * parseFloat(selectedLeverage) * 0.05;
     } else {
-      pnl = isWin 
-        ? futuresAmount * parseFloat(selectedLeverage) * 0.05 
+      pnl = isWin
+        ? futuresAmount * parseFloat(selectedLeverage) * 0.05
         : -futuresAmount * parseFloat(selectedLeverage) * 0.05;
     }
 
@@ -147,7 +149,9 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
       leverage: parseInt(selectedLeverage),
       control: isWin ? "profit" : "loss",
       operate: "low",
-      closePositionTime: new Date(Date.now() + parseInt(selectedDuration) * 1000).toISOString(),
+      closePositionTime: new Date(
+        Date.now() + parseInt(selectedDuration) * 1000
+      ).toISOString(),
       closePositionPrice: closePrice,
       openPositionTime: new Date().toISOString(),
       openPositionPrice: currentPrice,
@@ -155,7 +159,6 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
       futuresAmount: futuresAmount,
     };
 
-    dispatch(futuresFormAction.doCreate(item));
   };
 
   const modalContent = (
@@ -179,7 +182,9 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
                 loading="lazy"
               />
             </div>
-            <div className="pair-name">{selectedCoin.replace("USDT", "/USDT")}</div>
+            <div className="pair-name">
+              {selectedCoin.replace("USDT", "/USDT")}
+            </div>
           </div>
         </div>
 
@@ -330,7 +335,14 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
                   Available: {availableBalance.toFixed(2)} USDT
                 </div>
                 {amountError && (
-                  <div className="error-message" style={{color: "#FF6838", fontSize: "12px", marginTop: "5px"}}>
+                  <div
+                    className="error-message"
+                    style={{
+                      color: "#FF6838",
+                      fontSize: "12px",
+                      marginTop: "5px",
+                    }}
+                  >
                     {amountError}
                   </div>
                 )}
@@ -351,13 +363,29 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
               <button
                 className="confirm-btn"
                 onClick={startTrade}
-                disabled={!direction || futuresAmount <= 0 || futuresAmount > availableBalance}
+                disabled={
+                  !direction ||
+                  futuresAmount <= 0 ||
+                  futuresAmount > availableBalance
+                }
                 style={{
-                  opacity: (!direction || futuresAmount <= 0 || futuresAmount > availableBalance) ? 0.5 : 1,
-                  cursor: (!direction || futuresAmount <= 0 || futuresAmount > availableBalance) ? "not-allowed" : "pointer"
+                  opacity:
+                    !direction ||
+                    futuresAmount <= 0 ||
+                    futuresAmount > availableBalance
+                      ? 0.5
+                      : 1,
+                  cursor:
+                    !direction ||
+                    futuresAmount <= 0 ||
+                    futuresAmount > availableBalance
+                      ? "not-allowed"
+                      : "pointer",
                 }}
               >
-                {futuresAmount > availableBalance ? "INSUFFICIENT BALANCE" : "CONFIRM ORDER"}
+                {futuresAmount > availableBalance
+                  ? "INSUFFICIENT BALANCE"
+                  : "CONFIRM ORDER"}
               </button>
             </div>
           </>

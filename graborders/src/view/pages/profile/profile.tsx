@@ -237,7 +237,7 @@ const AccountInfo = ({ currentUser }) => (
       <div className="profile-info-label">Invitation Code</div>
       <div className="profile-info-value">
         <span className="profile-invite-code">
-          {currentUser?.kyc ? currentUser?.invitationcode : "******"}
+          {currentUser?.kyc ? currentUser?.refcode : "******"}
         </span>
       </div>
     </div>

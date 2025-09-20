@@ -47,8 +47,8 @@ function Futures() {
   const dispatch = useDispatch();
   const listAssets = useSelector(selector.selectRows);
   const listFutures = useSelector(futuresListSelectors.selectRows);
-  const listLoading = useSelector(futuresListSelectors.selectLoading)
-  const countFutures = useSelector(futuresListSelectors.selectCount)
+  const listLoading = useSelector(futuresListSelectors.selectLoading);
+  const countFutures = useSelector(futuresListSelectors.selectCount);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [tradeDirection, setTradeDirection] = useState<string | null>(null);
   const [isCoinModalOpen, setIsCoinModalOpen] = useState(false);
@@ -69,7 +69,8 @@ function Futures() {
   const currentCoinRef = useRef(selectedCoin); // Keep track of current coin
 
   // Get USDT balance
-  const usdtBalance = listAssets.find(asset => asset.symbol === 'USDT')?.balance || 0;
+  const usdtBalance =
+    listAssets.find((asset) => asset.symbol === "USDT")?.balance || 0;
 
   // Mock data for open orders
   const [openOrders, setOpenOrders] = useState<Order[]>([]);
@@ -77,41 +78,68 @@ function Futures() {
   // Mock data for recent orders
   const [recentOrders, setRecentOrders] = useState<Order[]>([]);
 
+  // Safe number formatting with fallback
+  const safeToFixed = (value: any, decimals: number = 2): string => {
+    if (value === null || value === undefined) return "0.00";
+    const num = typeof value === "string" ? parseFloat(value) : value;
+    return isNaN(num) ? "0.00" : num.toFixed(decimals);
+  };
+
   // Format number with commas and fixed decimals
-  const formatNumber = (num: string, decimals: number = 2) => {
-    return Number(num).toLocaleString(undefined, {
+  const formatNumber = (num: any, decimals: number = 2) => {
+    if (num === null || num === undefined) return "0.00";
+
+    const numValue = typeof num === "string" ? parseFloat(num) : num;
+    if (isNaN(numValue)) return "0.00";
+
+    return numValue.toLocaleString(undefined, {
       minimumFractionDigits: decimals,
       maximumFractionDigits: decimals,
     });
   };
 
   // Format volume in billions
-  const formatVolume = (vol: string) => {
-    const volumeNum = Number(vol);
+  const formatVolume = (vol: any) => {
+    if (vol === null || vol === undefined) return "0";
+
+    const volumeNum = typeof vol === "string" ? parseFloat(vol) : vol;
+    if (isNaN(volumeNum)) return "0";
+
     if (volumeNum >= 1000000000) {
       return (volumeNum / 1000000000).toFixed(2) + "B";
     } else if (volumeNum >= 1000000) {
       return (volumeNum / 1000000).toFixed(2) + "M";
     } else {
-      return formatNumber(vol, 0);
+      return formatNumber(volumeNum, 0);
     }
   };
 
   // Format date to readable format
   const formatDateTime = (dateString: string): string => {
     if (!dateString) return "N/A";
-    
+
     try {
       const date = new Date(dateString);
+      if (isNaN(date.getTime())) return dateString;
+
       const now = new Date();
       const isToday = date.toDateString() === now.toDateString();
-      
+
       if (isToday) {
         // Format as today with time
-        return `Today ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+        return `Today ${date.toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        })}`;
       } else {
         // Format as date with time
-        return `${date.toLocaleDateString([], { month: 'short', day: 'numeric' })} ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+        return `${date.toLocaleDateString([], {
+          month: "short",
+          day: "numeric",
+        })} ${date.toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        })}`;
       }
     } catch (error) {
       console.error("Error formatting date:", error, dateString);
@@ -122,10 +150,20 @@ function Futures() {
   // Format date for detailed view (with full date and time)
   const formatDateTimeDetailed = (dateString: string): string => {
     if (!dateString) return "N/A";
-    
+
     try {
       const date = new Date(dateString);
-      return `${date.toLocaleDateString([], { year: 'numeric', month: 'short', day: 'numeric' })} ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`;
+      if (isNaN(date.getTime())) return dateString;
+
+      return `${date.toLocaleDateString([], {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      })} ${date.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      })}`;
     } catch (error) {
       console.error("Error formatting date:", error, dateString);
       return dateString; // Return original if parsing fails
@@ -138,7 +176,7 @@ function Futures() {
     const formatted = listAssets.reduce((acc, item) => {
       acc[item.symbol] = item.amount;
       return acc;
-    }, {});
+    }, {} as { [key: string]: number });
     setBalances(formatted);
   };
 
@@ -158,11 +196,11 @@ function Futures() {
         const tickerData = await response.json();
 
         // Set initial data from REST API
-        setMarketPrice(tickerData.lastPrice);
-        setPriceChangePercent(tickerData.priceChangePercent);
-        setHighPrice(tickerData.highPrice);
-        setLowPrice(tickerData.lowPrice);
-        setVolume(tickerData.volume);
+        setMarketPrice(tickerData.lastPrice || "0");
+        setPriceChangePercent(tickerData.priceChangePercent || "0");
+        setHighPrice(tickerData.highPrice || "0");
+        setLowPrice(tickerData.lowPrice || "0");
+        setVolume(tickerData.volume || "0");
 
         setIsLoading(false);
       } catch (error) {
@@ -197,15 +235,19 @@ function Futures() {
       };
 
       tickerWs.current.onmessage = (event: MessageEvent) => {
-        const tickerData: BinanceTicker = JSON.parse(event.data);
+        try {
+          const tickerData: BinanceTicker = JSON.parse(event.data);
 
-        // Only update state if this message is for the currently selected coin
-        if (tickerData.s === currentCoinRef.current) {
-          setMarketPrice(tickerData.c);
-          setPriceChangePercent(tickerData.P);
-          setHighPrice(tickerData.h);
-          setLowPrice(tickerData.l);
-          setVolume(tickerData.v);
+          // Only update state if this message is for the currently selected coin
+          if (tickerData.s === currentCoinRef.current) {
+            setMarketPrice(tickerData.c || "0");
+            setPriceChangePercent(tickerData.P || "0");
+            setHighPrice(tickerData.h || "0");
+            setLowPrice(tickerData.l || "0");
+            setVolume(tickerData.v || "0");
+          }
+        } catch (error) {
+          console.error("Error parsing WebSocket message:", error);
         }
       };
 
@@ -301,11 +343,15 @@ function Futures() {
           status: "Closed",
           investment: 300.0,
           openPrice: 65983,
-          openTime: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+          openTime: new Date(
+            Date.now() - 3 * 24 * 60 * 60 * 1000
+          ).toISOString(),
           leverage: 10,
           pnl: -24.5,
           closePrice: 65958.5,
-          closeTime: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000 + 30 * 60 * 1000).toISOString(),
+          closeTime: new Date(
+            Date.now() - 3 * 24 * 60 * 60 * 1000 + 30 * 60 * 1000
+          ).toISOString(),
           orderType: "Market",
           margin: 30.0,
           fee: 1.5,
@@ -317,11 +363,15 @@ function Futures() {
           status: "Closed",
           investment: 600.0,
           openPrice: 65881,
-          openTime: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
+          openTime: new Date(
+            Date.now() - 4 * 24 * 60 * 60 * 1000
+          ).toISOString(),
           leverage: 20,
           pnl: 132.75,
           closePrice: 65913.75,
-          closeTime: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000 + 45 * 60 * 1000).toISOString(),
+          closeTime: new Date(
+            Date.now() - 4 * 24 * 60 * 60 * 1000 + 45 * 60 * 1000
+          ).toISOString(),
           orderType: "Market",
           margin: 30.0,
           fee: 3.0,
@@ -333,11 +383,15 @@ function Futures() {
           status: "Closed",
           investment: 500.0,
           openPrice: 0.455,
-          openTime: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+          openTime: new Date(
+            Date.now() - 2 * 24 * 60 * 60 * 1000
+          ).toISOString(),
           leverage: 15,
           pnl: 32.5,
           closePrice: 0.4582,
-          closeTime: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000 + 75 * 60 * 1000).toISOString(),
+          closeTime: new Date(
+            Date.now() - 2 * 24 * 60 * 60 * 1000 + 75 * 60 * 1000
+          ).toISOString(),
           orderType: "Limit",
           margin: 33.33,
           fee: 2.5,
@@ -357,7 +411,7 @@ function Futures() {
   }, []);
 
   useEffect(() => {
-    balance()
+    balance();
     return () => {
       // Clean up WebSocket connections
       if (tickerWs.current) tickerWs.current.close();
@@ -396,7 +450,7 @@ function Futures() {
     setTradeDirection(null);
   };
 
-  const handleOpenOrderModal = (order: Order) => {
+  const handleOpenOrderModal = (order: any) => {
     setSelectedOrder(order);
     setIsOrderModalOpen(true);
   };
@@ -420,6 +474,15 @@ function Futures() {
     height?: string;
   }) => <div className="loading-placeholder" style={{ width, height }} />;
 
+  // Handle image loading errors
+  const handleImageError = (
+    e: React.SyntheticEvent<HTMLImageElement, Event>
+  ) => {
+    const target = e.target as HTMLImageElement;
+    target.src =
+      "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAiIGhlaWdodD0iMzAiIHZpZXdCb3g9IjAgMCAzMCAzMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTUiIGN5PSIxNSIgcj0iMTQiIGZpbGw9IiMzMzMiIHN0cm9rZT0iI2NjYyIgc3Ryb2tlLXdpZHRoPSIyIi8+Cjx0ZXh0IHg9IjE1IiB5PSIxOCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjEwIiBmaWxsPSJ3aGl0ZSI+QzwvdGV4dD4KPC9zdmc+";
+  };
+
   return (
     <div className="container">
       {/* Header Section */}
@@ -434,6 +497,7 @@ function Futures() {
                 style={{ width: 30, height: 30 }}
                 alt={selectedCoin}
                 loading="lazy"
+                onError={handleImageError}
               />
             </div>
             <div className="market-name">{selectedCoin}</div>
@@ -493,7 +557,7 @@ function Futures() {
       </div>
 
       {/* If no symbol is selected, defaults to BTCUSDT */}
-      <FuturesChart symbol={selectedCoin || undefined} />
+      <FuturesChart symbol={selectedCoin || "BTCUSDT"} />
 
       {/* Action Buttons */}
       <div className="future-action-buttons">
@@ -531,7 +595,6 @@ function Futures() {
       {activeTab === "openOrders" && (
         <div className="orders-container">
           <>
-            
             {openOrders.length === 0 && (
               <div className="no-orders">
                 <i className="fas fa-folder-open" />
@@ -545,85 +608,86 @@ function Futures() {
       {/* Recent Orders */}
       {activeTab === "recentOrders" && (
         <div className="orders-container">
-          {listFutures.map((order) => (
-  <div
-    key={order.id}
-    className="order-card"
-    onClick={() => handleOpenOrderModal(order)}
-  >
-    <div className="order-header">
-      <div className="order-pair">{order.symbol || "BTC/USDT"}</div>
-      <div
-        className={`order-direction ${
-          order.futuresStatus === "long" ? "buy" : "sell"
-        }`}
-      >
-        {order.futuresStatus === "long" ? "BUY UP" : "BUY DOWN"}
-      </div>
-    </div>
-    <div className={`order-status ${order.closePositionTime ? "closed" : "open"}`}>
-      ● {order.closePositionTime ? "Closed" : "Open"}
-    </div>
-    <div className="order-details">
-      <div className="order-row">
-        <span className="order-label">Futures Amount:</span>
-        <span className="order-value">
-          ${order.futuresAmount}
-        </span>
-      </div>
-      <div className="order-row">
-        <span className="order-label">Open Price:</span>
-        <span className="order-value">
-          {formatNumber(
-            order.openPositionPrice.toString(),
-            order.openPositionPrice > 1000 ? 0 : 2
-          )}
-        </span>
-      </div>
-      {order.closePositionPrice && (
-        <div className="order-row">
-          <span className="order-label">Close Price:</span>
-          <span className="order-value">
-            {formatNumber(
-              order.closePositionPrice.toString(),
-              order.openPositionPrice > 1000 ? 0 : 2
-            )}
-          </span>
-        </div>
-      )}
-      <div className="order-row">
-        <span className="order-label">P/L:</span>
-        <span
-          className={`order-value ${
-            (order.profitAndLossAmount || 0) >= 0 ? "buy" : "sell"
-          }`}
-        >
-          ${order.profitAndLossAmount?.toFixed(2) || "0.00"}
-        </span>
-      </div>
-      <div className="order-row">
-        <span className="order-label">Leverage:</span>
-        <span className="order-value">
-          {order.leverage}x
-        </span>
-      </div>
-      {order.contractDuration && (
-        <div className="order-row">
-          <span className="order-label">Duration:</span>
-          <span className="order-value">
-            {order.contractDuration}s
-          </span>
-        </div>
-      )}
-      <div className="order-row">
-        <span className="order-label">Open Time:</span>
-        <span className="order-value">
-          {formatDateTime(order.openPositionTime)}
-        </span>
-      </div>
-    </div>
-  </div>
-))}
+          {listFutures.length > 0 &&
+            listFutures.map((order) => (
+              <div
+                key={order.id}
+                className="order-card"
+                onClick={() => handleOpenOrderModal(order)}
+              >
+                <div className="order-header">
+                  <div className="order-pair">{order.symbol || "BTC/USDT"}</div>
+                  <div
+                    className={`order-direction ${
+                      order.futuresStatus === "long" ? "buy" : "sell"
+                    }`}
+                  >
+                    {order.futuresStatus === "long" ? "BUY UP" : "BUY DOWN"}
+                  </div>
+                </div>
+                <div
+                  className={`order-status ${
+                    order.closePositionTime ? "closed" : "open"
+                  }`}
+                >
+                  ● {order.closePositionTime ? "Closed" : "Open"}
+                </div>
+                <div className="order-details">
+                  <div className="order-row">
+                    <span className="order-label">Futures Amount:</span>
+                    <span className="order-value">${order.futuresAmount}</span>
+                  </div>
+                  <div className="order-row">
+                    <span className="order-label">Open Price:</span>
+                    <span className="order-value">
+                      {formatNumber(
+                        order?.openPositionPrice?.toString(),
+                        order?.openPositionPrice > 1000 ? 0 : 2
+                      )}
+                    </span>
+                  </div>
+                  {order.closePositionPrice && (
+                    <div className="order-row">
+                      <span className="order-label">Close Price:</span>
+                      <span className="order-value">
+                        {formatNumber(
+                          order?.closePositionPrice?.toString(),
+                          order?.openPositionPrice > 1000 ? 0 : 2
+                        )}
+                      </span>
+                    </div>
+                  )}
+                  <div className="order-row">
+                    <span className="order-label">P/L:</span>
+                    <span
+                      className={`order-value ${
+                        (order.profitAndLossAmount || 0) >= 0 ? "buy" : "sell"
+                      }`}
+                    >
+                      ${safeToFixed(order.profitAndLossAmount, 2)}
+                    </span>
+                  </div>
+                  <div className="order-row">
+                    <span className="order-label">Leverage:</span>
+                    <span className="order-value">{order.leverage}x</span>
+                  </div>
+                  {order.contractDuration && (
+                    <div className="order-row">
+                      <span className="order-label">Duration:</span>
+                      <span className="order-value">
+                        {order.contractDuration}s
+                      </span>
+                    </div>
+                  )}
+                  <div className="order-row">
+                    <span className="order-label">Open Time:</span>
+                    <span className="order-value">
+                      {formatDateTime(order.openPositionTime)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))}
           {listFutures.length === 0 && !listLoading && (
             <div className="no-orders">
               <i className="fas fa-file-invoice" />
@@ -646,15 +710,22 @@ function Futures() {
             <div className="modal-body">
               <div className="order-detail-section">
                 <div className="detail-header">
-                  <span className="detail-pair">{selectedOrder.symbol || selectedOrder.pair}</span>
+                  <span className="detail-pair">
+                    {selectedOrder.symbol || selectedOrder.pair}
+                  </span>
                   <span
                     className={`detail-direction ${
-                      selectedOrder.futuresStatus === "long" || selectedOrder.direction === "BUY UP" ? "buy" : "sell"
+                      selectedOrder.futuresStatus === "long" ||
+                      selectedOrder.direction === "BUY UP"
+                        ? "buy"
+                        : "sell"
                     }`}
                   >
-                    {selectedOrder.futuresStatus === "long" ? "BUY UP" : 
-                     selectedOrder.futuresStatus === "short" ? "BUY DOWN" : 
-                     selectedOrder.direction}
+                    {selectedOrder.futuresStatus === "long"
+                      ? "BUY UP"
+                      : selectedOrder.futuresStatus === "short"
+                      ? "BUY DOWN"
+                      : selectedOrder.direction}
                   </span>
                 </div>
                 <div
@@ -670,10 +741,11 @@ function Futures() {
                 <div className="detail-row">
                   <span className="detail-label">Futures Amount:</span>
                   <span className="detail-value">
-                    {selectedOrder.futuresAmount || selectedOrder.investment} USDT
+                    {selectedOrder.futuresAmount || selectedOrder.investment}{" "}
+                    USDT
                   </span>
                 </div>
-                
+
                 {selectedOrder.contractDuration && (
                   <div className="detail-row">
                     <span className="detail-label">Contract Duration:</span>
@@ -682,28 +754,30 @@ function Futures() {
                     </span>
                   </div>
                 )}
-                
+
                 <div className="detail-row">
                   <span className="detail-label">Futures Status:</span>
                   <span className="detail-value">
                     {selectedOrder.closePositionTime ? "Completed" : "Open"}
                   </span>
                 </div>
-                
+
                 <div className="detail-row">
                   <span className="detail-label">Open Position Price:</span>
                   <span className="detail-value">
                     {selectedOrder.openPositionPrice || selectedOrder.openPrice}
                   </span>
                 </div>
-                
+
                 <div className="detail-row">
                   <span className="detail-label">Open Position Time:</span>
                   <span className="detail-value">
-                    {formatDateTimeDetailed(selectedOrder.openPositionTime || selectedOrder.openTime)}
+                    {formatDateTimeDetailed(
+                      selectedOrder.openPositionTime || selectedOrder.openTime
+                    )}
                   </span>
                 </div>
-                
+
                 {selectedOrder.closePositionPrice && (
                   <div className="detail-row">
                     <span className="detail-label">Close Position Price:</span>
@@ -712,7 +786,7 @@ function Futures() {
                     </span>
                   </div>
                 )}
-                
+
                 {selectedOrder.closePositionTime && (
                   <div className="detail-row">
                     <span className="detail-label">Close Position Time:</span>
@@ -721,16 +795,26 @@ function Futures() {
                     </span>
                   </div>
                 )}
-                
+
                 <div className="detail-row">
                   <span className="detail-label">Profit And Loss Amount:</span>
-                  <span className={`detail-value ${
-                    (selectedOrder.profitAndLossAmount || selectedOrder.pnl || 0) >= 0 ? "profit" : "loss"
-                  }`}>
-                    {selectedOrder.profitAndLossAmount || selectedOrder.pnl || 0} USDT
+                  <span
+                    className={`detail-value ${
+                      (selectedOrder.profitAndLossAmount ||
+                        selectedOrder.pnl ||
+                        0) >= 0
+                        ? "profit"
+                        : "loss"
+                    }`}
+                  >
+                    {safeToFixed(
+                      selectedOrder.profitAndLossAmount || selectedOrder.pnl,
+                      2
+                    )}{" "}
+                    USDT
                   </span>
                 </div>
-                
+
                 <div className="detail-row">
                   <span className="detail-label">Leverage:</span>
                   <span className="detail-value">
