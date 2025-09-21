@@ -836,12 +836,12 @@
       display: none;
       font-size: 14px;
   }
-
+/* 
   .status-success {
       background-color: rgba(0, 192, 118, 0.1);
       color: #00C076;
       border: 1px solid rgba(0, 192, 118, 0.3);
-  }
+  } */
 
   .status-error {
       background-color: rgba(255, 104, 56, 0.1);
@@ -993,11 +993,11 @@
       font-size: 14px;
   }
 
-  .status-success {
+  /* .status-success {
       background-color: rgba(0, 192, 118, 0.1);
       color: #00C076;
       border: 1px solid rgba(0, 192, 118, 0.3);
-  }
+  } */
 
   .status-error {
       background-color: rgba(255, 104, 56, 0.1);

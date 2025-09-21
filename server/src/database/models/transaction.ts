@@ -12,11 +12,21 @@ export default (database) => {
   const TransactionSchema = new Schema(
     {
       // ✅ Deposit, Withdraw, Convert
-      type: {
-        type: String,
-        enum: ["deposit", "withdraw", "convert_in", "convert_out","stacking"],
-        required: true,
-      },
+  type: {
+  type: String,
+  enum: [
+    "deposit", 
+    "withdraw", 
+    "convert_in", 
+    "convert_out",
+    "stacking",
+    "futures_profit",        // ✅ Profit from futures trading
+    "futures_loss",          // ✅ Loss from futures trading
+    "spot_profit",        // ✅ Margin deposit for futures
+    "spot_loss",    // ✅ Final settlement of futures position
+  ],
+  required: true,
+},
      referenceId: {
         type: Schema.Types.ObjectId,
       

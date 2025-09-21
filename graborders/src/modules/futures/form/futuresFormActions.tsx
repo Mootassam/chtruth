@@ -60,9 +60,9 @@ const vipFormActions = {
         type: vipFormActions.CREATE_SUCCESS,
       });
 
-      Message.success(
-        i18n('entities.futures.create.success'),
-      );
+      // Message.success(
+      //   i18n('entities.futures.create.success'),
+      // );
 
     } catch (error) {
       Errors.handle(error);
@@ -85,9 +85,9 @@ const vipFormActions = {
         type: vipFormActions.UPDATE_SUCCESS,
       });
 
-      Message.success(
-        i18n('entities.futures.update.success'),
-      );
+      // Message.success(
+      //   i18n('entities.futures.update.success'),
+      // );
 
     } catch (error) {
       Errors.handle(error);

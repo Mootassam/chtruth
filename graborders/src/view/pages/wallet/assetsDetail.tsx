@@ -6,15 +6,17 @@ import assetsActions from 'src/modules/assets/view/assetsViewActions';
 import assetsSelectors from 'src/modules/assets/view/assetsViewSelectors';
 import transactionListSelector from "src/modules/transaction/list/transactionListSelectors";
 import transactionListActions from "src/modules/transaction/list/transactionListActions";
-import {Link} from 'react-router-dom'
+import { Link } from 'react-router-dom';
+
 function AssetsDetail() {
     const { id } = useParams<{ id: string }>();
     const dispatch = useDispatch();
     const details = useSelector(assetsSelectors.selectRecord);
-        const transaction = useSelector(transactionListSelector.selectRows);
-            const assetLoading = useSelector(assetsSelectors.selectLoading);
-    const Transactionloading = useSelector(transactionListSelector.selectLoading)
-const loading = assetLoading || Transactionloading ;
+    const transaction = useSelector(transactionListSelector.selectRows);
+    const assetLoading = useSelector(assetsSelectors.selectLoading);
+    const Transactionloading = useSelector(transactionListSelector.selectLoading);
+    const loading = assetLoading || Transactionloading;
+    
     const [filterModalOpen, setFilterModalOpen] = useState(false);
     const [filters, setFilters] = useState({
         status: 'all',
@@ -24,12 +26,11 @@ const loading = assetLoading || Transactionloading ;
         endDate: ''
     });
 
-
     useEffect(() => {
         Promise.all([
             dispatch(assetsActions.doFind(id)),
             dispatch(transactionListActions.doFetch(id))
-        ])
+        ]);
     }, [dispatch, id]);
 
     // Filter transactions based on active filters
@@ -60,31 +61,94 @@ const loading = assetLoading || Transactionloading ;
         });
     };
 
-    // Get transaction icon and type text
+    // Enhanced transaction configuration with icons and colors
     const getTransactionConfig = (type, direction, relatedAsset) => {
         const config = {
             icon: 'fa-exchange-alt',
             typeText: 'Transaction',
-            iconClass: 'swap'
+            iconClass: 'swap',
+            color: '#627EEA',
+            amountColor: direction === 'in' ? '#2ff378' : '#FF6838'
         };
 
-        if (type === 'deposit') {
-            config.icon = direction === 'in' ? 'fa-arrow-down' : 'fa-arrow-up';
-            config.typeText = direction === 'in' ? 'Deposit' : 'Withdrawal';
-            config.iconClass = direction === 'in' ? 'deposit' : 'withdraw';
-        }
-
-        if (type === 'convert_in') {
-            config.typeText = relatedAsset ? `Converted from ${relatedAsset}` : 'Conversion';
-        }
-   if (type === 'convert_out') {
-            config.typeText = relatedAsset ? `Converted to ${relatedAsset}` : 'Conversion';
-        }
-        // Handle withdrawal specifically
-        if (type === 'withdraw') {
-            config.icon = 'fa-arrow-up';
-            config.typeText = 'Withdrawal';
-            config.iconClass = 'withdraw';
+        switch (type) {
+            case 'deposit':
+                config.icon = 'fa-arrow-down';
+                config.typeText = 'Deposit';
+                config.iconClass = 'deposit';
+                config.color = '#F3BA2F';
+                config.amountColor = '#2ff378';
+                break;
+                
+            case 'withdraw':
+                config.icon = 'fa-arrow-up';
+                config.typeText = 'Withdrawal';
+                config.iconClass = 'withdraw';
+                config.color = '#FF6838';
+                config.amountColor = '#FF6838';
+                break;
+                
+            case 'convert_in':
+                config.icon = 'fa-exchange-alt';
+                config.typeText = relatedAsset ? `Converted from ${relatedAsset}` : 'Conversion In';
+                config.iconClass = 'convert-in';
+                config.color = '#9C27B0';
+                config.amountColor = '#2ff378';
+                break;
+                
+            case 'convert_out':
+                config.icon = 'fa-exchange-alt';
+                config.typeText = relatedAsset ? `Converted to ${relatedAsset}` : 'Conversion Out';
+                config.iconClass = 'convert-out';
+                config.color = '#9C27B0';
+                config.amountColor = '#FF6838';
+                break;
+                
+            case 'stacking':
+                config.icon = 'fa-lock';
+                config.typeText = 'Stacking Reward';
+                config.iconClass = 'stacking';
+                config.color = '#4CAF50';
+                config.amountColor = '#2ff378';
+                break;
+                
+            case 'futures_profit':
+                config.icon = 'fa-chart-line';
+                config.typeText = 'Futures Profit';
+                config.iconClass = 'futures-profit';
+                config.color = '#00BCD4';
+                config.amountColor = '#2ff378';
+                break;
+                
+            case 'futures_loss':
+                config.icon = 'fa-chart-line';
+                config.typeText = 'Futures Loss';
+                config.iconClass = 'futures-loss';
+                config.color = '#FF5722';
+                config.amountColor = '#FF6838';
+                break;
+                
+            case 'spot_profit':
+                config.icon = 'fa-coins';
+                config.typeText = 'Spot Trading Profit';
+                config.iconClass = 'spot-profit';
+                config.color = '#4CAF50';
+                config.amountColor = '#2ff378';
+                break;
+                
+            case 'spot_loss':
+                config.icon = 'fa-coins';
+                config.typeText = 'Spot Trading Loss';
+                config.iconClass = 'spot-loss';
+                config.color = '#FF5722';
+                config.amountColor = '#FF6838';
+                break;
+                
+            default:
+                config.icon = 'fa-exchange-alt';
+                config.typeText = 'Transaction';
+                config.iconClass = 'default';
+                config.color = '#627EEA';
         }
 
         return config;
@@ -136,7 +200,6 @@ const loading = assetLoading || Transactionloading ;
                 {/* Transaction List with Loading Placeholder */}
                 <div className="transaction-list">
                     {loading ? (
-                        // Show 5 placeholder items while loading
                         Array.from({ length: 5 }).map((_, index) => (
                             <div className="transaction-item-placeholder" key={index}>
                                 <div className="transaction-info-placeholder">
@@ -154,7 +217,7 @@ const loading = assetLoading || Transactionloading ;
                         ))
                     ) : filteredTransactions?.length > 0 ? (
                         filteredTransactions.map((tx) => {
-                            const { icon, typeText, iconClass } = getTransactionConfig(
+                            const { icon, typeText, iconClass, amountColor } = getTransactionConfig(
                                 tx.type,
                                 tx.direction,
                                 tx.relatedAsset
@@ -163,7 +226,7 @@ const loading = assetLoading || Transactionloading ;
                             return (
                                 <div className="transaction-item" key={tx._id}>
                                     <div className="transaction-info">
-                                        <div className={`transaction-icon ${iconClass}`}>
+                                        <div className={`transaction-icon ${iconClass}`} style={{ backgroundColor: getTransactionConfig(tx.type, tx.direction, tx.relatedAsset).color }}>
                                             <i className={`fas ${icon}`} />
                                         </div>
                                         <div className="transaction-details">
@@ -174,12 +237,12 @@ const loading = assetLoading || Transactionloading ;
                                         </div>
                                     </div>
                                     <div className="transaction-amount">
-                                        <div className="transaction-value">
+                                        <div className="transaction-value" style={{ color: amountColor }}>
                                             {tx.direction === 'in' ? '+' : '-'}
                                             {tx.amount} {tx.asset}
                                         </div>
                                         <div className={`transaction-status ${
-                                            tx.status === 'pending' ? 'pending' : tx.status ==="canceled" ? 'canceled' :''
+                                            tx.status === 'pending' ? 'pending' : tx.status === "canceled" ? 'canceled' : ''
                                         }`}>
                                             {tx.status.charAt(0).toUpperCase() + tx.status.slice(1)}
                                         </div>
@@ -194,7 +257,6 @@ const loading = assetLoading || Transactionloading ;
                             </div>
                             <h3>No Transactions Yet</h3>
                             <p>Your transaction history will appear here once you start trading.</p>
-                        
                         </div>
                     )}
                 </div>
@@ -216,8 +278,9 @@ const loading = assetLoading || Transactionloading ;
                                     onChange={(e) => setFilters({...filters, status: e.target.value})}
                                 >
                                     <option value="all">All Statuses</option>
-                                    <option value="success">Completed</option>
+                                    <option value="completed">Completed</option>
                                     <option value="pending">Pending</option>
+                                    <option value="canceled">Canceled</option>
                                 </select>
                             </div>
                             <div className="filter-group">
@@ -229,7 +292,13 @@ const loading = assetLoading || Transactionloading ;
                                     <option value="all">All Types</option>
                                     <option value="deposit">Deposit</option>
                                     <option value="withdraw">Withdrawal</option>
-                                    <option value="convert_in">Conversion</option>
+                                    <option value="convert_in">Conversion In</option>
+                                    <option value="convert_out">Conversion Out</option>
+                                    <option value="stacking">Stacking</option>
+                                    <option value="futures_profit">Futures Profit</option>
+                                    <option value="futures_loss">Futures Loss</option>
+                                    <option value="spot_profit">Spot Profit</option>
+                                    <option value="spot_loss">Spot Loss</option>
                                 </select>
                             </div>
                             <div className="filter-group">
@@ -274,14 +343,23 @@ const loading = assetLoading || Transactionloading ;
             </div>
 
             <style>{`
+                /* Enhanced transaction icons */
+                .transaction-icon.deposit { background-color: #F3BA2F !important; color: #000; }
+                .transaction-icon.withdraw { background-color: #FF6838 !important; color: #000; }
+                .transaction-icon.convert-in { background-color: #9C27B0 !important; color: #FFF; }
+                .transaction-icon.convert-out { background-color: #9C27B0 !important; color: #FFF; }
+                .transaction-icon.stacking { background-color: #4CAF50 !important; color: #FFF; }
+                .transaction-icon.futures-profit { background-color: #00BCD4 !important; color: #FFF; }
+                .transaction-icon.futures-loss { background-color: #FF5722 !important; color: #FFF; }
+                .transaction-icon.spot-profit { background-color: #4CAF50 !important; color: #FFF; }
+                .transaction-icon.spot-loss { background-color: #FF5722 !important; color: #FFF; }
+                .transaction-icon.default { background-color: #627EEA !important; color: #FFF; }
+                .transaction-icon.swap { background-color: #627EEA !important; color: #FFF; }
+
                 /* Shimmer animation for loading placeholders */
                 @keyframes shimmer {
-                    0% {
-                        background-position: -468px 0;
-                    }
-                    100% {
-                        background-position: 468px 0;
-                    }
+                    0% { background-position: -468px 0; }
+                    100% { background-position: 468px 0; }
                 }
                 
                 .shimmer {
@@ -399,56 +477,6 @@ const loading = assetLoading || Transactionloading ;
                     margin-right: auto;
                 }
                 
-                .no-transactions-actions {
-                    display: flex;
-                    flex-direction: column;
-                    gap: 12px;
-                    max-width: 250px;
-                    margin: 0 auto;
-                }
-                
-                .no-transactions-actions .action-button {
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    gap: 10px;
-                    padding: 12px 20px;
-                    border-radius: 12px;
-                    font-weight: bold;
-                    cursor: pointer;
-                    transition: all 0.3s ease;
-                }
-                
-                .no-transactions-actions .deposit-button {
-                    background-color: #F3BA2F;
-                    color: #000000;
-                }
-                
-                .no-transactions-actions .trade-button {
-                    background-color: #627EEA;
-                    color: #FFFFFF;
-                }
-                
-                .no-transactions-actions .action-button:hover {
-                    transform: translateY(-2px);
-                    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
-                }
-                
-                @keyframes pulse {
-                    0% {
-                        transform: scale(1);
-                        opacity: 1;
-                    }
-                    50% {
-                        transform: scale(1.05);
-                        opacity: 0.8;
-                    }
-                    100% {
-                        transform: scale(1);
-                        opacity: 1;
-                    }
-                }
-                
                 .container {
                     max-width: 400px;
                     margin: 0 auto;
@@ -473,21 +501,6 @@ const loading = assetLoading || Transactionloading ;
                     font-size: 28px;
                     font-weight: bold;
                     margin-bottom: 5px;
-                }
-                
-                .asset-value {
-                    color: #AAAAAA;
-                    font-size: 16px;
-                    margin-bottom: 15px;
-                }
-                
-                .price-change {
-                    color: #F3BA2F;
-                    font-size: 14px;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    gap: 5px;
                 }
                 
                 .transaction-history {
@@ -552,21 +565,6 @@ const loading = assetLoading || Transactionloading ;
                     font-size: 16px;
                 }
                 
-                .transaction-icon.deposit {
-                    background-color: #F3BA2F;
-                    color: #000;
-                }
-                
-                .transaction-icon.withdraw {
-                    background-color: #FF6838;
-                    color: #000;
-                }
-                
-                .transaction-icon.swap {
-                    background-color: #627EEA;
-                    color: #FFF;
-                }
-                
                 .transaction-details {
                     display: flex;
                     flex-direction: column;
@@ -601,8 +599,8 @@ const loading = assetLoading || Transactionloading ;
                 }
 
                 .transaction-status.canceled {
-                  color: #FF6838;
-                 }
+                    color: #FF6838;
+                }
                 
                 // .action-buttons {
                 //     display: flex;
@@ -624,6 +622,8 @@ const loading = assetLoading || Transactionloading ;
                     text-align: center;
                     cursor: pointer;
                     transition: all 0.2s ease;
+                    text-decoration: none;
+                    display: block;
                 }
                 
                 .deposit-button {
@@ -750,6 +750,12 @@ const loading = assetLoading || Transactionloading ;
                 .btn-primary {
                     background-color: #F3BA2F;
                     color: #000;
+                }
+                
+                @keyframes pulse {
+                    0% { transform: scale(1); opacity: 1; }
+                    50% { transform: scale(1.05); opacity: 0.8; }
+                    100% { transform: scale(1); opacity: 1; }
                 }
             `}</style>
         </div>

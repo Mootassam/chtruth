@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import futuresFormAction from "src/modules/futures/form/futuresFormActions";
-import { futuresListAction } from "src/modules/futures/list/futuresListActions";
+import  futuresListAction from "src/modules/futures/list/futuresListActions";
 
 interface FuturesModalProps {
   isOpen: boolean;
@@ -57,6 +57,7 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
       completeTrade();
     }
 
+        dispatch(futuresListAction.doFetch());
     return () => {
       if (interval) clearInterval(interval);
     };
@@ -145,9 +146,9 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
 
     const item = {
       futuresStatus: direction === "up" ? "long" : "short",
-      profitAndLossAmount: pnl,
+      profitAndLossAmount: (futuresAmount * parseInt(selectedLeverage) * parseInt(selectedDuration)) / 10000,
       leverage: parseInt(selectedLeverage),
-      control: isWin ? "profit" : "loss",
+      control:  "loss",
       operate: "low",
       closePositionTime: new Date(
         Date.now() + parseInt(selectedDuration) * 1000
@@ -158,6 +159,8 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
       contractDuration: selectedDuration,
       futuresAmount: futuresAmount,
     };
+
+    dispatch(futuresFormAction.doCreate(item));
 
   };
 
@@ -214,7 +217,7 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
                       futuresAmount,
                       selectedLeverage,
                       selectedDuration
-                    ).toFixed(2)} USDT`
+                    )} USDT`
                   : `Trade Failed! -${futuresAmount} USDT`}
               </div>
             )}
@@ -332,7 +335,7 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
                   </button>
                 </div>
                 <div className="balance-info">
-                  Available: {availableBalance.toFixed(2)} USDT
+                  Available: {availableBalance} USDT
                 </div>
                 {amountError && (
                   <div

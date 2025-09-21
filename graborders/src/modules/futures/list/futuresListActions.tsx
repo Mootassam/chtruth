@@ -1,7 +1,5 @@
 import futuresService from 'src/modules/futures/futuresService';
 import selectors from 'src/modules/futures/list/futuresListSelectors';
-import { i18n } from '../../../i18n';
-import exporterFields from 'src/modules/futures/list/futuresListExporterFields';
 import Errors from 'src/modules/shared/error/errors';
 
 const prefix = 'VIP_LIST';

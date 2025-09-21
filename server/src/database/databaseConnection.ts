@@ -3,30 +3,27 @@ import { getConfig } from '../config';
 import init from './models';
 
 export async function databaseInit() {
-  /**
-   * If the connection is already established,
-   * returns the mongoose instance.
-   */
   if (mongoose.connection.readyState) {
     return mongoose;
   }
 
-  /**
-   * Connects to MongoDB
-   */
+  const uri = getConfig().DATABASE_CONNECTION;
+  if (!uri) {
+    throw new Error('❌ DATABASE_CONNECTION (Mongo URI) is missing from config/env');
+  }
+
   return mongoose
-    .connect(getConfig().DATABASE_CONNECTION, {
+    .connect(uri, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
-      useCreateIndex: true,
-    })
+    } as any)
     .then(() => {
       init(mongoose);
+      console.log('✅ MongoDB connected');
+      return mongoose;
     })
-    .then(() => mongoose)
     .catch((error) => {
-      console.error(error);
-
+      console.error('❌ MongoDB connection error', error);
       throw error;
     });
 }

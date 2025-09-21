@@ -67,10 +67,9 @@ function Futures() {
   const [isOrdersLoading, setIsOrdersLoading] = useState(true);
   const tickerWs = useRef<WebSocket | null>(null);
   const currentCoinRef = useRef(selectedCoin); // Keep track of current coin
+  const [balances, setBalances] = useState<{ [key: string]: number }>({});
 
-  // Get USDT balance
-  const usdtBalance =
-    listAssets.find((asset) => asset.symbol === "USDT")?.balance || 0;
+
 
   // Mock data for open orders
   const [openOrders, setOpenOrders] = useState<Order[]>([]);
@@ -170,7 +169,6 @@ function Futures() {
     }
   };
 
-  const [balances, setBalances] = useState<{ [key: string]: number }>({});
 
   const balance = () => {
     const formatted = listAssets.reduce((acc, item) => {
@@ -281,122 +279,8 @@ function Futures() {
   useEffect(() => {
     const timer = setTimeout(() => {
       // Set mock data after delay to simulate loading
-      setOpenOrders([
-        {
-          id: 3,
-          pair: "ETH/USDT",
-          direction: "BUY UP",
-          status: "Open",
-          investment: 450.0,
-          openPrice: 3450.25,
-          openTime: new Date().toISOString(),
-          leverage: 15,
-          pnl: 18.3,
-          currentPrice: 3468.55,
-          stopLoss: 3420.0,
-          takeProfit: 3500.0,
-          orderType: "Market",
-          margin: 30.0,
-          fee: 2.25,
-        },
-        {
-          id: 4,
-          pair: "SOL/USDT",
-          direction: "BUY DOWN",
-          status: "Open",
-          investment: 250.0,
-          openPrice: 102.75,
-          openTime: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-          leverage: 12,
-          pnl: -5.25,
-          currentPrice: 97.5,
-          stopLoss: 105.0,
-          takeProfit: 95.0,
-          orderType: "Limit",
-          margin: 20.83,
-          fee: 1.25,
-        },
-        {
-          id: 5,
-          pair: "BTC/USDT",
-          direction: "BUY UP",
-          status: "Open",
-          investment: 1200.0,
-          openPrice: 65820.5,
-          openTime: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-          leverage: 10,
-          pnl: 245.6,
-          currentPrice: 66066.1,
-          stopLoss: 65000.0,
-          takeProfit: 67000.0,
-          orderType: "Market",
-          margin: 120.0,
-          fee: 6.0,
-        },
-      ]);
 
-      setRecentOrders([
-        {
-          id: 1,
-          pair: "BTC/USDT",
-          direction: "BUY DOWN",
-          status: "Closed",
-          investment: 300.0,
-          openPrice: 65983,
-          openTime: new Date(
-            Date.now() - 3 * 24 * 60 * 60 * 1000
-          ).toISOString(),
-          leverage: 10,
-          pnl: -24.5,
-          closePrice: 65958.5,
-          closeTime: new Date(
-            Date.now() - 3 * 24 * 60 * 60 * 1000 + 30 * 60 * 1000
-          ).toISOString(),
-          orderType: "Market",
-          margin: 30.0,
-          fee: 1.5,
-        },
-        {
-          id: 2,
-          pair: "BTC/USDT",
-          direction: "BUY UP",
-          status: "Closed",
-          investment: 600.0,
-          openPrice: 65881,
-          openTime: new Date(
-            Date.now() - 4 * 24 * 60 * 60 * 1000
-          ).toISOString(),
-          leverage: 20,
-          pnl: 132.75,
-          closePrice: 65913.75,
-          closeTime: new Date(
-            Date.now() - 4 * 24 * 60 * 60 * 1000 + 45 * 60 * 1000
-          ).toISOString(),
-          orderType: "Market",
-          margin: 30.0,
-          fee: 3.0,
-        },
-        {
-          id: 6,
-          pair: "ADA/USDT",
-          direction: "BUY UP",
-          status: "Closed",
-          investment: 500.0,
-          openPrice: 0.455,
-          openTime: new Date(
-            Date.now() - 2 * 24 * 60 * 60 * 1000
-          ).toISOString(),
-          leverage: 15,
-          pnl: 32.5,
-          closePrice: 0.4582,
-          closeTime: new Date(
-            Date.now() - 2 * 24 * 60 * 60 * 1000 + 75 * 60 * 1000
-          ).toISOString(),
-          orderType: "Limit",
-          margin: 33.33,
-          fee: 2.5,
-        },
-      ]);
+
 
       setIsOrdersLoading(false);
     }, 1500);
@@ -474,14 +358,7 @@ function Futures() {
     height?: string;
   }) => <div className="loading-placeholder" style={{ width, height }} />;
 
-  // Handle image loading errors
-  const handleImageError = (
-    e: React.SyntheticEvent<HTMLImageElement, Event>
-  ) => {
-    const target = e.target as HTMLImageElement;
-    target.src =
-      "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAiIGhlaWdodD0iMzAiIHZpZXdCb3g9IjAgMCAzMCAzMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTUiIGN5PSIxNSIgcj0iMTQiIGZpbGw9IiMzMzMiIHN0cm9rZT0iI2NjYyIgc3Ryb2tlLXdpZHRoPSIyIi8+Cjx0ZXh0IHg9IjE1IiB5PSIxOCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjEwIiBmaWxsPSJ3aGl0ZSI+QzwvdGV4dD4KPC9zdmc+";
-  };
+
 
   return (
     <div className="container">
@@ -497,7 +374,7 @@ function Futures() {
                 style={{ width: 30, height: 30 }}
                 alt={selectedCoin}
                 loading="lazy"
-                onError={handleImageError}
+    
               />
             </div>
             <div className="market-name">{selectedCoin}</div>
@@ -587,7 +464,7 @@ function Futures() {
           className={`tab ${activeTab === "recentOrders" ? "active" : ""}`}
           onClick={() => setActiveTab("recentOrders")}
         >
-          Recent Orders ({listLoading ? "..." : countFutures})
+          Recent Orders 
         </div>
       </div>
 
@@ -841,7 +718,7 @@ function Futures() {
         listAssets={listAssets}
         selectedCoin={selectedCoin}
         marketPrice={marketPrice}
-        availableBalance={balances[selectedCoin.split("USDT")[0]]}
+        availableBalance={balances['USDT']}
       />
 
       <CoinListModal

@@ -252,7 +252,7 @@ function Trade() {
 
   const handleCancelOrder = (orderId) => {
     // In a real app, this would dispatch an action to cancel the order
-    dispatch(sportListActions.doDelete(orderId));
+    // dispatch(sportListActions.doDelete(orderId));
   };
 
   // Simulate order matching for limit orders

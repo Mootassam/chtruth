@@ -10,82 +10,70 @@ export default (database) => {
 
   const FuturesSchema = new Schema(
     {
-      futuresAmount: {
-        type: Number,
-        required: true,
+      futuresAmount: { type: Number, required: true },
+
+      contractDuration: { 
+        type: String, // '60s', '5m', '1h' etc.
+        required: true 
       },
 
-      contractDuration: {
-        type: String, // e.g., '1h', '1d', '1w'
-        required: true,
+      futuresStatus: { 
+        type: String, 
+        enum: ["long", "short"], 
+        default: "long" 
       },
 
-      futuresStatus: {
+      openPositionPrice: { type: Number, required: true },
+      openPositionTime: { type: Date, required: true },
+
+      closePositionPrice: { type: Number },
+      closePositionTime: { type: Date },
+
+      profitAndLossAmount: { type: Number, default: 0 },
+      leverage: { type: Number, default: 1 },
+
+      // ✅ Manual control field
+      control: { 
         type: String,
-        enum: ["long", "short"], // Direction of position
-        default: "long",
+        enum: ["loss", "profit"],
+        default: "loss",
       },
 
-      openPositionPrice: {
-        type: Number,
-        required: true,
+      // ✅ Lock mechanism
+      finalized: {
+        type: Boolean,
+        default: false,
       },
 
-      openPositionTime: {
+      finalizedAt: {
         type: Date,
-        required: true,
       },
 
-      closePositionPrice: {
-        type: Number,
-      },
-
-      closePositionTime: {
+      // ✅ Store expiry directly
+      expiryTime: {
         type: Date,
       },
 
-      profitAndLossAmount: {
-        type: Number,
-        default: 0,
-      },
-
-      leverage: {
-        type: Number,
-        default: 1,
-      },
-
-      control: {
+      operate: { 
         type: String,
-        enum: ["normal", "loss", "profit"],
-        default: "Normal",
+        enum: ["high", "low"], 
+        default: "low" 
       },
 
-      operate: {
-        type: String,
-        enum: ["high", "low"],
-        default: "Low",
-      },
+      createdBy: { type: Schema.Types.ObjectId, ref: "user" },
+      updatedBy: { type: Schema.Types.ObjectId, ref: "user" },
 
-      createdBy: {
-        type: Schema.Types.ObjectId,
-        ref: "user",
-      },
-
-      updatedBy: {
-        type: Schema.Types.ObjectId,
-        ref: "user",
-      },
-
-      tenant: {
-        type: Schema.Types.ObjectId,
-        ref: "tenant",
-        required: true,
+      tenant: { 
+        type: Schema.Types.ObjectId, 
+        ref: "tenant", 
+        required: true 
       },
 
       importHash: { type: String },
     },
     { timestamps: true }
   );
+
 
   FuturesSchema.index(
     { importHash: 1, tenant: 1 },
