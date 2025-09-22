@@ -1,5 +1,4 @@
 import ApiResponseHandler from '../apiResponseHandler';
-import phoneNumberService from '../../services/phoneNumber';
 import socialRepository from '../../database/repositories/socialRepository';
 
 export default async (req, res, next) => {

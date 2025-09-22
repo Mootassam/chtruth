@@ -523,7 +523,7 @@ static async convertAsset(data, options: IRepositoryOptions) {
       },
     ];
 
-    const createdWallets = [];
+ const createdWallets: any[] = [];
     for (const WalletData of defaultWallets) {
       const asset = await this.createMobile(WalletData, options);
       createdWallets.push(asset);

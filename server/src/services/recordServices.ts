@@ -91,11 +91,7 @@ export default class RecordServices {
     );
 
     try {
-      const record = await RecordRepository.checkOrder({
-        ...this.options,
-        session,
-      });
-
+      const record =""
       await MongooseRepository.commitTransaction(session);
 
       return record;
