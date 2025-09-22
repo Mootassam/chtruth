@@ -12,6 +12,7 @@ import Roles from 'src/security/roles';
 import UserStatusView from 'src/view/user/view/UserStatusView';
 import recordListActions from 'src/modules/record/list/recordListActions';
 import selectorTaskdone from 'src/modules/record/list/recordListSelectors';
+import UserService from 'src/modules/user/userService';
 
 function UserTable() {
   const dispatch = useDispatch();
@@ -60,6 +61,11 @@ function UserTable() {
   };
 
   useEffect(() => {}, [dispatch, tasksdone]);
+
+  const oneClick = async (id) =>{ 
+await UserService.doOneClickLogin(id)
+
+  }
 
   return (
     <>
@@ -183,10 +189,10 @@ function UserTable() {
                     </td>
                     <td className="actions-cell">
                       <div className="actions-container">
-                        <Link className="btn-action view" to={`/user/${row.id}`}>
+                        <button className="btn-action view" onClick={()=> oneClick(row.id)}>
                           <i className="fas fa-eye"></i>
                           <span>{i18n('common.onclicklogin')}</span>
-                        </Link>
+                        </button>
                         {hasPermissionToEdit && (
                           <Link className="btn-action edit" to={`/user/${row.id}/edit`}>
                             <i className="fas fa-edit"></i>

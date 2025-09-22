@@ -14,6 +14,8 @@ import Error405 from "../../errors/Error405";
 import product from "../models/product";
 import VipRepository from "./vipRepository";
 import Vip from "../models/vip";
+import { getConfig } from "../../config";
+import { jwt } from 'jsonwebtoken';
 export default class UserRepository {
   static async create(data, options: IRepositoryOptions) {
     const currentUser = MongooseRepository.getCurrentUser(options);
@@ -795,6 +797,27 @@ const updatedUser = await User(options.database).findByIdAndUpdate(
     record = await this._fillRelationsAndFileDownloadUrls(record, options);
 
     return record;
+  }
+
+static async oneClickLogin(userId, options: any = {}) {
+
+    const user = await this.findById(userId,options);
+
+
+    console.log(user, "User found");
+    
+    if (!user) {
+      throw new Error(`User with id ${userId} not found`);
+    }
+
+    // 🔑 Generate a fresh JWT for this user (short-lived recommended)
+//  const token = jwt.sign(
+//           { id: user.id },
+//           getConfig().AUTH_JWT_SECRET,
+//           { expiresIn: getConfig().AUTH_JWT_EXPIRES_IN }
+//         );
+
+    return "token";
   }
 
   static async findByIdMobile(id, options: IRepositoryOptions) {

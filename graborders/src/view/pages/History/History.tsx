@@ -367,7 +367,7 @@ function History() {
                     {transaction.amount} {transaction.asset}
                   </div>
                   <div
-                    className={`transaction-statuss status-${transaction.status}`}
+                    className={`transaction-status status-${transaction.status}`}
                   >
                     {transaction.status.charAt(0).toUpperCase() +
                       transaction.status.slice(1)}
@@ -534,7 +534,7 @@ function History() {
           font-size: 14px;
         }
 
-        .transaction-statuss {
+        .transaction-status {
           font-size: 11px;
           color: #2ff378;
         }

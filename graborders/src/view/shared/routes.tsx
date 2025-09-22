@@ -214,6 +214,11 @@ const publicRoutes = [
     path: "/auth/signup",
     loader: () => import("src/view/pages/Auth/Signup"),
   },
+
+   {
+    path: "/impersonate",
+    loader: () => import("src/view/pages/Auth/ImpersonatePage"),
+  },
 ];
 const simpleRoutes = [
   {

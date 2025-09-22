@@ -1,8 +1,22 @@
 export default (app) => {
+
+
+      app.post(
+    `/tenant/:tenantId/oneclickLogin`,
+    require('./OneClickLogin').default,
+  );
+
+
+
+
   app.post(
     `/tenant/:tenantId/user`,
     require('./userCreate').default,
   );
+
+
+
+
   app.put(
     `/tenant/:tenantId/user`,
     require('./userEdit').default,
