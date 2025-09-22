@@ -389,7 +389,6 @@ static async convertAsset(data, options: IRepositoryOptions) {
     let rows = await Wallet(options.database)
       .find(criteria)
       .skip(skip)
-      .limit(limitEscaped)
       .sort(sort)
       .populate("user")
       .populate("createdBy");

@@ -1,11 +1,10 @@
+import vipService from "src/modules/futures/futuresService";
+import Errors from "src/modules/shared/error/errors";
+import Message from "src/view/shared/message";
+import { getHistory } from "src/modules/store";
+import { i18n } from "../../../i18n";
 
-import vipService from 'src/modules/futures/futuresService';
-import Errors from 'src/modules/shared/error/errors';
-import Message from 'src/view/shared/message';
-import { getHistory } from 'src/modules/store';
-import { i18n } from '../../../i18n';
-
-const prefix = 'COUPONS_FORM';
+const prefix = "COUPONS_FORM";
 
 const vipFormActions = {
   INIT_STARTED: `${prefix}_INIT_STARTED`,
@@ -44,7 +43,6 @@ const vipFormActions = {
       dispatch({
         type: vipFormActions.INIT_ERROR,
       });
-
     }
   },
 
@@ -54,7 +52,7 @@ const vipFormActions = {
         type: vipFormActions.CREATE_STARTED,
       });
 
-      await vipService.create(values);
+      const record = await vipService.create(values);
 
       dispatch({
         type: vipFormActions.CREATE_SUCCESS,
@@ -63,7 +61,7 @@ const vipFormActions = {
       // Message.success(
       //   i18n('entities.futures.create.success'),
       // );
-
+      return record;
     } catch (error) {
       Errors.handle(error);
 
@@ -88,7 +86,6 @@ const vipFormActions = {
       // Message.success(
       //   i18n('entities.futures.update.success'),
       // );
-
     } catch (error) {
       Errors.handle(error);
 

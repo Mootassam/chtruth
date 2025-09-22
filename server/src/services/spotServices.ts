@@ -108,6 +108,15 @@ export default class kycServicess {
     );
   }
 
+
+    async findAndCountAllMobile(args) {
+    return SpotRepository.findAndCountAllMobile(
+      args,
+      this.options,
+    );
+  }
+  
+
   async import(data, importHash) {
     if (!importHash) {
       throw new Error400(

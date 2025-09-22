@@ -144,6 +144,10 @@ throw new Error405("Should be contact the customer service about this");
     return TransactionRepository.findAndCountAll(args, this.options);
   }
 
+    async findAndCountAllMobile(args) {
+    return TransactionRepository.findAndCountAllMobile(args, this.options);
+  }
+
   async findAndCountByUser(args) {
     return TransactionRepository.findAndCountByUser(args, this.options);
   }

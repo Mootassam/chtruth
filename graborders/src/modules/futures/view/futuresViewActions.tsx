@@ -19,6 +19,8 @@ const vipViewActions = {
         type: vipViewActions.FIND_SUCCESS,
         payload: record,
       });
+
+      return record
     } catch (error) {
       Errors.handle(error);
 

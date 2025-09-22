@@ -1,11 +1,10 @@
 import depositService from 'src/modules/message/messageService';
 import selectors from 'src/modules/message/list/messageListSelectors';
-import exporterFields from 'src/modules/message/list/messageListExporterFields';
 import Errors from 'src/modules/shared/error/errors';
 
-const prefix = 'VIP_LIST';
+const prefix = 'MESSAGE_LIST';
 
-const vipListActions = {
+const messageListActions = {
 
   FETCH_STARTED: `${prefix}_FETCH_STARTED`,
   FETCH_SUCCESS: `${prefix}_FETCH_SUCCESS`,
@@ -25,29 +24,29 @@ const vipListActions = {
 
   doClearAllSelected() {
     return {
-      type: vipListActions.CLEAR_ALL_SELECTED,
+      type: messageListActions.CLEAR_ALL_SELECTED,
     };
   },
 
   doToggleAllSelected() {
     return {
-      type: vipListActions.TOGGLE_ALL_SELECTED,
+      type: messageListActions.TOGGLE_ALL_SELECTED,
     };
   },
 
   doToggleOneSelected(id) {
     return {
-      type: vipListActions.TOGGLE_ONE_SELECTED,
+      type: messageListActions.TOGGLE_ONE_SELECTED,
       payload: id,
     };
   },
 
   doReset: () => async (dispatch) => {
     dispatch({
-      type: vipListActions.RESETED,
+      type: messageListActions.RESETED,
     });
 
-    dispatch(vipListActions.doFetch());
+    dispatch(messageListActions.doFetch());
   },
 
 
@@ -55,19 +54,19 @@ const vipListActions = {
   doChangePagination:
     (pagination) => async (dispatch, getState) => {
       dispatch({
-        type: vipListActions.PAGINATION_CHANGED,
+        type: messageListActions.PAGINATION_CHANGED,
         payload: pagination,
       });
-      dispatch(vipListActions.doFetchCurrentFilter());
+      dispatch(messageListActions.doFetchCurrentFilter());
     },
 
   doChangeSort: (sorter) => async (dispatch, getState) => {
     dispatch({
-      type: vipListActions.SORTER_CHANGED,
+      type: messageListActions.SORTER_CHANGED,
       payload: sorter,
     });
 
-    dispatch(vipListActions.doFetchCurrentFilter());
+    dispatch(messageListActions.doFetchCurrentFilter());
   },
 
   doFetchCurrentFilter:
@@ -77,7 +76,7 @@ const vipListActions = {
         getState(),
       );
       dispatch(
-        vipListActions.doFetch(filter, rawFilter, true),
+        messageListActions.doFetch(filter, rawFilter, true),
       );
     },
 
@@ -86,7 +85,7 @@ const vipListActions = {
     async (dispatch, getState) => {
       try {
         dispatch({
-          type: vipListActions.FETCH_STARTED,
+          type: messageListActions.FETCH_STARTED,
           payload: { filter, rawFilter, keepPagination },
         });
         const response = await depositService.list(
@@ -96,7 +95,7 @@ const vipListActions = {
           selectors.selectOffset(getState()),
         );
         dispatch({
-          type: vipListActions.FETCH_SUCCESS,
+          type: messageListActions.FETCH_SUCCESS,
           payload: {
             rows: response.rows,
             count: response.count,
@@ -105,10 +104,10 @@ const vipListActions = {
       } catch (error) {
         Errors.handle(error);
         dispatch({
-          type: vipListActions.FETCH_ERROR,
+          type: messageListActions.FETCH_ERROR,
         });
       }
     },
 };
 
-export default vipListActions;
+export default messageListActions;

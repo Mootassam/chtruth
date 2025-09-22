@@ -1,4 +1,6 @@
 export default (app) => {
+
+
   app.post(
     `/tenant/:tenantId/futures`,
     require('./futuresCreate').default,
@@ -20,6 +22,13 @@ export default (app) => {
     require('./futuresAutocomplete').default,
   );
   app.get(
+    `/tenant/:tenantId/futuresMobile`,
+    require('./futuresListMobile').default,
+  );
+
+
+
+    app.get(
     `/tenant/:tenantId/futures`,
     require('./futuresList').default,
   );
@@ -27,4 +36,6 @@ export default (app) => {
     `/tenant/:tenantId/futures/:id`,
     require('./futuresFind').default,
   );
+
+
 };

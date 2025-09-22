@@ -8,7 +8,6 @@ import Withdraw from "../models/withdraw";
 import assets from "../models/wallet";
 import transaction from "../models/transaction";
 
-
 class WithdrawRepository {
   static async create(data, options: IRepositoryOptions) {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
@@ -125,23 +124,21 @@ class WithdrawRepository {
     );
 
     // ❌ If rejected → refund user balance
- if (data.status === "canceled") {
-  const withdrawRecord = await Withdraw(options.database).findById(id);
-  const WalletModel = assets(options.database);
+    if (data.status === "canceled") {
+      const withdrawRecord = await Withdraw(options.database).findById(id);
+      const WalletModel = assets(options.database);
 
-  if (!withdrawRecord) {
-    throw new Error("Withdraw record not found");
+      if (!withdrawRecord) {
+        throw new Error("Withdraw record not found");
+      }
+
+      await WalletModel.updateOne(
+        { user: withdrawRecord.createdBy, symbol: withdrawRecord.currency },
+        { $inc: { amount: withdrawRecord.totalAmount } }, // refund balance
+        options
+      );
+    }
   }
-
-  await WalletModel.updateOne(
-    { user: withdrawRecord.createdBy, symbol: withdrawRecord.currency },
-    { $inc: { amount: withdrawRecord.totalAmount } }, // refund balance
-    options
-  );
-}
-
-  }
-
 
   static async destroy(id, options: IRepositoryOptions) {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
@@ -244,6 +241,65 @@ class WithdrawRepository {
     return { rows, count };
   }
 
+  static async findAndCountAllMobile(
+    { filter, limit = 0, offset = 0, orderBy = "" },
+    options: IRepositoryOptions
+  ) {
+    const currentTenant = MongooseRepository.getCurrentTenant(options);
+    const currentUser = MongooseRepository.getCurrentUser(options);
+
+    let criteriaAnd: any = [];
+
+    criteriaAnd.push({
+      tenant: currentTenant.id,
+    });
+
+    
+    criteriaAnd.push({
+      user: currentUser.id,
+    });
+
+    if (filter) {
+      if (filter.id) {
+        criteriaAnd.push({
+          ["_id"]: MongooseQueryUtils.uuid(filter.id),
+        });
+      }
+
+      if (filter.user) {
+        criteriaAnd.push({
+          user: filter.user,
+        });
+      }
+
+      if (filter.idnumer) {
+        criteriaAnd.push({
+          idnumer: {
+            $regex: MongooseQueryUtils.escapeRegExp(filter.idnumer),
+            $options: "i",
+          },
+        });
+      }
+    }
+
+    const sort = MongooseQueryUtils.sort(orderBy || "createdAt_DESC");
+    const skip = Number(offset || 0) || undefined;
+    const limitEscaped = Number(limit || 0) || undefined;
+    const criteria = criteriaAnd.length ? { $and: criteriaAnd } : null;
+    let rows = await Withdraw(options.database)
+      .find(criteria)
+      .skip(skip)
+      .limit(limitEscaped)
+      .sort(sort)
+      .populate("auditor")
+      .populate("createdBy");
+
+    const count = await Withdraw(options.database).countDocuments(criteria);
+
+    rows = await Promise.all(rows.map(this._fillFileDownloadUrls));
+
+    return { rows, count };
+  }
   static async findAllAutocomplete(search, limit, options: IRepositoryOptions) {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
 

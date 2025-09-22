@@ -284,7 +284,7 @@ const FuturesChart: React.FC<FuturesChartProps> = ({ symbol = "BTCUSDT" }) => {
       </div>
 
       {/* chart */}
-      <div id="futures-chart" style={{ width: "100%", height: 400 }} />
+      <div id="futures-chart" style={{ width: "100%", height: '380px' }} />
 
       {/* indicators */}
       <div style={{ display: "flex", gap: 6 }}>

@@ -23,6 +23,11 @@ export default (app) => {
     `/tenant/:tenantId/spot`,
     require('./spotList').default,
   );
+
+    app.get(
+    `/tenant/:tenantId/spotListMobile`,
+    require('./spotListMobile').default,
+  );
   app.get(
     `/tenant/:tenantId/spot/:id`,
     require('./spotFind').default,

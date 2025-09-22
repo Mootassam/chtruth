@@ -1,6 +1,6 @@
 import { createSelector } from 'reselect';
 
-const selectRaw = (state) => state.vip.view;
+const selectRaw = (state) => state.deposit.view;
 
 const selectRecord = createSelector(
   [selectRaw],

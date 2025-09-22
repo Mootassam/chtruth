@@ -1,12 +1,11 @@
 import spotService from 'src/modules/spot/spotService';
 import selectors from 'src/modules/spot/list/spotListSelectors';
 import { i18n } from '../../../i18n';
-import exporterFields from 'src/modules/spot/list/spotListExporterFields';
 import Errors from 'src/modules/shared/error/errors';
 
-const prefix = 'VIP_LIST';
+const prefix = 'SPOT_LIST';
 
-const vipListActions = {
+const spotListActions = {
 
   FETCH_STARTED: `${prefix}_FETCH_STARTED`,
   FETCH_SUCCESS: `${prefix}_FETCH_SUCCESS`,
@@ -26,48 +25,48 @@ const vipListActions = {
 
   doClearAllSelected() {
     return {
-      type: vipListActions.CLEAR_ALL_SELECTED,
+      type: spotListActions.CLEAR_ALL_SELECTED,
     };
   },
 
   doToggleAllSelected() {
     return {
-      type: vipListActions.TOGGLE_ALL_SELECTED,
+      type: spotListActions.TOGGLE_ALL_SELECTED,
     };
   },
 
   doToggleOneSelected(id) {
     return {
-      type: vipListActions.TOGGLE_ONE_SELECTED,
+      type: spotListActions.TOGGLE_ONE_SELECTED,
       payload: id,
     };
   },
 
   doReset: () => async (dispatch) => {
     dispatch({
-      type: vipListActions.RESETED,
+      type: spotListActions.RESETED,
     });
 
-    dispatch(vipListActions.doFetch());
+    dispatch(spotListActions.doFetch());
   },
 
 
   doChangePagination:
     (pagination) => async (dispatch, getState) => {
       dispatch({
-        type: vipListActions.PAGINATION_CHANGED,
+        type: spotListActions.PAGINATION_CHANGED,
         payload: pagination,
       });
-      dispatch(vipListActions.doFetchCurrentFilter());
+      dispatch(spotListActions.doFetchCurrentFilter());
     },
 
   doChangeSort: (sorter) => async (dispatch, getState) => {
     dispatch({
-      type: vipListActions.SORTER_CHANGED,
+      type: spotListActions.SORTER_CHANGED,
       payload: sorter,
     });
 
-    dispatch(vipListActions.doFetchCurrentFilter());
+    dispatch(spotListActions.doFetchCurrentFilter());
   },
 
   doFetchCurrentFilter:
@@ -77,7 +76,7 @@ const vipListActions = {
         getState(),
       );
       dispatch(
-        vipListActions.doFetch(filter, rawFilter, true),
+        spotListActions.doFetch(filter, rawFilter, true),
       );
     },
 
@@ -86,7 +85,7 @@ const vipListActions = {
     async (dispatch, getState) => {
       try {
         dispatch({
-          type: vipListActions.FETCH_STARTED,
+          type: spotListActions.FETCH_STARTED,
           payload: { filter, rawFilter, keepPagination },
         });
         const response = await spotService.list(
@@ -96,7 +95,7 @@ const vipListActions = {
           selectors.selectOffset(getState()),
         );
         dispatch({
-          type: vipListActions.FETCH_SUCCESS,
+          type: spotListActions.FETCH_SUCCESS,
           payload: {
             rows: response.rows,
             count: response.count,
@@ -105,10 +104,10 @@ const vipListActions = {
       } catch (error) {
         Errors.handle(error);
         dispatch({
-          type: vipListActions.FETCH_ERROR,
+          type: spotListActions.FETCH_ERROR,
         });
       }
     },
 };
 
-export default vipListActions;
+export default spotListActions;

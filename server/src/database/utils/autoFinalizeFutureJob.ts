@@ -74,7 +74,8 @@ export async function autoFinalizeFutureJob(job) {
       $set: {
         finalized: true,       // ✅ Mark as finalized
         finalizedAt: new Date(), // ✅ Set the finalization time
-        control: 'loss'        // ✅ Set the outcome to 'loss'
+        control: 'loss'   ,
+       profitAndLossAmount : amountToDebit    // ✅ Set the outcome to 'loss'
         // ❌ DO NOT set closePositionTime or closePositionPrice
       }
     }

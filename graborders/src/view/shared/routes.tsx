@@ -40,7 +40,7 @@ const privateRoutes = [
 
   {
     path: "/trade",
-    loader: () => import("src/view/pages/Trade/Trade"),
+    loader: () => import("src/view/pages/Trade/trade"),
     permissionRequired: permissions.categoryRead,
     exact: true,
   },

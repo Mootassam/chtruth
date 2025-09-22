@@ -3,9 +3,9 @@ import selectors from 'src/modules/assets/list/assetsListSelectors';
 import Errors from 'src/modules/shared/error/errors';
 
 
-const prefix = 'VIP_LIST';
+const prefix = 'ASSESTS_LIST';
 
-const vipListActions = {
+const assetsListActions = {
 
   FETCH_STARTED: `${prefix}_FETCH_STARTED`,
   FETCH_SUCCESS: `${prefix}_FETCH_SUCCESS`,
@@ -25,51 +25,49 @@ const vipListActions = {
 
   doClearAllSelected() {
     return {
-      type: vipListActions.CLEAR_ALL_SELECTED,
+      type: assetsListActions.CLEAR_ALL_SELECTED,
     };
   },
 
   doToggleAllSelected() {
     return {
-      type: vipListActions.TOGGLE_ALL_SELECTED,
+      type: assetsListActions.TOGGLE_ALL_SELECTED,
     };
   },
 
   doToggleOneSelected(id) {
     return {
-      type: vipListActions.TOGGLE_ONE_SELECTED,
+      type: assetsListActions.TOGGLE_ONE_SELECTED,
       payload: id,
     };
   },
 
   doReset: () => async (dispatch) => {
     dispatch({
-      type: vipListActions.RESETED,
+      type: assetsListActions.RESETED,
     });
 
-    dispatch(vipListActions.doFetch());
+    dispatch(assetsListActions.doFetch());
   },
 
-  doExport: () => async (dispatch, getState) => {
 
-  },
 
   doChangePagination:
     (pagination) => async (dispatch, getState) => {
       dispatch({
-        type: vipListActions.PAGINATION_CHANGED,
+        type: assetsListActions.PAGINATION_CHANGED,
         payload: pagination,
       });
-      dispatch(vipListActions.doFetchCurrentFilter());
+      dispatch(assetsListActions.doFetchCurrentFilter());
     },
 
   doChangeSort: (sorter) => async (dispatch, getState) => {
     dispatch({
-      type: vipListActions.SORTER_CHANGED,
+      type: assetsListActions.SORTER_CHANGED,
       payload: sorter,
     });
 
-    dispatch(vipListActions.doFetchCurrentFilter());
+    dispatch(assetsListActions.doFetchCurrentFilter());
   },
 
   doFetchCurrentFilter:
@@ -79,7 +77,7 @@ const vipListActions = {
         getState(),
       );
       dispatch(
-        vipListActions.doFetch(filter, rawFilter, true),
+        assetsListActions.doFetch(filter, rawFilter, true),
       );
     },
 
@@ -88,7 +86,7 @@ const vipListActions = {
     async (dispatch, getState) => {
       try {
         dispatch({
-          type: vipListActions.FETCH_STARTED,
+          type: assetsListActions.FETCH_STARTED,
           payload: { filter, rawFilter, keepPagination },
         });
         const response = await depositService.list(
@@ -98,7 +96,7 @@ const vipListActions = {
           selectors.selectOffset(getState()),
         );
         dispatch({
-          type: vipListActions.FETCH_SUCCESS,
+          type: assetsListActions.FETCH_SUCCESS,
           payload: {
             rows: response.rows,
             count: response.count,
@@ -107,10 +105,10 @@ const vipListActions = {
       } catch (error) {
         Errors.handle(error);
         dispatch({
-          type: vipListActions.FETCH_ERROR,
+          type: assetsListActions.FETCH_ERROR,
         });
       }
     },
 };
 
-export default vipListActions;
+export default assetsListActions;

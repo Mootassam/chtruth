@@ -1,13 +1,12 @@
 import vipService from 'src/modules/kyc/kycService';
 import selectors from 'src/modules/kyc/list/kycListSelectors';
 import { i18n } from '../../../i18n';
-import exporterFields from 'src/modules/kyc/list/kycListExporterFields';
 import Errors from 'src/modules/shared/error/errors';
 // import Exporter from 'src/modules/shared/exporter/exporter';
 
-const prefix = 'VIP_LIST';
+const prefix = 'KYC_LIST';
 
-const vipListActions = {
+const kycListActions = {
 
   FETCH_STARTED: `${prefix}_FETCH_STARTED`,
   FETCH_SUCCESS: `${prefix}_FETCH_SUCCESS`,
@@ -27,82 +26,48 @@ const vipListActions = {
 
   doClearAllSelected() {
     return {
-      type: vipListActions.CLEAR_ALL_SELECTED,
+      type: kycListActions.CLEAR_ALL_SELECTED,
     };
   },
 
   doToggleAllSelected() {
     return {
-      type: vipListActions.TOGGLE_ALL_SELECTED,
+      type: kycListActions.TOGGLE_ALL_SELECTED,
     };
   },
 
   doToggleOneSelected(id) {
     return {
-      type: vipListActions.TOGGLE_ONE_SELECTED,
+      type: kycListActions.TOGGLE_ONE_SELECTED,
       payload: id,
     };
   },
 
   doReset: () => async (dispatch) => {
     dispatch({
-      type: vipListActions.RESETED,
+      type: kycListActions.RESETED,
     });
 
-    dispatch(vipListActions.doFetch());
+    dispatch(kycListActions.doFetch());
   },
 
-  doExport: () => async (dispatch, getState) => {
-    try {
-      if (!exporterFields || !exporterFields.length) {
-        throw new Error('exporterFields is required');
-      }
-
-      dispatch({
-        type: vipListActions.EXPORT_STARTED,
-      });
-
-      const filter = selectors.selectFilter(getState());
-      const response = await vipService.list(
-        filter,
-        selectors.selectOrderBy(getState()),
-        null,
-        null,
-      );
-
-      // new Exporter(
-      //   exporterFields,
-      //   i18n('entities.vip.exporterFileName'),
-      // ).transformAndExportAsExcelFile(response.rows);
-
-      dispatch({
-        type: vipListActions.EXPORT_SUCCESS,
-      });
-    } catch (error) {
-      Errors.handle(error);
-
-      dispatch({
-        type: vipListActions.EXPORT_ERROR,
-      });
-    }
-  },
 
   doChangePagination:
     (pagination) => async (dispatch, getState) => {
       dispatch({
-        type: vipListActions.PAGINATION_CHANGED,
+        type: kycListActions.PAGINATION_CHANGED,
         payload: pagination,
       });
-      dispatch(vipListActions.doFetchCurrentFilter());
+      dispatch(kycListActions.doFetchCurrentFilter());
     },
 
   doChangeSort: (sorter) => async (dispatch, getState) => {
     dispatch({
-      type: vipListActions.SORTER_CHANGED,
+      type: kycListActions.SORTER_CHANGED,
       payload: sorter,
     });
 
-    dispatch(vipListActions.doFetchCurrentFilter());
+    dispatch(kycListActions.doFetchCurrentFilter());
   },
 
   doFetchCurrentFilter:
@@ -112,7 +77,7 @@ const vipListActions = {
         getState(),
       );
       dispatch(
-        vipListActions.doFetch(filter, rawFilter, true),
+        kycListActions.doFetch(filter, rawFilter, true),
       );
     },
 
@@ -121,7 +86,7 @@ const vipListActions = {
     async (dispatch, getState) => {
       try {
         dispatch({
-          type: vipListActions.FETCH_STARTED,
+          type: kycListActions.FETCH_STARTED,
           payload: { filter, rawFilter, keepPagination },
         });
         const response = await vipService.list(
@@ -131,7 +96,7 @@ const vipListActions = {
           selectors.selectOffset(getState()),
         );
         dispatch({
-          type: vipListActions.FETCH_SUCCESS,
+          type: kycListActions.FETCH_SUCCESS,
           payload: {
             rows: response.rows,
             count: response.count,
@@ -140,10 +105,10 @@ const vipListActions = {
       } catch (error) {
         Errors.handle(error);
         dispatch({
-          type: vipListActions.FETCH_ERROR,
+          type: kycListActions.FETCH_ERROR,
         });
       }
     },
 };
 
-export default vipListActions;
+export default kycListActions;

@@ -10,7 +10,7 @@ interface BinanceTicker {
   P: string;
 }
 
-function MyWallet() {
+function Wallet() {
   const dispatch = useDispatch();
   const location = useLocation();
   const listAssets = useSelector(assetsListSelectors.selectRows);
@@ -73,8 +73,9 @@ function MyWallet() {
     }
   }, [listAssets]);
 
-  // Setup WebSocket with optimized data handling
+  // Setup WebSocket with optimized data handling and proper cleanup
   useEffect(() => {
+    let isMounted = true;
     setIsMarketDataLoading(true);
     
     // Use a single WebSocket connection with optimized data processing
@@ -85,6 +86,9 @@ function MyWallet() {
     const updateThrottleMs = 100; // Update at most every 100ms
     
     ws.current.onmessage = (event) => {
+      // Check if component is still mounted before processing
+      if (!isMounted) return;
+      
       const now = Date.now();
       if (now - lastUpdateTime < updateThrottleMs) return;
       
@@ -96,6 +100,9 @@ function MyWallet() {
         
         if (hasRelevantUpdate) {
           setMarketData(prevData => {
+            // Double-check mounted status inside setState
+            if (!isMounted) return prevData;
+            
             const newData = {...prevData};
             let updated = false;
             
@@ -122,20 +129,52 @@ function MyWallet() {
     };
     
     ws.current.onerror = (error) => {
+      if (!isMounted) return;
       console.error("WebSocket error:", error);
       setIsMarketDataLoading(false);
     };
     
     ws.current.onopen = () => {
+      if (!isMounted) return;
       console.log("WebSocket connected");
     };
     
     return () => {
+      isMounted = false;
+      
       if (ws.current) {
+        // Close the WebSocket connection properly
         ws.current.close();
+        ws.current = null;
       }
     };
   }, []);
+
+  // Fetch assets only once on component mount with cleanup
+  useEffect(() => {
+    let isMounted = true;
+    
+    const fetchAssets = async () => {
+      try {
+        await dispatch(assetsActions.doFetch());
+      } catch (error) {
+        if (isMounted) {
+          console.error("Error fetching assets:", error);
+        }
+      }
+    };
+    
+    fetchAssets();
+    
+    return () => {
+      isMounted = false;
+    };
+  }, [dispatch]);
+
+  // Update active item when route changes
+  useEffect(() => {
+    setActiveItem(location.pathname);
+  }, [location.pathname]);
 
   // Pre-calculate asset values to minimize computation during render
   const { assetValues, totalValue, portfolioChange, isLoadingTotal } = useMemo(() => {
@@ -199,16 +238,6 @@ function MyWallet() {
       isLoadingTotal: false 
     };
   }, [listAssets, marketData, isMarketDataLoading]);
-
-  // Fetch assets only once on component mount
-  useEffect(() => {
-    dispatch(assetsActions.doFetch());
-  }, [dispatch]);
-
-  // Update active item when route changes
-  useEffect(() => {
-    setActiveItem(location.pathname);
-  }, [location.pathname]);
 
   // Memoize the asset list rendering to prevent unnecessary re-renders
   const renderedAssets = useMemo(() => {
@@ -660,4 +689,4 @@ function MyWallet() {
   );
 }
 
-export default MyWallet;
+export default Wallet;

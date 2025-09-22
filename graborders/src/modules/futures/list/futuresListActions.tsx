@@ -2,9 +2,9 @@ import futuresService from 'src/modules/futures/futuresService';
 import selectors from 'src/modules/futures/list/futuresListSelectors';
 import Errors from 'src/modules/shared/error/errors';
 
-const prefix = 'VIP_LIST';
+const prefix = 'FUTURES_LIST';
 
-const vipListActions = {
+const futuresListActions = {
 
   FETCH_STARTED: `${prefix}_FETCH_STARTED`,
   FETCH_SUCCESS: `${prefix}_FETCH_SUCCESS`,
@@ -24,29 +24,29 @@ const vipListActions = {
 
   doClearAllSelected() {
     return {
-      type: vipListActions.CLEAR_ALL_SELECTED,
+      type: futuresListActions.CLEAR_ALL_SELECTED,
     };
   },
 
   doToggleAllSelected() {
     return {
-      type: vipListActions.TOGGLE_ALL_SELECTED,
+      type: futuresListActions.TOGGLE_ALL_SELECTED,
     };
   },
 
   doToggleOneSelected(id) {
     return {
-      type: vipListActions.TOGGLE_ONE_SELECTED,
+      type: futuresListActions.TOGGLE_ONE_SELECTED,
       payload: id,
     };
   },
 
   doReset: () => async (dispatch) => {
     dispatch({
-      type: vipListActions.RESETED,
+      type: futuresListActions.RESETED,
     });
 
-    dispatch(vipListActions.doFetch());
+    dispatch(futuresListActions.doFetch());
   },
 
 
@@ -54,19 +54,19 @@ const vipListActions = {
   doChangePagination:
     (pagination) => async (dispatch, getState) => {
       dispatch({
-        type: vipListActions.PAGINATION_CHANGED,
+        type: futuresListActions.PAGINATION_CHANGED,
         payload: pagination,
       });
-      dispatch(vipListActions.doFetchCurrentFilter());
+      dispatch(futuresListActions.doFetchCurrentFilter());
     },
 
   doChangeSort: (sorter) => async (dispatch, getState) => {
     dispatch({
-      type: vipListActions.SORTER_CHANGED,
+      type: futuresListActions.SORTER_CHANGED,
       payload: sorter,
     });
 
-    dispatch(vipListActions.doFetchCurrentFilter());
+    dispatch(futuresListActions.doFetchCurrentFilter());
   },
 
   doFetchCurrentFilter:
@@ -76,7 +76,7 @@ const vipListActions = {
         getState(),
       );
       dispatch(
-        vipListActions.doFetch(filter, rawFilter, true),
+        futuresListActions.doFetch(filter, rawFilter, true),
       );
     },
 
@@ -85,7 +85,7 @@ const vipListActions = {
     async (dispatch, getState) => {
       try {
         dispatch({
-          type: vipListActions.FETCH_STARTED,
+          type: futuresListActions.FETCH_STARTED,
           payload: { filter, rawFilter, keepPagination },
         });
         const response = await futuresService.list(
@@ -95,7 +95,7 @@ const vipListActions = {
           selectors.selectOffset(getState()),
         );
         dispatch({
-          type: vipListActions.FETCH_SUCCESS,
+          type: futuresListActions.FETCH_SUCCESS,
           payload: {
             rows: response.rows,
             count: response.count,
@@ -104,10 +104,10 @@ const vipListActions = {
       } catch (error) {
         Errors.handle(error);
         dispatch({
-          type: vipListActions.FETCH_ERROR,
+          type: futuresListActions.FETCH_ERROR,
         });
       }
     },
 };
 
-export default vipListActions;
+export default futuresListActions;

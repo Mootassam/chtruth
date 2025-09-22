@@ -232,6 +232,105 @@ class TransactionRepository {
 
     return { rows, count };
   }
+  static async findAndCountAllMobile(
+    { filter, limit = 0, offset = 0, orderBy = "" },
+    options: IRepositoryOptions
+  ) {
+    const currentTenant = MongooseRepository.getCurrentTenant(options);
+    const currentUser = MongooseRepository.getCurrentUser(options);
+
+    let criteriaAnd: any = [];
+
+    criteriaAnd.push({
+      tenant: currentTenant.id,
+    });
+   
+
+    //   criteriaAnd.push({
+    //     user: currentUser.id,
+    //   });
+
+    // criteriaAnd.push({
+    //     asset: filter,
+    //   });
+    if (filter) {
+      if (filter.id) {
+        criteriaAnd.push({
+          ["_id"]: MongooseQueryUtils.uuid(filter.id),
+        });
+      }
+      if (filter.user) {
+        criteriaAnd.push({
+          user: filter.user,
+        });
+      }
+
+      if (filter.amount) {
+        criteriaAnd.push({
+          amount: {
+            $regex: MongooseQueryUtils.escapeRegExp(filter.amount),
+            $options: "i",
+          },
+        });
+      }
+
+      if (filter.status) {
+        criteriaAnd.push({
+          status: {
+            $regex: MongooseQueryUtils.escapeRegExp(filter.status),
+            $options: "i",
+          },
+        });
+      }
+
+      if (filter.type) {
+        criteriaAnd.push({
+          type: {
+            $regex: MongooseQueryUtils.escapeRegExp(filter.type),
+            $options: "i",
+          },
+        });
+      }
+
+      if (filter.datetransaction) {
+        const [start, end] = filter.datetransaction;
+
+        if (start !== undefined && start !== null && start !== "") {
+          criteriaAnd.push({
+            ["createdAt"]: {
+              $gte: start,
+            },
+          });
+        }
+
+        if (end !== undefined && end !== null && end !== "") {
+          criteriaAnd.push({
+            ["createdAt"]: {
+              $lte: end,
+            },
+          });
+        }
+      }
+    }
+
+    const sort = MongooseQueryUtils.sort(orderBy || "createdAt_DESC");
+
+    const skip = Number(offset || 0) || undefined;
+    const limitEscaped = Number(limit || 0) || undefined;
+    const criteria = criteriaAnd.length ? { $and: criteriaAnd } : null;
+
+    let rows = await Transaction(options.database)
+      .find(criteria)
+      .skip(skip)
+      .limit(limitEscaped)
+      .sort(sort);
+
+    const count = await Transaction(options.database).countDocuments(criteria);
+
+    rows = await Promise.all(rows.map(this._fillFileDownloadUrls));
+
+    return { rows, count };
+  }
 
 
   static async findAndCountByUser(
@@ -245,6 +344,10 @@ class TransactionRepository {
 
     criteriaAnd.push({
       tenant: currentTenant.id,
+    });
+
+       criteriaAnd.push({
+      user: currentUser.id,
     });
     if (filter) {
       criteriaAnd.push({
@@ -328,7 +431,6 @@ class TransactionRepository {
     let rows = await Transaction(options.database)
       .find(criteria)
       .skip(skip)
-      .limit(limitEscaped)
       .sort(sort);
 
     const count = await Transaction(options.database).countDocuments(criteria);

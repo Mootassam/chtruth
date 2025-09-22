@@ -14,6 +14,10 @@ import transaction from "src/modules/transaction/transactionReducers";
 import futures from "src/modules/futures/futuresReducers";
 import spot from "src/modules/spot/spotReducers";
 import message from 'src/modules/message/messagaeReducers'
+import assets from 'src/modules/assets/assetsReducers'
+import deposit from 'src/modules/deposit/depositReducers'
+import withdraw from 'src/modules/withdraw/withdrawReducers'
+import kyc from 'src/modules/kyc/kycReducers'
 import { combineReducers } from "redux";
 
 export default (history) =>
@@ -28,6 +32,10 @@ export default (history) =>
     spot,
     message,
     plan,
+    deposit,
+    withdraw,
+    assets,
+    kyc,
     stacking,
     product,
     record,

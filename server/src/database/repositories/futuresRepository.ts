@@ -180,6 +180,7 @@ static async update(id, data, options /*: IRepositoryOptions */) {
             finalized: true,
             finalizedAt: new Date(),
             updatedBy: currentUser.id,
+            profitAndLossAmount: data.control === 'profit' ? amountForProfit : -amountForLoss
           }
         }
       );
@@ -278,7 +279,7 @@ static async parseDurationToMs(duration: string | number | undefined) {
   }
 
   static async findAndCountAll(
-    { filter, limit = 0, offset = 0, orderBy = "" },
+    { filter, limit = 500, offset = 0, orderBy = "" },
     options: IRepositoryOptions
   ) {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
@@ -332,6 +333,61 @@ static async parseDurationToMs(duration: string | number | undefined) {
     return { rows, count };
   }
 
+
+    static async findAndCountAllMobile(
+    { filter, limit = 500, offset = 0, orderBy = "" },
+    options: IRepositoryOptions
+  ) {
+    const currentTenant = MongooseRepository.getCurrentTenant(options);
+    const currentUser =MongooseRepository.getCurrentUser(options);
+
+    let criteriaAnd: any = [];
+
+    criteriaAnd.push({
+      tenant: currentTenant.id,
+    });
+
+    if (filter) {
+      if (filter.id) {
+        criteriaAnd.push({
+          ["_id"]: MongooseQueryUtils.uuid(filter.id),
+        });
+      }
+
+  
+        criteriaAnd.push({
+          user: currentUser.id,
+        });
+
+
+      if (filter.idnumer) {
+        criteriaAnd.push({
+          idnumer: {
+            $regex: MongooseQueryUtils.escapeRegExp(filter.idnumer),
+            $options: "i",
+          },
+        });
+      }
+    }
+
+    const sort = MongooseQueryUtils.sort(orderBy || "createdAt_DESC");
+    const skip = Number(offset || 0) || undefined;
+    const limitEscaped = Number(limit || 0) || undefined;
+    const criteria = criteriaAnd.length ? { $and: criteriaAnd } : null;
+    let rows = await Futures(options.database)
+      .find(criteria)
+      .skip(skip)
+      .sort(sort)
+      .populate("user")
+      .populate("createdBy")
+ 
+
+    const count = await Futures(options.database).countDocuments(criteria);
+
+    rows = await Promise.all(rows.map(this._fillFileDownloadUrls));
+
+    return { rows, count };
+  }
   static async findAllAutocomplete(search, limit, options: IRepositoryOptions) {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
 

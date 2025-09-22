@@ -84,7 +84,7 @@ export default class spotService {
     const tenantId = AuthCurrentTenant.get();
 
     const response = await authAxios.get(
-      `/tenant/${tenantId}/spot`,
+      `/tenant/${tenantId}/spotListMobile`,
       {
         params,
       },

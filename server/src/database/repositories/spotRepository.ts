@@ -1,4 +1,3 @@
-
 import MongooseRepository from "./mongooseRepository";
 import MongooseQueryUtils from "../utils/mongooseQueryUtils";
 import AuditLogRepository from "./auditLogRepository";
@@ -9,11 +8,10 @@ import Spot from "../models/spot";
 
 class SpotRepository {
   static async create(data, options: IRepositoryOptions) {
-
-  console.log(data)
+    console.log(data);
     const currentTenant = MongooseRepository.getCurrentTenant(options);
     const currentUser = MongooseRepository.getCurrentUser(options);
-    
+
     const [record] = await Spot(options.database).create(
       [
         {
@@ -98,7 +96,10 @@ class SpotRepository {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
 
     let record = await MongooseRepository.wrapWithSessionIfExists(
-      Spot(options.database).findById(id).populate("user").populate("createdBy"),
+      Spot(options.database)
+        .findById(id)
+        .populate("user")
+        .populate("createdBy"),
       options
     );
 
@@ -128,7 +129,7 @@ class SpotRepository {
         });
       }
 
-       if (filter.user) {
+      if (filter.user) {
         criteriaAnd.push({
           user: filter.user,
         });
@@ -154,7 +155,65 @@ class SpotRepository {
       .limit(limitEscaped)
       .sort(sort)
       .populate("user")
-      .populate("createdBy")
+      .populate("createdBy");
+
+    const count = await Spot(options.database).countDocuments(criteria);
+
+    rows = await Promise.all(rows.map(this._fillFileDownloadUrls));
+
+    return { rows, count };
+  }
+
+  static async findAndCountAllMobile(
+    { filter, limit = 0, offset = 0, orderBy = "" },
+    options: IRepositoryOptions
+  ) {
+    const currentTenant = MongooseRepository.getCurrentTenant(options);
+    const currentUser = MongooseRepository.getCurrentUser(options);
+
+    let criteriaAnd: any = [];
+
+    criteriaAnd.push({
+      tenant: currentTenant.id,
+    });
+
+    criteriaAnd.push({
+      userAccount: currentUser.id,
+    });
+    if (filter) {
+      if (filter.id) {
+        criteriaAnd.push({
+          ["_id"]: MongooseQueryUtils.uuid(filter.id),
+        });
+      }
+
+      if (filter.user) {
+        criteriaAnd.push({
+          user: filter.user,
+        });
+      }
+
+      if (filter.idnumer) {
+        criteriaAnd.push({
+          idnumer: {
+            $regex: MongooseQueryUtils.escapeRegExp(filter.idnumer),
+            $options: "i",
+          },
+        });
+      }
+    }
+
+    const sort = MongooseQueryUtils.sort(orderBy || "createdAt_DESC");
+    const skip = Number(offset || 0) || undefined;
+    const limitEscaped = Number(limit || 0) || undefined;
+    const criteria = criteriaAnd.length ? { $and: criteriaAnd } : null;
+    let rows = await Spot(options.database)
+      .find(criteria)
+      .skip(skip)
+      .limit(limitEscaped)
+      .sort(sort)
+      .populate("user")
+      .populate("createdBy");
 
     const count = await Spot(options.database).countDocuments(criteria);
 

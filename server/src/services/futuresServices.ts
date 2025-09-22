@@ -92,10 +92,16 @@ export default class kycServicess {
     return FuturesRepository.findAllAutocomplete(search, limit, this.options);
   }
 
+
+
   async findAndCountAll(args) {
     return FuturesRepository.findAndCountAll(args, this.options);
   }
+4
 
+  async findAndCountAllMobile(args) {
+    return FuturesRepository.findAndCountAllMobile(args, this.options);
+  }
   async import(data, importHash) {
     if (!importHash) {
       throw new Error400(

@@ -1,6 +1,6 @@
 import { createSelector } from 'reselect';
 
-const selectRaw = (state) => state.vip.form;
+const selectRaw = (state) => state.kyc.form;
 
 const selectRecord = createSelector(
   [selectRaw],

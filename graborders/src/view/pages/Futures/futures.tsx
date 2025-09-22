@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
+// src/components/Futures.tsx (fixed)
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import CoinListModal from "src/shared/modal/CoinListModal";
 import FuturesModal from "src/shared/modal/FuturesModal";
 import FuturesChart from "./FuturesChart";
@@ -46,8 +47,9 @@ interface Order {
 function Futures() {
   const dispatch = useDispatch();
   const listAssets = useSelector(selector.selectRows);
+  const loadingList = useSelector(selector.selectLoading)
   const listFutures = useSelector(futuresListSelectors.selectRows);
-  const listLoading = useSelector(futuresListSelectors.selectLoading);
+  const futuretLoading = useSelector(futuresListSelectors.selectLoading);
   const countFutures = useSelector(futuresListSelectors.selectCount);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [tradeDirection, setTradeDirection] = useState<string | null>(null);
@@ -68,14 +70,8 @@ function Futures() {
   const tickerWs = useRef<WebSocket | null>(null);
   const currentCoinRef = useRef(selectedCoin); // Keep track of current coin
   const [balances, setBalances] = useState<{ [key: string]: number }>({});
-
-
-
-  // Mock data for open orders
-  const [openOrders, setOpenOrders] = useState<Order[]>([]);
-
-  // Mock data for recent orders
-  const [recentOrders, setRecentOrders] = useState<Order[]>([]);
+  const [usdtBalance, setUsdtBalance] = useState<number>(0);
+  const [assetsLoaded, setAssetsLoaded] = useState<boolean>(false);
 
   // Safe number formatting with fallback
   const safeToFixed = (value: any, decimals: number = 2): string => {
@@ -169,17 +165,24 @@ function Futures() {
     }
   };
 
-
-  const balance = () => {
-    const formatted = listAssets.reduce((acc, item) => {
-      acc[item.symbol] = item.amount;
-      return acc;
-    }, {} as { [key: string]: number });
-    setBalances(formatted);
-  };
+  // Calculate and set balances
+  const calculateBalances = useCallback(() => {
+    if (listAssets && listAssets.length > 0) {
+      const formatted = listAssets.reduce((acc, item) => {
+        acc[item.symbol] = item.amount;
+        return acc;
+      }, {} as { [key: string]: number });
+      
+      setBalances(formatted);
+      setUsdtBalance(formatted['USDT'] || 0);
+      setAssetsLoaded(true);
+    }
+  }, [listAssets]);
 
   // Fetch initial data via REST API before WebSocket connects
   useEffect(() => {
+    let isMounted = true;
+    
     const fetchInitialData = async () => {
       try {
         setIsLoading(true);
@@ -193,27 +196,36 @@ function Futures() {
 
         const tickerData = await response.json();
 
-        // Set initial data from REST API
-        setMarketPrice(tickerData.lastPrice || "0");
-        setPriceChangePercent(tickerData.priceChangePercent || "0");
-        setHighPrice(tickerData.highPrice || "0");
-        setLowPrice(tickerData.lowPrice || "0");
-        setVolume(tickerData.volume || "0");
-
-        setIsLoading(false);
+        // Only update state if component is still mounted
+        if (isMounted) {
+          setMarketPrice(tickerData.lastPrice || "0");
+          setPriceChangePercent(tickerData.priceChangePercent || "0");
+          setHighPrice(tickerData.highPrice || "0");
+          setLowPrice(tickerData.lowPrice || "0");
+          setVolume(tickerData.volume || "0");
+          setIsLoading(false);
+        }
       } catch (error) {
         console.error("Error fetching initial data:", error);
-        setIsLoading(false);
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
     };
 
     fetchInitialData();
+
+    return () => {
+      isMounted = false;
+    };
   }, [selectedCoin]);
 
   // WebSocket connection for ticker data (price, 24h stats)
   useEffect(() => {
     if (!selectedCoin) return;
 
+    let isMounted = true;
+    
     // Update the current coin reference
     currentCoinRef.current = selectedCoin;
 
@@ -233,11 +245,14 @@ function Futures() {
       };
 
       tickerWs.current.onmessage = (event: MessageEvent) => {
+        // Check if component is still mounted
+        if (!isMounted) return;
+        
         try {
           const tickerData: BinanceTicker = JSON.parse(event.data);
 
-          // Only update state if this message is for the currently selected coin
-          if (tickerData.s === currentCoinRef.current) {
+          // Only update state if this message is for the currently selected coin and component is mounted
+          if (tickerData.s === currentCoinRef.current && isMounted) {
             setMarketPrice(tickerData.c || "0");
             setPriceChangePercent(tickerData.P || "0");
             setHighPrice(tickerData.h || "0");
@@ -256,9 +271,9 @@ function Futures() {
       tickerWs.current.onclose = (event: CloseEvent) => {
         console.log("Ticker WebSocket closed, attempting to reconnect...");
 
-        // Auto-reconnect after a short delay, but only if the coin hasn't changed
+        // Auto-reconnect after a short delay, but only if the coin hasn't changed and component is mounted
         setTimeout(() => {
-          if (selectedCoin && selectedCoin === currentCoinRef.current) {
+          if (selectedCoin && selectedCoin === currentCoinRef.current && isMounted) {
             console.log("Attempting to reconnect ticker WebSocket...");
             connectTickerWebSocket();
           }
@@ -269,6 +284,8 @@ function Futures() {
     connectTickerWebSocket();
 
     return () => {
+      isMounted = false;
+      
       if (tickerWs.current && tickerWs.current.readyState === WebSocket.OPEN) {
         tickerWs.current.close();
       }
@@ -277,30 +294,54 @@ function Futures() {
 
   // Simulate loading orders data
   useEffect(() => {
+    let isMounted = true;
+    
     const timer = setTimeout(() => {
-      // Set mock data after delay to simulate loading
-
-
-
-      setIsOrdersLoading(false);
+      if (isMounted) {
+        setIsOrdersLoading(false);
+      }
     }, 1500);
 
-    return () => clearTimeout(timer);
-  }, []);
-
-  useEffect(() => {
-    dispatch(futuresListAction.doFetch());
-    dispatch(assetsListAction.doFetch());
-    return () => {};
-  }, []);
-
-  useEffect(() => {
-    balance();
     return () => {
-      // Clean up WebSocket connections
-      if (tickerWs.current) tickerWs.current.close();
+      isMounted = false;
+      clearTimeout(timer);
     };
   }, []);
+
+  // Fetch data on component mount
+  useEffect(() => {
+    let isMounted = true;
+    
+    const fetchData = async () => {
+      try {
+        await dispatch(futuresListAction.doFetch());
+        await dispatch(assetsListAction.doFetch());
+      } catch (error) {
+        if (isMounted) {
+          console.error("Error fetching data:", error);
+        }
+      }
+    };
+
+    fetchData();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [dispatch]);
+
+  // Calculate balances when assets data changes
+  useEffect(() => {
+    let isMounted = true;
+    
+    if (isMounted) {
+      calculateBalances();
+    }
+
+    return () => {
+      isMounted = false;
+    };
+  }, [listAssets, calculateBalances]);
 
   const handleOpenCoinModal = () => {
     setIsCoinModalOpen(true);
@@ -325,6 +366,8 @@ function Futures() {
   };
 
   const handleOpenModal = (direction: string) => {
+    // Refresh assets data before opening modal to ensure latest balance
+    dispatch(assetsListAction.doFetch());
     setTradeDirection(direction);
     setIsModalOpen(true);
   };
@@ -345,7 +388,7 @@ function Futures() {
   };
 
   const handleCloseOrder = (orderId: number) => {
-    setOpenOrders((prev) => prev.filter((order) => order.id !== orderId));
+    // setOpenOrders((prev) => prev.filter((order) => order.id !== orderId));
     setIsOrderModalOpen(false);
   };
 
@@ -357,8 +400,6 @@ function Futures() {
     width?: string;
     height?: string;
   }) => <div className="loading-placeholder" style={{ width, height }} />;
-
-
 
   return (
     <div className="container">
@@ -374,7 +415,6 @@ function Futures() {
                 style={{ width: 30, height: 30 }}
                 alt={selectedCoin}
                 loading="lazy"
-    
               />
             </div>
             <div className="market-name">{selectedCoin}</div>
@@ -455,7 +495,7 @@ function Futures() {
       {/* Tabs for Open Orders/Recent Orders */}
       <div className="section-tabs">
         <div
-          className={`tab ${activeTab === "openOrders" ? "active" : ""}`}
+className={`tab ${activeTab === "openOrders" ? "active" : ""}`}
           onClick={() => setActiveTab("openOrders")}
         >
           Open Orders ({isOrdersLoading ? "..." : 0})
@@ -464,7 +504,7 @@ function Futures() {
           className={`tab ${activeTab === "recentOrders" ? "active" : ""}`}
           onClick={() => setActiveTab("recentOrders")}
         >
-          Recent Orders 
+          Recent Orders ({countFutures})
         </div>
       </div>
 
@@ -472,12 +512,7 @@ function Futures() {
       {activeTab === "openOrders" && (
         <div className="orders-container">
           <>
-            {openOrders.length === 0 && (
-              <div className="no-orders">
-                <i className="fas fa-folder-open" />
-                <div>No open orders</div>
-              </div>
-            )}
+         
           </>
         </div>
       )}
@@ -485,7 +520,7 @@ function Futures() {
       {/* Recent Orders */}
       {activeTab === "recentOrders" && (
         <div className="orders-container">
-          {listFutures.length > 0 &&
+          {countFutures  && !futuretLoading &&
             listFutures.map((order) => (
               <div
                 key={order.id}
@@ -523,49 +558,23 @@ function Futures() {
                       )}
                     </span>
                   </div>
-                  {order.closePositionPrice && (
-                    <div className="order-row">
-                      <span className="order-label">Close Price:</span>
-                      <span className="order-value">
-                        {formatNumber(
-                          order?.closePositionPrice?.toString(),
-                          order?.openPositionPrice > 1000 ? 0 : 2
-                        )}
-                      </span>
-                    </div>
-                  )}
-                  <div className="order-row">
-                    <span className="order-label">P/L:</span>
-                    <span
-                      className={`order-value ${
-                        (order.profitAndLossAmount || 0) >= 0 ? "buy" : "sell"
-                      }`}
-                    >
-                      ${safeToFixed(order.profitAndLossAmount, 2)}
-                    </span>
-                  </div>
-                  <div className="order-row">
-                    <span className="order-label">Leverage:</span>
-                    <span className="order-value">{order.leverage}x</span>
-                  </div>
-                  {order.contractDuration && (
-                    <div className="order-row">
-                      <span className="order-label">Duration:</span>
-                      <span className="order-value">
-                        {order.contractDuration}s
-                      </span>
-                    </div>
-                  )}
-                  <div className="order-row">
+               <div className="order-row">
                     <span className="order-label">Open Time:</span>
                     <span className="order-value">
                       {formatDateTime(order.openPositionTime)}
                     </span>
                   </div>
+             
+                  <div className="order-row">
+                    <span className="order-label">Leverage:</span>
+                    <span className="order-value">{order.leverage}x</span>
+                  </div>
+             
+                 
                 </div>
               </div>
             ))}
-          {listFutures.length === 0 && !listLoading && (
+          {listFutures.length === 0 && !futuretLoading && (
             <div className="no-orders">
               <i className="fas fa-file-invoice" />
               <div>No recent orders</div>
@@ -677,13 +686,7 @@ function Futures() {
                   <span className="detail-label">Profit And Loss Amount:</span>
                   <span
                     className={`detail-value ${
-                      (selectedOrder.profitAndLossAmount ||
-                        selectedOrder.pnl ||
-                        0) >= 0
-                        ? "profit"
-                        : "loss"
-                    }`}
-                  >
+                      (selectedOrder.control === "profit" ? "profit" : "loss")}`}>
                     {safeToFixed(
                       selectedOrder.profitAndLossAmount || selectedOrder.pnl,
                       2
@@ -718,8 +721,9 @@ function Futures() {
         listAssets={listAssets}
         selectedCoin={selectedCoin}
         marketPrice={marketPrice}
-        availableBalance={balances['USDT']}
+        availableBalance={usdtBalance}
       />
+      
 
       <CoinListModal
         isOpen={isCoinModalOpen}
@@ -1052,6 +1056,7 @@ function Futures() {
           top: 0;
           left: 0;
           right: 0;
+          bottom: 0;
           background-color: rgba(0, 0, 0, 0.8);
           display: flex;
           justify-content: center;

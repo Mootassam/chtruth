@@ -84,7 +84,7 @@ export default class futuresService {
     const tenantId = AuthCurrentTenant.get();
 
     const response = await authAxios.get(
-      `/tenant/${tenantId}/futures`,
+      `/tenant/${tenantId}/futuresMobile`,
       {
         params,
       },

@@ -1,12 +1,10 @@
 import withdrawService from 'src/modules/withdraw/withdrawService';
 import selectors from 'src/modules/withdraw/list/withdrawListSelectors';
-import { i18n } from 'src/i18n';
-import exporterFields from 'src/modules/withdraw/list/withdrawListExporterFields';
 import Errors from 'src/modules/shared/error/errors';
 
-const prefix = 'VIP_LIST';
+const prefix = 'DEPOSIT_LIST';
 
-const vipListActions = {
+const depositListActions = {
 
   FETCH_STARTED: `${prefix}_FETCH_STARTED`,
   FETCH_SUCCESS: `${prefix}_FETCH_SUCCESS`,
@@ -26,78 +24,49 @@ const vipListActions = {
 
   doClearAllSelected() {
     return {
-      type: vipListActions.CLEAR_ALL_SELECTED,
+      type: depositListActions.CLEAR_ALL_SELECTED,
     };
   },
 
   doToggleAllSelected() {
     return {
-      type: vipListActions.TOGGLE_ALL_SELECTED,
+      type: depositListActions.TOGGLE_ALL_SELECTED,
     };
   },
 
   doToggleOneSelected(id) {
     return {
-      type: vipListActions.TOGGLE_ONE_SELECTED,
+      type: depositListActions.TOGGLE_ONE_SELECTED,
       payload: id,
     };
   },
 
   doReset: () => async (dispatch) => {
     dispatch({
-      type: vipListActions.RESETED,
+      type: depositListActions.RESETED,
     });
 
-    dispatch(vipListActions.doFetch());
+    dispatch(depositListActions.doFetch());
   },
 
-  doExport: () => async (dispatch, getState) => {
-    try {
-      if (!exporterFields || !exporterFields.length) {
-        throw new Error('exporterFields is required');
-      }
-
-      dispatch({
-        type: vipListActions.EXPORT_STARTED,
-      });
-
-      const filter = selectors.selectFilter(getState());
-      const response = await withdrawService.list(
-        filter,
-        selectors.selectOrderBy(getState()),
-        null,
-        null,
-      );
-
- 
-      dispatch({
-        type: vipListActions.EXPORT_SUCCESS,
-      });
-    } catch (error) {
-      Errors.handle(error);
-
-      dispatch({
-        type: vipListActions.EXPORT_ERROR,
-      });
-    }
-  },
+  
 
   doChangePagination:
     (pagination) => async (dispatch, getState) => {
       dispatch({
-        type: vipListActions.PAGINATION_CHANGED,
+        type: depositListActions.PAGINATION_CHANGED,
         payload: pagination,
       });
-      dispatch(vipListActions.doFetchCurrentFilter());
+      dispatch(depositListActions.doFetchCurrentFilter());
     },
 
   doChangeSort: (sorter) => async (dispatch, getState) => {
     dispatch({
-      type: vipListActions.SORTER_CHANGED,
+      type: depositListActions.SORTER_CHANGED,
       payload: sorter,
     });
 
-    dispatch(vipListActions.doFetchCurrentFilter());
+    dispatch(depositListActions.doFetchCurrentFilter());
   },
 
   doFetchCurrentFilter:
@@ -107,7 +76,7 @@ const vipListActions = {
         getState(),
       );
       dispatch(
-        vipListActions.doFetch(filter, rawFilter, true),
+        depositListActions.doFetch(filter, rawFilter, true),
       );
     },
 
@@ -116,7 +85,7 @@ const vipListActions = {
     async (dispatch, getState) => {
       try {
         dispatch({
-          type: vipListActions.FETCH_STARTED,
+          type: depositListActions.FETCH_STARTED,
           payload: { filter, rawFilter, keepPagination },
         });
         const response = await withdrawService.list(
@@ -126,7 +95,7 @@ const vipListActions = {
           selectors.selectOffset(getState()),
         );
         dispatch({
-          type: vipListActions.FETCH_SUCCESS,
+          type: depositListActions.FETCH_SUCCESS,
           payload: {
             rows: response.rows,
             count: response.count,
@@ -135,10 +104,10 @@ const vipListActions = {
       } catch (error) {
         Errors.handle(error);
         dispatch({
-          type: vipListActions.FETCH_ERROR,
+          type: depositListActions.FETCH_ERROR,
         });
       }
     },
 };
 
-export default vipListActions;
+export default depositListActions;

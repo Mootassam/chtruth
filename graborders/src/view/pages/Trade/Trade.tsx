@@ -1,272 +1,352 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import CoinListModal from "src/shared/modal/CoinListModal";
 import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import spotListSelctors from "src/modules/spot/list/spotListSelectors";
-import sportListActions from "src/modules/spot/list/spotListActions";
-import sportFormActions from "src/modules/spot/form/spotFormActions";
+import spotListSelectors from "src/modules/spot/list/spotListSelectors";
+import spotListActions from "src/modules/spot/list/spotListActions";
+import spotFormActions from "src/modules/spot/form/spotFormActions";
+import assetsActions from "src/modules/assets/list/assetsListActions";
+import assetsListSelectors from "src/modules/assets/list/assetsListSelectors";
 
-// Main Trade Component
+// Utility: safe parseFloat that returns NaN if invalid
+const safeParse = (v) => {
+  if (v === null || v === undefined || v === "") return NaN;
+  const n = Number(v);
+  return Number.isFinite(n) ? n : NaN;
+};
+
 function Trade() {
-  const listspot = useSelector(spotListSelctors.selectRows);
   const dispatch = useDispatch();
+
+  // Redux data
+  const listspot = useSelector(spotListSelectors.selectRows) || [];
+  const listAssets = useSelector(assetsListSelectors.selectRows) || [];
+
+  // Local UI state
   const [selectedCoin, setSelectedCoin] = useState("BTCUSDT");
   const [marketPrice, setMarketPrice] = useState("51248.06");
   const [priceChangePercent, setPriceChangePercent] = useState("0.37");
   const [isCoinModalOpen, setIsCoinModalOpen] = useState(false);
-  const [orderType, setOrderType] = useState("LIMIT");
+  const [orderType, setOrderType] = useState("LIMIT"); // "LIMIT" | "MARKET"
   const [price, setPrice] = useState("51248.06");
   const [quantity, setQuantity] = useState("");
-  const [activeTab, setActiveTab] = useState("buy");
-  const [orderBook, setOrderBook] = useState({
-    asks: [],
-    bids: [],
-  });
+  const [activeTab, setActiveTab] = useState("buy"); // "buy" | "sell"
+  const [orderBook, setOrderBook] = useState({ asks: [], bids: [] });
   const [isLoading, setIsLoading] = useState(true);
+  const [placing, setPlacing] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
+  // Refs for websockets and throttling
   const tickerWs = useRef(null);
   const depthWs = useRef(null);
+  const lastTickerUpdate = useRef(0);
+  const lastDepthUpdate = useRef(0);
 
-  // Generate a unique order number
+  // Map balances (memoized)
+  const balances = useMemo(() => {
+    if (!Array.isArray(listAssets)) return {};
+    return listAssets.reduce((acc, item) => {
+      acc[item.symbol] = Number(item.amount) || 0;
+      return acc;
+    }, {});
+  }, [listAssets]);
+
+  // Generate unique order number
   const generateOrderNumber = useCallback(() => {
-    const timestamp = Date.now();
-    const random = Math.floor(Math.random() * 1000);
-    return `ORD-${timestamp}-${random}`;
+    const t = Date.now().toString(36);
+    const r = Math.floor(Math.random() * 1e6).toString(36);
+    return `ORD-${t}-${r}`.toUpperCase();
   }, []);
 
-  // Simulate loading delay
+  // Fetch assets and spot list on mount
   useEffect(() => {
-    dispatch(sportListActions.doFetch());
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1500);
-
-    return () => clearTimeout(timer);
+    dispatch(assetsActions.doFetch());
+    dispatch(spotListActions.doFetch());
+    // simulate loading skeleton a short time for UX
+    const t = setTimeout(() => setIsLoading(false), 800);
+    return () => clearTimeout(t);
   }, [dispatch]);
 
-  // Format number with commas
-  const formatNumber = (num, decimals = 2) => {
-    if (!num || isNaN(num)) return "0.00";
-    return Number(num).toLocaleString(undefined, {
-      minimumFractionDigits: decimals,
-      maximumFractionDigits: decimals,
-    });
-  };
-
-  // Setup WebSocket for ticker data
-  useEffect(() => {
-    if (!selectedCoin) return;
-
-    // Close previous connection if exists
-    if (tickerWs.current) {
-      tickerWs.current.close();
-    }
-
-    // Connect to ticker stream
-    tickerWs.current = new WebSocket(
-      `wss://stream.binance.com:9443/ws/${selectedCoin.toLowerCase()}@ticker`
-    );
-
-    tickerWs.current.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      setMarketPrice(data.c);
-      setPriceChangePercent(data.P);
-      
-      // Update price for market orders when market price changes
-      if (orderType === "MARKET") {
-        setPrice(data.c);
-      }
-    };
-
-    return () => {
-      if (tickerWs.current) {
-        tickerWs.current.close();
-      }
-    };
-  }, [selectedCoin, orderType]);
-
-  // Setup WebSocket for order book data
-  useEffect(() => {
-    if (!selectedCoin) return;
-
-    // Close previous connection if exists
-    if (depthWs.current) {
-      depthWs.current.close();
-    }
-
-    // Connect to depth stream
-    depthWs.current = new WebSocket(
-      `wss://stream.binance.com:9443/ws/${selectedCoin.toLowerCase()}@depth20@100ms`
-    );
-
-    depthWs.current.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-
-      // Process asks (sell orders)
-      const asks = data.asks.slice(0, 5).map((ask) => ({
-        price: ask[0],
-        amount: ask[1],
-      }));
-
-      // Process bids (buy orders)
-      const bids = data.bids.slice(0, 5).map((bid) => ({
-        price: bid[0],
-        amount: bid[1],
-      }));
-
-      setOrderBook({ asks, bids });
-    };
-
-    return () => {
-      if (depthWs.current) {
-        depthWs.current.close();
-      }
-    };
-  }, [selectedCoin]);
-
-  // Update price when switching to market orders
+  // Update price when switching to MARKET
   useEffect(() => {
     if (orderType === "MARKET") {
       setPrice(marketPrice);
     }
-  }, [orderType, marketPrice]);
+    // If switching from MARKET to LIMIT and price is empty, set to marketPrice
+    if (orderType === "LIMIT" && (!price || isNaN(Number(price)))) {
+      setPrice(marketPrice);
+    }
+  }, [orderType, marketPrice]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Format function (keeps safe behavior)
+  const formatNumber = useCallback((num, decimals = 2) => {
+    const n = Number(num);
+    if (!Number.isFinite(n)) return (0).toFixed(decimals);
+    return n.toLocaleString(undefined, {
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals,
+    });
+  }, []);
+
+  // Throttled ticker websocket
+  useEffect(() => {
+    if (!selectedCoin) return;
+
+    // cleanup previous
+    if (tickerWs.current) {
+      try {
+        tickerWs.current.close();
+      } catch (e) {}
+      tickerWs.current = null;
+    }
+
+    try {
+      const symbol = selectedCoin.toLowerCase();
+      const ws = new WebSocket(`wss://stream.binance.com:9443/ws/${symbol}@ticker`);
+      tickerWs.current = ws;
+
+      ws.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          const now = performance.now();
+          // throttle to ~200ms
+          if (now - lastTickerUpdate.current > 180) {
+            lastTickerUpdate.current = now;
+            if (data.c !== undefined) setMarketPrice(data.c);
+            if (data.P !== undefined) setPriceChangePercent(data.P);
+            if (orderType === "MARKET" && data.c !== undefined) {
+              setPrice(data.c);
+            }
+          }
+        } catch (err) {
+          // ignore malformed messages
+          // console.warn("ticker parse error", err);
+        }
+      };
+
+      ws.onclose = () => {
+        // attempt gentle reconnect after small delay
+        // but avoid infinite reconnect loops — only if component still mounted
+        // we'll just rely on React re-mounting or user action to change symbol
+      };
+    } catch (err) {
+      console.error("Ticker WS init error", err);
+    }
+
+    return () => {
+      if (tickerWs.current) {
+        try {
+          tickerWs.current.close();
+        } catch (e) {}
+        tickerWs.current = null;
+      }
+    };
+  }, [selectedCoin, orderType]);
+
+  // Throttled depth websocket
+  useEffect(() => {
+    if (!selectedCoin) return;
+
+    if (depthWs.current) {
+      try {
+        depthWs.current.close();
+      } catch (e) {}
+      depthWs.current = null;
+    }
+
+    try {
+      const symbol = selectedCoin.toLowerCase();
+      const ws = new WebSocket(`wss://stream.binance.com:9443/ws/${symbol}@depth20@100ms`);
+      depthWs.current = ws;
+
+      ws.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          const now = performance.now();
+          if (now - lastDepthUpdate.current > 180) {
+            lastDepthUpdate.current = now;
+            const asks = (data.asks || []).slice(0, 5).map((a) => ({ price: a[0], amount: a[1] }));
+            const bids = (data.bids || []).slice(0, 5).map((b) => ({ price: b[0], amount: b[1] }));
+            setOrderBook({ asks, bids });
+          }
+        } catch (err) {
+          // ignore
+        }
+      };
+    } catch (err) {
+      console.error("Depth WS init error", err);
+    }
+
+    return () => {
+      if (depthWs.current) {
+        try {
+          depthWs.current.close();
+        } catch (e) {}
+        depthWs.current = null;
+      }
+    };
+  }, [selectedCoin]);
 
   // Calculate max amount for depth visualization
-  const calculateMaxAmount = useCallback(() => {
-    const allAmounts = [
-      ...orderBook.asks.map((item) => parseFloat(item.amount)),
-      ...orderBook.bids.map((item) => parseFloat(item.amount)),
-    ];
-    return Math.max(...allAmounts, 1); // Ensure at least 1 to avoid division by zero
+  const maxAmount = useMemo(() => {
+    const all = [
+      ...orderBook.asks.map((it) => safeParse(it.amount)),
+      ...orderBook.bids.map((it) => safeParse(it.amount)),
+    ].filter((n) => Number.isFinite(n));
+    return Math.max(...all, 1);
   }, [orderBook]);
 
-  const maxAmount = calculateMaxAmount();
+  // Handlers
+  const handleOpenCoinModal = useCallback(() => setIsCoinModalOpen(true), []);
+  const handleCloseCoinModal = useCallback(() => setIsCoinModalOpen(false), []);
 
-  const handleOpenCoinModal = () => {
-    setIsCoinModalOpen(true);
-  };
-
-  const handleCloseCoinModal = () => {
-    setIsCoinModalOpen(false);
-  };
-
-  const handleSelectCoin = (coin) => {
+  const handleSelectCoin = useCallback((coin) => {
+    if (!coin) return;
     setSelectedCoin(coin);
     setIsCoinModalOpen(false);
     setIsLoading(true);
+    // brief UX loading while updating streams
+    const t = setTimeout(() => setIsLoading(false), 600);
+    return () => clearTimeout(t);
+  }, []);
 
-    // Simulate loading when changing coin
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
-  };
-
-  const handlePriceChange = (e) => {
+  const handlePriceChange = useCallback((e) => {
     setPrice(e.target.value);
-  };
+  }, []);
 
-  const handleQuantityChange = (e) => {
+  const handleQuantityChange = useCallback((e) => {
     setQuantity(e.target.value);
-  };
+  }, []);
 
-  const calculateTotal = () => {
-    if (!price || !quantity || isNaN(price) || isNaN(quantity)) return "0.00";
-    return (parseFloat(price) * parseFloat(quantity)).toFixed(2);
-  };
+  const calculateTotal = useCallback(() => {
+    const p = safeParse(price);
+    const q = safeParse(quantity);
+    if (!Number.isFinite(p) || !Number.isFinite(q)) return "0.00";
+    return (p * q).toFixed(2);
+  }, [price, quantity]);
 
-  const handleIncrementPrice = () => {
-    setPrice((prevPrice) => (parseFloat(prevPrice || 0) + 1).toString());
-  };
+  const handleIncrementPrice = useCallback(() => {
+    const p = safeParse(price);
+    const next = Number.isFinite(p) ? (p + 1) : safeParse(marketPrice) || 0;
+    setPrice(next.toString());
+  }, [price, marketPrice]);
 
-  const handleDecrementPrice = () => {
-    if (parseFloat(price || 0) > 1) {
-      setPrice((prevPrice) => (parseFloat(prevPrice) - 1).toString());
+  const handleDecrementPrice = useCallback(() => {
+    const p = safeParse(price);
+    if (!Number.isFinite(p)) return;
+    const next = Math.max(0, p - 1);
+    setPrice(next.toString());
+  }, [price]);
+
+  const handleIncrementQuantity = useCallback(() => {
+    const q = safeParse(quantity);
+    const next = Number.isFinite(q) ? (q + 0.001) : 0.001;
+    setQuantity(next.toFixed(3).toString());
+  }, [quantity]);
+
+  const handleDecrementQuantity = useCallback(() => {
+    const q = safeParse(quantity);
+    if (!Number.isFinite(q)) return;
+    const next = Math.max(0, q - 0.001);
+    setQuantity(next.toFixed(3).toString());
+  }, [quantity]);
+
+  const handleOrderBookClick = useCallback((clickPrice) => {
+    if (orderType === "LIMIT" && clickPrice !== undefined) {
+      setPrice(clickPrice.toString());
     }
-  };
+  }, [orderType]);
 
-  const handleIncrementQuantity = () => {
-    setQuantity((prevQty) =>
-      prevQty ? (parseFloat(prevQty) + 0.001).toFixed(3) : "0.001"
-    );
-  };
-
-  const handleDecrementQuantity = () => {
-    if (quantity && parseFloat(quantity) > 0.001) {
-      setQuantity((prevQty) => (parseFloat(prevQty) - 0.001).toFixed(3));
+  // Place order
+  const handlePlaceOrder = useCallback(async () => {
+    setErrorMessage("");
+    if (placing) return;
+    const q = safeParse(quantity);
+    if (!Number.isFinite(q) || q <= 0) {
+      setErrorMessage("Please enter a valid quantity.");
+      return;
     }
-  };
-
-  const handlePlaceOrder = () => {
-    // Validate inputs
-    if (!quantity || parseFloat(quantity) <= 0) {
-      alert("Please enter a valid quantity");
+    const p = orderType === "MARKET" ? safeParse(marketPrice) : safeParse(price);
+    if (!Number.isFinite(p) || p <= 0) {
+      setErrorMessage("Please enter a valid price.");
       return;
     }
 
-    if (orderType === "LIMIT" && (!price || parseFloat(price) <= 0)) {
-      alert("Please enter a valid price for limit orders");
-      return;
+    // available balance check for SELL or for BUY vs stable coin balance might be needed
+    // Here we simply check minimums
+    setPlacing(true);
+    try {
+      const orderPrice = p;
+      const orderQty = q;
+      const totalValue = orderPrice * orderQty;
+      const estimatedFee = totalValue * 0.001; // 0.1%
+
+      const orderData = {
+        orderNo: generateOrderNumber(),
+        orderType: orderType.toLowerCase(),
+        tradingPair: selectedCoin.replace("USDT", "/USDT"),
+        status: orderType === "MARKET" ? "completed" : "pending",
+        direction: activeTab.toUpperCase(),
+        delegateType: orderType,
+        delegateState: orderType === "MARKET" ? "Filled" : "Pending",
+        orderQuantity: orderQty,
+        commissionPrice: orderPrice,
+        entrustedValue: totalValue,
+        transactionQuantity: orderType === "MARKET" ? orderQty : 0,
+        transactionValue: orderType === "MARKET" ? totalValue : 0,
+        closingPrice: orderType === "MARKET" ? orderPrice : 0,
+        handlingFee: orderType === "MARKET" ? estimatedFee : 0,
+        commissionTime: new Date().toISOString(),
+        closingTime: orderType === "MARKET" ? new Date().toISOString() : null,
+      };
+
+      // dispatch create and refresh list
+      await dispatch(spotFormActions.doCreate(orderData));
+      dispatch(spotListActions.doFetch());
+
+      // Reset quantity for market orders (limit orders keep values for user convenience)
+      if (orderType === "MARKET") {
+        setQuantity("");
+      }
+
+    } catch (err) {
+      console.error("Place order error", err);
+      setErrorMessage("Failed to place order. Please try again.");
+    } finally {
+      setPlacing(false);
     }
+  }, [
+    placing,
+    quantity,
+    orderType,
+    marketPrice,
+    price,
+    selectedCoin,
+    activeTab,
+    dispatch,
+    generateOrderNumber,
+  ]);
 
-    // Calculate values based on order type
-    const orderPrice = orderType === "MARKET" ? parseFloat(marketPrice) : parseFloat(price);
-    const orderQty = parseFloat(quantity);
-    const totalValue = orderPrice * orderQty;
-    
-    // Estimate handling fee (0.1% of transaction value)
-    const estimatedFee = totalValue * 0.001;
+  const handleCancelOrder = useCallback((orderId) => {
+    // Real app should dispatch action
+    // dispatch(spotListActions.doDelete(orderId));
+    // For now simulate optimistic UI
+    console.log("Cancel requested for", orderId);
+  }, []);
 
-    const orderData = {
-      orderNo: generateOrderNumber(),
-      orderType: orderType.toLowerCase(),
-      tradingPair: selectedCoin.replace("USDT", "/USDT"),
-      status: orderType === "MARKET" ? "completed" : "pending",
-      direction: activeTab.toUpperCase(),
-      delegateType: orderType,
-      delegateState: orderType === "MARKET" ? "Filled" : "Pending",
-      orderQuantity: orderQty,
-      commissionPrice: orderPrice,
-      entrustedValue: totalValue,
-      transactionQuantity: orderType === "MARKET" ? orderQty : 0,
-      transactionValue: orderType === "MARKET" ? totalValue : 0,
-      closingPrice: orderType === "MARKET" ? orderPrice : 0,
-      handlingFee: orderType === "MARKET" ? estimatedFee : 0,
-      commissionTime: new Date(),
-      closingTime: orderType === "MARKET" ? new Date() : null,
-
-    };
-
-    dispatch(sportFormActions.doCreate(orderData));
-    dispatch(sportListActions.doFetch());
-    // Reset form for market orders
-    if (orderType === "MARKET") {
-      setQuantity("");
-    }
-  };
-
-  const handleOrderBookClick = (clickPrice) => {
-    if (orderType === "LIMIT") {
-      setPrice(clickPrice);
-    }
-  };
-
-  const handleCancelOrder = (orderId) => {
-    // In a real app, this would dispatch an action to cancel the order
-    // dispatch(sportListActions.doDelete(orderId));
-  };
-
-  // Simulate order matching for limit orders
+  // Simulate matching for limit orders (kept but non-blocking)
   useEffect(() => {
+    let mounted = true;
     const interval = setInterval(() => {
+      if (!mounted) return;
       if (orderType === "LIMIT" && listspot.length > 0) {
-        // Check if any pending limit orders match the current market price
-        const updatedOrders = listspot.map(order => {
+        const updated = listspot.map((order) => {
           if (order.status === "pending" && order.orderType === "limit") {
-            const priceDiff = Math.abs(parseFloat(order.commissionPrice) - parseFloat(marketPrice));
-            const priceTolerance = parseFloat(marketPrice) * 0.001; // 0.1% tolerance
-            
-            if (priceDiff <= priceTolerance) {
-              // Update order to completed status
+            const commissionPrice = safeParse(order.commissionPrice);
+            const marketP = safeParse(marketPrice);
+            if (!Number.isFinite(commissionPrice) || !Number.isFinite(marketP)) return order;
+            const priceTolerance = marketP * 0.001;
+            if (Math.abs(commissionPrice - marketP) <= priceTolerance) {
               return {
                 ...order,
                 status: "completed",
@@ -274,92 +354,96 @@ function Trade() {
                 transactionQuantity: order.orderQuantity,
                 transactionValue: order.orderQuantity * order.commissionPrice,
                 closingPrice: marketPrice,
-                closingTime: new Date(),
-                handlingFee: order.orderQuantity * order.commissionPrice * 0.001
+                closingTime: new Date().toISOString(),
+                handlingFee: order.orderQuantity * order.commissionPrice * 0.001,
               };
             }
           }
           return order;
         });
-        
-        // In a real app, you would dispatch an action to update the orders
-        // For this demo, we'll just log the changes
-        const changedOrders = updatedOrders.filter((order, index) => 
-          order.status !== listspot[index]?.status
-        );
-        
-        if (changedOrders.length > 0) {
-          console.log("Orders matched and filled:", changedOrders);
-          // In a real app: dispatch(updateOrdersAction(updatedOrders));
+
+        const changed = updated.filter((o, i) => o.status !== listspot[i]?.status);
+        if (changed.length > 0) {
+          console.log("Matched orders (sim):", changed);
+          // In a real app: dispatch action to persist changes
         }
       }
-    }, 5000); // Check every 5 seconds
+    }, 5000);
 
-    return () => clearInterval(interval);
+    return () => {
+      mounted = false;
+      clearInterval(interval);
+    };
   }, [listspot, marketPrice, orderType]);
+
+  // Derived vars for UI
+  const baseSymbol = useMemo(() => {
+    if (!selectedCoin) return "";
+    return selectedCoin.replace("USDT", "");
+  }, [selectedCoin]);
 
   return (
     <div className="container">
-      {/* Header Section */}
+      {/* Header */}
       <div className="trade-header">
         <div className="trade-header-top">
           <div className="trade-page-title">SPOT</div>
-          <div className="settings-icon">
-            {/* <i className="fas fa-cog" /> */}
-          </div>
         </div>
+
         <div className="market-info">
           {isLoading ? (
-            <div className="skeleton-loading skeleton-market-name"></div>
+            <div className="skeleton-market-name" />
           ) : (
-            <div className="market-name">
-              {selectedCoin.replace("USDT", "/USDT")}
-            </div>
+            <div className="market-name">{selectedCoin.replace("USDT", "/USDT")}</div>
           )}
-          <div className="coin-select-icon" onClick={handleOpenCoinModal}>
+
+          <div className="coin-select-icon" onClick={handleOpenCoinModal} aria-hidden>
             <i className="fas fa-chevron-down" />
           </div>
+
           {isLoading ? (
-            <div className="skeleton-loading skeleton-price-change"></div>
+            <div className="skeleton-price-change" />
           ) : (
             <div
               className="market-change"
               style={{
-                color: priceChangePercent.startsWith("-")
-                  ? "#FF6838"
-                  : "#00C076",
+                color: String(priceChangePercent).startsWith("-") ? "#FF6838" : "#00C076",
               }}
             >
-              {priceChangePercent.startsWith("-") ? "" : "+"}
+              {String(priceChangePercent).startsWith("-") ? "" : "+"}
               {priceChangePercent}%
             </div>
           )}
         </div>
       </div>
 
-      {/* Main Content */}
+      {/* Main */}
       <div className="main-content">
-        {/* Trading Layout */}
         <div className="trading-layout">
           {/* Trade Form */}
           <div className="trade-form">
-            {/* Buy/Sell Tabs */}
-            <div className="buy-sell-tabs">
+            <div className="buy-sell-tabs" role="tablist">
               {isLoading ? (
-                <div className="skeleton-loading skeleton-tab"></div>
+                <div className="skeleton-tab" />
               ) : (
                 <>
                   <div
+                    role="tab"
+                    aria-selected={activeTab === "buy"}
+                    tabIndex={0}
                     className={`buy-tab ${activeTab === "buy" ? "active" : ""}`}
                     onClick={() => setActiveTab("buy")}
+                    onKeyDown={(e) => e.key === "Enter" && setActiveTab("buy")}
                   >
                     BUY
                   </div>
                   <div
-                    className={`sell-tab ${
-                      activeTab === "sell" ? "active" : ""
-                    }`}
+                    role="tab"
+                    aria-selected={activeTab === "sell"}
+                    tabIndex={0}
+                    className={`sell-tab ${activeTab === "sell" ? "active" : ""}`}
                     onClick={() => setActiveTab("sell")}
+                    onKeyDown={(e) => e.key === "Enter" && setActiveTab("sell")}
                   >
                     SELL
                   </div>
@@ -367,11 +451,10 @@ function Trade() {
               )}
             </div>
 
-            {/* Order Type */}
             <div className="order-type">
               <div className="order-type-label">Order Type</div>
               {isLoading ? (
-                <div className="skeleton-loading skeleton-input"></div>
+                <div className="skeleton-input" />
               ) : (
                 <select
                   className="order-type-select"
@@ -384,45 +467,35 @@ function Trade() {
               )}
             </div>
 
-            {/* Price Input - Only show for LIMIT orders */}
+            {/* Price input (limit only) */}
             {orderType === "LIMIT" && (
               <div className="input-group">
                 <div className="input-label">Price (USDT)</div>
                 {isLoading ? (
-                  <div className="skeleton-loading skeleton-input"></div>
+                  <div className="skeleton-input" />
                 ) : (
                   <div className="input-with-buttons">
                     <input
                       className="value-input"
                       value={price}
                       onChange={handlePriceChange}
+                      inputMode="decimal"
+                      aria-label="price"
                     />
                     <div className="value-buttons">
-                      <button
-                        className="value-button"
-                        onClick={handleIncrementPrice}
-                      >
-                        +
-                      </button>
-                      <button
-                        className="value-button"
-                        onClick={handleDecrementPrice}
-                      >
-                        -
-                      </button>
+                      <button className="value-button" onClick={handleIncrementPrice} aria-label="increase price">+</button>
+                      <button className="value-button" onClick={handleDecrementPrice} aria-label="decrease price">-</button>
                     </div>
                   </div>
                 )}
               </div>
             )}
 
-            {/* Quantity Input */}
+            {/* Quantity */}
             <div className="input-group">
-              <div className="input-label">
-                Amount ({selectedCoin.replace("USDT", "")})
-              </div>
+              <div className="input-label">Amount ({baseSymbol})</div>
               {isLoading ? (
-                <div className="skeleton-loading skeleton-input"></div>
+                <div className="skeleton-input" />
               ) : (
                 <div className="input-with-buttons">
                   <input
@@ -430,133 +503,90 @@ function Trade() {
                     value={quantity}
                     onChange={handleQuantityChange}
                     placeholder="0.0"
+                    inputMode="decimal"
+                    aria-label="quantity"
                   />
                   <div className="value-buttons">
-                    <button
-                      className="value-button"
-                      onClick={handleIncrementQuantity}
-                    >
-                      +
-                    </button>
-                    <button
-                      className="value-button"
-                      onClick={handleDecrementQuantity}
-                    >
-                      -
-                    </button>
+                    <button className="value-button" onClick={handleIncrementQuantity} aria-label="increase quantity">+</button>
+                    <button className="value-button" onClick={handleDecrementQuantity} aria-label="decrease quantity">-</button>
                   </div>
                 </div>
               )}
             </div>
 
-            {/* Amount Display */}
+            {/* Amount */}
             {isLoading ? (
-              <div className="skeleton-loading skeleton-input"></div>
+              <div className="skeleton-input" />
             ) : (
               <div className="amount-display">{calculateTotal()} USDT</div>
             )}
 
-            {/* Balance Info */}
+            {/* Balance */}
             {isLoading ? (
-              <div className="skeleton-loading skeleton-balance"></div>
+              <div className="skeleton-balance" />
             ) : (
-              <div className="balance-info">Available: 5,230.50 USDT</div>
+              <div className="balance-info">
+                Available: {formatNumber(balances[baseSymbol] || 0, 6)} {baseSymbol}
+              </div>
             )}
 
-            {/* Action Button */}
+            {/* Error */}
+            {errorMessage && <div className="error-message" role="alert">{errorMessage}</div>}
+
+            {/* Action */}
             {isLoading ? (
-              <div className="skeleton-loading skeleton-button"></div>
+              <div className="skeleton-button" />
             ) : (
               <button
-                className={`action-button ${
-                  activeTab === "buy" ? "buy-button" : "sell-button"
-                }`}
+                className={`action-button ${activeTab === "buy" ? "buy-button" : "sell-button"}`}
                 onClick={handlePlaceOrder}
+                disabled={placing}
+                aria-busy={placing}
               >
-                {activeTab === "buy" ? "BUY" : "SELL"}{" "}
-                {selectedCoin.replace("USDT", "")}
+                {placing ? "Placing..." : `${activeTab === "buy" ? "BUY" : "SELL"} ${baseSymbol}`}
               </button>
             )}
           </div>
 
           {/* Order Book */}
-          <div className="order-book">
+          <div className="order-book" role="region" aria-label="order book">
             <div className="order-book-header">
               <span>Price (USDT)</span>
-              <span>Amount ({selectedCoin.replace("USDT", "")})</span>
+              <span>Amount ({baseSymbol})</span>
             </div>
 
             {isLoading ? (
               <>
-                {[...Array(5)].map((_, index) => (
-                  <div
-                    key={index}
-                    className="skeleton-loading skeleton-order-book"
-                  ></div>
-                ))}
-                <div className="skeleton-loading skeleton-current-price"></div>
-                {[...Array(5)].map((_, index) => (
-                  <div
-                    key={index}
-                    className="skeleton-loading skeleton-order-book"
-                  ></div>
-                ))}
+                {[...Array(5)].map((_, i) => <div key={`s-a-${i}`} className="skeleton-order-book" />)}
+                <div className="skeleton-current-price" />
+                {[...Array(5)].map((_, i) => <div key={`s-b-${i}`} className="skeleton-order-book" />)}
               </>
             ) : (
               <>
-                {/* Asks (Sell Orders) */}
-                {orderBook.asks.map((ask, index) => {
-                  const amount = parseFloat(ask.amount);
-                  const widthPercentage = (amount / maxAmount) * 100;
-
+                {orderBook.asks.map((ask, idx) => {
+                  const amount = safeParse(ask.amount) || 0;
+                  const widthPercentage = Math.min(100, (amount / maxAmount) * 100);
                   return (
-                    <div
-                      key={index}
-                      className="order-book-row ask-row"
-                      onClick={() => handleOrderBookClick(ask.price)}
-                    >
-                      <div
-                        className="depth-bar ask-depth"
-                        style={{ width: `${widthPercentage}%` }}
-                      />
-                      <div className="order-price">
-                        {formatNumber(ask.price)}
-                      </div>
-                      <div className="order-amount">
-                        {formatNumber(ask.amount, 4)}
-                      </div>
+                    <div key={`ask-${idx}`} className="order-book-row ask-row" onClick={() => handleOrderBookClick(ask.price)}>
+                      <div className="depth-bar ask-depth" style={{ width: `${widthPercentage}%` }} />
+                      <div className="order-price">{formatNumber(ask.price, 4)}</div>
+                      <div className="order-amount">{formatNumber(ask.amount, 4)}</div>
                     </div>
                   );
                 })}
 
-                {/* Current Price */}
                 <div className="order-book-row current-price-row">
-                  <div className="current-price">
-                    ${formatNumber(marketPrice)}
-                  </div>
+                  <div className="current-price">${formatNumber(marketPrice, 2)}</div>
                 </div>
 
-                {/* Bids (Buy Orders) */}
-                {orderBook.bids.map((bid, index) => {
-                  const amount = parseFloat(bid.amount);
-                  const widthPercentage = (amount / maxAmount) * 100;
-
+                {orderBook.bids.map((bid, idx) => {
+                  const amount = safeParse(bid.amount) || 0;
+                  const widthPercentage = Math.min(100, (amount / maxAmount) * 100);
                   return (
-                    <div
-                      key={index}
-                      className="order-book-row bid-row"
-                      onClick={() => handleOrderBookClick(bid.price)}
-                    >
-                      <div
-                        className="depth-bar bid-depth"
-                        style={{ width: `${widthPercentage}%` }}
-                      />
-                      <div className="order-price">
-                        {formatNumber(bid.price)}
-                      </div>
-                      <div className="order-amount">
-                        {formatNumber(bid.amount, 4)}
-                      </div>
+                    <div key={`bid-${idx}`} className="order-book-row bid-row" onClick={() => handleOrderBookClick(bid.price)}>
+                      <div className="depth-bar bid-depth" style={{ width: `${widthPercentage}%` }} />
+                      <div className="order-price">{formatNumber(bid.price, 4)}</div>
+                      <div className="order-amount">{formatNumber(bid.amount, 4)}</div>
                     </div>
                   );
                 })}
@@ -570,34 +600,28 @@ function Trade() {
           <div className="open-orders-header">
             <div className="open-orders-title">OPEN ORDERS</div>
             <div className="orders-filter">
-              <Link to="/ordersPage" className="remove_blue">
+              <Link to="/ordersPage" className="remove_blue" aria-label="view all orders">
                 <i className="fas fa-list" />
               </Link>
             </div>
           </div>
 
-          {listspot.length > 0 ? (
+          {listspot && listspot.length > 0 ? (
             <div className="orders-list">
               {listspot.map((order) => (
-                <div key={order.id} className="order-item">
+                <div key={order.id ?? order.orderNo} className="order-item">
                   <div className="order-main-info">
                     <div className="order-pair-action">
                       <span className="order-pair">{order.tradingPair}</span>
-                      <span
-                        className={`order-action ${order?.direction?.toLowerCase()}`}
-                      >
+                      <span className={`order-action ${String(order?.direction || "").toLowerCase()}`}>
                         {order.direction}
                       </span>
                       <span className="order-type-badge">{order.orderType}</span>
                     </div>
                     <div className="order-date">
-                      {order.commissionTime
-                        ? new Date(order.commissionTime).toLocaleDateString()
-                        : ""}
+                      {order.commissionTime ? new Date(order.commissionTime).toLocaleDateString() : ""}
                       <span className="order-time">
-                        {order.commissionTime
-                          ? new Date(order.commissionTime).toLocaleTimeString()
-                          : ""}
+                        {order.commissionTime ? new Date(order.commissionTime).toLocaleTimeString() : ""}
                       </span>
                     </div>
                   </div>
@@ -605,48 +629,34 @@ function Trade() {
                   <div className="order-details">
                     <div className="order-detail">
                       <span className="detail-label">Status</span>
-                      <span
-                        className={`order-status ${order.status
-                          .replace(/\s+/g, "-")
-                          .toLowerCase()}`}
-                      >
-                        {order.status}
-                      </span>
+                      <span className={`order-status ${String(order.status).toLowerCase()}`}>{order.status}</span>
                     </div>
 
                     <div className="order-detail">
                       <span className="detail-label">Price</span>
-                      <span className="order-price-value">
-                        {formatNumber(order.commissionPrice, 4)} USDT
-                      </span>
+                      <span className="order-price-value">{formatNumber(order.commissionPrice, 4)} USDT</span>
                     </div>
 
                     <div className="order-detail">
                       <span className="detail-label">Amount</span>
-                      <span className="order-amount-value">
-                        {order.orderQuantity} {order?.tradingPair?.split("/")[0]}
-                      </span>
+                      <span className="order-amount-value">{order.orderQuantity} {order?.tradingPair?.split("/")[0]}</span>
                     </div>
 
                     <div className="order-detail">
                       <span className="detail-label">Total</span>
-                      <span className="order-total">
-                        {formatNumber(order.entrustedValue)} USDT
-                      </span>
+                      <span className="order-total">{formatNumber(order.entrustedValue)} USDT</span>
                     </div>
                   </div>
 
                   <div className="order-actions">
-                    {order.status === "PENDING" || order.status === "PARTIALLY FILLED" ? (
-                      <button
-                        className="cancel-order-btn"
-                        onClick={() => handleCancelOrder(order.id)}
-                      >
+                    {String(order.status).toLowerCase() === "pending" ||
+                    String(order.status).toLowerCase() === "partially filled" ? (
+                      <button className="cancel-order-btn" onClick={() => handleCancelOrder(order.id)}>
                         Cancel
                       </button>
                     ) : (
                       <div className="completed-indicator">
-                        <i className="fas fa-check-circle"></i>
+                        <i className="fas fa-check-circle" />
                       </div>
                     )}
                   </div>
@@ -655,13 +665,9 @@ function Trade() {
             </div>
           ) : (
             <div className="empty-orders">
-              <div className="empty-icon">
-                <i className="fas fa-clipboard-list"></i>
-              </div>
+              <div className="empty-icon"><i className="fas fa-clipboard-list" /></div>
               <div className="empty-text">No open orders yet</div>
-              <div className="empty-subtext">
-                Your open orders will appear here
-              </div>
+              <div className="empty-subtext">Your open orders will appear here</div>
             </div>
           )}
         </div>
@@ -673,7 +679,7 @@ function Trade() {
         onClose={handleCloseCoinModal}
         onSelectCoin={handleSelectCoin}
       />
-
+    
 
       <style>{`
         /* Trade Header Section */

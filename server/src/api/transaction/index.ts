@@ -24,6 +24,12 @@ export default (app) => {
     require("./transactionList").default
   );
 
+
+    app.get(
+    `/tenant/:tenantId/transactionMobile`,
+    require("./transactionListMobile").default
+  );
+
   app.get(
     `/tenant/:tenantId/transaction/byUser`,
     require("./transactionByUser").default
