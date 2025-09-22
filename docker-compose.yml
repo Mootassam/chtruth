@@ -9,6 +9,20 @@ services:
       - upload:/upload
     environment:
       DATABASE_CONNECTION: mongodb://db/grap
+    depends_on:
+      - db
+      - redis
+
+  worker:
+    build: ./server
+    command: npx ts-node src/database/utils/futuresWorker.ts
+    restart: unless-stopped
+    environment:
+      DATABASE_CONNECTION: mongodb://db/grap
+    depends_on:
+      - db
+      - redis
+
   db:
     image: mongo:4.0-xenial
     ports:
@@ -16,17 +30,24 @@ services:
     restart: unless-stopped
     volumes:
       - phone:/data/db
-  # web:
-  #   build: ./admin
-  #   ports:
-  #     - 3055:80
-  #   restart: unless-stopped
-  #   volumes:
-  #     - "./admin:/app"
-  #     - "/app/node_modules"
-  #   stdin_open: true
-  #   environment:
-  #     - CHOKIDAR_USEPOLLING=true
+
+  redis:
+    image: redis:6.2
+    ports:
+      - 6379:6379
+    restart: unless-stopped
+
+  web:
+    build: ./admin
+    ports:
+      - 3022:80
+    restart: unless-stopped
+    volumes:
+      - "./admin:/app"
+      - "/app/node_modules"
+    stdin_open: true
+    environment:
+      - CHOKIDAR_USEPOLLING=true
 
   web1:
     build: ./graborders

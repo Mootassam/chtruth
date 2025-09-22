@@ -369,7 +369,7 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
 
             <div className="trade-actions">
               {tradeStatus === "in-progress" && (
-                <button className="trade-action-btn keep-buying" onClick={startTrade}>
+                <button className="trade-action-btn keep-buying" onClick={onClose}>
                   Keep Buying
                 </button>
               )}

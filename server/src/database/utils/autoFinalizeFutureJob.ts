@@ -5,13 +5,15 @@ import wallet from "../models/wallet";
 
 // New, simplified job handler for auto-finalization
 export async function autoFinalizeFutureJob(job) {
-    const mongoose = await databaseInit();
+  const mongoose = await databaseInit();
 
   const { futureId, tenantId } = job.data;
 
   // 1. Fetch the contract record and user data
-  const futureRecord = await Futures(mongoose).findOne({ _id: futureId, tenant: tenantId }).populate('createdBy');
-  
+  const futureRecord = await Futures(mongoose)
+    .findOne({ _id: futureId, tenant: tenantId })
+    .populate("createdBy");
+
   // 2. Critical Check: If it's already finalized, do nothing.
   if (!futureRecord || futureRecord.finalized) {
     return;
@@ -28,7 +30,9 @@ export async function autoFinalizeFutureJob(job) {
   });
 
   if (!selectedWallet) {
-    console.error(`Wallet not found for user. Skipping auto-finalize for contract ${futureId}`);
+    console.error(
+      `Wallet not found for user. Skipping auto-finalize for contract ${futureId}`
+    );
     return;
   }
 
@@ -49,13 +53,15 @@ export async function autoFinalizeFutureJob(job) {
   );
 
   if (!updatedWallet) {
-    console.error(`Insufficient funds. Skipping auto-finalize for contract ${futureId}`);
+    console.error(
+      `Insufficient funds. Skipping auto-finalize for contract ${futureId}`
+    );
     return;
   }
 
   // 6. Record the transaction for history/auditing
   await transactionModel.create({
-    type: 'futures_loss',
+    type: "futures_loss",
     referenceId: futureRecord._id,
     wallet: selectedWallet._id,
     asset: "USDT",
@@ -64,7 +70,7 @@ export async function autoFinalizeFutureJob(job) {
     direction: "out",
     user: futureRecord.createdBy._id || futureRecord.createdBy,
     tenant: tenantId,
-    dateTransaction: new Date()
+    dateTransaction: new Date(),
   });
 
   // 7. FINALIZE THE RECORD - Only update the necessary fields
@@ -72,12 +78,12 @@ export async function autoFinalizeFutureJob(job) {
     { _id: futureId },
     {
       $set: {
-        finalized: true,       // ✅ Mark as finalized
+        finalized: true, // ✅ Mark as finalized
         finalizedAt: new Date(), // ✅ Set the finalization time
-        control: 'loss'   ,
-       profitAndLossAmount : amountToDebit    // ✅ Set the outcome to 'loss'
+        control: "loss",
+        profitAndLossAmount: amountToDebit, // ✅ Set the outcome to 'loss'
         // ❌ DO NOT set closePositionTime or closePositionPrice
-      }
+      },
     }
   );
 
