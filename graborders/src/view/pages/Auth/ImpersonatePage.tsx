@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import AuthService from "src/modules/auth/authService"; // adjust path if needed
+import { useHistory, useLocation } from "react-router-dom";
 import AuthToken from "src/modules/auth/authToken";
 
 function useQuery() {
@@ -8,7 +7,7 @@ function useQuery() {
 }
 
 export default function ImpersonatePage() {
-  const navigate = useNavigate();
+  const history = useHistory();
   const query = useQuery();
   const token = query.get("token");
 
@@ -18,11 +17,11 @@ export default function ImpersonatePage() {
       AuthToken.set(token, true);
 
       // Redirect to dashboard (or homepage)
-      navigate("/", { replace: true });
+      history.replace("/");
     } else {
-      navigate("/auth/signin", { replace: true });
+      history.replace("/auth/signin");
     }
-  }, [token, navigate]);
+  }, [token, history]);
 
   return <div>Logging in as user...</div>;
 }

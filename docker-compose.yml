@@ -8,7 +8,9 @@ services:
     volumes:
       - upload:/upload
     environment:
-      DATABASE_CONNECTION: mongodb://db/grap
+      DATABASE_CONNECTION: mongodb://db:27017/grap
+      REDIS_URL: redis://redis:6379
+      FUTURES_QUEUE_NAME: futures_queue
     depends_on:
       - db
       - redis
@@ -18,7 +20,9 @@ services:
     command: npx ts-node src/database/utils/futuresWorker.ts
     restart: unless-stopped
     environment:
-      DATABASE_CONNECTION: mongodb://db/grap
+      DATABASE_CONNECTION: mongodb://db:27017/grap
+      REDIS_URL: redis://redis:6379
+      FUTURES_QUEUE_NAME: futures_queue
     depends_on:
       - db
       - redis
