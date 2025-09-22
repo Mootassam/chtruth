@@ -12,6 +12,7 @@ import Spinner from 'src/view/shared/Spinner';
 import Pagination from 'src/view/shared/table/Pagination';
 import UserListItem from 'src/view/user/list/UserListItem';
 import WithdrawActions from 'src/modules/withdraw/form/withdrawFormActions';
+import { formatDate } from 'src/view/shared/dates/formatDate';
 
 function WithdrawListTable(props) {
   const [recordIdToDestroy, setRecordIdToDestroy] = useState(null);
@@ -165,17 +166,7 @@ function WithdrawListTable(props) {
                   </span>
                 )}
               </th>
-              <th 
-                className="sortable-header"
-                onClick={() => doChangeSort('status')}
-              >
-                {i18n('entities.withdraw.fields.status')}
-                {sorter.field === 'status' && (
-                  <span className="sort-icon">
-                    {sorter.order === 'ascend' ? '↑' : '↓'}
-                  </span>
-                )}
-              </th>
+             
               <th className="actions-header">Actions</th>
             </tr>
           </thead>
@@ -224,10 +215,12 @@ function WithdrawListTable(props) {
                   <td className="table-cell">
                     <UserListItem value={row.auditor} />
                   </td>
-                  <td className="table-cell">{row.acceptTime}</td>
-                  <td className="table-cell">
-                    {row.status === 'pending' ? (
-                      <div>
+                  <td className="table-cell">{formatDate(row.updatedAt)}</td>
+          
+                  <td className="actions-cell">
+                    <div className="actions-container ">
+                       {row.status === 'pending' ? (
+                      <div className='flex__table'>
                         <button
                           className="btn-action edit"
                           onClick={() => onSubmit(row,'success')}
@@ -246,26 +239,8 @@ function WithdrawListTable(props) {
                         {row.status}
                       </span>
                     )}
-                  </td>
-                  <td className="actions-cell">
-                    <div className="actions-container">
-                      {hasPermissionToEdit && (
-                        <Link className="btn-action edit" to={`/withdraw/${row.id}/edit`}>
-                          <i className="fas fa-edit"></i>
-                          <span>{i18n('common.edit')}</span>
-                        </Link>
-                      )}
-                      {hasPermissionToDestroy && (
-                        <button 
-                          className="btn-action delete" 
-                          type="button" 
-                          onClick={() => doOpenDestroyConfirmModal(row.id)}
-                        >
-                          <i className="fas fa-trash"></i>
-                          <span>{i18n('common.destroy')}</span>
-                        </button>
-                      )}
                     </div>
+                  
                   </td>
                 </tr>
               ))}

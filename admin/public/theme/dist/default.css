@@ -11614,11 +11614,17 @@ td {
   border: none;
   cursor: pointer;
   transition: all 0.2s;
+  width: max-content;
 }
 
 .btn-action.edit {
   background-color: #e9f7ef;
   color: #0ca678;
+}
+
+.btn-action.view {
+  background-color: gainsboro;
+
 }
 
 .btn-action.edit:hover {
@@ -11743,4 +11749,11 @@ td {
   border-color: #28a745;
   color: #28a745;
   font-weight: 600;
+}
+
+
+.flex__table { 
+display: flex;
+align-items: center;
+gap:10px
 }

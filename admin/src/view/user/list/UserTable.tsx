@@ -185,7 +185,7 @@ function UserTable() {
                       <div className="actions-container">
                         <Link className="btn-action view" to={`/user/${row.id}`}>
                           <i className="fas fa-eye"></i>
-                          <span>{i18n('common.view')}</span>
+                          <span>{i18n('common.onclicklogin')}</span>
                         </Link>
                         {hasPermissionToEdit && (
                           <Link className="btn-action edit" to={`/user/${row.id}/edit`}>
@@ -199,7 +199,7 @@ function UserTable() {
                             onClick={() => setRecordIdToDestroy(row.id)}
                           >
                             <i className="fas fa-trash"></i>
-                            <span>{i18n('common.destroy')}</span>
+                            <span>{i18n('common.freeze')}</span>
                           </button>
                         )}
                       </div>

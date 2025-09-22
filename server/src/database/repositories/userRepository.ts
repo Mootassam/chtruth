@@ -223,7 +223,7 @@ const updatedUser = await User(options.database).findByIdAndUpdate(
   }
 
   static async VipLevel(options) {
-    const sort = MongooseQueryUtils.sort("createdAt_ASC");
+    const sort = MongooseQueryUtils.sort("createdAt_DESC");
     const skip = Number(0) || undefined;
     const limitEscaped = Number(0) || undefined;
     let rows = await Vip(options.database)

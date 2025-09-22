@@ -12,6 +12,7 @@ import Spinner from 'src/view/shared/Spinner';
 import Pagination from 'src/view/shared/table/Pagination';
 import UserListItem from 'src/view/user/list/UserListItem';
 import depositActions from 'src/modules/deposit/form/depositFormActions';
+import { formatDate } from 'src/view/shared/dates/formatDate';
 
 function DepositListTable(props) {
   const [recordIdToDestroy, setRecordIdToDestroy] = useState(null);
@@ -164,17 +165,7 @@ function DepositListTable(props) {
                   </span>
                 )}
               </th>
-              <th 
-                className="sortable-header"
-                onClick={() => doChangeSort('status')}
-              >
-                {i18n('entities.deposit.fields.status')}
-                {sorter.field === 'status' && (
-                  <span className="sort-icon">
-                    {sorter.order === 'ascend' ? '↑' : '↓'}
-                  </span>
-                )}
-              </th>
+           
               <th className="actions-header">Actions</th>
             </tr>
           </thead>
@@ -219,14 +210,16 @@ function DepositListTable(props) {
                   <td className="table-cell numeric">{row.amount}</td>
                   <td className="table-cell">{row.rechargechannel}</td>
                   <td className="table-cell">{row.txid}</td>
-                  <td className="table-cell">{row.rechargetime}</td>
+                  <td className="table-cell">{formatDate(row.rechargetime)}</td>
                   <td className="table-cell">
                     <UserListItem value={row.auditor} />
                   </td>
-                  <td className="table-cell">{row.acceptime}</td>
-                  <td className="table-cell">
-                    {row.status === 'pending' ? (
-                      <div>
+                  <td className="table-cell">{formatDate(row.acceptime)}</td>
+               
+                  <td className="actions-cell">
+                    <div className="actions-container">
+                     {row.status === 'pending' ? (
+                      <div style={{display:'flex', alignItems:'center', gap:10}}>
                         <button
                           className="btn-action edit"
                           onClick={() => onSubmit(row,'success')}
@@ -245,25 +238,6 @@ function DepositListTable(props) {
                         {row.status}
                       </span>
                     )}
-                  </td>
-                  <td className="actions-cell">
-                    <div className="actions-container">
-                      {hasPermissionToEdit && (
-                        <Link className="btn-action edit" to={`/deposit/${row.id}/edit`}>
-                          <i className="fas fa-edit"></i>
-                          <span>{i18n('common.edit')}</span>
-                        </Link>
-                      )}
-                      {hasPermissionToDestroy && (
-                        <button 
-                          className="btn-action delete" 
-                          type="button" 
-                          onClick={() => doOpenDestroyConfirmModal(row.id)}
-                        >
-                          <i className="fas fa-trash"></i>
-                          <span>{i18n('common.destroy')}</span>
-                        </button>
-                      )}
                     </div>
                   </td>
                 </tr>

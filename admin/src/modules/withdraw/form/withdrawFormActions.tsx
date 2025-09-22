@@ -4,6 +4,7 @@ import Errors from 'src/modules/shared/error/errors';
 import Message from 'src/view/shared/message';
 import { getHistory } from 'src/modules/store';
 import { i18n } from 'src/i18n';
+import listActions from 'src/modules/withdraw/list/withdrawListActions';
 
 const prefix = 'COUPONS_FORM';
 
@@ -62,9 +63,9 @@ const vipFormActions = {
       });
 
       Message.success(
-        i18n('entities.vip.create.success'),
+        i18n('entities.withdraw.create.success'),
       );
-
+      dispatch(listActions.doFetchCurrentFilter());
       getHistory().push('/withdraw');
     } catch (error) {
       Errors.handle(error);
@@ -88,13 +89,13 @@ const vipFormActions = {
       });
 
       Message.success(
-        i18n('entities.vip.update.success'),
+        i18n('entities.withdraw.update.success'),
       );
-
+      dispatch(listActions.doFetchCurrentFilter());
       getHistory().push('/withdraw');
     } catch (error) {
       Errors.handle(error);
-
+  dispatch(listActions.doFetchCurrentFilter());
       dispatch({
         type: vipFormActions.UPDATE_ERROR,
       });
@@ -111,7 +112,7 @@ const vipFormActions = {
       dispatch({
         type: vipFormActions.UPDATE_SUCCESS,
       });
-
+  dispatch(listActions.doFetchCurrentFilter());
       Message.success(
         i18n('entities.withdraw.update.success'),
       );
@@ -119,7 +120,7 @@ const vipFormActions = {
       getHistory().push('/withdraw');
     } catch (error) {
       Errors.handle(error);
-
+  dispatch(listActions.doFetchCurrentFilter());
       dispatch({
         type: vipFormActions.UPDATE_ERROR,
       });

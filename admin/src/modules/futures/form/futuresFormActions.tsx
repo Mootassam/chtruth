@@ -4,6 +4,7 @@ import Errors from 'src/modules/shared/error/errors';
 import Message from 'src/view/shared/message';
 import { getHistory } from 'src/modules/store';
 import { i18n } from 'src/i18n';
+import listActions from 'src/modules/futures/list/futuresListActions';
 
 const prefix = 'COUPONS_FORM';
 
@@ -62,13 +63,13 @@ const vipFormActions = {
       });
 
       Message.success(
-        i18n('entities.vip.create.success'),
+        i18n('entities.futures.create.success'),
       );
-
+  dispatch(listActions.doFetchCurrentFilter());
       getHistory().push('/futures');
     } catch (error) {
       Errors.handle(error);
-
+  dispatch(listActions.doFetchCurrentFilter());
       dispatch({
         type: vipFormActions.CREATE_ERROR,
       });
@@ -86,15 +87,18 @@ const vipFormActions = {
       dispatch({
         type: vipFormActions.UPDATE_SUCCESS,
       });
+  dispatch(listActions.doFetchCurrentFilter());
+     
 
       Message.success(
-        i18n('entities.vip.update.success'),
+        i18n('entities.futures.update.success'),
       );
 
       getHistory().push('/futures');
     } catch (error) {
-      Errors.handle(error);
 
+      Errors.handle(error);
+  dispatch(listActions.doFetchCurrentFilter());
       dispatch({
         type: vipFormActions.UPDATE_ERROR,
       });

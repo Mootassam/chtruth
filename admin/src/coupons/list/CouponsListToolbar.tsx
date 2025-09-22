@@ -141,60 +141,11 @@ function CouponsToolbar(props) {
 
   return (
     <Toolbar>
-      {hasPermissionToCreate && (
-        <Link to="/coupons/new">
-          <span
-            data-tip={i18n('common.new')}
-            data-for="charge-list-toolbar-new-tooltip"
-          >
-            <button
-              className="btn btn-primary"
-              type="button"
-            >
-              <ButtonIcon iconClass="fas fa-plus" />
-            </button>
-            <ReactTooltip id="charge-list-toolbar-new-tooltip" />
-          </span>
-        </Link>
-      )}
-
-      {hasPermissionToImport && (
-        <Link to="/coupons/importer">
-          <span
-            data-tip={i18n('common.import')}
-            data-for="charge-list-toolbar-import-tooltip"
-          >
-            <button
-              className="btn btn-primary"
-              type="button"
-            >
-              <ButtonIcon iconClass="fas fa-upload" />
-            </button>
-            <ReactTooltip id="charge-list-toolbar-import-tooltip" />
-          </span>
-        </Link>
-      )}
+    
 
       {renderDestroyButton()}
 
-      {hasPermissionToAuditLogs && (
-        <Link to="/audit-logs?entityNames=coupons">
-          <span
-            data-tip={i18n('auditLog.menu')}
-            data-for="charge-list-toolbar-auditLog-tooltip"
-          >
-            <button
-              className="btnCircle btn-light"
-              type="button"
-            >
-              <ButtonIcon iconClass="fas fa-history" />
-            </button>
-            <ReactTooltip id="charge-list-toolbar-auditLog-tooltip" />
-          </span>
-        </Link>
-      )}
 
-      {renderExportButton()}
 
       {destroyAllConfirmVisible && (
         <ConfirmModal

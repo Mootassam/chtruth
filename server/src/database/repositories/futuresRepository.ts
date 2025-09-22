@@ -312,7 +312,7 @@ static async parseDurationToMs(duration: string | number | undefined) {
       }
     }
 
-    const sort = MongooseQueryUtils.sort(orderBy || "createdAt_ASC");
+    const sort = MongooseQueryUtils.sort(orderBy || "createdAt_DESC");
     const skip = Number(offset || 0) || undefined;
     const limitEscaped = Number(limit || 0) || undefined;
     const criteria = criteriaAnd.length ? { $and: criteriaAnd } : null;
@@ -322,7 +322,8 @@ static async parseDurationToMs(duration: string | number | undefined) {
       .limit(limitEscaped)
       .sort(sort)
       .populate("user")
-      .populate("createdBy");
+      .populate("createdBy")
+ 
 
     const count = await Futures(options.database).countDocuments(criteria);
 

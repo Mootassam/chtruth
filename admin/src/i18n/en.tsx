@@ -1,5 +1,7 @@
 const en = {
   common: {
+    freeze:'freeze',
+    onclicklogin:'One-Click Login',
     or: 'Or',
     cancel: 'Cancel',
     reset: 'Reset',

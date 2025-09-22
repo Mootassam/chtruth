@@ -60,6 +60,7 @@ function CouponsListFilter(props) {
   });
 
   useEffect(() => {
+   
     dispatch(
       actions.doFetch(
         schema.cast(initialValues),

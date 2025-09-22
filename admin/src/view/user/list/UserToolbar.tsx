@@ -111,42 +111,8 @@ function UserToolbar(props) {
 
   return (
     <Toolbar>
-      {/* {hasPermissionToCreate && (
-        <Link to="/user/new">
-          <button className="btn btn-primary" type="button">
-            <ButtonIcon iconClass="fas fa-user-plus" />
-          </button>
-        </Link>
-      )}
+     
 
-      {hasPermissionToImport && (
-        <Link to="/user/importer">
-          <span
-            data-tip={i18n('common.import')}
-            data-for="charge-list-toolbar-import-tooltip"
-          >
-            <button
-              className="btn btn-primary"
-              type="button"
-            >
-              <ButtonIcon iconClass="fas fa-upload" />
-            </button>
-            <ReactTooltip id="charge-list-toolbar-import-tooltip" />
-          </span>
-        </Link>
-      )} */}
-
-      {renderDestroyButton()}
-
-      {hasPermissionToAuditLogs && (
-        <Link to="/audit-logs?entityNames=user">
-          <button className="btn btn-light" type="button">
-            <ButtonIcon iconClass="fas fa-history" />
-          </button>
-        </Link>
-      )}
-
-      {renderExportButton()}
     </Toolbar>
   );
 }

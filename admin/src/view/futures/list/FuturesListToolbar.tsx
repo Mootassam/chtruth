@@ -141,7 +141,7 @@ function FuturesListToolbar(props) {
 
   return (
     <Toolbar>
-      {hasPermissionToCreate && (
+      {/* {hasPermissionToCreate && (
         <Link to="/futures/new">
           <span
             data-tip={i18n('common.new')}
@@ -156,8 +156,8 @@ function FuturesListToolbar(props) {
             <ReactTooltip id="charge-list-toolbar-new-tooltip" />
           </span>
         </Link>
-      )}
-
+      )} */}
+{/* 
       {hasPermissionToImport && (
         <Link to="/futures/importer">
           <span
@@ -173,28 +173,11 @@ function FuturesListToolbar(props) {
             <ReactTooltip id="charge-list-toolbar-import-tooltip" />
           </span>
         </Link>
-      )}
+      )} */}
 
       {renderDestroyButton()}
 
-      {hasPermissionToAuditLogs && (
-        <Link to="/audit-logs?entityNames=coupons">
-          <span
-            data-tip={i18n('auditLog.menu')}
-            data-for="charge-list-toolbar-auditLog-tooltip"
-          >
-            <button
-              className="btnCircle btn-light"
-              type="button"
-            >
-              <ButtonIcon iconClass="fas fa-history" />
-            </button>
-            <ReactTooltip id="charge-list-toolbar-auditLog-tooltip" />
-          </span>
-        </Link>
-      )}
 
-      {renderExportButton()}
 
       {destroyAllConfirmVisible && (
         <ConfirmModal

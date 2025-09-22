@@ -4,6 +4,7 @@ import Errors from 'src/modules/shared/error/errors';
 import Message from 'src/view/shared/message';
 import { getHistory } from 'src/modules/store';
 import { i18n } from 'src/i18n';
+import listActions from 'src/modules/deposit/list/depositListActions';
 
 const prefix = 'COUPONS_FORM';
 
@@ -64,6 +65,7 @@ const vipFormActions = {
       Message.success(
         i18n('entities.vip.create.success'),
       );
+      dispatch(listActions.doFetchCurrentFilter());
 
       getHistory().push('/deposit');
     } catch (error) {
@@ -90,6 +92,7 @@ const vipFormActions = {
       Message.success(
         i18n('entities.vip.update.success'),
       );
+      dispatch(listActions.doFetchCurrentFilter());
 
       getHistory().push('/deposit');
     } catch (error) {
@@ -116,6 +119,7 @@ const vipFormActions = {
       Message.success(
         i18n('entities.deposit.update.success'),
       );
+      dispatch(listActions.doFetchCurrentFilter());
 
       getHistory().push('/deposit');
     } catch (error) {
