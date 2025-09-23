@@ -1,11 +1,25 @@
-FROM node:14 AS builder
+# Build stage
+FROM node:18-alpine AS builder
 WORKDIR /app
+
+# Copy dependencies definition first
 COPY package*.json ./
-COPY package-lock.json ./
-RUN npm install --silent
+
+# Clean cache and install dependencies
+RUN npm cache clean --force
+RUN npm install --legacy-peer-deps
+
+# Copy app source
 COPY . .
+
+# Build the app
 RUN npm run build
 
-FROM nginx
+# Production stage
+FROM nginx:alpine
+
+# Copy custom nginx config (for React/Vue/SPA routing)
 COPY ./nginx.conf /etc/nginx/conf.d/default.conf
-COPY --from=builder  /app/dist /usr/share/nginx/html
+
+# Copy build output to nginx html folder
+COPY --from=builder /app/dist /usr/share/nginx/html

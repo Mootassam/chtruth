@@ -1,20 +1,28 @@
-FROM node:14.16.0-alpine3.13
+# Use a modern Node version
+FROM node:18-alpine
+
+# Set working directory
 WORKDIR /app
-COPY package*.json /app/
-COPY . /app/
-RUN npm install
-#RUN npm ci --only=production
-#RUN  npm install --production --silent && mv node_modules ../
-# ENV BACKEND_URL="http://159.198.77.158:8080/api"
-# ENV BACKEND_URL="https://www.mexclogal.org/api/"
+
+# Copy only package files first
+COPY package*.json ./
+
+# Clean npm cache and install deps
+RUN npm cache clean --force
+RUN npm install --legacy-peer-deps
+
+# Copy the rest of the application
+COPY . .
+
+# Set environment variables
 ENV BACKEND_URL="http://159.198.77.158:8084/api"
-# ENV BACKEND_URL="http://159.198.77.158:8080/api"
+
+# Expose your app port
 EXPOSE 8084
-# Install Redis
+
+# Install Redis (better to use a separate container, but keeping your setup)
 RUN apk add --no-cache redis
 EXPOSE 6379
-# Copy the rest of your application code to the container
 
-
-# Start Redis and your Node.js application
+# Start Redis and your Node.js app together
 CMD ["sh", "-c", "redis-server & npm start"]

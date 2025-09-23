@@ -2,7 +2,7 @@ FROM node:18 AS builder
 WORKDIR /app
 COPY package*.json ./
 COPY package-lock.json ./
-RUN npm install --silent
+RUN npm install 
 COPY . .
 RUN npm run build:production
 
