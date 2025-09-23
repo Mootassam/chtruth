@@ -8,7 +8,6 @@ import selectors from 'src/modules/kyc/view/kycViewSelectors';
 import CouponsView from 'src/view/kyc/view/KycView';
 import CouponsViewToolbar from 'src/view/kyc/view/KycViewToolbar';
 import ContentWrapper from 'src/view/layout/styles/ContentWrapper';
-import Breadcrumb from 'src/view/shared/Breadcrumb';
 import PageTitle from 'src/view/shared/styles/PageTitle';
 
 function CouponsPage() {
