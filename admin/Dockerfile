@@ -13,7 +13,7 @@ RUN npm install --legacy-peer-deps
 COPY . .
 
 # Build the app (use "build" if you don’t have "build:production")
-RUN npm run build:production
+RUN npm run build
 
 # Stage 2: Serve with Nginx
 FROM nginx:alpine
