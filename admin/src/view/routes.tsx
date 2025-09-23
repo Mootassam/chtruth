@@ -620,14 +620,14 @@ const privateRoutes = [
     permissionRequired: permissions.categoryRead,
     exact: true,
   },
-  {
+  // {
 
-    path: '/stacking/:id',
-    loader: () =>
-      import('src/view/stacking/view/stackingViewPage'),
-    permissionRequired: permissions.categoryRead,
-    exact: true,
-  },
+  //   path: '/stacking/:id',
+  //   loader: () =>
+  //     import('src/view/stacking/view/stackingViewPage'),
+  //   permissionRequired: permissions.categoryRead,
+  //   exact: true,
+  // },
 
 
 
