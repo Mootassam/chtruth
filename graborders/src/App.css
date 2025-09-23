@@ -1194,356 +1194,509 @@
 
 
   /* Invitation Page  */
-  .invite-container {
-      max-width: 400px;
-      margin: 0 auto;
-      padding-bottom: 80px;
-  }
-
-  /* Header Section */
-  .invite-header {
-      background-color: #000000;
-      padding: 15px 0;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      margin-bottom: 20px;
-  }
-
-  .invite-header-content {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-  }
-
-  .invite-back-btn {
-      color: #FFFFFF;
-      font-size: 20px;
-  }
-
-  .invite-title {
-      font-size: 20px;
-      font-weight: bold;
-  }
-
-  .invite-placeholder {
-      width: 20px;
-  }
-
-  /* Invite Section */
-  .invite-earn-section {
-      background-color: #1A1A1A;
-      border-radius: 12px;
-      padding: 25px;
-      margin-bottom: 20px;
-      text-align: center;
-  }
-
-  .invite-section-title {
-      font-size: 18px;
-      font-weight: bold;
-      color: #F3BA2F;
-      margin-bottom: 15px;
-  }
-
-  .invite-desc {
-      color: #AAAAAA;
-      font-size: 14px;
-      line-height: 1.5;
-      margin-bottom: 20px;
-  }
-
-  /* Referral Code */
-  .referral-container {
-      background: linear-gradient(145deg, #2A2A2A, #1A1A1A);
-      border-radius: 10px;
-      padding: 15px;
-      margin: 20px 0;
-      position: relative;
-  }
-
-  .referral-text {
-      font-size: 14px;
-      color: #AAAAAA;
-      margin-bottom: 8px;
-  }
-
-  .referral-code-value {
-      font-size: 22px;
-      font-weight: bold;
-      letter-spacing: 2px;
-      color: #F3BA2F;
-      margin: 10px 0;
-      padding: 10px;
-      background-color: #000000;
-      border-radius: 6px;
-      font-family: monospace;
-  }
-
-  .referral-copy-btn {
-      background-color: #F3BA2F;
-      color: #000000;
-      border: none;
-      border-radius: 6px;
-      padding: 10px 20px;
-      font-size: 14px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background-color 0.2s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      margin: 0 auto;
-  }
-
-  .referral-copy-btn:hover {
-      background-color: #e0ab29;
-  }
-
-  /* Share Options */
-  .share-buttons {
-      display: flex;
-      justify-content: center;
-      gap: 15px;
-      margin: 25px 0;
-  }
-
-  .share-btn {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      background-color: #2A2A2A;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: background-color 0.2s;
-  }
-
-  .share-btn:hover {
-      background-color: #363636;
-  }
-
-  .share-icon-img {
-      font-size: 20px;
-      color: #F3BA2F;
-  }
-
-  /* Rewards Section */
-  .rewards-container {
-      background-color: #1A1A1A;
-      border-radius: 12px;
-      padding: 25px;
-      margin-bottom: 20px;
-  }
-
-  .rewards-grid-container {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 15px;
-      margin-top: 15px;
-  }
-
-  .reward-item {
-      background-color: #2A2A2A;
-      border-radius: 10px;
-      padding: 15px;
-      text-align: center;
-  }
-
-  .reward-amount {
-      font-size: 24px;
-      font-weight: bold;
-      color: #F3BA2F;
-      margin-bottom: 5px;
-  }
-
-  .reward-text {
-      font-size: 12px;
-      color: #AAAAAA;
-  }
-
-  /* Members Section */
-  .members-container {
-      background-color: #1A1A1A;
-      border-radius: 12px;
-      padding: 25px;
-      margin-bottom: 20px;
-  }
-
-  .members-header-section {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-  }
-
-  .members-view-all {
-      color: #F3BA2F;
-      font-size: 14px;
-      text-decoration: none;
-  }
-
-  .members-view-all:hover {
-      text-decoration: underline;
-  }
-
-  .members-stats-container {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 15px;
-      margin-bottom: 20px;
-  }
-
-  .stat-item {
-      background-color: #2A2A2A;
-      border-radius: 10px;
-      padding: 15px;
-      text-align: center;
-  }
-
-  .stat-value {
-      font-size: 24px;
-      font-weight: bold;
-      margin-bottom: 5px;
-  }
-
-  .stat-approved {
-      color: #00C076;
-  }
-
-  .stat-pending {
-      color: #F3BA2F;
-  }
-
-  .stat-label {
-      font-size: 12px;
-      color: #AAAAAA;
-  }
-
-  /* Members List */
-  .members-list-container {
-      margin-top: 20px;
-  }
-
-  .member-list-item {
-      display: flex;
-      align-items: center;
-      padding: 12px 0;
-      border-bottom: 1px solid #2A2A2A;
-  }
-
-  .member-list-item:last-child {
-      border-bottom: none;
-  }
-
-  .member-avatar-img {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background-color: #2A2A2A;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-right: 12px;
-      color: #F3BA2F;
-  }
-
-  .member-info {
-      flex: 1;
-  }
-
-  .member-name-text {
-      font-weight: 500;
-      margin-bottom: 4px;
-  }
-
-  .member-join-date {
-      font-size: 12px;
-      color: #777777;
-  }
-
-  .member-status-badge {
-      font-size: 12px;
-      padding: 4px 8px;
-      border-radius: 4px;
-  }
-
-  .status-badge-approved {
-      background-color: rgba(0, 192, 118, 0.2);
-      color: #00C076;
-  }
-
-  .status-badge-pending {
-      background-color: rgba(243, 186, 47, 0.2);
-      color: #F3BA2F;
-  }
-
-  /* How It Works */
-  .how-it-works-container {
-      background-color: #1A1A1A;
-      border-radius: 12px;
-      padding: 25px;
-  }
-
-  .steps-container {
-      margin-top: 15px;
-  }
-
-  .step-item {
-      display: flex;
-      margin-bottom: 20px;
-  }
-
-  .step-number-circle {
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      background-color: #F3BA2F;
-      color: #000000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      margin-right: 15px;
-      flex-shrink: 0;
-  }
-
-  .step-content-text {
-      flex: 1;
-  }
-
-  .step-title-text {
-      font-weight: 500;
-      margin-bottom: 5px;
-  }
-
-  .step-desc {
-      font-size: 14px;
-      color: #AAAAAA;
-      line-height: 1.5;
-  }
-
-  /* Toast Notification */
-  .toast-notification {
-      position: fixed;
-      bottom: 80px;
-      left: 50%;
-      transform: translateX(-50%);
-      background-color: #00C076;
-      color: white;
-      padding: 12px 20px;
-      border-radius: 8px;
-      font-size: 14px;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-      z-index: 1000;
-  }
-
-  .toast-notification.show {
-      opacity: 1;
-  }
+     
+        .invite-container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            padding-bottom: 80px;
+        }
+        
+        /* Header Section */
+        .invite-header {
+            background-color: #000000;
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #2A2A2A;
+        }
+        
+        .invite-header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .invite-back-btn {
+            color: #FFFFFF;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: background-color 0.2s;
+        }
+        
+        .invite-back-btn:hover {
+            background-color: #1A1A1A;
+        }
+        
+        .invite-title {
+            font-size: 20px;
+            font-weight: bold;
+            background: linear-gradient(90deg, #F3BA2F, #ffd700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .invite-placeholder {
+            width: 20px;
+        }
+        
+        /* Invite Section */
+        .invite-earn-section {
+            background: linear-gradient(145deg, #1A1A1A, #2A2A2A);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            border: 1px solid #2A2A2A;
+        }
+        
+        .invite-section-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #F3BA2F;
+            margin-bottom: 15px;
+        }
+        
+        .invite-desc {
+            color: #AAAAAA;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+        
+        /* Referral Code */
+        .referral-container {
+            background: linear-gradient(145deg, #2A2A2A, #1A1A1A);
+            border-radius: 12px;
+            padding: 15px;
+            margin: 20px 0;
+            position: relative;
+            border: 1px solid #3A3A3A;
+        }
+        
+        .referral-text {
+            font-size: 14px;
+            color: #AAAAAA;
+            margin-bottom: 8px;
+        }
+        
+        .referral-code-value {
+            font-size: 22px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            color: #F3BA2F;
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #000000;
+            border-radius: 8px;
+            font-family: monospace;
+            user-select: all;
+            border: 1px solid #F3BA2F;
+        }
+        
+        .referral-copy-btn {
+            background: linear-gradient(90deg, #F3BA2F, #e0ab29);
+            color: #000000;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin: 0 auto;
+            box-shadow: 0 2px 10px rgba(243, 186, 47, 0.3);
+        }
+        
+        .referral-copy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(243, 186, 47, 0.4);
+        }
+        
+        .referral-copy-btn:active {
+            transform: translateY(0);
+        }
+        
+        /* Share Options */
+        .share-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 25px 0;
+        }
+        
+        .share-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #2A2A2A, #1A1A1A);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            border: 1px solid #3A3A3A;
+        }
+        
+        .share-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        .share-icon-img {
+            font-size: 20px;
+            color: #F3BA2F;
+        }
+        
+        /* Rewards Section */
+        .rewards-container {
+            background: linear-gradient(145deg, #1A1A1A, #2A2A2A);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            border: 1px solid #2A2A2A;
+        }
+        
+        .rewards-grid-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .reward-item {
+            background: linear-gradient(145deg, #2A2A2A, #1A1A1A);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.3s;
+            border: 1px solid #3A3A3A;
+        }
+        
+        .reward-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+        }
+        
+        .reward-amount {
+            font-size: 24px;
+            font-weight: bold;
+            color: #F3BA2F;
+            margin-bottom: 5px;
+        }
+        
+        .reward-text {
+            font-size: 12px;
+            color: #AAAAAA;
+        }
+        
+        /* Commission Structure Section */
+        .commission-container {
+            background: linear-gradient(145deg, #1A1A1A, #2A2A2A);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            border: 1px solid #2A2A2A;
+        }
+        
+        .commission-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .commission-item {
+            background: linear-gradient(145deg, #2A2A2A, #1A1A1A);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s;
+            border: 1px solid #3A3A3A;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .commission-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+        }
+        
+        .commission-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+        }
+        
+        .commission-item.first-gen::before {
+            background: linear-gradient(90deg, #F3BA2F, #ffd700);
+        }
+        
+        .commission-item.second-gen::before {
+            background: linear-gradient(90deg, #00C076, #00ff95);
+        }
+        
+        .commission-item.third-gen::before {
+            background: linear-gradient(90deg, #FF6B6B, #ff9e9e);
+        }
+        
+        .commission-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .commission-details {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .commission-detail {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #3A3A3A;
+        }
+        
+        .commission-detail:last-child {
+            border-bottom: none;
+        }
+        
+        .commission-label {
+            color: #AAAAAA;
+            font-size: 14px;
+        }
+        
+        .commission-value {
+            color: #F3BA2F;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        /* Generation Stats Section */
+        .generation-stats-container {
+            background: linear-gradient(145deg, #1A1A1A, #2A2A2A);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            border: 1px solid #2A2A2A;
+        }
+        
+        .generation-stats-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .generation-stat-item {
+            background: linear-gradient(145deg, #2A2A2A, #1A1A1A);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s;
+            border: 1px solid #3A3A3A;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .generation-stat-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+        }
+        
+        .generation-stat-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+        }
+        
+        .generation-stat-item.first-gen::before {
+            background: linear-gradient(90deg, #F3BA2F, #ffd700);
+        }
+        
+        .generation-stat-item.second-gen::before {
+            background: linear-gradient(90deg, #00C076, #00ff95);
+        }
+        
+        .generation-stat-item.third-gen::before {
+            background: linear-gradient(90deg, #FF6B6B, #ff9e9e);
+        }
+        
+        .generation-stat-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .generation-stats-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .generation-stat-detail {
+            text-align: center;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: rgba(0, 0, 0, 0.3);
+        }
+        
+        .generation-stat-value {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .generation-stat-approved .generation-stat-value {
+            color: #00C076;
+        }
+        
+        .generation-stat-pending .generation-stat-value {
+            color: #F3BA2F;
+        }
+        
+        .generation-stat-label {
+            font-size: 12px;
+            color: #AAAAAA;
+        }
+        
+        /* How It Works */
+        .how-it-works-container {
+            background: linear-gradient(145deg, #1A1A1A, #2A2A2A);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            border: 1px solid #2A2A2A;
+        }
+        
+        .steps-container {
+            margin-top: 15px;
+        }
+        
+        .step-item {
+            display: flex;
+            margin-bottom: 20px;
+            transition: transform 0.2s;
+            background: linear-gradient(145deg, #2A2A2A, #1A1A1A);
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid #3A3A3A;
+        }
+        
+        .step-item:hover {
+            transform: translateX(5px);
+        }
+        
+        .step-number-circle {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: linear-gradient(90deg, #F3BA2F, #ffd700);
+            color: #000000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        
+        .step-content-text {
+            flex: 1;
+        }
+        
+        .step-title-text {
+            font-weight: 500;
+            margin-bottom: 5px;
+            color: #F3BA2F;
+        }
+        
+        .step-desc {
+            font-size: 14px;
+            color: #AAAAAA;
+            line-height: 1.5;
+        }
+        
+        /* Toast Notification */
+        .toast-notification {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(90deg, #00C076, #00ff95);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        .toast-notification.show {
+            opacity: 1;
+        }
+        
+        /* Animation for referral code */
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(243, 186, 47, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(243, 186, 47, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(243, 186, 47, 0); }
+        }
+        
+        .referral-code-value.highlight {
+            animation: pulse 1.5s infinite;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 480px) {
+            .invite-container {
+                padding: 15px;
+                padding-bottom: 60px;
+            }
+            
+            .invite-earn-section, 
+            .rewards-container, 
+            .commission-container,
+            .generation-stats-container,
+            .how-it-works-container {
+                padding: 20px;
+            }
+            
+            .reward-amount, .generation-stat-value {
+                font-size: 20px;
+            }
+            
+            .referral-code-value {
+                font-size: 18px;
+            }
+        }
 
 
   /* Langugae Page */
@@ -2936,7 +3089,7 @@
 
   /* Notification Container */
   .notification-container {
-      /* background: var(--bg-card); */
+      background: #1A1A1A;
       border-radius: 14px;
       border: 1px solid var(--border-color);
       overflow: hidden;

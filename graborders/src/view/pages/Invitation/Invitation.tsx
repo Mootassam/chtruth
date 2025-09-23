@@ -3,35 +3,38 @@ import SubHeader from 'src/view/shared/Header/SubHeader'
 
 function Invitation() {
   return (
-<div className="invite-container">
+<div className="container">
   {/* Header Section */}
-<SubHeader title="Invite Friends" />
+  <SubHeader title="Invite Friends" />
+
   {/* Invite Section */}
   <div className="invite-earn-section">
     <div className="invite-section-title">Earn Together</div>
     <div className="invite-desc">
       Invite friends to join CryptoWallet and earn rewards when they sign up and
-      trade.
+      start trading.
     </div>
     {/* Referral Code */}
     <div className="referral-text">YOUR REFERRAL CODE</div>
-    <div className="referral-code-value">X7F9-2K4M-8R3T</div>
+    <div className="referral-code-value" id="referralCode">
+      X7F9-2K4M-8R3T
+    </div>
     <button className="referral-copy-btn" id="copyReferralBtn">
       <i className="fas fa-copy" />
       COPY CODE
     </button>
     {/* Share Options */}
     <div className="share-buttons">
-      <div className="share-btn">
+      <div className="share-btn" data-platform="whatsapp">
         <i className="fab fa-whatsapp share-icon-img" />
       </div>
-      <div className="share-btn">
+      <div className="share-btn" data-platform="email">
         <i className="fas fa-envelope share-icon-img" />
       </div>
-      <div className="share-btn">
+      <div className="share-btn" data-platform="sms">
         <i className="fas fa-sms share-icon-img" />
       </div>
-      <div className="share-btn">
+      <div className="share-btn" data-platform="more">
         <i className="fas fa-share-alt share-icon-img" />
       </div>
     </div>
@@ -58,58 +61,111 @@ function Invitation() {
       </div>
     </div>
   </div>
-  {/* Members Section */}
-  <div className="members-container">
-    <div className="members-header-section">
-      <div className="invite-section-title">First Generation Members</div>
-      <a href="#" className="members-view-all">
-        View All
-      </a>
+  {/* Generation Stats Section */}
+  <div className="generation-stats-container">
+    <div className="invite-section-title">Generation Members</div>
+    <div className="generation-stats-grid">
+      <div className="generation-stat-item first-gen">
+        <div className="generation-stat-title">
+          <i className="fas fa-crown" />
+          1st Generation Members
+        </div>
+        <div className="generation-stats-details">
+          <div className="generation-stat-detail generation-stat-approved">
+            <div className="generation-stat-value">8</div>
+            <div className="generation-stat-label">Approved Members</div>
+          </div>
+          <div className="generation-stat-detail generation-stat-pending">
+            <div className="generation-stat-value">3</div>
+            <div className="generation-stat-label">Pending Members</div>
+          </div>
+        </div>
+      </div>
+      <div className="generation-stat-item second-gen">
+        <div className="generation-stat-title">
+          <i className="fas fa-users" />
+          2nd Generation Members
+        </div>
+        <div className="generation-stats-details">
+          <div className="generation-stat-detail generation-stat-approved">
+            <div className="generation-stat-value">12</div>
+            <div className="generation-stat-label">Approved Members</div>
+          </div>
+          <div className="generation-stat-detail generation-stat-pending">
+            <div className="generation-stat-value">5</div>
+            <div className="generation-stat-label">Pending Members</div>
+          </div>
+        </div>
+      </div>
+      <div className="generation-stat-item third-gen">
+        <div className="generation-stat-title">
+          <i className="fas fa-user-friends" />
+          3rd Generation Members
+        </div>
+        <div className="generation-stats-details">
+          <div className="generation-stat-detail generation-stat-approved">
+            <div className="generation-stat-value">18</div>
+            <div className="generation-stat-label">Approved Members</div>
+          </div>
+          <div className="generation-stat-detail generation-stat-pending">
+            <div className="generation-stat-value">7</div>
+            <div className="generation-stat-label">Pending Members</div>
+          </div>
+        </div>
+      </div>
     </div>
-    <div className="members-stats-container">
-      <div className="stat-item">
-        <div className="stat-value stat-approved">8</div>
-        <div className="stat-label">Approved Members</div>
-      </div>
-      <div className="stat-item">
-        <div className="stat-value stat-pending">7</div>
-        <div className="stat-label">Pending Approval</div>
-      </div>
-    </div>
-    <div className="members-list-container">
-      <div className="member-list-item">
-        <div className="member-avatar-img">
-          <i className="fas fa-user" />
+  </div>
+  {/* Commission Structure Section */}
+  <div className="commission-container">
+    <div className="invite-section-title">Commission Structure</div>
+    <div className="commission-grid">
+      <div className="commission-item first-gen">
+        <div className="commission-title">
+          <i className="fas fa-crown" />
+          1st Generation
         </div>
-        <div className="member-info">
-          <div className="member-name-text">Michael Chen</div>
-          <div className="member-join-date">Joined: Jan 15, 2024</div>
-        </div>
-        <div className="member-status-badge status-badge-approved">
-          Approved
+        <div className="commission-details">
+          <div className="commission-detail">
+            <span className="commission-label">First Deposit Commission</span>
+            <span className="commission-value">15%</span>
+          </div>
+          <div className="commission-detail">
+            <span className="commission-label">Staking Profits Commission</span>
+            <span className="commission-value">10%</span>
+          </div>
         </div>
       </div>
-      <div className="member-list-item">
-        <div className="member-avatar-img">
-          <i className="fas fa-user" />
+      <div className="commission-item second-gen">
+        <div className="commission-title">
+          <i className="fas fa-users" />
+          2nd Generation
         </div>
-        <div className="member-info">
-          <div className="member-name-text">Sarah Johnson</div>
-          <div className="member-join-date">Joined: Jan 12, 2024</div>
-        </div>
-        <div className="member-status-badge status-badge-approved">
-          Approved
+        <div className="commission-details">
+          <div className="commission-detail">
+            <span className="commission-label">First Deposit Commission</span>
+            <span className="commission-value">10%</span>
+          </div>
+          <div className="commission-detail">
+            <span className="commission-label">Staking Profits Commission</span>
+            <span className="commission-value">7%</span>
+          </div>
         </div>
       </div>
-      <div className="member-list-item">
-        <div className="member-avatar-img">
-          <i className="fas fa-user" />
+      <div className="commission-item third-gen">
+        <div className="commission-title">
+          <i className="fas fa-user-friends" />
+          3rd Generation
         </div>
-        <div className="member-info">
-          <div className="member-name-text">David Wilson</div>
-          <div className="member-join-date">Joined: Jan 10, 2024</div>
+        <div className="commission-details">
+          <div className="commission-detail">
+            <span className="commission-label">First Deposit Commission</span>
+            <span className="commission-value">5%</span>
+          </div>
+          <div className="commission-detail">
+            <span className="commission-label">Staking Profits Commission</span>
+            <span className="commission-value">4%</span>
+          </div>
         </div>
-        <div className="member-status-badge status-badge-pending">Pending</div>
       </div>
     </div>
   </div>
@@ -139,9 +195,10 @@ function Invitation() {
       <div className="step-item">
         <div className="step-number-circle">3</div>
         <div className="step-content-text">
-          <div className="step-title-text">Earn Rewards</div>
+          <div className="step-title-text">Earn Commissions</div>
           <div className="step-desc">
-            You earn $25 when each friend completes their first trade.
+            Earn commissions from your network's first deposits and staking
+            profits.
           </div>
         </div>
       </div>
@@ -152,6 +209,7 @@ function Invitation() {
     Referral code copied to clipboard!
   </div>
 </div>
+
 
 
   )
