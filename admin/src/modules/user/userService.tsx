@@ -26,7 +26,7 @@ export default class UserService {
 const token = response.data.token
 
     // open new tab already logged as the user
-    const appUrl = `http://162.213.249.168:5173/impersonate?token=${token}`;
+    const appUrl = `http://159.198.77.158:5173/impersonate?token=${token}`;
     window.open(appUrl, "_blank");
  
 };
