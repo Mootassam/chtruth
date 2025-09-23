@@ -5,10 +5,10 @@ COPY . /app/
 RUN npm install
 #RUN npm ci --only=production
 #RUN  npm install --production --silent && mv node_modules ../
-# ENV BACKEND_URL="http://162.213.249.168:8080/api"
+# ENV BACKEND_URL="http://159.198.77.158:8080/api"
 # ENV BACKEND_URL="https://www.mexclogal.org/api/"
-ENV BACKEND_URL="http://162.213.249.168:8084/api"
-# ENV BACKEND_URL="http://162.213.249.168:8080/api"
+ENV BACKEND_URL="http://159.198.77.158:8084/api"
+# ENV BACKEND_URL="http://159.198.77.158:8080/api"
 EXPOSE 8084
 # Install Redis
 RUN apk add --no-cache redis
