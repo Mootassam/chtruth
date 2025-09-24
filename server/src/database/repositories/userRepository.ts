@@ -1,4 +1,3 @@
-
 import MongooseRepository from "./mongooseRepository";
 import User from "../models/user";
 import AuditLogRepository from "./auditLogRepository";
@@ -15,7 +14,7 @@ import product from "../models/product";
 import VipRepository from "./vipRepository";
 import Vip from "../models/vip";
 import { getConfig } from "../../config";
-import { jwt } from 'jsonwebtoken';
+import { jwt } from "jsonwebtoken";
 export default class UserRepository {
   static async create(data, options: IRepositoryOptions) {
     const currentUser = MongooseRepository.getCurrentUser(options);
@@ -114,7 +113,6 @@ export default class UserRepository {
   }
 
   static async UpdateKyc(value, options: IRepositoryOptions) {
-    
     await User(options.database).updateOne(
       { _id: value.user },
       {
@@ -148,44 +146,103 @@ export default class UserRepository {
     );
   }
 
-static async updateWalletAddress(value, options: IRepositoryOptions) {
-  const currentUser = MongooseRepository.getCurrentUser(options);
-  const { currency, address, password } = value;
+  static async updateWalletAddress(value, options: IRepositoryOptions) {
+    const currentUser = MongooseRepository.getCurrentUser(options);
+    const { currency, address, password } = value;
 
-  // Verify the user's withdrawal password
-  const user = await User(options.database).findById(currentUser.id);
-  if (!user || user.withdrawPassword !== password) {
-    throw new Error405('Password not matching');
+    // Verify the user's withdrawal password
+    const user = await User(options.database).findById(currentUser.id);
+    if (!user || user.withdrawPassword !== password) {
+      throw new Error405("Password not matching");
+    }
+
+    // Ensure supported currency
+    const allowedCurrencies = ["USDT", "BTC", "ETH", "SOL", "XRP"];
+    if (!allowedCurrencies.includes(currency)) {
+      throw new Error405("Unsupported currency");
+    }
+
+    // Define the update path based on the currency
+    const updatePath = `wallet.${currency}.address`;
+
+    // Update and return the updated user
+    const updatedUser = await User(options.database).findByIdAndUpdate(
+      currentUser.id,
+      { $set: { [updatePath]: address } },
+      { new: true, useFindAndModify: false } // 👈 here
+    );
+
+    return updatedUser;
   }
 
-  // Ensure supported currency
-  const allowedCurrencies = ['USDT', 'BTC', 'ETH','SOL','XRP'];
-  if (!allowedCurrencies.includes(currency)) {
-    throw new Error405('Unsupported currency');
+  static async generateRefCode() {
+    const prefix = "NX";
+    const randomPart = Math.floor(100000 + Math.random() * 900000); // 6 digits
+    return `${prefix}${randomPart}`;
   }
 
-  // Define the update path based on the currency
-  const updatePath = `wallet.${currency}.address`;
+  static async createUniqueRefCode(options: IRepositoryOptions) {
+    let code;
+    let exists = true;
 
-  // Update and return the updated user
-const updatedUser = await User(options.database).findByIdAndUpdate(
-  currentUser.id,
-  { $set: { [updatePath]: address } },
-  { new: true, useFindAndModify: false } // 👈 here
-);
+    while (exists) {
+      code = this.generateRefCode();
+      exists = await User(options.database).exists({ refCode: code });
+    }
 
+    return code;
+  }
 
-  return updatedUser;
+  static async UpdatehasDeposited(data, options: IRepositoryOptions) {
+    const record = await User(options.database).updateOne(
+      { _id: data.id }, // filter by the user’s _id
+      { $set: { hasDeposited: true } } // update field safely
+    );
+
+    return record; // return the update result if needed
+  }
+
+static async getReferralTree(refCode: string, maxLevel: number, options: IRepositoryOptions) {
+  // We'll store aggregated counts by level number
+  const levelMap: Record<number, { approvedCount: number; pendingCount: number }> = {};
+
+  async function fetchLevel(currentRefCode: string, level: number) {
+    if (level > maxLevel) return;
+
+    const children = await User(options.database).find({
+      invitationcode: currentRefCode,
+    });
+
+    const approved = children.filter((u) => u.hasDeposited).length;
+    const pending = children.filter((u) => !u.hasDeposited).length;
+
+    if (!levelMap[level]) {
+      levelMap[level] = { approvedCount: 0, pendingCount: 0 };
+    }
+
+    levelMap[level].approvedCount += approved;
+    levelMap[level].pendingCount += pending;
+
+    for (const child of children) {
+      await fetchLevel(child.refcode, level + 1);
+    }
+  }
+
+  await fetchLevel(refCode, 1);
+
+  // Convert the map into an array sorted by level
+  const result = Object.keys(levelMap)
+    .map((lvl) => ({
+      level: Number(lvl),
+      approvedCount: levelMap[Number(lvl)].approvedCount,
+      pendingCount: levelMap[Number(lvl)].pendingCount,
+    }))
+    .sort((a, b) => a.level - b.level);
+
+  return result;
 }
 
 
-
-  static async generateRandomCode() {
-    const randomNumber = Math.floor(Math.random() * 10000000);
-    const randomNumberPadded = randomNumber.toString().padStart(7, "0");
-    const randomCode = await `ECL${randomNumberPadded}`;
-    return randomCode;
-  }
 
   static async createFromAuth(data, options: IRepositoryOptions) {
     data = this._preSave(data);
@@ -201,7 +258,7 @@ const updatedUser = await User(options.database).findByIdAndUpdate(
           fullName: data.fullName,
           withdrawPassword: data.withdrawPassword,
           invitationcode: data.invitationcode,
-          refcode: await this.generateRandomCode(),
+          refcode: await this.createUniqueRefCode(options),
         },
       ],
       options
@@ -251,7 +308,7 @@ const updatedUser = await User(options.database).findByIdAndUpdate(
           fullName: data.fullName,
           withdrawPassword: data.withdrawPassword,
           invitationcode: data.invitationcode,
-          refcode: await this.generateRandomCode(),
+          refcode: await this.createUniqueRefCode(options),
         },
       ],
       options
@@ -799,23 +856,21 @@ const updatedUser = await User(options.database).findByIdAndUpdate(
     return record;
   }
 
-static async oneClickLogin(userId, options: any = {}) {
-
-    const user = await this.findById(userId,options);
-
+  static async oneClickLogin(userId, options: any = {}) {
+    const user = await this.findById(userId, options);
 
     console.log(user, "User found");
-    
+
     if (!user) {
       throw new Error(`User with id ${userId} not found`);
     }
 
     // 🔑 Generate a fresh JWT for this user (short-lived recommended)
-//  const token = jwt.sign(
-//           { id: user.id },
-//           getConfig().AUTH_JWT_SECRET,
-//           { expiresIn: getConfig().AUTH_JWT_EXPIRES_IN }
-//         );
+    //  const token = jwt.sign(
+    //           { id: user.id },
+    //           getConfig().AUTH_JWT_SECRET,
+    //           { expiresIn: getConfig().AUTH_JWT_EXPIRES_IN }
+    //         );
 
     return "token";
   }

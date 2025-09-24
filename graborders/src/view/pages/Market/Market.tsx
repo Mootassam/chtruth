@@ -1,7 +1,8 @@
 import axios from "axios";
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import ReactDOM from "react-dom";
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
+import Header from "src/view/shared/Header/Header";
 
 // Interface for Binance ticker data
 interface BinanceTicker {
@@ -28,48 +29,68 @@ interface CryptoData {
 
 // Main Market Component
 const Market: React.FC = () => {
-  const [cryptoData, setCryptoData] = useState<{ [key: string]: CryptoData }>({});
+  const [cryptoData, setCryptoData] = useState<{ [key: string]: CryptoData }>(
+    {}
+  );
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("All");
   const [isLoading, setIsLoading] = useState(true);
   const ws = useRef<WebSocket | null>(null);
 
   // Favorite coins list - including the requested ones
-  const favoriteCoins = useMemo(() => [
-    "BTCUSDT", "ETHUSDT", "BNBUSDT", "LTCUSDT", "SOLUSDT", 
-    "XRPUSDT", "SUIUSDT", "DOGEUSDT", "SHIBUSDT"
-  ], []);
+  const favoriteCoins = useMemo(
+    () => [
+      "BTCUSDT",
+      "ETHUSDT",
+      "BNBUSDT",
+      "LTCUSDT",
+      "SOLUSDT",
+      "XRPUSDT",
+      "SUIUSDT",
+      "DOGEUSDT",
+      "SHIBUSDT",
+    ],
+    []
+  );
 
   // Fetch initial market data
   useEffect(() => {
     const fetchAllPrices = async () => {
       try {
         setIsLoading(true);
-        const response = await axios.get('https://api.binance.com/api/v3/ticker/24hr');
-        
-        // Process only USDT pairs
-        const usdtPairs = response.data.filter((item: any) => 
-          item.symbol.endsWith('USDT') && 
-          !item.symbol.includes('UP') && 
-          !item.symbol.includes('DOWN') &&
-          !item.symbol.includes('BEAR') && 
-          !item.symbol.includes('BULL')
+        const response = await axios.get(
+          "https://api.binance.com/api/v3/ticker/24hr"
         );
-        
+
+        // Process only USDT pairs
+        const usdtPairs = response.data.filter(
+          (item: any) =>
+            item.symbol.endsWith("USDT") &&
+            !item.symbol.includes("UP") &&
+            !item.symbol.includes("DOWN") &&
+            !item.symbol.includes("BEAR") &&
+            !item.symbol.includes("BULL")
+        );
+
         // Sort by quoteVolume (market value) to get most valuable pairs
-        usdtPairs.sort((a: any, b: any) => parseFloat(b.quoteVolume) - parseFloat(a.quoteVolume));
-        
+        usdtPairs.sort(
+          (a: any, b: any) =>
+            parseFloat(b.quoteVolume) - parseFloat(a.quoteVolume)
+        );
+
         // Take top 200 pairs by market value
         const topPairs = usdtPairs.slice(0, 200);
-        
+
         const formattedData: { [key: string]: CryptoData } = {};
-        
+
         topPairs.forEach((item: any) => {
           const symbol = item.symbol;
           const baseSymbol = symbol.replace("USDT", "");
           const isPositive = !item.priceChangePercent.startsWith("-");
-          const changePercent = Math.abs(Number(item.priceChangePercent)).toFixed(2);
-          
+          const changePercent = Math.abs(
+            Number(item.priceChangePercent)
+          ).toFixed(2);
+
           // Format volume
           const volumeNum = Number(item.volume);
           let volumeFormatted = volumeNum.toFixed(0);
@@ -78,7 +99,7 @@ const Market: React.FC = () => {
           } else if (volumeNum >= 1000000) {
             volumeFormatted = (volumeNum / 1000000).toFixed(1) + "M";
           }
-          
+
           formattedData[symbol] = {
             symbol,
             name: `${baseSymbol}/USDT`,
@@ -94,36 +115,35 @@ const Market: React.FC = () => {
             quoteVolume: parseFloat(item.quoteVolume), // For sorting by market value
           };
         });
-        
+
         setCryptoData(formattedData);
         setIsLoading(false);
-        
       } catch (error) {
         console.error("Error fetching market data:", error);
         setIsLoading(false);
       }
     };
-    
+
     fetchAllPrices();
   }, []);
 
   // Setup WebSocket for real-time updates
   useEffect(() => {
     // Create WebSocket connection for all tickers
-    ws.current = new WebSocket('wss://stream.binance.com:9443/ws/!ticker@arr');
-    
+    ws.current = new WebSocket("wss://stream.binance.com:9443/ws/!ticker@arr");
+
     ws.current.onmessage = (event) => {
       const data: BinanceTicker[] = JSON.parse(event.data);
-      
+
       // Update crypto data with real-time information
-      setCryptoData(prevData => {
-        const newData = {...prevData};
-        
+      setCryptoData((prevData) => {
+        const newData = { ...prevData };
+
         data.forEach((ticker) => {
           if (newData[ticker.s]) {
             const isPositive = !ticker.P.startsWith("-");
             const changePercent = Math.abs(Number(ticker.P)).toFixed(2);
-            
+
             // Format volume
             const volumeNum = Number(ticker.v);
             let volumeFormatted = volumeNum.toFixed(0);
@@ -132,7 +152,7 @@ const Market: React.FC = () => {
             } else if (volumeNum >= 1000000) {
               volumeFormatted = (volumeNum / 1000000).toFixed(1) + "M";
             }
-            
+
             newData[ticker.s] = {
               ...newData[ticker.s],
               price: Number(ticker.c).toLocaleString(undefined, {
@@ -148,15 +168,15 @@ const Market: React.FC = () => {
             };
           }
         });
-        
+
         return newData;
       });
     };
-    
+
     ws.current.onerror = (error) => {
       console.error("WebSocket error:", error);
     };
-    
+
     return () => {
       if (ws.current) {
         ws.current.close();
@@ -167,7 +187,7 @@ const Market: React.FC = () => {
   // Filter and sort cryptocurrencies
   const filteredCrypto = useMemo(() => {
     const cryptoArray = Object.values(cryptoData);
-    
+
     if (cryptoArray.length === 0) return [];
 
     let filtered = cryptoArray;
@@ -175,9 +195,10 @@ const Market: React.FC = () => {
     // Apply search filter
     if (searchTerm) {
       const searchTermLower = searchTerm.toLowerCase();
-      filtered = filtered.filter(crypto => 
-        crypto.name.toLowerCase().includes(searchTermLower) ||
-        crypto.symbol.toLowerCase().includes(searchTermLower)
+      filtered = filtered.filter(
+        (crypto) =>
+          crypto.name.toLowerCase().includes(searchTermLower) ||
+          crypto.symbol.toLowerCase().includes(searchTermLower)
       );
     }
 
@@ -194,7 +215,10 @@ const Market: React.FC = () => {
       case "Favorites":
         return filtered
           .filter((crypto) => favoriteCoins.includes(crypto.symbol))
-          .sort((a, b) => favoriteCoins.indexOf(a.symbol) - favoriteCoins.indexOf(b.symbol));
+          .sort(
+            (a, b) =>
+              favoriteCoins.indexOf(a.symbol) - favoriteCoins.indexOf(b.symbol)
+          );
       default:
         // Sort by market value (quoteVolume) for All tab
         return filtered.sort((a, b) => b.quoteVolume - a.quoteVolume);
@@ -211,7 +235,7 @@ const Market: React.FC = () => {
 
   return (
     <div className="container">
-      {/* Header Section */}
+  
       <div className="market-headers">
         <div className="market-page-title">USDT MARKET</div>
         {/* Search Bar */}
@@ -224,8 +248,8 @@ const Market: React.FC = () => {
             onChange={handleSearchChange}
           />
           {searchTerm && (
-            <button 
-              className="clear-search" 
+            <button
+              className="clear-search"
               onClick={() => setSearchTerm("")}
               aria-label="Clear search"
             >
@@ -247,7 +271,7 @@ const Market: React.FC = () => {
           </div>
         ))}
       </div>
-      
+
       <div className="market-list">
         {isLoading && Object.keys(cryptoData).length === 0 ? (
           <div className="market-placeholder">
@@ -256,13 +280,33 @@ const Market: React.FC = () => {
                 <div className="crypto-info-placeholder">
                   <div className="crypto-icon-placeholder shimmer"></div>
                   <div className="crypto-details-placeholder">
-                    <div className="placeholder-line shimmer" style={{width: '60%', height: '16px', marginBottom: '8px'}}></div>
-                    <div className="placeholder-line shimmer" style={{width: '40%', height: '12px'}}></div>
+                    <div
+                      className="placeholder-line shimmer"
+                      style={{
+                        width: "60%",
+                        height: "16px",
+                        marginBottom: "8px",
+                      }}
+                    ></div>
+                    <div
+                      className="placeholder-line shimmer"
+                      style={{ width: "40%", height: "12px" }}
+                    ></div>
                   </div>
                 </div>
                 <div className="price-info-placeholder">
-                  <div className="placeholder-line shimmer" style={{width: '70px', height: '16px', marginBottom: '8px'}}></div>
-                  <div className="placeholder-line shimmer" style={{width: '50px', height: '12px'}}></div>
+                  <div
+                    className="placeholder-line shimmer"
+                    style={{
+                      width: "70px",
+                      height: "16px",
+                      marginBottom: "8px",
+                    }}
+                  ></div>
+                  <div
+                    className="placeholder-line shimmer"
+                    style={{ width: "50px", height: "12px" }}
+                  ></div>
                 </div>
               </div>
             ))}
@@ -285,7 +329,11 @@ const Market: React.FC = () => {
                         style={{ width: 40, height: 40 }}
                         alt={crypto.name.split("/")[0]}
                         onError={(e) => {
-                          (e.target as HTMLImageElement).src = `https://via.placeholder.com/40/3a3a3a/ffffff?text=${crypto.name.split("/")[0].charAt(0)}`;
+                          (
+                            e.target as HTMLImageElement
+                          ).src = `https://via.placeholder.com/40/3a3a3a/ffffff?text=${crypto.name
+                            .split("/")[0]
+                            .charAt(0)}`;
                         }}
                       />
                     </div>

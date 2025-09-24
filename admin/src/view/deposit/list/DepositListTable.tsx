@@ -13,37 +13,56 @@ import Pagination from 'src/view/shared/table/Pagination';
 import UserListItem from 'src/view/user/list/UserListItem';
 import depositActions from 'src/modules/deposit/form/depositFormActions';
 import { formatDate } from 'src/view/shared/dates/formatDate';
+import userFormActions from 'src/modules/user/form/userFormActions';
 
 function DepositListTable(props) {
-  const [recordIdToDestroy, setRecordIdToDestroy] = useState(null);
+  const [recordIdToDestroy, setRecordIdToDestroy] =
+    useState(null);
   const dispatch = useDispatch();
 
   const findLoading = useSelector(selectors.selectLoading);
-  const destroyLoading = useSelector(destroySelectors.selectLoading);
+  const destroyLoading = useSelector(
+    destroySelectors.selectLoading,
+  );
   const loading = findLoading || destroyLoading;
 
   const rows = useSelector(selectors.selectRows);
-  const pagination = useSelector(selectors.selectPagination);
-  const selectedKeys = useSelector(selectors.selectSelectedKeys);
+  const pagination = useSelector(
+    selectors.selectPagination,
+  );
+  const selectedKeys = useSelector(
+    selectors.selectSelectedKeys,
+  );
   const hasRows = useSelector(selectors.selectHasRows);
   const sorter = useSelector(selectors.selectSorter);
-  const isAllSelected = useSelector(selectors.selectIsAllSelected);
-  const hasPermissionToEdit = useSelector(couponsSelectors.selectPermissionToEdit);
-  const hasPermissionToDestroy = useSelector(couponsSelectors.selectPermissionToDestroy);
+  const isAllSelected = useSelector(
+    selectors.selectIsAllSelected,
+  );
+  const hasPermissionToEdit = useSelector(
+    couponsSelectors.selectPermissionToEdit,
+  );
+  const hasPermissionToDestroy = useSelector(
+    couponsSelectors.selectPermissionToDestroy,
+  );
 
-  const doOpenDestroyConfirmModal = (id) => setRecordIdToDestroy(id);
-  const doCloseDestroyConfirmModal = () => setRecordIdToDestroy(null);
+  const doOpenDestroyConfirmModal = (id) =>
+    setRecordIdToDestroy(id);
+  const doCloseDestroyConfirmModal = () =>
+    setRecordIdToDestroy(null);
 
   const onSubmit = (row, values) => {
     const data = {
       ...row,
       status: values,
     };
-    dispatch(depositActions.Update(row.id,data));
+    dispatch(depositActions.Update(row.id, data));
   };
 
   const doChangeSort = (field) => {
-    const order = sorter.field === field && sorter.order === 'ascend' ? 'descend' : 'ascend';
+    const order =
+      sorter.field === field && sorter.order === 'ascend'
+        ? 'descend'
+        : 'ascend';
     dispatch(actions.doChangeSort({ field, order }));
   };
 
@@ -56,8 +75,10 @@ function DepositListTable(props) {
     dispatch(destroyActions.doDestroy(id));
   };
 
-  const doToggleAllSelected = () => dispatch(actions.doToggleAllSelected());
-  const doToggleOneSelected = (id) => dispatch(actions.doToggleOneSelected(id));
+  const doToggleAllSelected = () =>
+    dispatch(actions.doToggleAllSelected());
+  const doToggleOneSelected = (id) =>
+    dispatch(actions.doToggleOneSelected(id));
 
   return (
     <div className="spot-list-container">
@@ -77,7 +98,7 @@ function DepositListTable(props) {
                   </div>
                 )}
               </th>
-              <th 
+              <th
                 className="sortable-header"
                 onClick={() => doChangeSort('orderno')}
               >
@@ -88,7 +109,7 @@ function DepositListTable(props) {
                   </span>
                 )}
               </th>
-              <th 
+              <th
                 className="sortable-header"
                 onClick={() => doChangeSort('createdBy')}
               >
@@ -99,7 +120,7 @@ function DepositListTable(props) {
                   </span>
                 )}
               </th>
-              <th 
+              <th
                 className="sortable-header"
                 onClick={() => doChangeSort('amount')}
               >
@@ -110,18 +131,22 @@ function DepositListTable(props) {
                   </span>
                 )}
               </th>
-              <th 
+              <th
                 className="sortable-header"
-                onClick={() => doChangeSort('rechargechannel')}
+                onClick={() =>
+                  doChangeSort('rechargechannel')
+                }
               >
-                {i18n('entities.deposit.fields.rechargechannel')}
+                {i18n(
+                  'entities.deposit.fields.rechargechannel',
+                )}
                 {sorter.field === 'rechargechannel' && (
                   <span className="sort-icon">
                     {sorter.order === 'ascend' ? '↑' : '↓'}
                   </span>
                 )}
               </th>
-              <th 
+              <th
                 className="sortable-header"
                 onClick={() => doChangeSort('txid')}
               >
@@ -132,18 +157,20 @@ function DepositListTable(props) {
                   </span>
                 )}
               </th>
-              <th 
+              <th
                 className="sortable-header"
                 onClick={() => doChangeSort('rechargetime')}
               >
-                {i18n('entities.deposit.fields.rechargetime')}
+                {i18n(
+                  'entities.deposit.fields.rechargetime',
+                )}
                 {sorter.field === 'rechargetime' && (
                   <span className="sort-icon">
                     {sorter.order === 'ascend' ? '↑' : '↓'}
                   </span>
                 )}
               </th>
-              <th 
+              <th
                 className="sortable-header"
                 onClick={() => doChangeSort('auditor')}
               >
@@ -154,7 +181,7 @@ function DepositListTable(props) {
                   </span>
                 )}
               </th>
-              <th 
+              <th
                 className="sortable-header"
                 onClick={() => doChangeSort('acceptime')}
               >
@@ -165,7 +192,7 @@ function DepositListTable(props) {
                   </span>
                 )}
               </th>
-           
+
               <th className="actions-header">Actions</th>
             </tr>
           </thead>
@@ -175,7 +202,9 @@ function DepositListTable(props) {
                 <td colSpan={12} className="loading-cell">
                   <div className="loading-container">
                     <Spinner />
-                    <span className="loading-text">Loading data...</span>
+                    <span className="loading-text">
+                      Loading data...
+                    </span>
                   </div>
                 </td>
               </tr>
@@ -198,46 +227,76 @@ function DepositListTable(props) {
                       <input
                         type="checkbox"
                         className="form-checkbox"
-                        checked={selectedKeys.includes(row.id)}
-                        onChange={() => doToggleOneSelected(row.id)}
+                        checked={selectedKeys.includes(
+                          row.id,
+                        )}
+                        onChange={() =>
+                          doToggleOneSelected(row.id)
+                        }
                       />
                     </div>
                   </td>
-                  <td className="table-cell">{row.orderno}</td>
+                  <td className="table-cell">
+                    {row.orderno}
+                  </td>
                   <td className="table-cell">
                     <UserListItem value={row.createdBy} />
                   </td>
-                  <td className="table-cell numeric">{row.amount}</td>
-                  <td className="table-cell">{row.rechargechannel}</td>
+                  <td className="table-cell numeric">
+                    {row.amount}
+                  </td>
+                  <td className="table-cell">
+                    {row.rechargechannel}
+                  </td>
                   <td className="table-cell">{row.txid}</td>
-                  <td className="table-cell">{formatDate(row.rechargetime)}</td>
+                  <td className="table-cell">
+                    {formatDate(row.rechargetime)}
+                  </td>
                   <td className="table-cell">
                     <UserListItem value={row.auditor} />
                   </td>
-                  <td className="table-cell">{formatDate(row.acceptime)}</td>
-               
+                  <td className="table-cell">
+                    {formatDate(row.acceptime)}
+                  </td>
+
                   <td className="actions-cell">
                     <div className="actions-container">
-                     {row.status === 'pending' ? (
-                      <div style={{display:'flex', alignItems:'center', gap:10}}>
-                        <button
-                          className="btn-action edit"
-                          onClick={() => onSubmit(row,'success')}
+                      {row.status === 'pending' ? (
+                        <div
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 10,
+                          }}
                         >
-                          Pass
-                        </button>
-                        <button
-                          className="btn-action delete"
-                          onClick={() => onSubmit(row, 'canceled')}
+                          <button
+                            className="btn-action edit"
+                            onClick={() =>
+                              onSubmit(row, 'success')
+                            }
+                          >
+                            Pass
+                          </button>
+                          <button
+                            className="btn-action delete"
+                            onClick={() =>
+                              onSubmit(row, 'canceled')
+                            }
+                          >
+                            Rejection
+                          </button>
+                        </div>
+                      ) : (
+                        <span
+                          className={`status-badge ${
+                            row.status === 'success'
+                              ? 'success'
+                              : 'canceled'
+                          }`}
                         >
-                          Rejection
-                        </button>
-                      </div>
-                    ) : (
-                      <span className={`status-badge ${row.status === 'success' ? 'success' : 'canceled'}`}>
-                        {row.status}
-                      </span>
-                    )}
+                          {row.status}
+                        </span>
+                      )}
                     </div>
                   </td>
                 </tr>
@@ -247,7 +306,11 @@ function DepositListTable(props) {
       </div>
 
       <div className="pagination-container">
-        <Pagination onChange={doChangePagination} disabled={loading} pagination={pagination} />
+        <Pagination
+          onChange={doChangePagination}
+          disabled={loading}
+          pagination={pagination}
+        />
       </div>
 
       {recordIdToDestroy && (

@@ -1,87 +1,55 @@
 export default (app) => {
-
-
-      app.post(
-    `/tenant/:tenantId/oneclickLogin`,
-    require('./OneClickLogin').default,
-  );
-
-
-
-
   app.post(
-    `/tenant/:tenantId/user`,
-    require('./userCreate').default,
+    `/tenant/:tenantId/oneclickLogin`,
+    require("./OneClickLogin").default
   );
 
+  app.post(`/tenant/:tenantId/user`, require("./userCreate").default);
 
+  app.put(`/tenant/:tenantId/user`, require("./userEdit").default);
+  app.put(
+    `/tenant/:tenantId/userHasdeposited`,
+    require("./userHasDeposited").default
+  );
 
+  app.put(`/tenant/:tenantId/userkyc`, require("./userKyc").default);
 
   app.put(
-    `/tenant/:tenantId/user`,
-    require('./userEdit').default,
-  );
-
-
-
-    app.put(
-    `/tenant/:tenantId/userkyc`,
-    require('./userKyc').default,
-  );
-
-
-      app.put(
     `/tenant/:tenantId/UpdateWithdrawPassword`,
-    require('./UpdateWithdrawPassword').default,
+    require("./UpdateWithdrawPassword").default
   );
 
-
-      app.put(
+  app.put(
     `/tenant/:tenantId/UpdateWallet`,
-    require('./UpdateWalletAdress').default,
+    require("./UpdateWalletAdress").default
   );
 
+  app.post(`/tenant/:tenantId/user/import`, require("./userImport").default);
+  app.delete(`/tenant/:tenantId/user`, require("./userDestroy").default);
+  app.get(`/tenant/:tenantId/user`, require("./userList").default);
 
+  app.get(`/tenant/:tenantId/userTree`, require("./userTree").default);
 
-  app.post(
-    `/tenant/:tenantId/user/import`,
-    require('./userImport').default,
-  );
-  app.delete(
-    `/tenant/:tenantId/user`,
-    require('./userDestroy').default,
-  );
-  app.get(
-    `/tenant/:tenantId/user`,
-    require('./userList').default,
-  );
   app.get(
     `/tenant/:tenantId/user/autocomplete`,
-    require('./userAutocomplete').default,
+    require("./userAutocomplete").default
   );
-  app.get(
-    `/tenant/:tenantId/user/:id`,
-    require('./userFind').default,
-  );
+  app.get(`/tenant/:tenantId/user/:id`, require("./userFind").default);
   app.get(
     `/tenant/:tenantId/userAdherantAutocomplete`,
-    require('./userAdherantAutocomplete').default,
+    require("./userAdherantAutocomplete").default
   );
   app.get(
     `/tenant/:tenantId/userAdhesionList`,
-    require('./userAdhesionList').default,
+    require("./userAdhesionList").default
   );
-  app.get(
-    `/tenant/:tenantId/userDonsList`,
-    require('./userDonsList').default,
-  );
+  app.get(`/tenant/:tenantId/userDonsList`, require("./userDonsList").default);
   app.get(
     `/tenant/:tenantId/userVotesList`,
-    require('./userVotesList').default,
+    require("./userVotesList").default
   );
   app.get(
     `/tenant/:tenantId/userHistoriquesPointsList`,
-    require('./userHistoriquePointsList').default,
+    require("./userHistoriquePointsList").default
   );
-
 };

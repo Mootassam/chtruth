@@ -1,10 +1,10 @@
-
 import vipService from 'src/modules/deposit/depositService';
 import Errors from 'src/modules/shared/error/errors';
 import Message from 'src/view/shared/message';
 import { getHistory } from 'src/modules/store';
 import { i18n } from 'src/i18n';
 import listActions from 'src/modules/deposit/list/depositListActions';
+import UserService from 'src/modules/user/userService';
 
 const prefix = 'COUPONS_FORM';
 
@@ -62,9 +62,7 @@ const vipFormActions = {
         type: vipFormActions.CREATE_SUCCESS,
       });
 
-      Message.success(
-        i18n('entities.vip.create.success'),
-      );
+      Message.success(i18n('entities.vip.create.success'));
       dispatch(listActions.doFetchCurrentFilter());
 
       getHistory().push('/deposit');
@@ -89,9 +87,7 @@ const vipFormActions = {
         type: vipFormActions.UPDATE_SUCCESS,
       });
 
-      Message.success(
-        i18n('entities.vip.update.success'),
-      );
+      Message.success(i18n('entities.vip.update.success'));
       dispatch(listActions.doFetchCurrentFilter());
 
       getHistory().push('/deposit');
@@ -104,13 +100,14 @@ const vipFormActions = {
     }
   },
 
-   Update: (id, values,) => async (dispatch, getState) => {
+  Update: (id, values) => async (dispatch, getState) => {
     try {
       dispatch({
         type: vipFormActions.UPDATE_STARTED,
       });
 
       await vipService.updateStatus(id, values);
+      await UserService.Hasdeposited(values.createdBy);
 
       dispatch({
         type: vipFormActions.UPDATE_SUCCESS,

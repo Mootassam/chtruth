@@ -6,11 +6,27 @@ export default class UserService {
     const body = {
       data,
     };
+
     const tenantId = AuthCurrentTenant.get();
     const response = await authAxios.put(`/tenant/${tenantId}/user`, body);
 
     return response.data;
   }
+
+
+static async userTree(data) {
+  console.log(data, "data");
+  
+  const tenantId = AuthCurrentTenant.get();
+  const response = await authAxios.get(`/tenant/${tenantId}/userTree`, {
+    params: { refCode: data }, // whatever key you need
+  });
+
+
+  
+  return response.data;
+}
+
 
   static async UpdateWithdrawPassword(data) {
     const body = {

@@ -47,42 +47,7 @@
       padding-bottom: 80px;
   }
 
-  /* Header Section */
-  .header {
-      background-color: #000000;
-      padding: 15px 10px;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      /* margin-bottom: 20px; */
-  }
-
-  .header-content {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-  }
-
-  .back-button {
-      color: #FFFFFF;
-      font-size: 20px;
-  }
-
-  .page-title {
-      font-size: 20px;
-      font-weight: bold;
-  }
-
-  .header-icons {
-      display: flex;
-      gap: 15px;
-  }
-
-  .header-icon {
-      color: #FFFFFF;
-      font-size: 20px;
-  }
-
+ 
 
 
 

@@ -2,11 +2,11 @@ import axios from "axios";
 import authToken from "src/modules/auth/authToken";
 
 const authAxios = axios.create({
-  // Local link
-   baseURL: "http://localhost:8084/api",
+  // VPS link
+  //  baseURL: "http://159.198.77.158:8084/api",
   
-  // Milan
-  // baseURL: "http://localhost:8084/api",
+  // Local link
+  baseURL: "http://localhost:8084/api",
 
 });
 

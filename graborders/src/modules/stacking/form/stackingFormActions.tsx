@@ -63,7 +63,7 @@ const vipFormActions = {
       });
 
       Message.success(
-        i18n('entities.vip.create.success'),
+        i18n('entities.stacking.create.success'),
       );
       dispatch(listActions.doFetchCurrentFilter());
 dispatch(assetsListActions.doFetch())
@@ -90,7 +90,7 @@ dispatch(assetsListActions.doFetch())
       });
 
       Message.success(
-        i18n('entities.vip.update.success'),
+        i18n('entities.stacking.update.success'),
       );
 
       getHistory().push('/stacking');

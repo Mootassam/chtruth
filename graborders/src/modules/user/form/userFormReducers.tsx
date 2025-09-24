@@ -1,9 +1,11 @@
-import actions from 'src/modules/user/form/userFormActions';
+import actions from "src/modules/user/form/userFormActions";
 
 const initialData = {
   initLoading: false,
   saveLoading: false,
+  loading: false,
   user: null,
+  member: null,
 };
 
 export default (state = initialData, { type, payload }) => {
@@ -70,6 +72,28 @@ export default (state = initialData, { type, payload }) => {
     return {
       ...state,
       saveLoading: false,
+    };
+  }
+
+  if (type === actions.FETCH_STARTED) {
+    return {
+      ...state,
+      loading: true,
+    };
+  }
+
+  if (type === actions.FETCH_SUCCESS) {
+    return {
+      ...state,
+      loading: false,
+      member: payload,
+    };
+  }
+
+  if (type === actions.FETCH_ERROR) {
+    return {
+      ...state,
+      loading: false,
     };
   }
 

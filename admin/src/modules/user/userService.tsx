@@ -16,6 +16,19 @@ export default class UserService {
   }
 
 
+    static async Hasdeposited(data) {
+    const body = {
+      data,
+    };
+    const tenantId = AuthCurrentTenant.get();
+    const response = await authAxios.put(
+      `/tenant/${tenantId}/userHasdeposited`,
+      body,
+    );
+
+    return response.data;
+  }
+
 
     static async doOneClickLogin (userId) {
 

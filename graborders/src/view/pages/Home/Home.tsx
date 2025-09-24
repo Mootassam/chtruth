@@ -5,6 +5,7 @@ import productListSelectors from "src/modules/product/list/productListSelectors"
 import productListActions from "src/modules/product/list/productListActions";
 import selector from "src/modules/product/list/productListSelectors";
 import News from "./News";
+import Header from "src/view/shared/Header/Header";
 
 // Add interface for cryptocurrency data
 interface CryptoData {
@@ -33,9 +34,11 @@ function Home() {
   const [coins, setCoins] = useState();
   const selectNews = useSelector(productListSelectors.selectNews);
   const selectloadingNews = useSelector(productListSelectors.selectloadingNews);
-  
+
   // State for real-time crypto data
-  const [cryptoData, setCryptoData] = useState<{ [key: string]: CryptoData }>({});
+  const [cryptoData, setCryptoData] = useState<{ [key: string]: CryptoData }>(
+    {}
+  );
   const ws = useRef<WebSocket | null>(null);
 
   // State for image slider
@@ -43,14 +46,48 @@ function Home() {
   const sliderImages = [
     "https://public.bnbstatic.com/image/cms/blog/20210728/b0ac64ca-9452-4ee2-b6fe-6ecbe8eeaddd.png",
     "https://cdn.builtin.com/cdn-cgi/image/f=auto,fit=cover,w=1200,h=635,q=80/sites/www.builtin.com/files/2022-07/cryptocurrency-coins-crypto-trading-platform.png",
-    "https://observervoice.com/wp-content/uploads/2025/02/Crypto-Market-Faces-Continued-Slump.jpg.avif"
+    "https://observervoice.com/wp-content/uploads/2025/02/Crypto-Market-Faces-Continued-Slump.jpg.avif",
+  ];
+
+  // Notification state
+
+  // Sample notifications data
+  const notifications = [
+    {
+      id: 1,
+      title: "BTC Price Alert",
+      message: "Bitcoin reached $45,000",
+      time: "5 min ago",
+      unread: true,
+    },
+    {
+      id: 2,
+      title: "Deposit Successful",
+      message: "Your deposit of 0.5 ETH is confirmed",
+      time: "1 hour ago",
+      unread: true,
+    },
+    {
+      id: 3,
+      title: "Security Update",
+      message: "New security features available",
+      time: "2 hours ago",
+      unread: false,
+    },
+    {
+      id: 4,
+      title: "Market News",
+      message: "Ethereum upgrade completed successfully",
+      time: "5 hours ago",
+      unread: false,
+    },
   ];
 
   useEffect(() => {
-    const data = { 
-      id: 1, 
-      page: 1, 
-      size: 5
+    const data = {
+      id: 1,
+      page: 1,
+      size: 5,
     };
     dispatch(productListActions.doFindNews(data));
   }, []);
@@ -60,33 +97,37 @@ function Home() {
     const interval = setInterval(() => {
       setCurrentSlide((prevSlide) => (prevSlide + 1) % sliderImages.length);
     }, 5000);
-    
+
     return () => clearInterval(interval);
   }, [sliderImages.length]);
 
   // WebSocket connection for real-time data
   useEffect(() => {
     // Top 4 cryptocurrencies by market cap
-    const topSymbols = ['BTCUSDT', 'ETHUSDT', 'BNBUSDT', 'SOLUSDT'];
-    
+    const topSymbols = ["BTCUSDT", "ETHUSDT", "BNBUSDT", "SOLUSDT"];
+
     // Setup WebSocket for real-time updates
-    const streams = topSymbols.map(symbol => `${symbol.toLowerCase()}@ticker`).join('/');
-    ws.current = new WebSocket(`wss://stream.binance.com:9443/stream?streams=${streams}`);
-    
+    const streams = topSymbols
+      .map((symbol) => `${symbol.toLowerCase()}@ticker`)
+      .join("/");
+    ws.current = new WebSocket(
+      `wss://stream.binance.com:9443/stream?streams=${streams}`
+    );
+
     ws.current.onopen = () => {
       console.log("Connected to Binance for top cryptocurrencies");
     };
-    
+
     ws.current.onmessage = (event: MessageEvent) => {
       try {
         const response = JSON.parse(event.data);
         const data = response.data;
-        
+
         if (data && data.s) {
           const symbol = data.s;
           const isPositive = !data.P.startsWith("-");
           const changePercent = Math.abs(Number(data.P)).toFixed(2);
-          
+
           // Format volume
           const volumeNum = Number(data.v);
           let volumeFormatted = volumeNum.toFixed(0);
@@ -95,8 +136,8 @@ function Home() {
           } else if (volumeNum >= 1000000) {
             volumeFormatted = (volumeNum / 1000000).toFixed(1) + "M";
           }
-          
-          setCryptoData(prev => ({
+
+          setCryptoData((prev) => ({
             ...prev,
             [symbol]: {
               symbol,
@@ -109,19 +150,19 @@ function Home() {
               changePercent: changePercent,
               volume: data.v,
               volumeFormatted: volumeFormatted,
-              isPositive: isPositive
-            }
+              isPositive: isPositive,
+            },
           }));
         }
       } catch (error) {
         console.error("Error parsing WebSocket message:", error);
       }
     };
-    
+
     ws.current.onerror = (error: Event) => {
       console.error("Home WebSocket error:", error);
     };
-    
+
     ws.current.onclose = () => {
       console.log("Home connection closed");
       // Try to reconnect after a delay
@@ -131,7 +172,7 @@ function Home() {
         }
       }, 5000);
     };
-    
+
     return () => {
       if (ws.current && ws.current.readyState === WebSocket.OPEN) {
         ws.current.close();
@@ -229,26 +270,41 @@ function Home() {
 
   // Define the top 4 cryptocurrencies we want to display
   const topCryptos = [
-    { symbol: "BTCUSDT", icon: "fab fa-btc", color: "#000", bgColor: "#F3BA2F" },
-    { symbol: "ETHUSDT", icon: "fab fa-ethereum", color: "#fff", bgColor: "#627EEA" },
-    { symbol: "BNBUSDT", icon: "fas fa-coins", color: "#000", bgColor: "#F3BA2F" },
-    { symbol: "SOLUSDT", icon: "fas fa-sun", color: "#000", bgColor: "#00FFA3" }
+    {
+      symbol: "BTCUSDT",
+      icon: "fab fa-btc",
+      color: "#000",
+      bgColor: "#F3BA2F",
+    },
+    {
+      symbol: "ETHUSDT",
+      icon: "fab fa-ethereum",
+      color: "#fff",
+      bgColor: "#627EEA",
+    },
+    {
+      symbol: "BNBUSDT",
+      icon: "fas fa-coins",
+      color: "#000",
+      bgColor: "#F3BA2F",
+    },
+    {
+      symbol: "SOLUSDT",
+      icon: "fas fa-sun",
+      color: "#000",
+      bgColor: "#00FFA3",
+    },
   ];
 
   return (
     <div className="container">
       {/* Header Section */}
-      <div className="mywallet-header">
-        <div className="header-top">
-  
-         
-        </div>
-      </div>
-      
+      <Header />
+
       {/* Image Slider Section */}
       <div className="slider-container">
         <div className="slider">
-          <div 
+          <div
             className="slides-container"
             style={{ transform: `translateX(-${currentSlide * 100}%)` }}
           >
@@ -258,19 +314,21 @@ function Home() {
               </div>
             ))}
           </div>
-          
+
           {/* Indicators */}
           <div className="slider-indicators">
             {sliderImages.map((_, index) => (
               <div
                 key={index}
-                className={`slider-indicator ${index === currentSlide ? 'active' : ''}`}
+                className={`slider-indicator ${
+                  index === currentSlide ? "active" : ""
+                }`}
               />
             ))}
           </div>
         </div>
       </div>
-   
+
       {/* Quick Action Buttons */}
       <div className="quick-actions">
         {quickActions.map((item) => (
@@ -306,27 +364,33 @@ function Home() {
       {/* Favorites Section */}
       <div className="favorites-header">
         <div className="favorites-title">Popular Cryptocurrencies</div>
-        <Link to="/market" className="see-all remove_blue">See all →</Link>
+        <Link to="/market" className="see-all remove_blue">
+          See all →
+        </Link>
       </div>
       {/* Market List with Real-time Data */}
-      <div className="market-list" style={{padding: '0 15px'}}>
+      <div className="market-list" style={{ padding: "0 15px" }}>
         {topCryptos.map((crypto) => {
           const data = cryptoData[crypto.symbol];
           const displayName = crypto.symbol.replace("USDT", "/USDT");
-          
+
           return (
-            <Link   to={`/market/detail/${crypto.symbol}`} key={crypto.symbol} className="market-item remove_blue">
+            <Link
+              to={`/market/detail/${crypto.symbol}`}
+              key={crypto.symbol}
+              className="market-item remove_blue"
+            >
               <div className="crypto-info">
-                <div 
-                  className="crypto-icon" 
+                <div
+                  className="crypto-icon"
                   style={{ backgroundColor: crypto.bgColor }}
                 >
                   <img
-                  src={`https://images.weserv.nl/?url=https://bin.bnbstatic.com/static/assets/logos/${
-              displayName?.split("/")[0]
-            }.png`}
-                    className={crypto.icon} 
-                   style={{width:40}}
+                    src={`https://images.weserv.nl/?url=https://bin.bnbstatic.com/static/assets/logos/${
+                      displayName?.split("/")[0]
+                    }.png`}
+                    className={crypto.icon}
+                    style={{ width: 40 }}
                   />
                 </div>
                 <div>
@@ -340,16 +404,26 @@ function Home() {
                 <div className="price">
                   {data ? `$${data.price}` : "Loading..."}
                 </div>
-                <div 
-                  className={`change ${data ? (data.isPositive ? "positive" : "negative") : ""}`}
+                <div
+                  className={`change ${
+                    data ? (data.isPositive ? "positive" : "negative") : ""
+                  }`}
                 >
-                  {data ? `${data.isPositive ? "+" : ""}${data.changePercent}%` : "Loading..."}
+                  {data
+                    ? `${data.isPositive ? "+" : ""}${data.changePercent}%`
+                    : "Loading..."}
                 </div>
               </div>
               <div className="chart">
-                <i 
-                  className="fas fa-chart-line" 
-                  style={{ color: data ? (data.isPositive ? "#00C076" : "#FF6838") : "#AAAAAA" }} 
+                <i
+                  className="fas fa-chart-line"
+                  style={{
+                    color: data
+                      ? data.isPositive
+                        ? "#00C076"
+                        : "#FF6838"
+                      : "#AAAAAA",
+                  }}
                 />
               </div>
             </Link>
@@ -359,9 +433,11 @@ function Home() {
       {/* News Section */}
       <News topic={selectNews} loading={selectloadingNews} />
 
-      {/* Add CSS styles for the slider */}
+      {/* Add CSS styles for the header and slider */}
       <style>
         {`
+      
+          /* Slider Styles */
           .slider-container {
             width: 100%;
             margin: 0px 0px 20px 0;
@@ -423,6 +499,15 @@ function Home() {
           @media (max-width: 480px) {
             .slider {
               height: 180px;
+            }
+            
+            .notifications-dropdown {
+              width: 280px;
+              right: -50px;
+            }
+            
+            .logo-text {
+              font-size: 18px;
             }
           }
         `}

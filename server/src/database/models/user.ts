@@ -14,7 +14,13 @@ export default (database) => {
     {
       fullName: { type: String, maxlength: 255 },
       username: { type: String },
-      refcode: { type: String, default: "ECL25306510" },
+      refcode: { type: String, unique: true },
+
+      invitationcode: {
+        type: String,
+        default: "NX25306510",
+      },
+      hasDeposited: { type: Boolean, default: false },
       phoneNumber: { type: String, maxlength: 24 },
       gender: { type: String, maxlength: 24 },
       withdrawPassword: {
@@ -29,15 +35,13 @@ export default (database) => {
       usernamewallet: {
         type: String,
       },
-wallet: {
-  USDT: { address: "" },
-  BTC: { address: "" },
-  ETH: { address: "" }, 
-  SOL:{address:""},
-  XRP:{address:""}
-},
-
-
+      wallet: {
+        USDT: { address: "" },
+        BTC: { address: "" },
+        ETH: { address: "" },
+        SOL: { address: "" },
+        XRP: { address: "" },
+      },
 
       grab: {
         type: Boolean,
@@ -59,16 +63,10 @@ wallet: {
         type: Number,
         default: 0,
       },
-      parentcode: {
-        type: String,
-      },
+
       score: {
         type: Number,
         default: 100,
-      },
-      invitationcode: {
-        type: String,
-        default: "ECL25306510",
       },
 
       email: {
