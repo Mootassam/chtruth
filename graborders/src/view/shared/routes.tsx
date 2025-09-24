@@ -64,6 +64,11 @@ const screenRoutes = [
     loader: () => import("src/view/pages/invitation/invitation"),
     permissionRequired: permissions.categoryRead,
   },
+    {
+    path: "/members",
+    loader: () => import("src/view/pages/invitation/members"),
+    permissionRequired: permissions.categoryRead,
+  },
   {
     path: "/wallets/:id",
     loader: () => import("src/view/pages/wallet/assetsDetail"),

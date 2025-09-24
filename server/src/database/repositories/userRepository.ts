@@ -244,6 +244,42 @@ static async getReferralTree(refCode: string, maxLevel: number, options: IReposi
 
 
 
+static async getReferralUsersByLevel(
+  refCode: string,
+  level: number,
+  status: "approved" | "pending",
+  options: IRepositoryOptions
+) {
+  // collect users level by level
+  async function fetchLevel(currentRefCode: string, currentLevel: number): Promise<any[]> {
+    if (currentLevel > level) return [];
+
+    const children = await User(options.database).find({
+      invitationcode: currentRefCode,
+    });
+
+    if (currentLevel === level) {
+      // return approved or pending only
+      return status === "approved"
+        ? children.filter((u) => u.hasDeposited)
+        : children.filter((u) => !u.hasDeposited);
+    }
+
+    // search deeper if not reached the level yet
+    let results: any[] = [];
+    for (const child of children) {
+      const sub = await fetchLevel(child.refcode, currentLevel + 1);
+      results = results.concat(sub);
+    }
+    return results;
+  }
+
+  const users = await fetchLevel(refCode, 1);
+  return status === "approved" ? { approvedUsers: users } : { pendingUsers: users };
+}
+
+
+
   static async createFromAuth(data, options: IRepositoryOptions) {
     data = this._preSave(data);
 

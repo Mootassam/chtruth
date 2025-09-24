@@ -3,15 +3,13 @@ import { useDispatch, useSelector } from "react-redux";
 import authSelectors from "src/modules/auth/authSelectors";
 import userFormActions from "src/modules/user/form/userFormActions";
 import userFormSelectors from "src/modules/user/form/userFormSelectors";
-import userSelectors from "src/modules/user/userSelectors";
 import SubHeader from "src/view/shared/Header/SubHeader";
 
 function Invitation() {
   const dispatch = useDispatch();
   const currentUser = useSelector(authSelectors.selectCurrentUser);
   const listMembers = useSelector(userFormSelectors.listMembers);
-
-  console.log(listMembers);
+  const Loading = useSelector(userFormSelectors.ListLoading);
 
   useEffect(() => {
     dispatch(userFormActions.doTree(currentUser.refcode));
@@ -32,7 +30,7 @@ function Invitation() {
         {/* Referral Code */}
         <div className="referral-text">YOUR REFERRAL CODE</div>
         <div className="referral-code-value" id="referralCode">
-          X7F9-2K4M-8R3T
+          {currentUser?.refcode}
         </div>
         <button className="referral-copy-btn" id="copyReferralBtn">
           <i className="fas fa-copy" />
@@ -80,22 +78,23 @@ function Invitation() {
       <div className="generation-stats-container">
         <div className="invite-section-title">Generation Members</div>
         <div className="generation-stats-grid">
-          {listMembers.map((item) => (
-            <div className="generation-stat-item first-gen">
+          {Loading && <h2> Loading ... </h2>}
+          {!Loading && listMembers?.map((item, index) => (
+            <div className="generation-stat-item first-gen" key={index}>
               <div className="generation-stat-title">
                 <i className="fas fa-crown" />
-                {item.level}st Generation Members
+                {item?.level}st Generation Members
               </div>
               <div className="generation-stats-details">
                 <div className="generation-stat-detail generation-stat-approved">
                   <div className="generation-stat-value">
-                    {item.approvedCount}
+                    {item?.approvedCount}
                   </div>
                   <div className="generation-stat-label">Approved Members</div>
                 </div>
                 <div className="generation-stat-detail generation-stat-pending">
                   <div className="generation-stat-value">
-                    {item.pendingCount}
+                    {item?.pendingCount}
                   </div>
                   <div className="generation-stat-label">Pending Members</div>
                 </div>
