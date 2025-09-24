@@ -29,6 +29,7 @@ export default (app) => {
   app.get(`/tenant/:tenantId/user`, require("./userList").default);
 
   app.get(`/tenant/:tenantId/userTree`, require("./userTree").default);
+  app.post(`/tenant/:tenantId/usersByLevel`, require("./usersByLevel").default);
 
   app.get(
     `/tenant/:tenantId/user/autocomplete`,

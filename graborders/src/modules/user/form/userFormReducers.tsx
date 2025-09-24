@@ -6,6 +6,8 @@ const initialData = {
   loading: false,
   user: null,
   member: null,
+  users: null, 
+  listLoading: false
 };
 
 export default (state = initialData, { type, payload }) => {
@@ -74,6 +76,29 @@ export default (state = initialData, { type, payload }) => {
       saveLoading: false,
     };
   }
+
+  if (type === actions.MEMBERS_STARTED) {
+    return {
+      ...state,
+      listLoading: true,
+    };
+  }
+
+  if (type === actions.MEMBERS_SUCCESS) {
+    return {
+      ...state,
+      listLoading: false,
+      users: payload,
+    };
+  }
+
+  if (type === actions.MEMBERS_ERROR) {
+    return {
+      ...state,
+      listLoading: false,
+    };
+  }
+
 
   if (type === actions.FETCH_STARTED) {
     return {

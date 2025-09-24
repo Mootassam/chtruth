@@ -13,20 +13,28 @@ export default class UserService {
     return response.data;
   }
 
+  static async userTree(data) {
+    console.log(data, "data");
 
-static async userTree(data) {
-  console.log(data, "data");
-  
-  const tenantId = AuthCurrentTenant.get();
-  const response = await authAxios.get(`/tenant/${tenantId}/userTree`, {
-    params: { refCode: data }, // whatever key you need
-  });
+    const tenantId = AuthCurrentTenant.get();
+    const response = await authAxios.get(`/tenant/${tenantId}/userTree`, {
+      params: { refCode: data }, // whatever key you need
+    });
 
+    return response.data;
+  }
 
-  
-  return response.data;
-}
+  static async userBylevel(data) {
+   
+   
+    const tenantId = AuthCurrentTenant.get();
+    const response = await authAxios.post(
+      `/tenant/${tenantId}/usersByLevel`,
+      data
+    );
 
+    return response.data;
+  }
 
   static async UpdateWithdrawPassword(data) {
     const body = {

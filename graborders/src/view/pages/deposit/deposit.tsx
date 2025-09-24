@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import SubHeader from "src/view/shared/Header/SubHeader";
 import { useParams } from "react-router-dom";
 import yupFormSchemas from "src/modules/shared/yup/yupFormSchemas";
@@ -12,23 +12,89 @@ import { QRCodeCanvas } from "qrcode.react";
 import FieldFormItem from "src/shared/form/FieldFormItem";
 import actions from "src/modules/deposit/form/depositFormActions";
 
-const schema = yup.object().shape({
-  orderno: yupFormSchemas.string(i18n("entities.deposit.fields.orderno")),
-  amount: yupFormSchemas.decimal(i18n("entities.deposit.fields.amount"), {
-    required: true,
-  }),
-  txid: yupFormSchemas.string(i18n("entities.deposit.fields.txid"), {
-    required: true,
-  }),
-  rechargechannel: yupFormSchemas.string(
-    i18n("entities.deposit.fields.rechargechannel")
-  ),
-});
+// Minimum deposit amounts for each network
+const MIN_DEPOSIT_AMOUNTS = {
+  USDT: 30,
+  SOL: 0.232,
+  BTC: 0.0087,
+  ETH: 0.0071,
+  XRP: 16.9
+};
+
+// Network data with addresses
+const networks = [
+  { 
+    id: "btc", 
+    name: "Bitcoin", 
+    icon: "fab fa-btc", 
+    color: "#F3BA2F",
+    address: "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa"
+  },
+  { 
+    id: "eth", 
+    name: "Ethereum", 
+    icon: "fab fa-ethereum", 
+    color: "#627EEA",
+    address: "0x742d35Cc6634C0532925a3b844Bc454e4438f44e"
+  },
+  {
+    id: "usdt",
+    name: "Tether",
+    icon: "fas fa-dollar-sign",
+    color: "#26A17B",
+    address: "0x742d35Cc6634C0532925a3b844Bc454e4438f44e"
+  },
+  { 
+    id: "sol", 
+    name: "Solana", 
+    icon: "fas fa-bolt", 
+    color: "#00FFA3",
+    address: "So11111111111111111111111111111111111111112"
+  },
+  {
+    id: "xrp",
+    name: "Ripple",
+    icon: "fas fa-exchange-alt",
+    color: "#23292F",
+    address: "rPEPPER7kfTD9w2To4CQk6UCfuHM9c6GDY"
+  },
+];
+
+// Dynamic schema creation based on selected network
+const createSchema = (selectedNetwork) => {
+  const minAmount = MIN_DEPOSIT_AMOUNTS[selectedNetwork.toUpperCase()] || 0;
+  
+  return yup.object().shape({
+    orderno: yupFormSchemas.string(i18n("entities.deposit.fields.orderno")),
+    amount: yupFormSchemas.decimal(i18n("entities.deposit.fields.amount"), {
+      required: true,
+      min: minAmount
+    }).test(
+      'min-deposit',
+      `Minimum deposit for ${selectedNetwork.toUpperCase()} is ${minAmount}`,
+      function(value) {
+        if (!value) return false;
+        return parseFloat(value) >= minAmount;
+      }
+    ),
+    txid: yupFormSchemas.string(i18n("entities.deposit.fields.txid"), {
+      required: true,
+    }),
+    rechargechannel: yupFormSchemas.string(
+      i18n("entities.deposit.fields.rechargechannel")
+    ),
+  });
+};
 
 function Deposit() {
   const dispatch = useDispatch();
   const currentUser = useSelector(authSelectors.selectCurrentUser);
   const [selectedNetwork, setSelectedNetwork] = useState("btc");
+  const [showToast, setShowToast] = useState(false);
+  const [currentAddress, setCurrentAddress] = useState(networks[0].address);
+
+  // Update schema when network changes
+  const schema = useMemo(() => createSchema(selectedNetwork), [selectedNetwork]);
 
   const [initialValues] = useState(() => {
     return {
@@ -46,6 +112,22 @@ function Deposit() {
     mode: "all",
     defaultValues: initialValues,
   });
+
+  // Update address when network changes
+  useEffect(() => {
+    const network = networks.find(n => n.id === selectedNetwork);
+    if (network) {
+      setCurrentAddress(network.address);
+    }
+  }, [selectedNetwork]);
+
+  // Copy address to clipboard
+  const copyAddressToClipboard = () => {
+    navigator.clipboard.writeText(currentAddress).then(() => {
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    });
+  };
 
   const onSubmit = (values) => {
     // Generate order number in format: RE + YYYYMMDD + 7 random digits
@@ -83,25 +165,6 @@ function Deposit() {
     });
   };
 
-  // Network data
-  const networks = [
-    { id: "btc", name: "Bitcoin", icon: "fab fa-btc", color: "#F3BA2F" },
-    { id: "eth", name: "Ethereum", icon: "fab fa-ethereum", color: "#627EEA" },
-    {
-      id: "usdt",
-      name: "Tether",
-      icon: "fas fa-dollar-sign",
-      color: "#26A17B",
-    },
-    { id: "sol", name: "Solana", icon: "fas fa-bolt", color: "#00FFA3" },
-    {
-      id: "xrp",
-      name: "Ripple",
-      icon: "fas fa-exchange-alt",
-      color: "#23292F",
-    },
-  ];
-
   const selectedNetworkData = useMemo(
     () => networks.find((network) => network.id === selectedNetwork),
     [selectedNetwork]
@@ -110,14 +173,22 @@ function Deposit() {
   // Handle network selection
   const handleNetworkSelect = (event) => {
     setSelectedNetwork(event.target.value);
+    // Clear amount field when network changes to avoid validation issues
+    form.setValue("amount", "");
+    form.clearErrors("amount");
+  };
+
+  // Get minimum amount for current network
+  const getMinAmount = () => {
+    return MIN_DEPOSIT_AMOUNTS[selectedNetwork.toUpperCase()] || 0;
   };
 
   return (
-    <div className="depositContainer">
+    <div className="container">
       {/* Header Section */}
       <SubHeader title="Deposit Crypto" />
 
-      {/* Network Selection - Changed to Dropdown */}
+      {/* Network Selection */}
       <div className="networkSection">
         <div className="sectionHeading">Select Network</div>
         <div className="networkDropdownContainer">
@@ -136,7 +207,11 @@ function Deposit() {
             className="networkDropdownIcon"
             style={{ color: selectedNetworkData.color }}
           >
-            <i className={selectedNetworkData.icon} />
+            <img
+              src={`https://images.weserv.nl/?url=https://bin.bnbstatic.com/static/assets/logos/${selectedNetworkData.id.toUpperCase()}.png`}
+              style={{ width: 25, height: 25 }}
+              alt={selectedNetworkData.id}
+            />
           </div>
         </div>
       </div>
@@ -144,7 +219,7 @@ function Deposit() {
       {/* QR Code Section */}
       <div className="qrSection">
         <QRCodeCanvas
-          value={"1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa"}
+          value={currentAddress}
           size={180}
           bgColor="#ffffff"
           fgColor="#000000"
@@ -155,9 +230,13 @@ function Deposit() {
         <div className="addressSection">
           <div className="addressLabel">Your deposit address</div>
           <div className="addressText" id="walletAddress">
-            1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa
+            {currentAddress}
           </div>
-          <button className="copyBtn" id="copyAddress">
+          <button 
+            type="button"
+            className="copyBtn" 
+            onClick={copyAddressToClipboard}
+          >
             <i className="fas fa-copy" /> Copy Address
           </button>
         </div>
@@ -169,13 +248,14 @@ function Deposit() {
           <div className="amountSection">
             <FieldFormItem
               name="amount"
-              type="text"
-              label="Deposit amount"
+              type="number"
+              label={`Deposit amount (${selectedNetwork.toUpperCase()})`}
               className="textField"
               className1="inputField"
               className2="inputLabel"
               className3="inputWrapper"
-              placeholder="Enter The Deposit Amount"
+              placeholder={`Minimum: ${getMinAmount()} ${selectedNetwork.toUpperCase()}`}
+              step="any"
             />
 
             <FieldFormItem
@@ -188,6 +268,12 @@ function Deposit() {
               className3="inputWrapper"
               placeholder="Enter The TXID"
             />
+          </div>
+
+          {/* Minimum Amount Warning */}
+          <div className="minAmountWarning">
+            <i className="fas fa-info-circle" />
+            Minimum deposit: <strong>{getMinAmount()} {selectedNetwork.toUpperCase()}</strong>
           </div>
 
           {/* Warning Section */}
@@ -204,7 +290,11 @@ function Deposit() {
           </div>
 
           {/* Deposit Button */}
-          <button type="submit" className="depositBtn" id="depositBtn">
+          <button 
+            type="submit" 
+            className="depositBtn" 
+            disabled={!form.formState.isValid}
+          >
             Confirm Deposit
           </button>
         </form>
@@ -219,6 +309,10 @@ function Deposit() {
           </div>
         </div>
         <div className="detailRow">
+          <div className="detailLabel">Minimum deposit</div>
+          <div className="detailValue">{getMinAmount()} {selectedNetwork.toUpperCase()}</div>
+        </div>
+        <div className="detailRow">
           <div className="detailLabel">Estimated arrival</div>
           <div className="detailValue">3 network confirmations</div>
         </div>
@@ -229,11 +323,17 @@ function Deposit() {
       </div>
 
       {/* Toast Notification */}
-      <div className="toastMsg" id="toast">
+      <div className={`toastMsg ${showToast ? 'visible' : ''}`} id="toast">
         Address copied to clipboard!
       </div>
 
       <style>{`
+  .depositContainer {
+    max-width: 500px;
+    margin: 0 auto;
+    padding-bottom: 20px;
+  }
+
   .networkSection {
       padding: 0 15px;
       margin-bottom: 20px;
@@ -243,6 +343,7 @@ function Deposit() {
       font-weight: bold;
       margin-bottom: 12px;
       font-size: 16px;
+      color: #FFFFFF;
   }
 
   /* Network Dropdown Styles */
@@ -263,6 +364,7 @@ function Deposit() {
     -webkit-appearance: none;
     -moz-appearance: none;
     cursor: pointer;
+    transition: border-color 0.3s;
   }
 
   .networkDropdown:focus {
@@ -277,6 +379,9 @@ function Deposit() {
     transform: translateY(-50%);
     font-size: 24px;
     pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   /* QR Code Section */
@@ -289,8 +394,8 @@ function Deposit() {
   }
 
   .qrBox {
-      width: 200px;
-      height: 200px;
+      width: 180px;
+      height: 180px;
       margin: 0 auto 20px;
       background-color: #FFFFFF;
       border-radius: 12px;
@@ -298,6 +403,7 @@ function Deposit() {
       justify-content: center;
       align-items: center;
       overflow: hidden;
+      padding: 10px;
   }
 
   .addressSection {
@@ -316,6 +422,7 @@ function Deposit() {
       margin-bottom: 15px;
       font-family: monospace;
       color: #F3BA2F;
+      line-height: 1.4;
   }
 
   .copyBtn {
@@ -344,51 +451,21 @@ function Deposit() {
   /* Amount Section */
   .amountSection {
       padding: 0 15px;
-      margin-bottom: 20px;
+      margin-bottom: 10px;
   }
 
-  .amountInputBox {
-      background-color: #2A2A2A;
-      border-radius: 12px;
-      padding: 15px;
-      margin-bottom: 8px;
+  .minAmountWarning {
+    padding: 0 15px;
+    margin-bottom: 20px;
+    color: #F3BA2F;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
 
-  .amountLabel {
-      font-size: 14px;
-      color: #AAAAAA;
-      margin-bottom: 8px;
-  }
-
-  .inputRow {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-  }
-
-  .amountField {
-      background: transparent;
-      border: none;
-      color: #FFFFFF;
-      font-size: 24px;
-      font-weight: bold;
-      width: 70%;
-      outline: none;
-  }
-
-  .currencyDropdown {
-      background-color: #1A1A1A;
-      color: #FFFFFF;
-      border: none;
-      border-radius: 6px;
-      padding: 8px 12px;
-      font-size: 14px;
-  }
-
-  .minAmountText {
-      color: #FF6838;
-      font-size: 12px;
-      margin-top: 5px;
+  .minAmountWarning i {
+    color: #F3BA2F;
   }
 
   /* Warning Section */
@@ -439,7 +516,7 @@ function Deposit() {
       transition: background-color 0.3s ease;
   }
 
-  .depositBtn:hover {
+  .depositBtn:hover:not(:disabled) {
       background-color: #e6ab0a;
   }
 
@@ -453,6 +530,9 @@ function Deposit() {
   .networkDetails {
       padding: 15px;
       margin-top: 20px;
+      background-color: #1A1A1A;
+      border-radius: 12px;
+      margin: 20px 15px 0;
   }
 
   .detailRow {
@@ -460,6 +540,10 @@ function Deposit() {
       justify-content: space-between;
       margin-bottom: 12px;
       font-size: 14px;
+  }
+
+  .detailRow:last-child {
+      margin-bottom: 0;
   }
 
   .detailLabel {
@@ -485,23 +569,46 @@ function Deposit() {
       opacity: 0;
       transition: opacity 0.3s ease;
       z-index: 1000;
+      pointer-events: none;
   }
 
-  @media (min-width: 401px) {
-    .wallet-container {
-      box-shadow: 0 0 20px rgba(243, 186, 47, 0.1);
-      min-height: 100vh;
-    }
+  .toastMsg.visible {
+      opacity: 1;
+  }
+
+  /* Form field styling */
+  .inputWrapper {
+    // margin-bottom: 16px;
+  }
+
+  .inputLabel {
+    display: block;
+    // margin-bottom: 8px;
+    color: #AAAAAA;
+    font-size: 14px;
+  }
+
+  .inputField {
+    width: 100%;
+    // background-color: #2A2A2A;
+    // border: 2px solid #2A2A2A;
+    border-radius: 12px;
+    // padding: 12px 15px;
+    color: white;
+    font-size: 16px;
+    transition: border-color 0.3s;
+  }
+
+  .inputField:focus {
+    outline: none;
+    border-color: #F3BA2F;
+  }
+
+  .inputField:invalid {
+    border-color: #FF6838;
   }
 
   @media (max-width: 350px) {
-    .wallet-asset-icon,
-    .wallet-transaction-icon {
-      width: 35px;
-      height: 35px;
-      font-size: 16px;
-    }
-    
     .networkDropdown {
       padding: 10px 40px 10px 12px;
       font-size: 14px;
@@ -511,10 +618,15 @@ function Deposit() {
       font-size: 20px;
       right: 12px;
     }
-  }
 
-  .toastMsg.visible {
-      opacity: 1;
+    .qrBox {
+      width: 150px;
+      height: 150px;
+    }
+
+    .addressText {
+      font-size: 12px;
+    }
   }
 `}</style>
     </div>

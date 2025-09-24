@@ -5,6 +5,7 @@ import { getHistory } from "src/modules/store";
 import { i18n } from "../../../i18n";
 import authSelectors from "src/modules/auth/authSelectors";
 import authActions from "src/modules/auth/authActions";
+import { log } from "node:console";
 
 const prefix = "USER_FORM";
 
@@ -24,6 +25,10 @@ const userFormActions = {
   FETCH_STARTED: `${prefix}_FETCH_STARTED`,
   FETCH_SUCCESS: `${prefix}_FETCH_SUCCESS`,
   FETCH_ERROR: `${prefix}_FETCH_ERROR`,
+
+  MEMBERS_STARTED: `${prefix}_MEMBERS_STARTED`,
+  MEMBERS_SUCCESS: `${prefix}_MEMBERS_SUCCESS`,
+  MEMBERS_ERROR: `${prefix}_MEMBERS_ERROR`,
 
   doInit: (id?) => async (dispatch) => {
     try {
@@ -83,6 +88,28 @@ const userFormActions = {
     }
   },
 
+  byLevel: (values) => async (dispatch, getState) => {
+    try {
+      dispatch({
+        type: userFormActions.MEMBERS_STARTED,
+      });
+
+      const response = await UserService.userBylevel(values);
+
+
+      dispatch({
+        type: userFormActions.MEMBERS_SUCCESS,
+        payload: response,
+      });
+    } catch (error) {
+      Errors.handle(error);
+
+      dispatch({
+        type: userFormActions.MEMBERS_ERROR,
+      });
+    }
+  },
+
   doTree: (values) => async (dispatch, getState) => {
     try {
       dispatch({
@@ -91,12 +118,9 @@ const userFormActions = {
 
       const response = await UserService.userTree(values);
 
-
-
-
       dispatch({
         type: userFormActions.FETCH_SUCCESS,
-        payload: response, 
+        payload: response,
       });
     } catch (error) {
       Errors.handle(error);

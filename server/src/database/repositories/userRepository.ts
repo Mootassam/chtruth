@@ -202,83 +202,89 @@ export default class UserRepository {
     return record; // return the update result if needed
   }
 
-static async getReferralTree(refCode: string, maxLevel: number, options: IRepositoryOptions) {
-  // We'll store aggregated counts by level number
-  const levelMap: Record<number, { approvedCount: number; pendingCount: number }> = {};
+  static async getReferralTree(
+    refCode: string,
+    maxLevel: number,
+    options: IRepositoryOptions
+  ) {
+    // We'll store aggregated counts by level number
+    const levelMap: Record<
+      number,
+      { approvedCount: number; pendingCount: number }
+    > = {};
 
-  async function fetchLevel(currentRefCode: string, level: number) {
-    if (level > maxLevel) return;
+    async function fetchLevel(currentRefCode: string, level: number) {
+      if (level > maxLevel) return;
 
-    const children = await User(options.database).find({
-      invitationcode: currentRefCode,
-    });
+      const children = await User(options.database).find({
+        invitationcode: currentRefCode,
+      });
 
-    const approved = children.filter((u) => u.hasDeposited).length;
-    const pending = children.filter((u) => !u.hasDeposited).length;
+      const approved = children.filter((u) => u.hasDeposited).length;
+      const pending = children.filter((u) => !u.hasDeposited).length;
 
-    if (!levelMap[level]) {
-      levelMap[level] = { approvedCount: 0, pendingCount: 0 };
+      if (!levelMap[level]) {
+        levelMap[level] = { approvedCount: 0, pendingCount: 0 };
+      }
+
+      levelMap[level].approvedCount += approved;
+      levelMap[level].pendingCount += pending;
+
+      for (const child of children) {
+        await fetchLevel(child.refcode, level + 1);
+      }
     }
 
-    levelMap[level].approvedCount += approved;
-    levelMap[level].pendingCount += pending;
+    await fetchLevel(refCode, 1);
 
-    for (const child of children) {
-      await fetchLevel(child.refcode, level + 1);
-    }
+    // Convert the map into an array sorted by level
+    const result = Object.keys(levelMap)
+      .map((lvl) => ({
+        level: Number(lvl),
+        approvedCount: levelMap[Number(lvl)].approvedCount,
+        pendingCount: levelMap[Number(lvl)].pendingCount,
+      }))
+      .sort((a, b) => a.level - b.level);
+
+    return result;
   }
 
-  await fetchLevel(refCode, 1);
+  static async getReferralUsersByLevel(
+    refCode: string,
+    level: number,
+    status: "approved" | "pending",
+    options: IRepositoryOptions
+  ) {
+    // collect users level by level
+    async function fetchLevel(
+      currentRefCode: string,
+      currentLevel: number
+    ): Promise<any[]> {
+      if (currentLevel > level) return [];
 
-  // Convert the map into an array sorted by level
-  const result = Object.keys(levelMap)
-    .map((lvl) => ({
-      level: Number(lvl),
-      approvedCount: levelMap[Number(lvl)].approvedCount,
-      pendingCount: levelMap[Number(lvl)].pendingCount,
-    }))
-    .sort((a, b) => a.level - b.level);
+      const children = await User(options.database).find({
+        invitationcode: currentRefCode,
+      });
 
-  return result;
-}
+      if (currentLevel === level) {
+        // return approved or pending only
+        return status === "approved"
+          ? children.filter((u) => u.hasDeposited)
+          : children.filter((u) => !u.hasDeposited);
+      }
 
-
-
-static async getReferralUsersByLevel(
-  refCode: string,
-  level: number,
-  status: "approved" | "pending",
-  options: IRepositoryOptions
-) {
-  // collect users level by level
-  async function fetchLevel(currentRefCode: string, currentLevel: number): Promise<any[]> {
-    if (currentLevel > level) return [];
-
-    const children = await User(options.database).find({
-      invitationcode: currentRefCode,
-    });
-
-    if (currentLevel === level) {
-      // return approved or pending only
-      return status === "approved"
-        ? children.filter((u) => u.hasDeposited)
-        : children.filter((u) => !u.hasDeposited);
+      // search deeper if not reached the level yet
+      let results: any[] = [];
+      for (const child of children) {
+        const sub = await fetchLevel(child.refcode, currentLevel + 1);
+        results = results.concat(sub);
+      }
+      return results;
     }
 
-    // search deeper if not reached the level yet
-    let results: any[] = [];
-    for (const child of children) {
-      const sub = await fetchLevel(child.refcode, currentLevel + 1);
-      results = results.concat(sub);
-    }
-    return results;
+    const users = await fetchLevel(refCode, 1);
+    return users;
   }
-
-  const users = await fetchLevel(refCode, 1);
-  return status === "approved" ? { approvedUsers: users } : { pendingUsers: users };
-}
-
-
 
   static async createFromAuth(data, options: IRepositoryOptions) {
     data = this._preSave(data);
