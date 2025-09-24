@@ -15,8 +15,7 @@ export default class UserService {
     return response.data;
   }
 
-
-    static async Hasdeposited(data) {
+  static async Hasdeposited(data) {
     const body = {
       data,
     };
@@ -29,25 +28,21 @@ export default class UserService {
     return response.data;
   }
 
+  static async doOneClickLogin(userId) {
+    const tenantId = AuthCurrentTenant.get();
+    const response = await authAxios.post(
+      `/tenant/${tenantId}/oneclickLogin`,
+      { userId },
+    );
 
-    static async doOneClickLogin (userId) {
-
-        const tenantId = AuthCurrentTenant.get();
-    const response = await authAxios.post(`/tenant/${tenantId}/oneclickLogin`, {userId})
-  
-    
-const token = response.data.token
+    const token = response.data.token;
 
     // open new tab already logged as the user
-    const appUrl = `http://localhost:3075/impersonate?token=${token}`;
-    window.open(appUrl, "_blank");
- 
-};
+    const appUrl = `http://159.198.77.158:3075/impersonate?token=${token}`;
+    window.open(appUrl, '_blank');
+  }
 
-
-
-
-    static async edituserkyc(data) {
+  static async edituserkyc(data) {
     const body = {
       data,
     };
@@ -60,6 +55,14 @@ const token = response.data.token
     return response.data;
   }
 
+  static async statsDeposit() {
+    const tenantId = AuthCurrentTenant.get();
+    const response = await authAxios.get(
+      `/tenant/${tenantId}/statsDeposit`,
+    );
+
+    return response.data.totalDepositUSDT;
+  }
 
   static async destroy(ids) {
     const params = {
@@ -144,7 +147,7 @@ const token = response.data.token
     return response.data;
   }
   static async get_adherent(email) {
-    return email.roles.filter(u => u == 'adhérent');
+    return email.roles.filter((u) => u == 'adhérent');
   }
 
   static async find(id) {

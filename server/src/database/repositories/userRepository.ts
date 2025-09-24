@@ -15,6 +15,9 @@ import VipRepository from "./vipRepository";
 import Vip from "../models/vip";
 import { getConfig } from "../../config";
 import { jwt } from "jsonwebtoken";
+import withdraw from "../models/withdraw";
+import deposit from "../models/deposit";
+import axios from "axios";
 export default class UserRepository {
   static async create(data, options: IRepositoryOptions) {
     const currentUser = MongooseRepository.getCurrentUser(options);
@@ -112,6 +115,51 @@ export default class UserRepository {
     );
   }
 
+  static async StatsDeposit(options: IRepositoryOptions) {
+    // Pairs we want to track
+    const symbols = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "XRPUSDT"];
+
+    // Fetch all prices from Binance
+    const prices: Record<string, number> = {};
+    for (const symbol of symbols) {
+      const res = await axios.get(
+        `https://api.binance.com/api/v3/ticker/price?symbol=${symbol}`
+      );
+      // Example: "BTCUSDT" → store as prices["btc"] = 65000
+      prices[symbol.replace("USDT", "").toLowerCase()] = parseFloat(
+        res.data.price
+      );
+    }
+
+    // USDT is always 1
+    prices["usdt"] = 1;
+
+    // Fetch successful deposits
+    const deposits = await deposit(options.database).find({
+      status: "success",
+    });
+
+    let totalInUSDT = 0;
+
+    for (const d of deposits) {
+      // normalize channel: "usd" in DB should be treated as "usdt"
+      const channelRaw = d.rechargechannel?.toLowerCase();
+      const channel = channelRaw === "usd" ? "usdt" : channelRaw;
+
+      const amount = parseFloat(d.amount);
+
+      if (!amount || !channel || !prices[channel]) continue;
+
+      // Convert deposit to USDT
+      totalInUSDT += amount * prices[channel];
+    }
+
+    return {
+      totalDepositUSDT: totalInUSDT,
+      totalCount: deposits.length,
+    };
+  }
+
   static async UpdateKyc(value, options: IRepositoryOptions) {
     await User(options.database).updateOne(
       { _id: value.user },
@@ -199,7 +247,8 @@ export default class UserRepository {
       { $set: { hasDeposited: true } } // update field safely
     );
 
-    return record; // return the update result if needed
+    return record; // return the update resul
+    // t if needed
   }
 
   static async getReferralTree(

@@ -17,6 +17,11 @@ const selectRows = createSelector(
   (raw) => raw.rows,
 );
 
+const selectcountDeposit = createSelector(
+  [selectRaw],
+  (raw) => raw.totaldepoist,
+);
+
 const selectCount = createSelector(
   [selectRaw],
   (raw) => raw.count,
@@ -125,6 +130,7 @@ const userListSelectors = {
   selectExportLoading,
   selectRawFilter,
   selectIsAllSelected,
+  selectcountDeposit,
   selectSorter,
 };
 

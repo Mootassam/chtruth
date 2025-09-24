@@ -1,5 +1,17 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import userListActions from './../../modules/user/list/userListActions';
+import userListSelectors from 'src/modules/user/list/userListSelectors';
 function Home() {
+  const dispatch = useDispatch();
+  const totalDeposit = useSelector(
+    userListSelectors.selectcountDeposit,
+  );
+
+  useEffect(() => {
+    dispatch(userListActions.depositCount());
+    return () => {};
+  }, []);
   return (
     <div className="admin-home-container">
       <div className="welcome-section">
@@ -29,7 +41,9 @@ function Home() {
             <span className="stat-title">
               Total Recharge Amount:
             </span>
-            <span className="stat-value">541,244.11</span>
+            <span className="stat-value">
+              {totalDeposit} USDT
+            </span>
           </div>
         </div>
 

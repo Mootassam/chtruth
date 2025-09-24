@@ -6,6 +6,7 @@ const initialData = {
   rows: [] as Array<any>,
   count: 0,
   loading: false,
+  totaldepoist: 0,
   filter: {},
   rawFilter: {},
   pagination: {
@@ -117,21 +118,43 @@ export default (state = initialData, { type, payload }) => {
   if (type === actions.EXPORT_STARTED) {
     return {
       ...state,
-      exportLoading: true,
+      countLoading: true,
     };
   }
 
   if (type === actions.EXPORT_SUCCESS) {
     return {
       ...state,
-      exportLoading: false,
+      countLoading: false,
     };
   }
 
   if (type === actions.EXPORT_ERROR) {
     return {
       ...state,
-      exportLoading: false,
+      countLoading: false,
+    };
+  }
+
+  if (type === actions.DCOUNT_STARTED) {
+    return {
+      ...state,
+      countLoading: true,
+    };
+  }
+
+  if (type === actions.DCOUNT_SUCCESS) {
+    return {
+      ...state,
+      totaldepoist: payload,
+      countLoading: false,
+    };
+  }
+
+  if (type === actions.DCOUNT_ERROR) {
+    return {
+      ...state,
+      countLoading: false,
     };
   }
 

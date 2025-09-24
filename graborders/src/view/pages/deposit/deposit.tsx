@@ -248,14 +248,14 @@ function Deposit() {
           <div className="amountSection">
             <FieldFormItem
               name="amount"
-              type="number"
+              type="Number"
               label={`Deposit amount (${selectedNetwork.toUpperCase()})`}
               className="textField"
               className1="inputField"
               className2="inputLabel"
               className3="inputWrapper"
               placeholder={`Minimum: ${getMinAmount()} ${selectedNetwork.toUpperCase()}`}
-              step="any"
+         
             />
 
             <FieldFormItem
