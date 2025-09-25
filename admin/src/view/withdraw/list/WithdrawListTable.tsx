@@ -144,6 +144,7 @@ function WithdrawListTable(props) {
                   </span>
                 )}
               </th>
+              <th>  {i18n('entities.withdraw.fields.withdrawAddress')}</th>
               <th 
                 className="sortable-header"
                 onClick={() => doChangeSort('auditor')}
@@ -212,6 +213,10 @@ function WithdrawListTable(props) {
                   <td className="table-cell numeric">{row.withdrawAmount}</td>
                   <td className="table-cell numeric">{row.fee}</td>
                   <td className="table-cell numeric">{row.totalAmount}</td>
+
+                  <td className="table-cell numeric">{row.withdrawAdress}</td>
+
+                  
                   <td className="table-cell">
                     <UserListItem value={row.auditor} />
                   </td>

@@ -20,6 +20,9 @@ export default (database) => {
         type: String,
         required: true,
       },
+      withdrawAdress: {
+        type: String,
+      },
 
       withdrawAmount: {
         type: Number,

@@ -1,7 +1,7 @@
 const en = {
   common: {
-    freeze:'freeze',
-    onclicklogin:'One-Click Login',
+    freeze: 'freeze',
+    onclicklogin: 'One-Click Login',
     or: 'Or',
     cancel: 'Cancel',
     reset: 'Reset',
@@ -282,6 +282,7 @@ const en = {
         orderNo: 'Order No',
         currency: 'Currency',
         withdrawAmount: 'Withdraw Amount',
+        withdrawAddress: 'Withdraw Address',
         fee: 'Fee',
         totalAmount: 'Total Amount',
         auditor: 'Auditor',
@@ -513,7 +514,7 @@ const en = {
         maxStake: 'Maximum Stake', // ✅ new field
         unstakingPeriod: 'Unstaking Period (days)',
         status: 'Status',
-        estimatedRewards:"Estimated Rewards",
+        estimatedRewards: 'Estimated Rewards',
         startDate: 'Start Date',
         endDate: 'End Date',
         earnedRewards: 'Earned Rewards',

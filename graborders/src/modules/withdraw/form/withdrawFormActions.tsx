@@ -1,11 +1,11 @@
+import vipService from "src/modules/withdraw/withdrawService";
+import Errors from "src/modules/shared/error/errors";
+import Message from "src/view/shared/message";
+import { getHistory } from "src/modules/store";
+import { i18n } from "../../../i18n";
+import assetsListActions from "src/modules/assets/list/assetsListActions";
 
-import vipService from 'src/modules/withdraw/withdrawService';
-import Errors from 'src/modules/shared/error/errors';
-import Message from 'src/view/shared/message';
-import { getHistory } from 'src/modules/store';
-import { i18n } from '../../../i18n';
-
-const prefix = 'COUPONS_FORM';
+const prefix = "COUPONS_FORM";
 
 const vipFormActions = {
   INIT_STARTED: `${prefix}_INIT_STARTED`,
@@ -45,7 +45,7 @@ const vipFormActions = {
         type: vipFormActions.INIT_ERROR,
       });
 
-      getHistory().push('/withdraw');
+      getHistory().push("/withdraw");
     }
   },
 
@@ -61,11 +61,11 @@ const vipFormActions = {
         type: vipFormActions.CREATE_SUCCESS,
       });
 
-      Message.success(
-        i18n('entities.withdraw.create.success'),
-      );
+      dispatch(assetsListActions.doFetch());
 
-      getHistory().push('/withdraw');
+      Message.success(i18n("entities.withdraw.create.success"));
+
+      getHistory().push("/withdraw");
     } catch (error) {
       Errors.handle(error);
 
@@ -87,11 +87,9 @@ const vipFormActions = {
         type: vipFormActions.UPDATE_SUCCESS,
       });
 
-      Message.success(
-        i18n('entities.withdraw.update.success'),
-      );
+      Message.success(i18n("entities.withdraw.update.success"));
 
-      getHistory().push('/withdraw');
+      getHistory().push("/withdraw");
     } catch (error) {
       Errors.handle(error);
 

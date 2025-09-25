@@ -1,17 +1,17 @@
 import React, { useMemo, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import SubHeader from "src/view/shared/Header/SubHeader";
-import { useParams } from "react-router-dom";
-import yupFormSchemas from "src/modules/shared/yup/yupFormSchemas";
-import * as yup from "yup";
-import { i18n } from "../../../i18n";
 import { useDispatch, useSelector } from "react-redux";
-import authSelectors from "src/modules/auth/authSelectors";
 import { useForm, FormProvider } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+import yupFormSchemas from "src/modules/shared/yup/yupFormSchemas";
+import { i18n } from "../../../i18n";
+import authSelectors from "src/modules/auth/authSelectors";
 import actions from "src/modules/withdraw/form/withdrawFormActions";
 import FieldFormItem from "src/shared/form/FieldFormItem";
 import assetsListSelectors from "src/modules/assets/list/assetsListSelectors";
+import assetsListActions from "src/modules/assets/list/assetsListActions";
 
 const schema = yup.object().shape({
   orderNo: yupFormSchemas.string(i18n("entities.withdraw.fields.orderNo")),
@@ -22,8 +22,7 @@ const schema = yup.object().shape({
   ),
   fee: yupFormSchemas.decimal(i18n("entities.withdraw.fields.fee")),
   totalAmount: yupFormSchemas.decimal(
-    i18n("entities.withdraw.fields.totalAmount"),
-
+    i18n("entities.withdraw.fields.totalAmount")
   ),
   auditor: yupFormSchemas.relationToOne(
     i18n("entities.withdraw.fields.auditor")
@@ -41,38 +40,48 @@ function Withdraw() {
   const currentUser = useSelector(authSelectors.selectCurrentUser);
   const assets = useSelector(assetsListSelectors.selectRows);
 
+  const [address, setAddress] = useState("");
   const [selected, setSelected] = useState("");
   const [item, setItem] = useState(null);
 
+  // Update selected asset info when currency changes
   useEffect(() => {
     if (selected && assets.length) {
       const foundItem = assets.find((asset) => asset.symbol === selected);
-      setItem(foundItem);
+      setItem(foundItem || null);
+
+      // Update address from wallet if available
+      const walletAddress = currentUser?.wallet?.[selected]?.address || "";
+      setAddress(walletAddress);
     } else {
       setItem(null);
+      setAddress("");
     }
-  }, [selected, assets]);
+  }, [selected, assets, currentUser]);
+
+  // Fetch assets once
+  useEffect(() => {
+    dispatch(assetsListActions.doFetch())
+  }, [dispatch]);
 
   // Check if user has any wallet
   const hasAnyWallet =
     currentUser.wallet &&
     Object.values(currentUser.wallet).some(
-      (val) => val && val.address && val.address.trim() !== ""
+      (val) => val?.address?.trim() !== ""
     );
 
- 
-  const [initialValues] = useState(() => {
-    return {
-      orderNo: "",
-      currency: "",
-      withdrawAmount: "",
-      fee: "",
-      totalAmount: "",
-      auditor: "",
-      acceptTime: "",
-      status: "pending",
-    };
-  });
+  const initialValues = {
+    orderNo: "",
+    currency: "",
+    withdrawAmount: "",
+    fee: "",
+    totalAmount: "",
+    auditor: "",
+    acceptTime: "",
+    status: "pending",
+    withdrawAdress: "",
+  };
 
   const form = useForm({
     resolver: yupResolver(schema),
@@ -83,27 +92,23 @@ function Withdraw() {
   const onSubmit = (values) => {
     // Generate order number in format: RE + YYYYMMDD + 7 random digits
     const now = new Date();
-
-    // Format date as YYYYMMDD
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, "0");
-    const day = String(now.getDate()).padStart(2, "0");
-    const dateStr = `${year}${month}${day}`;
-
-    // Generate 7 random digits
-    const randomDigits = Math.floor(Math.random() * 10000000)
+    const dateStr = `${now.getFullYear()}${String(
+      now.getMonth() + 1
+    ).padStart(2, "0")}${String(now.getDate()).padStart(2, "0")}`;
+    const randomDigits = Math.floor(Math.random() * 1e7)
       .toString()
       .padStart(7, "0");
 
-    // Create order number
     values.orderNo = `RE${dateStr}${randomDigits}`;
     values.currency = selected;
-values.totalAmount = values.withdrawAmount
+    values.totalAmount = values.withdrawAmount;
+    values.withdrawAdress = address;
+
     dispatch(actions.doCreate(values));
 
-    // Reset form fields after submission
     form.reset(initialValues);
     setSelected("");
+    setAddress("");
   };
 
   const currencyOptions = [
@@ -111,10 +116,9 @@ values.totalAmount = values.withdrawAmount
     { id: "ETH", name: "Ethereum", icon: "fab fa-ethereum", color: "#627EEA" },
     { id: "USDT", name: "Tether", icon: "fas fa-dollar-sign", color: "#26A17B" },
     { id: "SOL", name: "Solana", icon: "fas fa-bolt", color: "#00FFA3" },
-    { id: "XRP", name: "Ripple", icon: "fas fa-exchange-alt", color: "#23292F" }
+    { id: "XRP", name: "Ripple", icon: "fas fa-exchange-alt", color: "#23292F" },
   ];
 
-  // Get selected currency data
   const selectedCurrencyData = useMemo(
     () => currencyOptions.find((currency) => currency.id === selected),
     [selected]
@@ -122,10 +126,8 @@ values.totalAmount = values.withdrawAmount
 
   return (
     <div className="withdrawContainer">
-      {/* Header Section */}
       <SubHeader title="Withdraw Crypto" />
       <div className="container">
-        {/* No Wallet Message or Form */}
         {!hasAnyWallet ? (
           <div className="noWalletSection">
             <div className="noWalletCard">
@@ -155,9 +157,7 @@ values.totalAmount = values.withdrawAmount
             </div>
           </div>
         ) : (
-          /* Form Section */
           <>
-            {/* Currency Selection - Changed to Dropdown */}
             <div className="currencySection">
               <div className="sectionHeading">Select Currency</div>
               <div className="currencyDropdownContainer">
@@ -168,16 +168,8 @@ values.totalAmount = values.withdrawAmount
                 >
                   <option value="">Select a currency</option>
                   {currencyOptions.map((currency) => {
-{}
-console.log('====================================');
-console.log(currentUser.wallet);
-console.log('====================================');
                     const hasWallet =
-                      currentUser.wallet &&
-                      currentUser.wallet[currency.id] &&
-                      currentUser.wallet[currency.id].address;
-                      {currentUser.wallet[currency.id]}
-               
+                      currentUser.wallet?.[currency.id]?.address;
                     return (
                       <option
                         key={currency.id}
@@ -192,9 +184,9 @@ console.log('====================================');
                 {selected && (
                   <div
                     className="currencyDropdownIcon"
-                    style={{ color: selectedCurrencyData.color }}
+                    style={{ color: selectedCurrencyData?.color }}
                   >
-                    <i className={selectedCurrencyData.icon} />
+                    <i className={selectedCurrencyData?.icon} />
                   </div>
                 )}
               </div>
@@ -209,25 +201,24 @@ console.log('====================================');
               <FormProvider {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)}>
                   <div className="formSection">
-                    {/* Withdrawal Address */}
                     <div className="inputField">
                       <label className="inputLabel">Withdrawal Address</label>
                       <div className="inputWrapper">
                         <input
                           type="text"
-                          className="textField "
+                          className="textField"
                           id="withdrawalAddress"
-                          placeholder="Enter wallet address "
-                          value={currentUser.wallet[selected]?.address || ""}
+                          placeholder="Enter wallet address"
+                          value={address}
                           disabled
                         />
                         <div className="networkInfo" id="networkDetails">
-                          Network: {selectedCurrencyData.label} (
+                          Network: {selectedCurrencyData?.name} (
                           {selected.toUpperCase()})
                         </div>
                       </div>
                     </div>
-                    {/* Amount */}
+
                     <div className="inputField">
                       <label className="inputLabel">Withdrawal Amount</label>
                       <div className="inputWrapper">
@@ -245,7 +236,7 @@ console.log('====================================');
                         </div>
                       </div>
                     </div>
-                    {/* Withdrawal Password */}
+
                     <div className="inputField">
                       <label className="inputLabel">Withdrawal Password</label>
                       <div className="inputWrapper">
@@ -257,34 +248,25 @@ console.log('====================================');
                       </div>
                     </div>
 
-                    {/* Fee Information */}
                     <div className="feeContainer">
                       <div className="feeRow">
                         <div className="feeLabel">Minimum withdrawal</div>
-                        <div className="feeValue" id="minWithdrawal">
-                          0.001 {selected.toUpperCase()}
-                        </div>
+                        <div className="feeValue">0.001 {selected}</div>
                       </div>
                       <div className="feeRow">
                         <div className="feeLabel">Network fee</div>
-                        <div className="feeValue" id="networkFee">
-                          0.0005 {selected.toUpperCase()}
-                        </div>
+                        <div className="feeValue">0.0005 {selected}</div>
                       </div>
                       <div className="feeRow">
                         <div className="feeLabel">Service fee</div>
-                        <div className="feeValue" id="serviceFee">
-                          0.0001 {selected.toUpperCase()}
-                        </div>
+                        <div className="feeValue">0.0001 {selected}</div>
                       </div>
                       <div className="feeRow receiveAmount">
                         <div className="feeLabel">You will receive</div>
-                        <div className="feeValue" id="receiveAmount">
-                          0.0000 {selected.toUpperCase()}
-                        </div>
+                        <div className="feeValue">0.0000 {selected}</div>
                       </div>
                     </div>
-                    {/* Security Notice */}
+
                     <div className="securityNotice">
                       <div className="securityHeader">
                         <i className="fas fa-shield-alt securityIcon" />
@@ -298,12 +280,8 @@ console.log('====================================');
                         to incorrect addresses cannot be reversed.
                       </div>
                     </div>
-                    {/* Withdraw Button */}
-                    <button
-                      type="submit"
-                      className="withdrawBtn"
-                      id="withdrawBtn"
-                    >
+
+                    <button type="submit" className="withdrawBtn">
                       Confirm Withdrawal
                     </button>
                   </div>
@@ -313,7 +291,6 @@ console.log('====================================');
           </>
         )}
 
-        {/* Toast Notification */}
         <div className="toastMsg" id="toastNotification">
           Withdrawal address copied!
         </div>
