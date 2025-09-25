@@ -1,10 +1,16 @@
 import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import { io, Socket } from "socket.io-client";
+import notificationListActions from "src/modules/notification/list/notificationListActions";
 
 let socket: Socket | null = null;
 
-export default function useNotifications(userId: string, isAdmin: boolean = false) {
-  const [notifications, setNotifications] = useState<any[]>([]);
+export default function useNotifications(
+  userId: string,
+  isAdmin: boolean = false
+) {
+  const [notifications, setNotifications] = useState(0);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (!userId) return;
@@ -25,8 +31,7 @@ export default function useNotifications(userId: string, isAdmin: boolean = fals
 
     // Listen to new notifications
     socket.on("newNotification", (notif) => {
-      console.log("🔔 New notification:", notif);
-      setNotifications((prev) => [notif, ...prev]);
+      dispatch(notificationListActions.doFetch());
     });
 
     // Cleanup on unmount

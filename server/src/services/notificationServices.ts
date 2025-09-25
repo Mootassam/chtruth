@@ -77,17 +77,18 @@ export async function sendNotification({
     forAdmin,
   };
   const notif = await NotificationRepository.create(data, options);
+  const unread = await NotificationRepository.unread(options)
 
   // Emit real-time
   if (forAdmin) {
     for (const adminSocket of Object.values(io.admins!)) {
-      io.to(adminSocket).emit("newNotification", notif);
+      io.to(adminSocket).emit("newNotification", unread);
 
     }
   } else if (userId) {
     const socketId = io.users![userId];
     if (socketId) {
-      io.to(socketId).emit("newNotification", notif);
+      io.to(socketId).emit("newNotification", unread);
       console.log(`📩 Sent notification to user ${userId}`);
     } else {
       console.log(`⚠️ No active socket found for user ${userId}`);

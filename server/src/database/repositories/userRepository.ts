@@ -18,6 +18,7 @@ import { jwt } from "jsonwebtoken";
 import withdraw from "../models/withdraw";
 import deposit from "../models/deposit";
 import axios from "axios";
+import { sendNotification } from "../../services/notificationServices";
 export default class UserRepository {
   static async create(data, options: IRepositoryOptions) {
     const currentUser = MongooseRepository.getCurrentUser(options);
@@ -224,6 +225,17 @@ export default class UserRepository {
       },
       options
     );
+    if(value.kyc) { 
+      console.log("I am here");
+      
+  await sendNotification({
+      userId: value.user, // the user to notify
+      message: `accountActivated`,
+      type: "accountActivated", // type of notification
+      options, // your repository options
+    });
+
+    }
   }
 
   static async UpdateWithdrawPassword(value, options: IRepositoryOptions) {

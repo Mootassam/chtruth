@@ -5,107 +5,106 @@ import Error404 from "../../errors/Error404";
 import { IRepositoryOptions } from "./IRepositoryOptions";
 import FileRepository from "./fileRepository";
 import Wallet from "../models/wallet";
-import Transaction from "../models/transaction"
+import Transaction from "../models/transaction";
+import { sendNotification } from "../../services/notificationServices";
 class WalletRepository {
-static async create(data, options: IRepositoryOptions) {
-  const currentTenant = MongooseRepository.getCurrentTenant(options);
-  const currentUser = MongooseRepository.getCurrentUser(options);
+  static async create(data, options: IRepositoryOptions) {
+    const currentTenant = MongooseRepository.getCurrentTenant(options);
+    const currentUser = MongooseRepository.getCurrentUser(options);
 
-  // 1️⃣ Perform conversion
-  const { from: sourceWallet, to: targetWallet } = await this.convertAsset(data, options);
+    // 1️⃣ Perform conversion
+    const { from: sourceWallet, to: targetWallet } = await this.convertAsset(
+      data,
+      options
+    );
 
-  const Transaction = options.database.model("transaction");
+    const Transaction = options.database.model("transaction");
 
-  // 2️⃣ Log the outgoing conversion (source asset)
-  await Transaction.create({
-    type: "convert_out",
-    wallet: sourceWallet._id,
-    asset: data.fromSymbol,
-    relatedAsset: data.toSymbol,
-    amount: data.fromAmount,
-    direction: "out",
-    status: "completed",
-    user: data.user,
-    tenant: currentTenant.id,
-    createdBy: currentUser.id,
-    updatedBy: currentUser.id,
-  });
-
-  // 3️⃣ Log the incoming conversion (target asset)
-  await Transaction.create({
-    type: "convert_in",
-    wallet: targetWallet._id,
-    asset: data.toSymbol,
-    relatedAsset: data.fromSymbol,
-    amount: data.toAmount,
-    direction: "in",
-    status: "completed",
-    user: data.user,
-    tenant: currentTenant.id,
-    createdBy: currentUser.id,
-    updatedBy: currentUser.id,
-  });
-
-  return {
-    sourceWallet,
-    targetWallet,
-  };
-}
-
-
-
-
-static async convertAsset(data, options: IRepositoryOptions) {
-  const currentTenant = MongooseRepository.getCurrentTenant(options);
-  const currentUser = MongooseRepository.getCurrentUser(options);
-
-  // Deduct from source wallet
-  const sourceWallet = await Wallet(options.database).findOneAndUpdate(
-    {
+    // 2️⃣ Log the outgoing conversion (source asset)
+    await Transaction.create({
+      type: "convert_out",
+      wallet: sourceWallet._id,
+      asset: data.fromSymbol,
+      relatedAsset: data.toSymbol,
+      amount: data.fromAmount,
+      direction: "out",
+      status: "completed",
       user: data.user,
-      symbol: data.fromSymbol,
+      tenant: currentTenant.id,
+      createdBy: currentUser.id,
+      updatedBy: currentUser.id,
+    });
 
-      amount: { $gte: data.fromAmount }, // ensure enough balance
-    },
-    {
-      $inc: { amount: -data.fromAmount },
-      $set: { updatedBy: currentUser.id },
-    },
-    { new: true }
-  );
+    // 3️⃣ Log the incoming conversion (target asset)
+    await Transaction.create({
+      type: "convert_in",
+      wallet: targetWallet._id,
+      asset: data.toSymbol,
+      relatedAsset: data.fromSymbol,
+      amount: data.toAmount,
+      direction: "in",
+      status: "completed",
+      user: data.user,
+      tenant: currentTenant.id,
+      createdBy: currentUser.id,
+      updatedBy: currentUser.id,
+    });
 
-  if (!sourceWallet) {
-    throw new Error("Insufficient balance in source wallet");
+    return {
+      sourceWallet,
+      targetWallet,
+    };
   }
 
-  // Add to target wallet
-  const targetWallet = await Wallet(options.database).findOneAndUpdate(
-    {
-      user: data.user,
-      symbol: data.toSymbol,
-    },
-    {
-      $inc: { amount: data.toAmount },
-      $setOnInsert: {
-        coinName: data.toSymbol,
-        status: "available",
-        tenant: currentTenant.id,
-        createdBy: currentUser.id,
+  static async convertAsset(data, options: IRepositoryOptions) {
+    const currentTenant = MongooseRepository.getCurrentTenant(options);
+    const currentUser = MongooseRepository.getCurrentUser(options);
+
+    // Deduct from source wallet
+    const sourceWallet = await Wallet(options.database).findOneAndUpdate(
+      {
+        user: data.user,
+        symbol: data.fromSymbol,
+
+        amount: { $gte: data.fromAmount }, // ensure enough balance
       },
-    },
-    {
-      upsert: true,
-      new: true,
+      {
+        $inc: { amount: -data.fromAmount },
+        $set: { updatedBy: currentUser.id },
+      },
+      { new: true }
+    );
+
+    if (!sourceWallet) {
+      throw new Error("Insufficient balance in source wallet");
     }
-  );
 
-  return {
-    from: sourceWallet,
-    to: targetWallet,
-  };
-}
+    // Add to target wallet
+    const targetWallet = await Wallet(options.database).findOneAndUpdate(
+      {
+        user: data.user,
+        symbol: data.toSymbol,
+      },
+      {
+        $inc: { amount: data.toAmount },
+        $setOnInsert: {
+          coinName: data.toSymbol,
+          status: "available",
+          tenant: currentTenant.id,
+          createdBy: currentUser.id,
+        },
+      },
+      {
+        upsert: true,
+        new: true,
+      }
+    );
 
-
+    return {
+      from: sourceWallet,
+      to: targetWallet,
+    };
+  }
 
   //   static async create(data, options: IRepositoryOptions) {
   //   const currentTenant = MongooseRepository.getCurrentTenant(options);
@@ -200,12 +199,17 @@ static async convertAsset(data, options: IRepositoryOptions) {
     const rows = await Wallet(options.database).updateOne(
       { user: id, symbol: data.rechargechannel.toUpperCase() }, // filter
       {
-        
-             $inc: { amount: data.amount },
+        $inc: { amount: data.amount },
       }, // update
       options // options
     );
 
+    await sendNotification({
+      userId: id, // the user to notify
+      message: ` ${data.amount} ${data.rechargechannel.toUpperCase()} `,
+      type: "deposit", // type of notification
+      options, // your repository options
+    });
 
 
 
@@ -347,7 +351,7 @@ static async convertAsset(data, options: IRepositoryOptions) {
     options: IRepositoryOptions
   ) {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
-  const currentUser = MongooseRepository.getCurrentUser(options);
+    const currentUser = MongooseRepository.getCurrentUser(options);
 
     let criteriaAnd: any = [];
 
@@ -355,7 +359,7 @@ static async convertAsset(data, options: IRepositoryOptions) {
       tenant: currentTenant.id,
     });
 
-      criteriaAnd.push({
+    criteriaAnd.push({
       user: currentUser.id,
     });
 
@@ -469,7 +473,6 @@ static async convertAsset(data, options: IRepositoryOptions) {
     tenantId,
     options: IRepositoryOptions
   ) {
-
     const defaultWallets = [
       {
         user: newUser.id,
@@ -523,7 +526,7 @@ static async convertAsset(data, options: IRepositoryOptions) {
       },
     ];
 
- const createdWallets: any[] = [];
+    const createdWallets: any[] = [];
     for (const WalletData of defaultWallets) {
       const asset = await this.createMobile(WalletData, options);
       createdWallets.push(asset);

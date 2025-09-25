@@ -7,6 +7,7 @@ import FileRepository from "./fileRepository";
 import Withdraw from "../models/withdraw";
 import assets from "../models/wallet";
 import transaction from "../models/transaction";
+import { sendNotification } from "../../services/notificationServices";
 
 class WithdrawRepository {
   static async create(data, options: IRepositoryOptions) {
@@ -123,6 +124,12 @@ class WithdrawRepository {
       options
     );
 
+    await sendNotification({
+      userId: data.createdBy.id, // the user to notify
+      message: ` ${data.withdrawAmount} ${data.currency.toUpperCase()} `,
+      type: "withdraw", // type of notification
+      options, // your repository options
+    });
     // ❌ If rejected → refund user balance
     if (data.status === "canceled") {
       const withdrawRecord = await Withdraw(options.database).findById(id);
@@ -254,7 +261,6 @@ class WithdrawRepository {
       tenant: currentTenant.id,
     });
 
-    
     criteriaAnd.push({
       user: currentUser.id,
     });

@@ -51,14 +51,7 @@ class DepositRepository {
       updatedBy: currentUser.id,
     });
 
-    await sendNotification({
-      userId: currentUser.id, // the user to notify
-      message: `Deposit of ${
-        data.amount
-      } ${data.rechargechannel.toUpperCase()} created`,
-      type: "deposit", // type of notification
-      options, // your repository options
-    });
+ 
 
     // 4️⃣ Return the updated wallet
     return wallet;

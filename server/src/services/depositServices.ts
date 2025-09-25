@@ -38,7 +38,7 @@ export default class DepositServicess {
     }
   }
 
-  async update(id, data, io) {
+  async update(id, data, io?) {
     const session = await MongooseRepository.createSession(
       this.options.database
     );
@@ -71,7 +71,6 @@ export default class DepositServicess {
     );
 
     try {
-
       const record = await DepositRepository.updateStatus(id, data, io, {
         ...this.options,
         session,

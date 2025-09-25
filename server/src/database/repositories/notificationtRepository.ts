@@ -29,7 +29,7 @@ class NotificationRepository {
     );
 
     // 4️⃣ Return the updated wallet
-    return wallet;
+    return record;
   }
 
   static async update(id, io, options: IRepositoryOptions) {
@@ -117,6 +117,18 @@ class NotificationRepository {
       Notification(options.database).countDocuments({
         ...filter,
         tenant: currentTenant.id,
+      }),
+      options
+    );
+  }
+
+  static async unread(options: IRepositoryOptions) {
+    const currentTenant = MongooseRepository.getCurrentTenant(options);
+
+    return MongooseRepository.wrapWithSessionIfExists(
+      Notification(options.database).countDocuments({
+        tenant: currentTenant.id,
+        status: "unread",
       }),
       options
     );
