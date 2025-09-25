@@ -29,18 +29,26 @@ function Invitation() {
   }, [dispatch, currentUser?.refcode]);
 
   // Copy referral code to clipboard
-  const copyReferralCode = () => {
-    if (currentUser?.refcode) {
-      navigator.clipboard.writeText(currentUser.refcode)
-        .then(() => {
-          setCopySuccess(true);
-          setTimeout(() => setCopySuccess(false), 2000);
-        })
-        .catch(err => {
-          console.error('Failed to copy: ', err);
-        });
-    }
-  };
+const copyReferralCode = () => {
+  const code = currentUser?.refcode;
+  if (!code) return;
+
+  if (navigator.clipboard && window.isSecureContext) {
+    // Modern API
+    navigator.clipboard.writeText(code)
+      .then(() => {
+        setCopySuccess(true);
+        setTimeout(() => setCopySuccess(false), 2000);
+      })
+      .catch(err => {
+        console.error("Clipboard copy failed: ", err);
+        fallbackCopyText(code);
+      });
+  } else {
+    // Fallback for Safari / HTTP
+    fallbackCopyText(code);
+  }
+};
 
   // Share functionality
   const shareReferral = (platform) => {
@@ -117,213 +125,7 @@ function Invitation() {
 
   return (
     <div className="container">
-      <style>{`
-        /* Modal Styles */
-        .modal-overlay {
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background-color: rgba(0, 0, 0, 0.8);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          z-index: 1000;
-          padding: 20px;
-          opacity: 0;
-          visibility: hidden;
-          transition: all 0.3s ease;
-        }
-
-        .modal-overlay.active {
-          opacity: 1;
-          visibility: visible;
-        }
-
-        .modal-content {
-          background: linear-gradient(145deg, #1A1A1A, #2A2A2A);
-          border-radius: 16px;
-          padding: 0;
-          width: 100%;
-          max-width: 400px;
-          max-height: 90vh;
-          overflow: hidden;
-          transform: translateY(50px);
-          transition: transform 0.3s ease;
-          border: 1px solid #2A2A2A;
-          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-        }
-
-        .modal-overlay.active .modal-content {
-          transform: translateY(0);
-        }
-
-        .modal-header {
-          padding: 20px 25px;
-          border-bottom: 1px solid #3A3A3A;
-          background: linear-gradient(145deg, #2A2A2A, #1A1A1A);
-          position: relative;
-        }
-
-        .modal-header::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 4px;
-          background: linear-gradient(90deg, #F3BA2F, #ffd700);
-        }
-
-        .modal-title {
-          font-size: 20px;
-          font-weight: bold;
-          color: #F3BA2F;
-          margin: 0;
-        }
-
-        .modal-close-btn {
-          position: absolute;
-          top: 20px;
-          right: 25px;
-          background: none;
-          border: none;
-          color: #AAAAAA;
-          font-size: 24px;
-          cursor: pointer;
-          transition: color 0.2s;
-          width: 30px;
-          height: 30px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          border-radius: 50%;
-        }
-
-        .modal-close-btn:hover {
-          color: #F3BA2F;
-          background-color: rgba(243, 186, 47, 0.1);
-        }
-
-        .modal-body {
-          padding: 0;
-          max-height: 60vh;
-          overflow-y: auto;
-        }
-
-        .members-list {
-          list-style: none;
-          padding: 0;
-          margin: 0;
-        }
-
-        .member-item {
-          padding: 15px 25px;
-          border-bottom: 1px solid #3A3A3A;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          transition: background-color 0.2s;
-        }
-
-        .member-item:hover {
-          background-color: rgba(255, 255, 255, 0.05);
-        }
-
-        .member-item:last-child {
-          border-bottom: none;
-        }
-
-        .member-info {
-          flex: 1;
-        }
-
-        .member-email {
-          color: #FFFFFF;
-          font-weight: 500;
-          margin-bottom: 5px;
-          font-size: 14px;
-        }
-
-        .member-date {
-          color: #AAAAAA;
-          font-size: 12px;
-        }
-
-        .member-status {
-          padding: 4px 12px;
-          border-radius: 20px;
-          font-size: 11px;
-          font-weight: bold;
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
-        }
-
-        .status-approved {
-          background: linear-gradient(90deg, #00C076, #00ff95);
-          color: #000000;
-        }
-
-        .status-pending {
-          background: linear-gradient(90deg, #F3BA2F, #ffd700);
-          color: #000000;
-        }
-
-        .empty-state {
-          padding: 40px 25px;
-          text-align: center;
-          color: #AAAAAA;
-        }
-
-        .empty-state i {
-          font-size: 48px;
-          margin-bottom: 15px;
-          color: #3A3A3A;
-        }
-
-        .empty-state p {
-          margin: 0;
-          font-size: 14px;
-        }
-
-        /* Scrollbar Styling */
-        .modal-body::-webkit-scrollbar {
-          width: 6px;
-        }
-
-        .modal-body::-webkit-scrollbar-track {
-          background: #1A1A1A;
-        }
-
-        .modal-body::-webkit-scrollbar-thumb {
-          background: #F3BA2F;
-          border-radius: 3px;
-        }
-
-        .modal-body::-webkit-scrollbar-thumb:hover {
-          background: #ffd700;
-        }
-
-        @media (max-width: 480px) {
-          .modal-content {
-            margin: 10px;
-            max-height: 85vh;
-          }
-          
-          .modal-header {
-            padding: 15px 20px;
-          }
-          
-          .modal-title {
-            font-size: 18px;
-          }
-          
-          .member-item {
-            padding: 12px 20px;
-          }
-        }
-      `}</style>
+  
 
       {/* Header Section */}
       <SubHeader title="Invite Friends" />
@@ -627,6 +429,213 @@ function Invitation() {
           </div>
         </div>
       </div>
+          <style>{`
+        /* Modal Styles */
+        .modal-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background-color: rgba(0, 0, 0, 0.8);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 1000;
+          padding: 20px;
+          opacity: 0;
+          visibility: hidden;
+          transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active {
+          opacity: 1;
+          visibility: visible;
+        }
+
+        .modal-content {
+          background: linear-gradient(145deg, #1A1A1A, #2A2A2A);
+          border-radius: 16px;
+          padding: 0;
+          width: 100%;
+          max-width: 400px;
+          max-height: 90vh;
+          overflow: hidden;
+          transform: translateY(50px);
+          transition: transform 0.3s ease;
+          border: 1px solid #2A2A2A;
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-overlay.active .modal-content {
+          transform: translateY(0);
+        }
+
+        .modal-header {
+          padding: 20px 25px;
+          border-bottom: 1px solid #3A3A3A;
+          background: linear-gradient(145deg, #2A2A2A, #1A1A1A);
+          position: relative;
+        }
+
+        .modal-header::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 4px;
+          background: linear-gradient(90deg, #F3BA2F, #ffd700);
+        }
+
+        .modal-title {
+          font-size: 20px;
+          font-weight: bold;
+          color: #F3BA2F;
+          margin: 0;
+        }
+
+        .modal-close-btn {
+          position: absolute;
+          top: 20px;
+          right: 25px;
+          background: none;
+          border: none;
+          color: #AAAAAA;
+          font-size: 24px;
+          cursor: pointer;
+          transition: color 0.2s;
+          width: 30px;
+          height: 30px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 50%;
+        }
+
+        .modal-close-btn:hover {
+          color: #F3BA2F;
+          background-color: rgba(243, 186, 47, 0.1);
+        }
+
+        .modal-body {
+          padding: 0;
+          max-height: 60vh;
+          overflow-y: auto;
+        }
+
+        .members-list {
+          list-style: none;
+          padding: 0;
+          margin: 0;
+        }
+
+        .member-item {
+          padding: 15px 25px;
+          border-bottom: 1px solid #3A3A3A;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          transition: background-color 0.2s;
+        }
+
+        .member-item:hover {
+          background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .member-item:last-child {
+          border-bottom: none;
+        }
+
+        .member-info {
+          flex: 1;
+        }
+
+        .member-email {
+          color: #FFFFFF;
+          font-weight: 500;
+          margin-bottom: 5px;
+          font-size: 14px;
+        }
+
+        .member-date {
+          color: #AAAAAA;
+          font-size: 12px;
+        }
+
+        .member-status {
+          padding: 4px 12px;
+          border-radius: 20px;
+          font-size: 11px;
+          font-weight: bold;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+
+        .status-approved {
+          background: linear-gradient(90deg, #00C076, #00ff95);
+          color: #000000;
+        }
+
+        .status-pending {
+          background: linear-gradient(90deg, #F3BA2F, #ffd700);
+          color: #000000;
+        }
+
+        .empty-state {
+          padding: 40px 25px;
+          text-align: center;
+          color: #AAAAAA;
+        }
+
+        .empty-state i {
+          font-size: 48px;
+          margin-bottom: 15px;
+          color: #3A3A3A;
+        }
+
+        .empty-state p {
+          margin: 0;
+          font-size: 14px;
+        }
+
+        /* Scrollbar Styling */
+        .modal-body::-webkit-scrollbar {
+          width: 6px;
+        }
+
+        .modal-body::-webkit-scrollbar-track {
+          background: #1A1A1A;
+        }
+
+        .modal-body::-webkit-scrollbar-thumb {
+          background: #F3BA2F;
+          border-radius: 3px;
+        }
+
+        .modal-body::-webkit-scrollbar-thumb:hover {
+          background: #ffd700;
+        }
+
+        @media (max-width: 480px) {
+          .modal-content {
+            margin: 10px;
+            max-height: 85vh;
+          }
+          
+          .modal-header {
+            padding: 15px 20px;
+          }
+          
+          .modal-title {
+            font-size: 18px;
+          }
+          
+          .member-item {
+            padding: 12px 20px;
+          }
+        }
+      `}</style>
     </div>
   );
 }

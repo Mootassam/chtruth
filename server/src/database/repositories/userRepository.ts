@@ -160,6 +160,49 @@ export default class UserRepository {
     };
   }
 
+
+
+   static async StatsWithdraw(options: IRepositoryOptions) {
+    // Pairs we want to track
+    const symbols = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "XRPUSDT"];
+
+    // Fetch all prices from Binance
+    const prices: Record<string, number> = {};
+    for (const symbol of symbols) {
+      const res = await axios.get(
+        `https://api.binance.com/api/v3/ticker/price?symbol=${symbol}`
+      );
+      prices[symbol.replace("USDT", "").toLowerCase()] = parseFloat(res.data.price);
+    }
+
+    // USDT always equals 1
+    prices["usdt"] = 1;
+
+    // Fetch successful withdrawals
+    const withdrawals = await withdraw(options.database).find({ status: "success" });
+
+    let totalInUSDT = 0;
+
+    for (const w of withdrawals) {
+      // normalize: "usd" → "usdt"
+      const channelRaw = w.currency?.toLowerCase();
+
+      const channel = channelRaw === "usd" ? "usdt" : channelRaw;
+
+      const amount = parseFloat(w.withdrawAmount);
+
+      if (!amount || !channel || !prices[channel]) continue;
+
+      // Convert withdrawal to USDT
+      totalInUSDT += amount * prices[channel];
+    }
+
+    return {
+      totalWithdrawUSDT: totalInUSDT,
+      totalCount: withdrawals.length,
+    };
+  }
+
   static async UpdateKyc(value, options: IRepositoryOptions) {
     await User(options.database).updateOne(
       { _id: value.user },

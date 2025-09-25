@@ -33,10 +33,14 @@ const userListActions = {
   DESTROY_SUCCESS: `${prefix}_DESTROY_SUCCESS`,
   DESTROY_ERROR: `${prefix}_DESTROY_ERROR`,
 
-
   DCOUNT_STARTED: `${prefix}_DCOUNT_STARTED`,
   DCOUNT_SUCCESS: `${prefix}_DCOUNT_SUCCESS`,
   DCOUNT_ERROR: `${prefix}_DCOUNT_ERROR`,
+
+  WCOUNT_STARTED: `${prefix}_WCOUNT_STARTED`,
+  WCOUNT_SUCCESS: `${prefix}_WCOUNT_SUCCESS`,
+  WCOUNT_ERROR: `${prefix}_WCOUNT_ERROR`,
+
   doClearAllSelected() {
     return {
       type: userListActions.CLEAR_ALL_SELECTED,
@@ -188,7 +192,6 @@ const userListActions = {
   },
 
   depositCount: () => async (dispatch, getState) => {
-
     try {
       dispatch({
         type: userListActions.DCOUNT_STARTED,
@@ -198,7 +201,7 @@ const userListActions = {
 
       dispatch({
         type: userListActions.DCOUNT_SUCCESS,
-        payload : response
+        payload: response,
       });
     } catch (error) {
       Errors.handle(error);
@@ -208,6 +211,29 @@ const userListActions = {
       });
     }
   },
+
+
+    withdrawCount: () => async (dispatch, getState) => {
+    try {
+      dispatch({
+        type: userListActions.WCOUNT_STARTED,
+      });
+
+      const response = await UserService.statisWithdraw();
+
+      dispatch({
+        type: userListActions.WCOUNT_SUCCESS,
+        payload: response,
+      });
+    } catch (error) {
+      Errors.handle(error);
+
+      dispatch({
+        type: userListActions.WCOUNT_ERROR,
+      });
+    }
+  },
+
 
   doDestroyAllSelected:
     () => async (dispatch, getState) => {

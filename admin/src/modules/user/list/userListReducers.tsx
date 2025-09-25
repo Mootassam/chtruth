@@ -7,6 +7,7 @@ const initialData = {
   count: 0,
   loading: false,
   totaldepoist: 0,
+  totalwithdraw: 0,
   filter: {},
   rawFilter: {},
   pagination: {
@@ -152,6 +153,31 @@ export default (state = initialData, { type, payload }) => {
   }
 
   if (type === actions.DCOUNT_ERROR) {
+    return {
+      ...state,
+      countLoading: false,
+    };
+  }
+
+
+
+  
+  if (type === actions.WCOUNT_STARTED) {
+    return {
+      ...state,
+      countLoading: true,
+    };
+  }
+
+  if (type === actions.WCOUNT_SUCCESS) {
+    return {
+      ...state,
+      totalwithdraw: payload,
+      countLoading: false,
+    };
+  }
+
+  if (type === actions.WCOUNT_ERROR) {
     return {
       ...state,
       countLoading: false,

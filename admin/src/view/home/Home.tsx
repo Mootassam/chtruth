@@ -7,9 +7,13 @@ function Home() {
   const totalDeposit = useSelector(
     userListSelectors.selectcountDeposit,
   );
+  const totalWithdraw = useSelector(
+    userListSelectors.selectcountWithdraw,
+  );
 
   useEffect(() => {
     dispatch(userListActions.depositCount());
+     dispatch(userListActions.withdrawCount());
     return () => {};
   }, []);
   return (
@@ -55,7 +59,7 @@ function Home() {
             <span className="stat-title">
               Total Withdrawals:
             </span>
-            <span className="stat-value">58,413,521</span>
+            <span className="stat-value">{totalWithdraw} USDT</span>
           </div>
         </div>
       </div>
