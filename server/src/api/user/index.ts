@@ -34,6 +34,7 @@ export default (app) => {
   app.get(`/tenant/:tenantId/totalUser`, require("./totalUser").default);
 
 
+
   
   app.get(
     `/tenant/:tenantId/statisWithdraw`,

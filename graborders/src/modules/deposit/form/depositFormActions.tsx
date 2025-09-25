@@ -1,9 +1,9 @@
-
 import vipService from 'src/modules/deposit/depositService';
 import Errors from 'src/modules/shared/error/errors';
 import Message from 'src/view/shared/message';
 import { getHistory } from 'src/modules/store';
 import { i18n } from '../../../i18n';
+
 
 const prefix = 'COUPONS_FORM';
 
@@ -65,6 +65,7 @@ const vipFormActions = {
         i18n('entities.deposit.create.success'),
       );
 
+  
       getHistory().push('/deposit');
     } catch (error) {
       Errors.handle(error);

@@ -11,16 +11,20 @@ import authSocial from "./auth/authSocial";
 import setupSwaggerUI from "./apiDocumentation";
 import { Server as SocketIOServer } from "socket.io";
 import { createServer } from "http";
+import { setSocketIO } from "../services/notificationServices";
 
 const app = express();
 const server = createServer(app);
 const io = new SocketIOServer(server, {
   cors: {
-    origin:
-      process.env.NODE_ENV === "production" ? ["https://yourdomain.com"] : "*",
+    origin: "*",
     methods: ["GET", "POST"],
   },
+  transports: ["websocket", "polling"],
 });
+
+setSocketIO(io);
+
 // Enables CORS
 app.use(cors({ origin: true }));
 
@@ -102,4 +106,4 @@ routes.param("tenantId", tenantMiddleware);
 // Add the routes to the /api endpoint
 app.use("/api", routes);
 
-export default app;
+export default server;

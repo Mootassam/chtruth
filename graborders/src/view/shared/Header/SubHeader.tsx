@@ -1,7 +1,13 @@
+import { useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { Link } from "react-router-dom";
+import authSelectors from "src/modules/auth/authSelectors";
+import useNotifications from "../notifications/useNotifications";
 function SubHeader(props) {
   const history = useHistory();
+  const currentUser = useSelector(authSelectors.selectCurrentUser);
+
+  const { notifications } = useNotifications(currentUser.id);
 
   const goBack = () => {
     history.goBack(); // This will take you back to the previous page

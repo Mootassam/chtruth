@@ -9,13 +9,14 @@ import assets from "../models/wallet";
 import transaction from "../models/transaction";
 import wallet from "../models/wallet";
 import { sendNotification } from "../../services/notificationServices";
+import notification from "../models/notification";
 
-class DepositRepository {
+class NotificationRepository {
   static async create(data, options: IRepositoryOptions) {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
     const currentUser = MongooseRepository.getCurrentUser(options);
 
-    const [record] = await Deposit(options.database).create(
+    const [record] = await notification(options.database).create(
       [
         {
           ...data,
@@ -27,38 +28,6 @@ class DepositRepository {
       options
     );
 
-    const WalletModel = assets(options.database);
-    const TransactionModel = options.database.model("transaction");
-
-    // 1️⃣ Fetch the user's wallet for the given asset
-    let wallet = await WalletModel.findOne({
-      user: currentUser.id,
-      symbol: data.rechargechannel.toUpperCase(),
-    });
-
-    // 3️⃣ Create a transaction log
-    await TransactionModel.create({
-      type: "deposit",
-      wallet: wallet.id,
-      asset: wallet.symbol,
-      amount: data.amount,
-      referenceId: record.id,
-      direction: "in",
-      status: "pending", // deposit is pending
-      user: currentUser.id,
-      tenant: currentTenant.id,
-      createdBy: currentUser.id,
-      updatedBy: currentUser.id,
-    });
-
-    await sendNotification({
-      userId: currentUser.id, // the user to notify
-      message: `Deposit of ${
-        data.amount
-      } ${data.rechargechannel.toUpperCase()} created`,
-      type: "deposit", // type of notification
-      options, // your repository options
-    });
 
     // 4️⃣ Return the updated wallet
     return wallet;
@@ -292,4 +261,4 @@ class DepositRepository {
   }
 }
 
-export default DepositRepository;
+export default NotificationRepository;
