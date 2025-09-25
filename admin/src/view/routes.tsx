@@ -16,7 +16,13 @@ const privateRoutes = [
     permissionRequired: permissions.userRead,
     exact: true,
   },
-  
+  {
+    path: '/password-reset/:id',
+    loader: () => import('src/view/auth/PasswordReset'),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+
   {
     path: '/profile',
     loader: () => import('src/view/auth/ProfileFormPage'),
@@ -131,12 +137,13 @@ const privateRoutes = [
     exact: true,
   },
 
-
-   // product routes
+  // product routes
   {
     path: '/transaction',
     loader: () =>
-      import('src/view/transaction/list/TransactionListPage'),
+      import(
+        'src/view/transaction/list/TransactionListPage'
+      ),
     permissionRequired: permissions.categoryRead,
     exact: true,
   },
@@ -144,7 +151,9 @@ const privateRoutes = [
   {
     path: '/transaction/new',
     loader: () =>
-      import('src/view/transaction/form/TransactionFormPage'),
+      import(
+        'src/view/transaction/form/TransactionFormPage'
+      ),
     permissionRequired: permissions.categoryRead,
     exact: true,
   },
@@ -160,18 +169,21 @@ const privateRoutes = [
   {
     path: '/transaction/:id/edit',
     loader: () =>
-      import('src/view/transaction/form/TransactionFormPage'),
+      import(
+        'src/view/transaction/form/TransactionFormPage'
+      ),
     permissionRequired: permissions.categoryRead,
     exact: true,
   },
   {
     path: '/transaction/:id',
     loader: () =>
-      import('src/view/transaction/view/TransactionViewPage'),
+      import(
+        'src/view/transaction/view/TransactionViewPage'
+      ),
     permissionRequired: permissions.categoryRead,
     exact: true,
   },
-
 
   // record routes
   {
@@ -370,8 +382,6 @@ const privateRoutes = [
     exact: true,
   },
 
-
-
   // Withdraw routes
 
   {
@@ -412,8 +422,6 @@ const privateRoutes = [
     permissionRequired: permissions.categoryRead,
     exact: true,
   },
-
-
 
   // Assets routes
 
@@ -456,52 +464,41 @@ const privateRoutes = [
     exact: true,
   },
 
-
   // spot routes
 
   {
     path: '/spot',
-    loader: () =>
-      import('src/view/spot/list/SpotListPage'),
+    loader: () => import('src/view/spot/list/SpotListPage'),
     permissionRequired: permissions.categoryRead,
     exact: true,
   },
 
   {
     path: '/spot/new',
-    loader: () =>
-      import('src/view/spot/form/SpotFormPage'),
+    loader: () => import('src/view/spot/form/SpotFormPage'),
     permissionRequired: permissions.categoryRead,
     exact: true,
   },
   {
     path: '/spot/importer',
     loader: () =>
-      import(
-        'src/view/spot/importer/SpotImporterPage'
-      ),
+      import('src/view/spot/importer/SpotImporterPage'),
     permissionRequired: permissions.categoryRead,
     exact: true,
   },
   {
     path: '/spot/:id/edit',
-    loader: () =>
-      import('src/view/spot/form/SpotFormPage'),
+    loader: () => import('src/view/spot/form/SpotFormPage'),
     permissionRequired: permissions.categoryRead,
     exact: true,
   },
   {
     path: '/spot/:id',
-    loader: () =>
-      import('src/view/spot/view/SpotViewPage'),
+    loader: () => import('src/view/spot/view/SpotViewPage'),
     permissionRequired: permissions.categoryRead,
     exact: true,
   },
 
-
-
-
-  
   // Message routes
 
   {
@@ -536,14 +533,13 @@ const privateRoutes = [
     exact: true,
   },
   {
-
     path: '/message/:id',
     loader: () =>
       import('src/view/message/view/MessageViewPage'),
     permissionRequired: permissions.categoryRead,
     exact: true,
   },
-  
+
   // Futures routes
 
   {
@@ -578,14 +574,12 @@ const privateRoutes = [
     exact: true,
   },
   {
-
     path: '/futures/:id',
     loader: () =>
       import('src/view/futures/view/FuturesViewPage'),
     permissionRequired: permissions.categoryRead,
     exact: true,
   },
-
 
   // Stacking routes
 
@@ -629,15 +623,14 @@ const privateRoutes = [
   //   exact: true,
   // },
 
-
-
-  
   // Stacking routes
 
   {
     path: '/stackingPlan',
     loader: () =>
-      import('src/view/stackingPlan/list/StackingPlanListPage'),
+      import(
+        'src/view/stackingPlan/list/StackingPlanListPage'
+      ),
     permissionRequired: permissions.categoryRead,
     exact: true,
   },
@@ -645,7 +638,9 @@ const privateRoutes = [
   {
     path: '/stackingPlan/new',
     loader: () =>
-      import('src/view/stackingPlan/form/StackingPlanFormPage'),
+      import(
+        'src/view/stackingPlan/form/StackingPlanFormPage'
+      ),
     permissionRequired: permissions.categoryRead,
     exact: true,
   },
@@ -661,15 +656,18 @@ const privateRoutes = [
   {
     path: '/stackingPlan/:id/edit',
     loader: () =>
-      import('src/view/stackingPlan/form/StackingPlanFormPage'),
+      import(
+        'src/view/stackingPlan/form/StackingPlanFormPage'
+      ),
     permissionRequired: permissions.categoryRead,
     exact: true,
   },
   {
-
     path: '/stackingPlan/:id',
     loader: () =>
-      import('src/view/stackingPlan/view/stackingPlanViewPage'),
+      import(
+        'src/view/stackingPlan/view/stackingPlanViewPage'
+      ),
     permissionRequired: permissions.categoryRead,
     exact: true,
   },

@@ -12,7 +12,21 @@ export default class AuthService {
         tenantId: tenantSubdomain.isSubdomain
           ? AuthCurrentTenant.get()
           : undefined,
-      }
+      },
+    );
+
+    return response.data;
+  }
+
+  static async resetPasswprd(userId, newPassword) {
+    const body = {
+      userId,
+      newPassword,
+    };
+
+    const response = await authAxios.put(
+      '/auth/password-reset',
+      body,
     );
 
     return response.data;
@@ -72,7 +86,7 @@ export default class AuthService {
   static async fetchMe() {
     const response = await authAxios.get('/auth/me');
     return response.data;
-  }  
+  }
 
   static signout() {
     AuthToken.set(null, true);

@@ -378,6 +378,20 @@ class AuthService {
     }
   }
 
+  static async resetPassword(userId, newPassword, options) {
+    const newHashedPassword = await bcrypt.hash(
+      newPassword,
+      BCRYPT_SALT_ROUNDS
+    );
+
+    return UserRepository.updatePassword(
+      userId,
+      newHashedPassword,
+      true,
+      options
+    );
+  }
+
   static async findByEmail(email, options: any = {}) {
     email = email.toLowerCase();
     return UserRepository.findByEmail(email, options);

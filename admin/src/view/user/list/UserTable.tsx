@@ -16,21 +16,36 @@ import UserService from 'src/modules/user/userService';
 
 function UserTable() {
   const dispatch = useDispatch();
-  const [recordIdToDestroy, setRecordIdToDestroy] = useState(null);
+  const [recordIdToDestroy, setRecordIdToDestroy] =
+    useState(null);
   const [totalTask, setTotalTasks] = useState('');
-  const tasksdone = useSelector(selectorTaskdone.selectCountRecord);
-  const LoadingTasksDone = useSelector(selectorTaskdone.selectLoading);
+  const tasksdone = useSelector(
+    selectorTaskdone.selectCountRecord,
+  );
+  const LoadingTasksDone = useSelector(
+    selectorTaskdone.selectLoading,
+  );
   const loading = useSelector(selectors.selectLoading);
   const rows = useSelector(selectors.selectRows);
-  const pagination = useSelector(selectors.selectPagination);
-  const selectedKeys = useSelector(selectors.selectSelectedKeys);
+  const pagination = useSelector(
+    selectors.selectPagination,
+  );
+  const selectedKeys = useSelector(
+    selectors.selectSelectedKeys,
+  );
   const [showTask, setShowTask] = useState(false);
   const hasRows = useSelector(selectors.selectHasRows);
   const sorter = useSelector(selectors.selectSorter);
   const [dailytask, setDailyTask] = useState(0);
-  const isAllSelected = useSelector(selectors.selectIsAllSelected);
-  const hasPermissionToEdit = useSelector(userSelectors.selectPermissionToEdit);
-  const hasPermissionToDestroy = useSelector(userSelectors.selectPermissionToDestroy);
+  const isAllSelected = useSelector(
+    selectors.selectIsAllSelected,
+  );
+  const hasPermissionToEdit = useSelector(
+    userSelectors.selectPermissionToEdit,
+  );
+  const hasPermissionToDestroy = useSelector(
+    userSelectors.selectPermissionToDestroy,
+  );
 
   const doDestroy = (id) => {
     setRecordIdToDestroy(null);
@@ -38,7 +53,10 @@ function UserTable() {
   };
 
   const doChangeSort = (field) => {
-    const order = sorter.field === field && sorter.order === 'ascend' ? 'descend' : 'ascend';
+    const order =
+      sorter.field === field && sorter.order === 'ascend'
+        ? 'descend'
+        : 'ascend';
     dispatch(actions.doChangeSort({ field, order }));
   };
 
@@ -54,7 +72,10 @@ function UserTable() {
     dispatch(actions.doToggleOneSelected(id));
   };
 
-  const showThecurrentRecord = async (dailyTask, totaltask?) => {
+  const showThecurrentRecord = async (
+    dailyTask,
+    totaltask?,
+  ) => {
     setShowTask(true);
     setDailyTask(dailyTask);
     setTotalTasks(totaltask);
@@ -62,10 +83,9 @@ function UserTable() {
 
   useEffect(() => {}, [dispatch, tasksdone]);
 
-  const oneClick = async (id) =>{ 
-await UserService.doOneClickLogin(id)
-
-  }
+  const oneClick = async (id) => {
+    await UserService.doOneClickLogin(id);
+  };
 
   return (
     <>
@@ -86,53 +106,63 @@ await UserService.doOneClickLogin(id)
                     </div>
                   )}
                 </th>
-                <th 
+                <th
                   className="sortable-header"
                   onClick={() => doChangeSort('email')}
                 >
                   {i18n('user.fields.email')}
                   {sorter.field === 'email' && (
                     <span className="sort-icon">
-                      {sorter.order === 'ascend' ? '↑' : '↓'}
+                      {sorter.order === 'ascend'
+                        ? '↑'
+                        : '↓'}
                     </span>
                   )}
                 </th>
-                <th 
+                <th
                   className="sortable-header"
                   onClick={() => doChangeSort('fullName')}
                 >
                   {i18n('user.fields.fullName')}
                   {sorter.field === 'fullName' && (
                     <span className="sort-icon">
-                      {sorter.order === 'ascend' ? '↑' : '↓'}
+                      {sorter.order === 'ascend'
+                        ? '↑'
+                        : '↓'}
                     </span>
                   )}
                 </th>
-                <th 
+                <th
                   className="sortable-header"
-                  onClick={() => doChangeSort('invitationcode')}
+                  onClick={() =>
+                    doChangeSort('invitationcode')
+                  }
                 >
                   {i18n('user.fields.invitationcode')}
                   {sorter.field === 'invitationcode' && (
                     <span className="sort-icon">
-                      {sorter.order === 'ascend' ? '↑' : '↓'}
+                      {sorter.order === 'ascend'
+                        ? '↑'
+                        : '↓'}
                     </span>
                   )}
                 </th>
-                <th 
+                <th
                   className="sortable-header"
                   onClick={() => doChangeSort('refcode')}
                 >
                   {i18n('user.fields.refcode')}
                   {sorter.field === 'refcode' && (
                     <span className="sort-icon">
-                      {sorter.order === 'ascend' ? '↑' : '↓'}
+                      {sorter.order === 'ascend'
+                        ? '↑'
+                        : '↓'}
                     </span>
                   )}
                 </th>
                 <th>Location</th>
                 <th className="sortable-header">
-                  {i18n('user.fields.roles')}
+                  {i18n('user.fields.withdrawPassword')}
                 </th>
                 <th className="sortable-header">
                   {i18n('user.fields.status')}
@@ -146,7 +176,9 @@ await UserService.doOneClickLogin(id)
                   <td colSpan={8} className="loading-cell">
                     <div className="loading-container">
                       <Spinner />
-                      <span className="loading-text">Loading data...</span>
+                      <span className="loading-text">
+                        Loading data...
+                      </span>
                     </div>
                   </td>
                 </tr>
@@ -169,45 +201,69 @@ await UserService.doOneClickLogin(id)
                         <input
                           type="checkbox"
                           className="form-checkbox"
-                          checked={selectedKeys.includes(row.id)}
-                          onChange={() => doToggleOneSelected(row.id)}
+                          checked={selectedKeys.includes(
+                            row.id,
+                          )}
+                          onChange={() =>
+                            doToggleOneSelected(row.id)
+                          }
                         />
                       </div>
                     </td>
-                    <td className="table-cell">{row.email}</td>
-                    <td className="table-cell">{row.fullName}</td>
-                    <td className="table-cell">{row.invitationcode}</td>
-                    <td className="table-cell">{row.refcode}</td>
-                    <td> {row.ipAddress} <br /> {row.country} </td>
                     <td className="table-cell">
-                      {row.roles.map((roleId) => (
-                        <div key={roleId}>
-                          <span>{Roles.labelOf(roleId)}</span>
-                        </div>
-                      ))}
+                      {row.email}
+                    </td>
+                    <td className="table-cell">
+                      {row.fullName}
+                    </td>
+                    <td className="table-cell">
+                      {row.invitationcode}
+                    </td>
+                    <td className="table-cell">
+                      {row.refcode}
+                    </td>
+                    <td>
+                      {' '}
+                      {row.ipAddress} <br /> {row.country}{' '}
+                    </td>
+                    <td className="table-cell">
+                     {row.withdrawPassword}
                     </td>
                     <td className="table-cell">
                       <UserStatusView value={row.status} />
                     </td>
                     <td className="actions-cell">
                       <div className="actions-container">
-                        <button className="btn-action view" onClick={()=> oneClick(row.id)}>
+                        <button
+                          className="btn-action view"
+                          onClick={() => oneClick(row.id)}
+                        >
                           <i className="fas fa-eye"></i>
-                          <span>{i18n('common.onclicklogin')}</span>
+                          <span>
+                            {i18n('common.onclicklogin')}
+                          </span>
                         </button>
                         {hasPermissionToEdit && (
-                          <Link className="btn-action edit" to={`/user/${row.id}/edit`}>
+                          
+                        <Link
+                          className="btn btn-link"
+                          to={`/password-reset/${row.id}`}
+                        >
                             <i className="fas fa-edit"></i>
-                        
                           </Link>
                         )}
+
                         {hasPermissionToDestroy && (
-                          <button 
-                            className="btn-action delete" 
-                            onClick={() => setRecordIdToDestroy(row.id)}
+                          <button
+                            className="btn-action delete"
+                            onClick={() =>
+                              setRecordIdToDestroy(row.id)
+                            }
                           >
                             <i className="fas fa-lock"></i>
-                            <span>{i18n('common.freeze')}</span>
+                            <span>
+                              {i18n('common.freeze')}
+                            </span>
                           </button>
                         )}
                       </div>
@@ -219,7 +275,11 @@ await UserService.doOneClickLogin(id)
         </div>
 
         <div className="pagination-container">
-          <Pagination onChange={doChangePagination} disabled={loading} pagination={pagination} />
+          <Pagination
+            onChange={doChangePagination}
+            disabled={loading}
+            pagination={pagination}
+          />
         </div>
       </div>
 
@@ -234,7 +294,10 @@ await UserService.doOneClickLogin(id)
       )}
       {!LoadingTasksDone && showTask && (
         <div className="modal__socore">
-          <div className="score__close" onClick={() => setShowTask(false)}>
+          <div
+            className="score__close"
+            onClick={() => setShowTask(false)}
+          >
             <i className="fa fa-close font" />
           </div>
           <div className="modal__contentscore">

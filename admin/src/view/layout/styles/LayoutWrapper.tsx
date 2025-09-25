@@ -63,7 +63,7 @@ const LayoutWrapper = styled.div`
       #2c3e50 0%,
       #1a1f2c 100%
     );
-    height: 100vh;
+    height: 100%;
     // position: fixed;
     left: 0;
     top: 0;
