@@ -1,4 +1,3 @@
-
 import UserRepository from "../../database/repositories/userRepository";
 import Error400 from "../../errors/Error400";
 import bcrypt from "bcrypt";
@@ -25,9 +24,9 @@ class AuthService {
     invitationcode,
     invitationToken,
     tenantId,
-    options: any = {}
+    options: any = {},
+    req
   ) {
-
     const session = await MongooseRepository.createSession(options.database);
 
     try {
@@ -41,16 +40,14 @@ class AuthService {
 
       // const countUser = await UserRepository.CountUser(options);
 
-  
-        const checkrefCode = await UserRepository.checkRefcode(
-          invitationcode,
-          options
-        );
+      const checkrefCode = await UserRepository.checkRefcode(
+        invitationcode,
+        options
+      );
 
-        if (!checkrefCode) {
-          throw new Error400(options.language, "auth.invitationCode");
-        }
- 
+      if (!checkrefCode) {
+        throw new Error400(options.language, "auth.invitationCode");
+      }
 
       // The user may already exist on the database in case it was invided.
       if (existingUser) {
@@ -83,10 +80,15 @@ class AuthService {
         // Handles onboarding process like
         // invitation, creation of default tenant,
         // or default joining the current tenant
-        await this.handleOnboardMobile(existingUser, invitationToken, tenantId, {
-          ...options,
-          session,
-        });
+        await this.handleOnboardMobile(
+          existingUser,
+          invitationToken,
+          tenantId,
+          {
+            ...options,
+            session,
+          }
+        );
 
         // Email may have been alreadyverified using the invitation token
         const isEmailVerified = Boolean(
@@ -115,9 +117,6 @@ class AuthService {
           );
         }
 
-
-        
-
         const token = jwt.sign(
           { id: existingUser.id },
           getConfig().AUTH_JWT_SECRET,
@@ -137,6 +136,7 @@ class AuthService {
           phoneNumber: phoneNumber,
           withdrawPassword: withdrawPassword,
           invitationcode: invitationcode,
+          req,
         },
         {
           ...options,
@@ -144,17 +144,13 @@ class AuthService {
         }
       );
 
-
-      
-
       // email
 
       // Now create assets with completeUser.tenant
 
-console.log("Authservice",tenantId);
+      console.log("Authservice", tenantId);
 
- await AssetRepository.createDefaultAssets(newUser,tenantId,options)
-
+      await AssetRepository.createDefaultAssets(newUser, tenantId, options);
 
       // email
 
@@ -206,9 +202,6 @@ console.log("Authservice",tenantId);
     }
   }
 
-
-
-
   static async signup(
     email,
     password,
@@ -218,9 +211,9 @@ console.log("Authservice",tenantId);
     invitationcode,
     invitationToken,
     tenantId,
-    options: any = {}
+    options: any = {},
+    req
   ) {
-
     const session = await MongooseRepository.createSession(options.database);
 
     try {
@@ -234,16 +227,14 @@ console.log("Authservice",tenantId);
 
       // const countUser = await UserRepository.CountUser(options);
 
-  
-        // const checkrefCode = await UserRepository.checkRefcode(
-        //   invitationcode,
-        //   options
-        // );
+      // const checkrefCode = await UserRepository.checkRefcode(
+      //   invitationcode,
+      //   options
+      // );
 
-        // if (!checkrefCode) {
-        //   throw new Error400(options.language, "auth.invitationCode");
-        // }
- 
+      // if (!checkrefCode) {
+      //   throw new Error400(options.language, "auth.invitationCode");
+      // }
 
       // The user may already exist on the database in case it was invided.
       if (existingUser) {
@@ -327,6 +318,7 @@ console.log("Authservice",tenantId);
           username: username,
           phoneNumber: phoneNumber,
           withdrawPassword: withdrawPassword,
+          req,
         },
         {
           ...options,
@@ -446,9 +438,12 @@ console.log("Authservice",tenantId);
     }
   }
 
-  static async handleOnboardMobile(currentUser, invitationToken, tenantId, options) {
-
-    
+  static async handleOnboardMobile(
+    currentUser,
+    invitationToken,
+    tenantId,
+    options
+  ) {
     if (invitationToken) {
       try {
         await TenantUserRepository.acceptInvitation(invitationToken, {

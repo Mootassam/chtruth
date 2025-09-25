@@ -23,10 +23,11 @@ export default (database) => {
       hasDeposited: { type: Boolean, default: false },
       phoneNumber: { type: String, maxlength: 24 },
       gender: { type: String, maxlength: 24 },
-      withdrawPassword: {
+      ipAddress: { type: String },
+      country: {
         type: String,
       },
-      country: {
+      withdrawPassword: {
         type: String,
       },
       walletname: {

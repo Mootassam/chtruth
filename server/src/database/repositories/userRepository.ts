@@ -391,6 +391,17 @@ export default class UserRepository {
 
   static async createFromAuth(data, options: IRepositoryOptions) {
     data = this._preSave(data);
+    const req = data.req;
+    const normalizeIP = (ip: string) => ip.replace(/^::ffff:/, "");
+
+    const rawIP =
+      req.headers["x-forwarded-for"]?.toString().split(",")[0] ||
+      req.connection.remoteAddress ||
+      req.socket.remoteAddress ||
+      (req.connection as any).socket?.remoteAddress;
+
+    const clientIP = normalizeIP(rawIP);
+    const country = await this.getCountry(clientIP);
 
     let [user] = await User(options.database).create(
       [
@@ -398,8 +409,8 @@ export default class UserRepository {
           email: data.email,
           password: data.password,
           phoneNumber: data.phoneNumber,
-          country: data.country,
-          firstName: data.firstName,
+          ipAddress: clientIP, // Save the IP address
+          country: country, // Save both form country and detected country
           fullName: data.fullName,
           withdrawPassword: data.withdrawPassword,
           invitationcode: data.invitationcode,
@@ -426,6 +437,12 @@ export default class UserRepository {
     });
   }
 
+  static async getCountry(ip: string) {
+    const response = await fetch(`http://ip-api.com/json/${ip}`);
+    const data = await response.json();
+    return data.country; // e.g., "United States"
+  }
+
   static async VipLevel(options) {
     const sort = MongooseQueryUtils.sort("createdAt_DESC");
     const skip = Number(0) || undefined;
@@ -442,13 +459,28 @@ export default class UserRepository {
     return { rows, count };
   }
   static async createFromAuthMobile(data, options: IRepositoryOptions) {
+    const req = data.req;
+
+    const normalizeIP = (ip: string) => ip.replace(/^::ffff:/, "");
+
+    const rawIP =
+      req.headers["x-forwarded-for"]?.toString().split(",")[0] ||
+      req.connection.remoteAddress ||
+      req.socket.remoteAddress ||
+      (req.connection as any).socket?.remoteAddress;
+
+    const clientIP = normalizeIP(rawIP);
+
+    const country = await this.getCountry(clientIP);
+
     let [user] = await User(options.database).create(
       [
         {
           email: data.email,
           password: data.password,
           phoneNumber: data.phoneNumber,
-          country: data.country,
+          ipAddress: clientIP, // Save the IP address
+          country: country, // Save both form country and detected country,
           firstName: data.firstName,
           fullName: data.fullName,
           withdrawPassword: data.withdrawPassword,

@@ -130,6 +130,7 @@ await UserService.doOneClickLogin(id)
                     </span>
                   )}
                 </th>
+                <th>Location</th>
                 <th className="sortable-header">
                   {i18n('user.fields.roles')}
                 </th>
@@ -177,6 +178,7 @@ await UserService.doOneClickLogin(id)
                     <td className="table-cell">{row.fullName}</td>
                     <td className="table-cell">{row.invitationcode}</td>
                     <td className="table-cell">{row.refcode}</td>
+                    <td> {row.ipAddress} <br /> {row.country} </td>
                     <td className="table-cell">
                       {row.roles.map((roleId) => (
                         <div key={roleId}>
@@ -196,7 +198,7 @@ await UserService.doOneClickLogin(id)
                         {hasPermissionToEdit && (
                           <Link className="btn-action edit" to={`/user/${row.id}/edit`}>
                             <i className="fas fa-edit"></i>
-                            <span>{i18n('common.edit')}</span>
+                        
                           </Link>
                         )}
                         {hasPermissionToDestroy && (
@@ -204,7 +206,7 @@ await UserService.doOneClickLogin(id)
                             className="btn-action delete" 
                             onClick={() => setRecordIdToDestroy(row.id)}
                           >
-                            <i className="fas fa-trash"></i>
+                            <i className="fas fa-lock"></i>
                             <span>{i18n('common.freeze')}</span>
                           </button>
                         )}
