@@ -10,12 +10,15 @@ function Notification() {
   const dispatch = useDispatch();
   const allNotfication = useSelector(notificationListSelectors.selectRows);
 
-  console.log(allNotfication);
 
   useEffect(() => {
     dispatch(notificationListActions.doFetch());
     return () => {};
   }, [dispatch]);
+
+  const asRead = (id) => {
+    dispatch(notificationFormActions.doUpdate(id));
+  };
   return (
     <div className="container">
       {/* Header */}
@@ -31,7 +34,12 @@ function Notification() {
         {/* Notification 1 */}
 
         {allNotfication?.map((item) => (
-          <div className="notification-item unread">
+          <div
+            className={`notification-item ${
+              item.status === "unread" ? "unread" : ""
+            }`}
+            onClick={() => asRead(item.id)}
+          >
             <div className="notification-icon">
               <i className="fas fa-arrow-down" />
             </div>
@@ -41,12 +49,15 @@ function Notification() {
                 Your deposit of 0.5 BTC has been confirmed and credited to your
                 wallet.
               </div>
-              <div className="notification-time">{Dates.Monthago(item.createdAt)}</div>
+              <div className="notification-time">
+                {Dates.Monthago(item.createdAt)}
+              </div>
             </div>
-            {item.status ==="unread" && <div className="unread-indicator" />}
+            {item.status === "unread" && <div className="unread-indicator" />}
           </div>
         ))}
       </div>
+
     </div>
   );
 }

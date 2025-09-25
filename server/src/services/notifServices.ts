@@ -38,13 +38,13 @@ export default class NotifServicess {
     }
   }
 
-  async update(id, data, io) {
+  async update(id, io) {
     const session = await MongooseRepository.createSession(
       this.options.database
     );
 
     try {
-      const record = await NotificationRepository.update(id, data, io, {
+      const record = await NotificationRepository.update(id,  io, {
         ...this.options,
         session,
       });

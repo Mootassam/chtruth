@@ -32,7 +32,7 @@ class NotificationRepository {
     return wallet;
   }
 
-  static async update(id, data, io, options: IRepositoryOptions) {
+  static async update(id, io, options: IRepositoryOptions) {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
 
     let record = await MongooseRepository.wrapWithSessionIfExists(
@@ -47,14 +47,14 @@ class NotificationRepository {
     await Notification(options.database).updateOne(
       { _id: id },
       {
-        ...data,
         auditor: MongooseRepository.getCurrentUser(options).id,
         updatedBy: MongooseRepository.getCurrentUser(options).id,
+        status: "read",
       },
       options
     );
 
-    await this._createAuditLog(AuditLogRepository.UPDATE, id, data, options);
+    // await this._createAuditLog(AuditLogRepository.UPDATE, id, options);
 
     record = await this.findById(id, options);
 
@@ -187,7 +187,10 @@ class NotificationRepository {
       .sort(sort)
       .populate("userId");
 
-    const count = await Notification(options.database).countDocuments(criteria);
+    const count = await Notification(options.database).countDocuments({
+      userId: currentUser.id,
+      status: "unread",
+    });
 
     rows = await Promise.all(rows.map(this._fillFileDownloadUrls));
 

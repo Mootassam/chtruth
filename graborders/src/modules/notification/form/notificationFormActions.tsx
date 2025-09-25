@@ -3,6 +3,7 @@ import Message from "src/view/shared/message";
 import { getHistory } from "src/modules/store";
 import { i18n } from "../../../i18n";
 import notificationService from "../notificationService";
+import notificationListActions from "../list/notificationListActions";
 
 const prefix = "COUPONS_FORM";
 
@@ -72,21 +73,21 @@ const notificationFormActions = {
     }
   },
 
-  doUpdate: (id, values) => async (dispatch, getState) => {
+  doUpdate: (id) => async (dispatch, getState) => {
     try {
       dispatch({
         type: notificationFormActions.UPDATE_STARTED,
       });
 
-      await notificationService.update(id, values);
+      await notificationService.update(id);
 
       dispatch({
         type: notificationFormActions.UPDATE_SUCCESS,
       });
 
-      Message.success(i18n("entities.deposit.update.success"));
+      // Message.success(i18n("entities.deposit.update.success"));
+      dispatch(notificationListActions.doFetch());
 
-      getHistory().push("/deposit");
     } catch (error) {
       Errors.handle(error);
 

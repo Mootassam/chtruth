@@ -1,6 +1,9 @@
 import React from "react";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import notificationListSelectors from "src/modules/notification/list/notificationListSelectors";
 function Header() {
+  const count = useSelector(notificationListSelectors.selectCount);
   return (
     <div className="app-header">
       <div className="header-content">
@@ -16,7 +19,7 @@ function Header() {
             <div className="notification-containers">
               <button className="notification-btn" aria-label="Notifications">
                 <i className="fas fa-bell"></i>
-                <span className="notification-badge">2</span>
+                <span className="notification-badge">{count}</span>
               </button>
             </div>
           </Link>

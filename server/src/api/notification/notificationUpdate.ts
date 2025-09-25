@@ -9,11 +9,7 @@ export default (io) => async (req, res, next) => {
     //   Permissions.values.categoryRead,
     // );
 
-    const payload = await new NotifServicess(req).update(
-      req.params.id,
-      req.body.data,
-      io
-    );
+    const payload = await new NotifServicess(req).update(req.params.id, io);
 
     await ApiResponseHandler.success(req, res, payload);
   } catch (error) {

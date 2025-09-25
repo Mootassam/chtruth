@@ -3,16 +3,19 @@ import { useHistory } from "react-router-dom";
 import { Link } from "react-router-dom";
 import authSelectors from "src/modules/auth/authSelectors";
 import useNotifications from "../notifications/useNotifications";
+import notificationListSelectors from "src/modules/notification/list/notificationListSelectors";
+
 function SubHeader(props) {
   const history = useHistory();
   const currentUser = useSelector(authSelectors.selectCurrentUser);
+  const count = useSelector(notificationListSelectors.selectCount);
 
   const { notifications } = useNotifications(currentUser.id);
 
   const goBack = () => {
     history.goBack(); // This will take you back to the previous page
   };
-  
+
   // Example notification count - you can replace this with actual data
   const notificationCount = 3; // This should come from your state/props
 
@@ -27,7 +30,7 @@ function SubHeader(props) {
           <Link to="/notification" className="notification-link">
             <i className="fas fa-bell header-icon" />
             {notificationCount > 0 && (
-              <span className="notification-badge">{notificationCount}</span>
+              <span className="notification-badge">{count}</span>
             )}
           </Link>
         </div>

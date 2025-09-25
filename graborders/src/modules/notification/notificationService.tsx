@@ -1,23 +1,20 @@
-import authAxios from 'src/modules/shared/axios/authAxios';
-import AuthCurrentTenant from 'src/modules/auth/authCurrentTenant';
+import authAxios from "src/modules/shared/axios/authAxios";
+import AuthCurrentTenant from "src/modules/auth/authCurrentTenant";
 
 export default class notificationService {
-  static async update(id, data) {
+  static async update(id) {
     const body = {
       id,
-      data,
     };
 
     const tenantId = AuthCurrentTenant.get();
     const response = await authAxios.put(
       `/tenant/${tenantId}/notification/${id}`,
-      body,
+      body
     );
 
     return response.data;
   }
-
-
 
   static async destroyAll(ids) {
     const params = {
@@ -29,7 +26,7 @@ export default class notificationService {
       `/tenant/${tenantId}/notification`,
       {
         params,
-      },
+      }
     );
 
     return response.data;
@@ -43,7 +40,7 @@ export default class notificationService {
     const tenantId = AuthCurrentTenant.get();
     const response = await authAxios.post(
       `/tenant/${tenantId}/notification`,
-      body,
+      body
     );
 
     return response.data;
@@ -59,7 +56,7 @@ export default class notificationService {
 
     const response = await authAxios.post(
       `/tenant/${tenantId}/notification/import`,
-      body,
+      body
     );
 
     return response.data;
@@ -69,7 +66,7 @@ export default class notificationService {
     const tenantId = AuthCurrentTenant.get();
 
     const response = await authAxios.get(
-      `/tenant/${tenantId}/notification/${id}`,
+      `/tenant/${tenantId}/notification/${id}`
     );
 
     return response.data;
@@ -85,12 +82,9 @@ export default class notificationService {
 
     const tenantId = AuthCurrentTenant.get();
 
-    const response = await authAxios.get(
-      `/tenant/${tenantId}/notification`,
-      {
-        params,
-      },
-    );
+    const response = await authAxios.get(`/tenant/${tenantId}/notification`, {
+      params,
+    });
 
     return response.data;
   }
@@ -105,7 +99,7 @@ export default class notificationService {
       `/tenant/${tenantId}/notification/autocomplete`,
       {
         params,
-      },
+      }
     );
 
     return response.data;
