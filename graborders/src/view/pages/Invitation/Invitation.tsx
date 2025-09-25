@@ -12,13 +12,13 @@ function Invitation() {
   const listMembers = useSelector(userFormSelectors.listMembers);
   const Loading = useSelector(userFormSelectors.loading);
   const listUser = useSelector(userFormSelectors.lisUsers);
-
   const userLoading = useSelector(userFormSelectors.usersLoading);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalData, setModalData] = useState({
     title: "",
     members: [],
-    type: "", // 'approved' or 'pending'
+    type: "", // "approved" or "pending"
   });
   const [copySuccess, setCopySuccess] = useState(false);
 
@@ -28,47 +28,52 @@ function Invitation() {
     }
   }, [dispatch, currentUser?.refcode]);
 
-  // Copy referral code to clipboard
-const copyReferralCode = () => {
-  const code = currentUser?.refcode;
-  if (!code) return;
+  // ✅ Fixed Clipboard Copy
+  const copyReferralCode = async () => {
+    if (!currentUser?.refcode) return;
 
-  if (navigator.clipboard && window.isSecureContext) {
-    // Modern API
-    navigator.clipboard.writeText(code)
-      .then(() => {
-        setCopySuccess(true);
-        setTimeout(() => setCopySuccess(false), 2000);
-      })
-      .catch(err => {
-        console.error("Clipboard copy failed: ", err);
-        fallbackCopyText(code);
-      });
-  } else {
-    // Fallback for Safari / HTTP
-    fallbackCopyText(code);
-  }
-};
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(currentUser.refcode);
+      } else {
+        // Fallback for insecure contexts
+        const textArea = document.createElement("textarea");
+        textArea.value = currentUser.refcode;
+        textArea.style.position = "fixed";
+        textArea.style.opacity = "0";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textArea);
+      }
 
-  // Share functionality
-  const shareReferral = (platform) => {
+      setCopySuccess(true);
+      setTimeout(() => setCopySuccess(false), 2000);
+    } catch (err) {
+      console.error("Failed to copy:", err);
+    }
+  };
+
+  // ✅ Share functionality
+  const shareReferral = (platform: string) => {
     const shareText = `Join NEXUS using my referral code: ${currentUser?.refcode}`;
     const shareUrl = window.location.origin;
-    
+
     switch (platform) {
-      case 'whatsapp':
-        window.open(`https://wa.me/?text=${encodeURIComponent(shareText)}`, '_blank');
+      case "whatsapp":
+        window.open(`https://wa.me/?text=${encodeURIComponent(shareText)}`, "_blank");
         break;
-      case 'email':
-        window.open(`mailto:?subject=Join NEXUS&body=${encodeURIComponent(shareText)}`, '_blank');
+      case "email":
+        window.open(`mailto:?subject=Join NEXUS&body=${encodeURIComponent(shareText)}`, "_blank");
         break;
-      case 'sms':
-        window.open(`sms:?body=${encodeURIComponent(shareText)}`, '_blank');
+      case "sms":
+        window.open(`sms:?body=${encodeURIComponent(shareText)}`, "_blank");
         break;
-      case 'more':
+      case "more":
         if (navigator.share) {
           navigator.share({
-            title: 'NEXUS Referral',
+            title: "NEXUS Referral",
             text: shareText,
             url: shareUrl,
           });
@@ -81,7 +86,7 @@ const copyReferralCode = () => {
     }
   };
 
-  const handleOpenModal = async (level, type) => {
+  const handleOpenModal = (level: number, type: "approved" | "pending") => {
     const title = `${level}${getOrdinalSuffix(level)} Generation ${
       type === "approved" ? "Approved" : "Pending"
     } Members`;
@@ -95,8 +100,8 @@ const copyReferralCode = () => {
 
     const values = {
       status: type,
-      refCode: currentUser.refcode,
-      level: level,
+      refCode: currentUser?.refcode,
+      level,
     };
 
     dispatch(userFormActions.byLevel(values));
@@ -111,22 +116,19 @@ const copyReferralCode = () => {
     });
   };
 
-  const getOrdinalSuffix = (number) => {
+  const getOrdinalSuffix = (number: number) => {
     if (number === 1) return "st";
     if (number === 2) return "nd";
     if (number === 3) return "rd";
     return "th";
   };
 
-  // Format generation title with correct ordinal
-  const getGenerationTitle = (level) => {
+  const getGenerationTitle = (level: number) => {
     return `${level}${getOrdinalSuffix(level)} Generation Members`;
   };
 
   return (
     <div className="container">
-  
-
       {/* Header Section */}
       <SubHeader title="Invite Friends" />
 
@@ -137,47 +139,33 @@ const copyReferralCode = () => {
           Invite friends to join NEXUS and earn rewards when they sign up
           and start trading.
         </div>
+
         {/* Referral Code */}
         <div className="referral-text">YOUR REFERRAL CODE</div>
         <div className="referral-code-value" id="referralCode">
           {currentUser?.refcode || "Loading..."}
         </div>
-        <button 
-          className="referral-copy-btn" 
+        <button
+          className="referral-copy-btn"
           id="copyReferralBtn"
           onClick={copyReferralCode}
         >
           <i className="fas fa-copy" />
           {copySuccess ? "COPIED!" : "COPY CODE"}
         </button>
+
         {/* Share Options */}
         <div className="share-buttons">
-          <div 
-            className="share-btn" 
-            data-platform="whatsapp"
-            onClick={() => shareReferral('whatsapp')}
-          >
+          <div className="share-btn" onClick={() => shareReferral("whatsapp")}>
             <i className="fab fa-whatsapp share-icon-img" />
           </div>
-          <div 
-            className="share-btn" 
-            data-platform="email"
-            onClick={() => shareReferral('email')}
-          >
+          <div className="share-btn" onClick={() => shareReferral("email")}>
             <i className="fas fa-envelope share-icon-img" />
           </div>
-          <div 
-            className="share-btn" 
-            data-platform="sms"
-            onClick={() => shareReferral('sms')}
-          >
+          <div className="share-btn" onClick={() => shareReferral("sms")}>
             <i className="fas fa-sms share-icon-img" />
           </div>
-          <div 
-            className="share-btn" 
-            data-platform="more"
-            onClick={() => shareReferral('more')}
-          >
+          <div className="share-btn" onClick={() => shareReferral("more")}>
             <i className="fas fa-share-alt share-icon-img" />
           </div>
         </div>
@@ -212,12 +200,14 @@ const copyReferralCode = () => {
         <div className="generation-stats-grid">
           {Loading && <h2> Loading ... </h2>}
           {!Loading && listMembers?.length === 0 && (
-            <div style={{textAlign: 'center', color: '#AAAAAA', padding: '20px'}}>
+            <div
+              style={{ textAlign: "center", color: "#AAAAAA", padding: "20px" }}
+            >
               No generation data available
             </div>
           )}
           {!Loading &&
-            listMembers?.map((item, index) => (
+            listMembers?.map((item: any, index: number) => (
               <div className="generation-stat-item first-gen" key={index}>
                 <div className="generation-stat-title">
                   <i className="fas fa-crown" />
@@ -354,6 +344,97 @@ const copyReferralCode = () => {
           </div>
         </div>
       </div>
+
+      {/* ✅ Toast Notification */}
+      {copySuccess && (
+        <div
+          className="toast-notification"
+          id="referralToast"
+          style={{
+            position: "fixed",
+            bottom: "20px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            background: "#00C076",
+            color: "white",
+            padding: "12px 24px",
+            borderRadius: "8px",
+            fontWeight: "500",
+            zIndex: 1001,
+          }}
+        >
+          Referral code copied to clipboard!
+        </div>
+      )}
+
+      {/* Members Modal */}
+      {isModalOpen && (
+        <div className="modal-overlay " onClick={handleCloseModal}>
+          <div
+            className="modal-content"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="modal-header">
+              <h3 className="modal-title">{modalData.title}</h3>
+              <button className="modal-close-btn" onClick={handleCloseModal}>
+                <i className="fas fa-times"></i>
+              </button>
+            </div>
+            <div className="modal-body">
+              {userLoading ? (
+                <div
+                  style={{
+                    textAlign: "center",
+                    padding: "40px",
+                    color: "#F3BA2F",
+                  }}
+                >
+                  <i
+                    className="fas fa-spinner fa-spin"
+                    style={{ fontSize: "24px", marginBottom: "15px" }}
+                  ></i>
+                  <p>Loading members...</p>
+                </div>
+              ) : listUser && listUser.length > 0 ? (
+                <ul className="members-list">
+                  {listUser.map((member: any, index: number) => (
+                    <li key={index} className="member-item">
+                      <div className="member-info">
+                        <div className="member-email">{member.email}</div>
+                        <div className="member-date">
+                          {modalData.type === "approved"
+                            ? `Approved: ${Dates.formatDateTime(
+                                member.updatedAt || member.createdAt
+                              )}`
+                            : `Joined: ${Dates.formatDateTime(
+                                member.createdAt
+                              )}`}
+                        </div>
+                      </div>
+                      <div
+                        className={`member-status ${
+                          modalData.type === "approved"
+                            ? "status-approved"
+                            : "status-pending"
+                        }`}
+                      >
+                        {modalData.type}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <div className="empty-state">
+                  <i className="fas fa-users"></i>
+                  <p>No members found</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+
 
       {/* Toast Notification */}
       <div 
