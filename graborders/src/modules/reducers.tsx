@@ -18,6 +18,8 @@ import assets from 'src/modules/assets/assetsReducers'
 import deposit from 'src/modules/deposit/depositReducers'
 import withdraw from 'src/modules/withdraw/withdrawReducers'
 import kyc from 'src/modules/kyc/kycReducers'
+import notification from 'src/modules/notification/notificationReducers'
+
 import { combineReducers } from "redux";
 
 export default (history) =>
@@ -35,6 +37,7 @@ export default (history) =>
     deposit,
     withdraw,
     assets,
+    notification,
     kyc,
     stacking,
     product,

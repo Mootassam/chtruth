@@ -90,7 +90,7 @@ require("./vip").default(routes);
 require("./kyc").default(routes, io);
 require("./deposit").default(routes, io);
 require("./assets").default(routes, io);
-
+require("./notification").default(routes, io);
 require("./withdraw").default(routes, io);
 require("./stacking").default(routes, io);
 require("./stackingPlan").default(routes, io);

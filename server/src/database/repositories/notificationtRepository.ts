@@ -4,7 +4,7 @@ import AuditLogRepository from "./auditLogRepository";
 import Error404 from "../../errors/Error404";
 import { IRepositoryOptions } from "./IRepositoryOptions";
 import FileRepository from "./fileRepository";
-import Deposit from "../models/deposit";
+import Notification from "../models/notification";
 import assets from "../models/wallet";
 import transaction from "../models/transaction";
 import wallet from "../models/wallet";
@@ -28,7 +28,6 @@ class NotificationRepository {
       options
     );
 
-
     // 4️⃣ Return the updated wallet
     return wallet;
   }
@@ -37,7 +36,7 @@ class NotificationRepository {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
 
     let record = await MongooseRepository.wrapWithSessionIfExists(
-      Deposit(options.database).findById(id),
+      Notification(options.database).findById(id),
       options
     );
 
@@ -45,7 +44,7 @@ class NotificationRepository {
       throw new Error404();
     }
 
-    await Deposit(options.database).updateOne(
+    await Notification(options.database).updateOne(
       { _id: id },
       {
         ...data,
@@ -65,8 +64,8 @@ class NotificationRepository {
   static async updateStatus(id, data, io, options: IRepositoryOptions) {
     const currentUser = MongooseRepository.getCurrentUser(options);
 
-    // ✅ Update the deposit status
-    await Deposit(options.database).updateOne(
+    // ✅ Update the Notification status
+    await Notification(options.database).updateOne(
       { _id: id },
       {
         $set: {
@@ -98,7 +97,7 @@ class NotificationRepository {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
 
     let record = await MongooseRepository.wrapWithSessionIfExists(
-      Deposit(options.database).findById(id),
+      Notification(options.database).findById(id),
       options
     );
 
@@ -106,7 +105,7 @@ class NotificationRepository {
       throw new Error404();
     }
 
-    await Deposit(options.database).deleteOne({ _id: id }, options);
+    await Notification(options.database).deleteOne({ _id: id }, options);
 
     await this._createAuditLog(AuditLogRepository.DELETE, id, record, options);
   }
@@ -115,7 +114,7 @@ class NotificationRepository {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
 
     return MongooseRepository.wrapWithSessionIfExists(
-      Deposit(options.database).countDocuments({
+      Notification(options.database).countDocuments({
         ...filter,
         tenant: currentTenant.id,
       }),
@@ -127,10 +126,7 @@ class NotificationRepository {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
 
     let record = await MongooseRepository.wrapWithSessionIfExists(
-      Deposit(options.database)
-        .findById(id)
-        .populate("auditor")
-        .populate("createdBy"),
+      Notification(options.database).findById(id).populate("userId"),
       options
     );
 
@@ -146,11 +142,15 @@ class NotificationRepository {
     options: IRepositoryOptions
   ) {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
+    const currentUser = MongooseRepository.getCurrentUser(options);
 
     let criteriaAnd: any = [];
 
     criteriaAnd.push({
       tenant: currentTenant.id,
+    });
+    criteriaAnd.push({
+      userId: currentUser.id,
     });
 
     if (filter) {
@@ -180,15 +180,14 @@ class NotificationRepository {
     const skip = Number(offset || 0) || undefined;
     const limitEscaped = Number(limit || 0) || undefined;
     const criteria = criteriaAnd.length ? { $and: criteriaAnd } : null;
-    let rows = await Deposit(options.database)
+    let rows = await Notification(options.database)
       .find(criteria)
       .skip(skip)
       .limit(limitEscaped)
       .sort(sort)
-      .populate("auditor")
-      .populate("createdBy");
+      .populate("userId");
 
-    const count = await Deposit(options.database).countDocuments(criteria);
+    const count = await Notification(options.database).countDocuments(criteria);
 
     rows = await Promise.all(rows.map(this._fillFileDownloadUrls));
 
@@ -225,7 +224,7 @@ class NotificationRepository {
 
     const criteria = { $and: criteriaAnd };
 
-    const records = await Deposit(options.database)
+    const records = await Notification(options.database)
       .find(criteria)
       .limit(limitEscaped)
       .sort(sort);
@@ -239,7 +238,7 @@ class NotificationRepository {
   static async _createAuditLog(action, id, data, options: IRepositoryOptions) {
     await AuditLogRepository.log(
       {
-        entityName: Deposit(options.database).modelName,
+        entityName: Notification(options.database).modelName,
         entityId: id,
         action,
         values: data,
