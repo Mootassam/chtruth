@@ -28,12 +28,6 @@ export default class UserService {
     return response.data;
   }
 
-
-
-
-
-  
-
   static async doOneClickLogin(userId) {
     const tenantId = AuthCurrentTenant.get();
     const response = await authAxios.post(
@@ -70,7 +64,7 @@ export default class UserService {
     return response.data.totalDepositUSDT;
   }
 
- static async statisWithdraw() {
+  static async statisWithdraw() {
     const tenantId = AuthCurrentTenant.get();
     const response = await authAxios.get(
       `/tenant/${tenantId}/statisWithdraw`,
@@ -79,7 +73,15 @@ export default class UserService {
     return response.data.totalWithdrawUSDT;
   }
 
-  
+  static async countall() {
+    const tenantId = AuthCurrentTenant.get();
+    const response = await authAxios.get(
+      `/tenant/${tenantId}/totalUser`,
+    );
+
+    return response.data.count;
+  }
+
   static async destroy(ids) {
     const params = {
       ids,

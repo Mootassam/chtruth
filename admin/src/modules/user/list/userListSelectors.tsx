@@ -22,11 +22,14 @@ const selectcountDeposit = createSelector(
   (raw) => raw.totaldepoist,
 );
 
-  
-
 const selectcountWithdraw = createSelector(
   [selectRaw],
   (raw) => raw.totalwithdraw,
+);
+
+const countAllUses = createSelector(
+  [selectRaw],
+  (raw) => raw.totalUsers,
 );
 
 const selectCount = createSelector(
@@ -139,7 +142,8 @@ const userListSelectors = {
   selectIsAllSelected,
   selectcountDeposit,
   selectSorter,
-  selectcountWithdraw
+  selectcountWithdraw,
+  countAllUses,
 };
 
 export default userListSelectors;

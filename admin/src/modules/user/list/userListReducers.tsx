@@ -8,6 +8,7 @@ const initialData = {
   loading: false,
   totaldepoist: 0,
   totalwithdraw: 0,
+  totalUsers: 0,
   filter: {},
   rawFilter: {},
   pagination: {
@@ -161,7 +162,29 @@ export default (state = initialData, { type, payload }) => {
 
 
 
-  
+
+    if (type === actions.COUNT_STARTED) {
+    return {
+      ...state,
+      countLoading: true,
+    };
+  }
+
+  if (type === actions.COUNT_SUCCESS) {
+    return {
+      ...state,
+      totalUsers: payload,
+      countLoading: false,
+    };
+  }
+
+  if (type === actions.COUNT_ERROR) {
+    return {
+      ...state,
+      countLoading: false,
+    };
+  }
+
   if (type === actions.WCOUNT_STARTED) {
     return {
       ...state,

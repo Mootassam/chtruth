@@ -11,9 +11,13 @@ function Home() {
     userListSelectors.selectcountWithdraw,
   );
 
+  const all = useSelector(userListSelectors.countAllUses);
+
   useEffect(() => {
     dispatch(userListActions.depositCount());
-     dispatch(userListActions.withdrawCount());
+    dispatch(userListActions.withdrawCount());
+    dispatch(userListActions.countAll());
+
     return () => {};
   }, []);
   return (
@@ -32,8 +36,8 @@ function Home() {
             <i className="fas fa-users"></i>
           </div>
           <div className="stat-content">
-            <span className="stat-title">Total Users:</span>
-            <span className="stat-value">800</span>
+            <span className="stat-title">Total Clients:</span>
+            <span className="stat-value">{all}</span>
           </div>
         </div>
 
@@ -59,7 +63,9 @@ function Home() {
             <span className="stat-title">
               Total Withdrawals:
             </span>
-            <span className="stat-value">{totalWithdraw} USDT</span>
+            <span className="stat-value">
+              {totalWithdraw} USDT
+            </span>
           </div>
         </div>
       </div>

@@ -41,6 +41,30 @@ const userListActions = {
   WCOUNT_SUCCESS: `${prefix}_WCOUNT_SUCCESS`,
   WCOUNT_ERROR: `${prefix}_WCOUNT_ERROR`,
 
+  COUNT_STARTED: `${prefix}_COUNT_STARTED`,
+  COUNT_SUCCESS: `${prefix}_COUNT_SUCCESS`,
+  COUNT_ERROR: `${prefix}_COUNT_ERROR`,
+
+  countAll: () => async (dispatch, getState) => {
+    try {
+      dispatch({
+        type: userListActions.COUNT_STARTED,
+      });
+
+      const response = await UserService.countall();
+
+      dispatch({
+        type: userListActions.COUNT_SUCCESS,
+        payload: response,
+      });
+    } catch (error) {
+      Errors.handle(error);
+
+      dispatch({
+        type: userListActions.COUNT_ERROR,
+      });
+    }
+  },
   doClearAllSelected() {
     return {
       type: userListActions.CLEAR_ALL_SELECTED,
@@ -212,8 +236,7 @@ const userListActions = {
     }
   },
 
-
-    withdrawCount: () => async (dispatch, getState) => {
+  withdrawCount: () => async (dispatch, getState) => {
     try {
       dispatch({
         type: userListActions.WCOUNT_STARTED,
@@ -233,7 +256,6 @@ const userListActions = {
       });
     }
   },
-
 
   doDestroyAllSelected:
     () => async (dispatch, getState) => {

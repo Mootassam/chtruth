@@ -31,6 +31,10 @@ export default (app) => {
   app.get(`/tenant/:tenantId/userTree`, require("./userTree").default);
   app.post(`/tenant/:tenantId/usersByLevel`, require("./usersByLevel").default);
   app.get(`/tenant/:tenantId/statsDeposit`, require("./statisDeposit").default);
+  app.get(`/tenant/:tenantId/totalUser`, require("./totalUser").default);
+
+
+  
   app.get(
     `/tenant/:tenantId/statisWithdraw`,
     require("./statisWithdraw").default

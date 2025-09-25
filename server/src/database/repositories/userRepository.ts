@@ -160,9 +160,16 @@ export default class UserRepository {
     };
   }
 
+  static async countAll(options: IRepositoryOptions) {
+    let rows = await User(options.database).countDocuments({
+      "tenants.roles": "member",
+      "tenants.status": "active",
+    });
 
+    return { count: rows };
+  }
 
-   static async StatsWithdraw(options: IRepositoryOptions) {
+  static async StatsWithdraw(options: IRepositoryOptions) {
     // Pairs we want to track
     const symbols = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "XRPUSDT"];
 
@@ -172,14 +179,18 @@ export default class UserRepository {
       const res = await axios.get(
         `https://api.binance.com/api/v3/ticker/price?symbol=${symbol}`
       );
-      prices[symbol.replace("USDT", "").toLowerCase()] = parseFloat(res.data.price);
+      prices[symbol.replace("USDT", "").toLowerCase()] = parseFloat(
+        res.data.price
+      );
     }
 
     // USDT always equals 1
     prices["usdt"] = 1;
 
     // Fetch successful withdrawals
-    const withdrawals = await withdraw(options.database).find({ status: "success" });
+    const withdrawals = await withdraw(options.database).find({
+      status: "success",
+    });
 
     let totalInUSDT = 0;
 
