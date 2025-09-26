@@ -85,7 +85,7 @@ function Notification() {
   return (
     <div className="container">
       <SubHeader title="Notification" />
-      
+
       {/* Filter Tabs */}
       <div className="filter-tabs">
         {filterTabs.map((tab) => (
@@ -144,8 +144,8 @@ function Notification() {
             </div>
             <div className="empty-title">No notifications yet</div>
             <div className="empty-message">
-              {activeFilter === "all" 
-                ? "You don't have any notifications yet" 
+              {activeFilter === "all"
+                ? "You don't have any notifications yet"
                 : `No ${activeFilter} notifications found`}
             </div>
           </div>

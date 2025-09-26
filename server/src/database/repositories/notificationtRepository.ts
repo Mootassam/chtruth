@@ -210,10 +210,13 @@ class NotificationRepository {
     criteriaAnd.push({
       userId: currentUser.id,
     });
+
+    
+    if(filter){ 
     criteriaAnd.push({
       status: filter,
     });
-
+}
     if (filter) {
       if (filter.id) {
         criteriaAnd.push({

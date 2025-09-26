@@ -13,6 +13,35 @@ import FieldFormItem from "src/shared/form/FieldFormItem";
 import assetsListSelectors from "src/modules/assets/list/assetsListSelectors";
 import assetsListActions from "src/modules/assets/list/assetsListActions";
 
+// Network fee configuration
+const networkFees = {
+  BTC: {
+    minAmount: 0.00091,
+    fee: 0.00002,
+    network: "Bitcoin",
+  },
+  ETH: {
+    minAmount: 0.0077,
+    fee: 0.0005,
+    network: "Ethereum (ERC20)",
+  },
+  USDT: {
+    minAmount: 30,
+    fee: 3,
+    network: "Tron (TRC20)",
+  },
+  SOL: {
+    minAmount: 0.01,
+    fee: 0.000005,
+    network: "Solana",
+  },
+  XRP: {
+    minAmount: 10,
+    fee: 0.1,
+    network: "Ripple",
+  },
+};
+
 const schema = yup.object().shape({
   orderNo: yupFormSchemas.string(i18n("entities.withdraw.fields.orderNo")),
   currency: yupFormSchemas.string(i18n("entities.withdraw.fields.currency")),
@@ -33,6 +62,10 @@ const schema = yup.object().shape({
   status: yupFormSchemas.enumerator(i18n("entities.withdraw.fields.status"), {
     options: ["pending", "canceled", "success"],
   }),
+  withdrawPassword: yup
+    .string()
+    .required("Withdrawal password is required")
+    .min(6, "Withdrawal password must be at least 6 characters"),
 });
 
 function Withdraw() {
@@ -43,6 +76,8 @@ function Withdraw() {
   const [address, setAddress] = useState("");
   const [selected, setSelected] = useState("");
   const [item, setItem] = useState(null);
+  const [withdrawAmount, setWithdrawAmount] = useState("");
+  const [errors, setErrors] = useState({});
 
   // Update selected asset info when currency changes
   useEffect(() => {
@@ -61,7 +96,7 @@ function Withdraw() {
 
   // Fetch assets once
   useEffect(() => {
-    dispatch(assetsListActions.doFetch())
+    dispatch(assetsListActions.doFetch());
   }, [dispatch]);
 
   // Check if user has any wallet
@@ -81,6 +116,7 @@ function Withdraw() {
     acceptTime: "",
     status: "pending",
     withdrawAdress: "",
+    withdrawPassword: "",
   };
 
   const form = useForm({
@@ -89,12 +125,58 @@ function Withdraw() {
     defaultValues: initialValues,
   });
 
+  // Calculate received amount
+  const calculateReceivedAmount = () => {
+    if (!selected || !withdrawAmount) return 0;
+
+    const amount = parseFloat(withdrawAmount);
+    if (isNaN(amount)) return 0;
+
+    const fee = networkFees[selected]?.fee || 0;
+    return Math.max(0, amount - fee);
+  };
+
+  // Validate withdrawal amount
+  const validateWithdrawal = () => {
+    const newErrors = {};
+
+    if (!selected) {
+      newErrors.currency = "Please select a currency";
+    }
+
+    if (!withdrawAmount) {
+      newErrors.amount = "Please enter withdrawal amount";
+    } else {
+      const amount = parseFloat(withdrawAmount);
+      const minAmount = networkFees[selected]?.minAmount || 0;
+      const availableBalance = item?.amount || 0;
+
+      if (isNaN(amount) || amount <= 0) {
+        newErrors.amount = "Please enter a valid amount";
+      } else if (amount < minAmount) {
+        newErrors.amount = `Minimum withdrawal is ${minAmount} ${selected}`;
+      } else if (amount > availableBalance) {
+        newErrors.amount = `Insufficient balance. Available: ${availableBalance} ${selected}`;
+      }
+    }
+
+    if (!form.watch("withdrawPassword")) {
+      newErrors.password = "Withdrawal password is required";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const onSubmit = (values) => {
+    if (!validateWithdrawal()) return;
+
     // Generate order number in format: RE + YYYYMMDD + 7 random digits
     const now = new Date();
-    const dateStr = `${now.getFullYear()}${String(
-      now.getMonth() + 1
-    ).padStart(2, "0")}${String(now.getDate()).padStart(2, "0")}`;
+    const dateStr = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(
+      2,
+      "0"
+    )}${String(now.getDate()).padStart(2, "0")}`;
     const randomDigits = Math.floor(Math.random() * 1e7)
       .toString()
       .padStart(7, "0");
@@ -103,26 +185,42 @@ function Withdraw() {
     values.currency = selected;
     values.totalAmount = values.withdrawAmount;
     values.withdrawAdress = address;
+    values.fee = networkFees[selected]?.fee || 0;
 
     dispatch(actions.doCreate(values));
 
     form.reset(initialValues);
     setSelected("");
     setAddress("");
+    setWithdrawAmount("");
+    setErrors({});
   };
 
   const currencyOptions = [
     { id: "BTC", name: "Bitcoin", icon: "fab fa-btc", color: "#F3BA2F" },
     { id: "ETH", name: "Ethereum", icon: "fab fa-ethereum", color: "#627EEA" },
-    { id: "USDT", name: "Tether", icon: "fas fa-dollar-sign", color: "#26A17B" },
+    {
+      id: "USDT",
+      name: "Tether",
+      icon: "fas fa-dollar-sign",
+      color: "#26A17B",
+    },
     { id: "SOL", name: "Solana", icon: "fas fa-bolt", color: "#00FFA3" },
-    { id: "XRP", name: "Ripple", icon: "fas fa-exchange-alt", color: "#23292F" },
+    {
+      id: "XRP",
+      name: "Ripple",
+      icon: "fas fa-exchange-alt",
+      color: "#23292F",
+    },
   ];
 
   const selectedCurrencyData = useMemo(
     () => currencyOptions.find((currency) => currency.id === selected),
     [selected]
   );
+
+  const currentFeeConfig = selected ? networkFees[selected] : null;
+  const receivedAmount = calculateReceivedAmount();
 
   return (
     <div className="withdrawContainer">
@@ -164,7 +262,10 @@ function Withdraw() {
                 <select
                   className="currencyDropdown"
                   value={selected}
-                  onChange={(e) => setSelected(e.target.value)}
+                  onChange={(e) => {
+                    setSelected(e.target.value);
+                    setErrors({});
+                  }}
                 >
                   <option value="">Select a currency</option>
                   {currencyOptions.map((currency) => {
@@ -176,7 +277,8 @@ function Withdraw() {
                         value={currency.id}
                         disabled={!hasWallet}
                       >
-                        {currency.name}
+                        {currency.name} ({currency.id})
+                        {!hasWallet && " - No wallet address"}
                       </option>
                     );
                   })}
@@ -186,10 +288,17 @@ function Withdraw() {
                     className="currencyDropdownIcon"
                     style={{ color: selectedCurrencyData?.color }}
                   >
-                    <i className={selectedCurrencyData?.icon} />
+                    <img
+                      src={`https://images.weserv.nl/?url=https://bin.bnbstatic.com/static/assets/logos/${selectedCurrencyData?.id.toUpperCase()}.png`}
+                      style={{ width: 25, height: 25 }}
+                      alt={selectedCurrencyData?.id}
+                    />
                   </div>
                 )}
               </div>
+              {errors.currency && (
+                <div className="errorText">{errors.currency}</div>
+              )}
               {!selected && (
                 <div className="dropdownHint">
                   Please select a currency to continue
@@ -201,6 +310,7 @@ function Withdraw() {
               <FormProvider {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)}>
                   <div className="formSection">
+                    {/* Withdrawal Address */}
                     <div className="inputField">
                       <label className="inputLabel">Withdrawal Address</label>
                       <div className="inputWrapper">
@@ -213,20 +323,26 @@ function Withdraw() {
                           disabled
                         />
                         <div className="networkInfo" id="networkDetails">
-                          Network: {selectedCurrencyData?.name} (
-                          {selected.toUpperCase()})
+                          Network: {currentFeeConfig?.network}
                         </div>
                       </div>
                     </div>
 
+                    {/* Withdrawal Amount */}
                     <div className="inputField">
                       <label className="inputLabel">Withdrawal Amount</label>
                       <div className="inputWrapper">
-                        <FieldFormItem
-                          name="withdrawAmount"
+                        <input
                           type="number"
+                          step="any"
                           className="amountField"
                           placeholder="0.0"
+                          value={withdrawAmount}
+                          onChange={(e) => {
+                            setWithdrawAmount(e.target.value);
+                            form.setValue("withdrawAmount", e.target.value);
+                            setErrors({ ...errors, amount: null });
+                          }}
                         />
                         <div className="balanceText">
                           Available:{" "}
@@ -235,8 +351,12 @@ function Withdraw() {
                           </span>
                         </div>
                       </div>
+                      {errors.amount && (
+                        <div className="errorText">{errors.amount}</div>
+                      )}
                     </div>
 
+                    {/* Withdrawal Password */}
                     <div className="inputField">
                       <label className="inputLabel">Withdrawal Password</label>
                       <div className="inputWrapper">
@@ -244,27 +364,45 @@ function Withdraw() {
                           type="password"
                           className="textField"
                           placeholder="Enter withdrawal password"
+                          {...form.register("withdrawPassword")}
+                          onChange={() =>
+                            setErrors({ ...errors, password: null })
+                          }
                         />
                       </div>
+                      {errors.password && (
+                        <div className="errorText">{errors.password}</div>
+                      )}
                     </div>
 
+                    {/* Fee Information */}
                     <div className="feeContainer">
-                      <div className="feeRow">
-                        <div className="feeLabel">Minimum withdrawal</div>
-                        <div className="feeValue">0.001 {selected}</div>
-                      </div>
-                      <div className="feeRow">
-                        <div className="feeLabel">Network fee</div>
-                        <div className="feeValue">0.0005 {selected}</div>
-                      </div>
-                      <div className="feeRow">
-                        <div className="feeLabel">Service fee</div>
-                        <div className="feeValue">0.0001 {selected}</div>
-                      </div>
-                      <div className="feeRow receiveAmount">
-                        <div className="feeLabel">You will receive</div>
-                        <div className="feeValue">0.0000 {selected}</div>
-                      </div>
+                      {currentFeeConfig && (
+                        <>
+                          <div className="feeRow">
+                            <div className="feeLabel">Minimum withdrawal</div>
+                            <div className="feeValue">
+                              {currentFeeConfig.minAmount} {selected}
+                            </div>
+                          </div>
+                          <div className="feeRow">
+                            <div className="feeLabel">Network fee</div>
+                            <div className="feeValue">
+                              {currentFeeConfig.fee} {selected}
+                            </div>
+                          </div>
+                          <div className="feeRow">
+                            <div className="feeLabel">Service fee</div>
+                            <div className="feeValue">0.0000 {selected}</div>
+                          </div>
+                          <div className="feeRow receiveAmount">
+                            <div className="feeLabel">You will receive</div>
+                            <div className="feeValue">
+                              {receivedAmount.toFixed(8)} {selected}
+                            </div>
+                          </div>
+                        </>
+                      )}
                     </div>
 
                     <div className="securityNotice">
@@ -281,7 +419,13 @@ function Withdraw() {
                       </div>
                     </div>
 
-                    <button type="submit" className="withdrawBtn">
+                    <button
+                      type="submit"
+                      className="withdrawBtn"
+                      disabled={
+                        !withdrawAmount || !form.watch("withdrawPassword")
+                      }
+                    >
                       Confirm Withdrawal
                     </button>
                   </div>
@@ -362,6 +506,7 @@ function Withdraw() {
           font-weight: bold;
           margin-bottom: 12px;
           font-size: 16px;
+          color: #FFFFFF;
         }
         
         .currencyDropdownContainer {
@@ -403,6 +548,12 @@ function Withdraw() {
           margin-top: 8px;
         }
         
+        .errorText {
+          color: #FF4444;
+          font-size: 14px;
+          margin-top: 5px;
+        }
+        
         /* Form Styles */
         .formSection {
           margin-top: 20px;
@@ -423,6 +574,11 @@ function Withdraw() {
           background-color: #2A2A2A;
           border-radius: 12px;
           padding: 15px;
+          border: 1px solid #333333;
+        }
+        
+        .inputWrapper:focus-within {
+          border-color: #F3BA2F;
         }
         
         .textField {
@@ -432,6 +588,10 @@ function Withdraw() {
           color: #FFFFFF;
           font-size: 16px;
           outline: none;
+        }
+        
+        .textField:disabled {
+          color: #777777;
         }
         
         .networkInfo {
@@ -461,6 +621,7 @@ function Withdraw() {
           border-radius: 12px;
           padding: 15px;
           margin-bottom: 20px;
+          border: 1px solid #333333;
         }
         
         .feeRow {
@@ -484,6 +645,7 @@ function Withdraw() {
           padding-top: 12px;
           margin-top: 12px;
           font-weight: bold;
+          font-size: 16px;
         }
         
         .securityNotice {
@@ -531,7 +693,7 @@ function Withdraw() {
           transition: background-color 0.3s ease;
         }
         
-        .withdrawBtn:hover {
+        .withdrawBtn:hover:not(:disabled) {
           background-color: #e6ab0a;
         }
         
