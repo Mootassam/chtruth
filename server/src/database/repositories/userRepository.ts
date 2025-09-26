@@ -157,8 +157,8 @@ export default class UserRepository {
     }
 
     return {
-      totalDepositUSDT: totalInUSDT,
-      totalCount: deposits.length,
+      totalDepositUSDT: totalInUSDT || 0,
+      totalCount: deposits.length || 0,
     };
   }
 
@@ -211,8 +211,8 @@ export default class UserRepository {
     }
 
     return {
-      totalWithdrawUSDT: totalInUSDT,
-      totalCount: withdrawals.length,
+      totalWithdrawUSDT: totalInUSDT || 0,
+      totalCount: withdrawals.length || 0,
     };
   }
 
