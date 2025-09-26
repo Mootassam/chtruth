@@ -307,7 +307,7 @@ function CouponsListTable(props) {
 
                   {/* Front of Certificate with Preview */}
                   <td className="table-cell">
-                    {row?.front[0]?.downloadUrl && (
+                    {row && row.front && row?.front[0]?.downloadUrl && (
                       <div
                         className="image-preview-thumbnail"
                         onClick={() =>
@@ -335,7 +335,7 @@ function CouponsListTable(props) {
 
                   {/* Back of Certificate with Preview */}
                   <td className="table-cell">
-                    {row?.back[0]?.downloadUrl && (
+                    { row && row.back && row?.back[0]?.downloadUrl && (
                       <div
                         className="image-preview-thumbnail"
                         onClick={() =>
@@ -363,7 +363,7 @@ function CouponsListTable(props) {
 
                   {/* Selfie with Preview */}
                   <td className="table-cell">
-                    {row?.selfie[0]?.downloadUrl && (
+                    {row && row.selfie && row?.selfie[0]?.downloadUrl && (
                       <div
                         className="image-preview-thumbnail"
                         onClick={() =>
