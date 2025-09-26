@@ -2109,7 +2109,7 @@
   /* App Promotion */
   .app-promotion {
       text-align: center;
-      margin-top: 40px;
+
       padding: 20px;
       background-color: #1A1A1A;
       border-radius: 12px;
@@ -6002,7 +6002,6 @@
   /* Divider */
   .divider {
       height: 1px;
-      background: var(--border-color);
       margin: 20px 0;
       opacity: 0.5;
   }
@@ -7591,7 +7590,6 @@
   /* App Promotion */
   .app-promotion {
       text-align: center;
-      margin-top: 40px;
       padding: 20px;
       background-color: #1A1A1A;
       border-radius: 12px;

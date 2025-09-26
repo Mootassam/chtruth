@@ -360,7 +360,6 @@ function CouponsListTable(props) {
                       </div>
                     )}
                   </td>
-
                   {/* Selfie with Preview */}
                   <td className="table-cell">
                     {row && row.selfie && row?.selfie[0]?.downloadUrl && (

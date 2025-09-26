@@ -58,9 +58,15 @@ export function InputFormItem(props) {
         </label>
       )}
       {description}
-      <div className="input-container" style={className === "captcha-input" ? { padding: 0 } : {}}>
+      <div 
+        className="input-container" 
+        style={{ 
+          position: 'relative',
+          ...(className === "captcha-input" ? { padding: 0 } : {})
+        }}
+      >
         <input
-          className={`${props.className} ${
+          className={`${className} ${
             errorMessage ? "__danger" : ""
           }`}
           id={name}
@@ -77,10 +83,13 @@ export function InputFormItem(props) {
           autoFocus={autoFocus || undefined}
           autoComplete={autoComplete || undefined}
           disabled={disabled}
-          style={type === "password" ? { paddingRight: "40px" } : {}}
+          style={type === "password" ? { 
+            paddingRight: "40px",
+            width: "100%"
+          } : { width: "100%" }}
         />
         
-        {/* Eye icon for password fields */}
+        {/* Eye icon for password fields - positioned inside input */}
         {type === "password" && (
           <div 
             className="toggle-password" 
@@ -91,7 +100,11 @@ export function InputFormItem(props) {
               top: "50%",
               transform: "translateY(-50%)",
               cursor: "pointer",
-              color: "#888"
+              color: "#888",
+              zIndex: 2,
+              background: "transparent",
+              border: "none",
+              padding: "8px"
             }}
           >
             <i className={showPassword ? "far fa-eye-slash" : "far fa-eye"} />

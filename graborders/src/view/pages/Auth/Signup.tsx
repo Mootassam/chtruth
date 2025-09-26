@@ -39,22 +39,27 @@ function Signup() {
       .string(i18n("user.fields.newPasswordConfirmation"), {
         required: true,
       })
-      .oneOf([yup.ref("password"), null], i18n("auth.passwordChange.mustMatch")),
+      .oneOf(
+        [yup.ref("password"), null],
+        i18n("auth.passwordChange.mustMatch")
+      ),
     phoneNumber: yupFormSchemas.string(i18n("user.fields.phoneNumber"), {
       required: true,
- 
     }),
-      invitationcode: yupFormSchemas.string(i18n("user.fields.invitationcode"), {
+    invitationcode: yupFormSchemas.string(i18n("user.fields.invitationcode"), {
       required: true,
     }),
-    withdrawPassword: yupFormSchemas.string(i18n("user.fields.withdrawPassword"), {
-      required: true,
-    }),
+    withdrawPassword: yupFormSchemas.string(
+      i18n("user.fields.withdrawPassword"),
+      {
+        required: true,
+      }
+    ),
 
     captcha: yup
       .string()
       .required(i18n("user.fields.captcha"))
-      .test('captcha-match', 'Captcha does not match', function(value) {
+      .test("captcha-match", "Captcha does not match", function (value) {
         return value === captchaText;
       }),
   });
@@ -67,7 +72,7 @@ function Signup() {
       password: "",
       newPasswordConfirmation: "",
       phoneNumber: "",
-      withdrawPassword:"",
+      withdrawPassword: "",
       invitationcode: "",
       captcha: "",
     },
@@ -91,19 +96,23 @@ function Signup() {
     form.clearErrors("captcha");
   }, [form]);
 
-  const onSubmit = useCallback((data) => {
-    // Captcha validation is already handled by yup schema
-    const { email, password, phoneNumber,withdrawPassword, invitationcode } = data;
-    dispatch(
-      actions.doRegisterEmailAndPassword(
-        email,
-        password,
-        phoneNumber,
-  withdrawPassword,
-        invitationcode
-      )
-    );
-  }, [dispatch]);
+  const onSubmit = useCallback(
+    (data) => {
+      // Captcha validation is already handled by yup schema
+      const { email, password, phoneNumber, withdrawPassword, invitationcode } =
+        data;
+      dispatch(
+        actions.doRegisterEmailAndPassword(
+          email,
+          password,
+          phoneNumber,
+          withdrawPassword,
+          invitationcode
+        )
+      );
+    },
+    [dispatch]
+  );
 
   const goBack = useCallback(() => {
     history.goBack();
@@ -116,14 +125,15 @@ function Signup() {
   return (
     <div className="container">
       {/* Header Section */}
-      <div className="header" style={{display: 'flex'}}>
-        <div className="back-button" onClick={goBack} style={{ cursor: "pointer" }}>
+      <div className="header" style={{ display: "flex" }}>
+        <div
+          className="back-button"
+          onClick={goBack}
+          style={{ cursor: "pointer" }}
+        >
           <i className="fas fa-arrow-left" />
         </div>
         <div className="page-title">SIGN UP</div>
-        <div className="language-icon" style={{ cursor: "pointer" }}>
-          <i className="fas fa-globe" />
-        </div>
       </div>
 
       {/* Form Section */}
@@ -149,14 +159,10 @@ function Signup() {
           />
 
           {/* Graphical Captcha */}
-          <label className="input-label">
-            Graphical Captcha
-          </label>
+          <label className="input-label">Graphical Captcha</label>
           <div className="captcha-container">
             <div className="captcha-display">
-              <div className="captcha-text">
-                {captchaText}
-              </div>
+              <div className="captcha-text">{captchaText}</div>
             </div>
             <div className="captcha-controls">
               <div className="refresh-captcha" onClick={refreshCaptcha}>
@@ -189,7 +195,7 @@ function Signup() {
             autoComplete="new-password"
             label="Confirm Password"
           />
-   <InputFormItem
+          <InputFormItem
             type="text"
             name="withdrawPassword"
             placeholder="Enter the withdraw Password"
@@ -205,21 +211,19 @@ function Signup() {
             externalErrorMessage={errorMessage}
             label="Invitation Code"
           />
-       
 
-          <button 
-            className="signup-button" 
-            disabled={loading} 
-            type="submit"
-          >
+          <button className="signup-button" disabled={loading} type="submit">
             <ButtonIcon loading={loading} />
-            <span>CREATE ACCOUNT</span>
+            <span>{loading ? "CREATING..." : "CREATE ACCOUNT"}</span>
           </button>
         </form>
       </FormProvider>
 
       {/* Footer Links */}
-      <div className="footer-links" style={{ textAlign: "center", margin: "20px 0" }}>
+      <div
+        className="footer-links"
+        style={{ textAlign: "center", margin: "20px 0" }}
+      >
         <Link to="/auth/signin" className="footer-link">
           Already have an account? Log in
         </Link>
@@ -227,7 +231,8 @@ function Signup() {
 
       {/* Terms */}
       <div className="terms">
-        By creating an account, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+        By creating an account, you agree to our{" "}
+        <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
       </div>
     </div>
   );

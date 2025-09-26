@@ -101,7 +101,6 @@ const authActions = {
         dispatch({ type: authActions.AUTH_START });
 
         let currentUser = null;
-        let kycIsActive = null
 
         const token = await service.signinWithEmailAndPassword(email, password);
 
