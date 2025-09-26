@@ -75,7 +75,7 @@ export default class DepositServicess {
         ...this.options,
         session,
       });
-      await WalletRepository.updateAmount(data.createdBy.id, data, {
+      await WalletRepository.processDeposit(data.createdBy.id, data, {
         ...this.options,
         session,
       });

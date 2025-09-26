@@ -144,6 +144,14 @@ function AssetsDetail() {
                 config.amountColor = '#FF6838';
                 break;
                 
+
+                case 'reward':
+                config.icon = 'fa-hand-holding-dollar';
+                config.typeText = 'Referral Reward';
+                config.iconClass = 'spot-profit';
+                config.color = '#63f211ff';
+                config.amountColor = '#5ffc1bff';
+                break;
             default:
                 config.icon = 'fa-exchange-alt';
                 config.typeText = 'Transaction';

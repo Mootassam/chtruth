@@ -20,7 +20,7 @@ export const setSocketIO = (socketIOInstance: SocketIOServer) => {
   io.admins = io.admins || {};
 
   io.on("connection", (socket) => {
-    console.log("✅ User connected:", socket.id);
+    // console.log("✅ User connected:", socket.id);
 
     // Send immediate success message (optional)
     socket.emit("success", "Connected successfully!");
@@ -32,10 +32,10 @@ export const setSocketIO = (socketIOInstance: SocketIOServer) => {
         if (!userId) return;
         if (isAdmin) {
           io.admins![userId] = socket.id;
-          console.log(`🛡️ Admin registered: ${userId} -> ${socket.id}`);
+          // console.log(`🛡️ Admin registered: ${userId} -> ${socket.id}`);
         } else {
           io.users![userId] = socket.id;
-          console.log(`👤 User registered: ${userId} -> ${socket.id}`);
+          // console.log(`👤 User registered: ${userId} -> ${socket.id}`);
         }
       }
     );
@@ -87,9 +87,9 @@ export async function sendNotification({
     const socketId = io.users![userId];
     if (socketId) {
       io.to(socketId).emit("newNotification", unread);
-      console.log(`📩 Sent notification to user ${userId}`);
+      // console.log(`📩 Sent notification to user ${userId}`);
     } else {
-      console.log(`⚠️ No active socket found for user ${userId}`);
+      // console.log(`⚠️ No active socket found for user ${userId}`);
     }
   }
 

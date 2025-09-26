@@ -23,7 +23,10 @@ export default (database) => {
     "futures_profit",        // ✅ Profit from futures trading
     "futures_loss",          // ✅ Loss from futures trading
     "spot_profit",        // ✅ Margin deposit for futures
-    "spot_loss",    // ✅ Final settlement of futures position
+    "spot_loss", 
+    "reward"  
+    
+  // ✅ Final settlement of futures position
   ],
   required: true,
 },
