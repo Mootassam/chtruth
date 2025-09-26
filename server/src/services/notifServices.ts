@@ -44,7 +44,7 @@ export default class NotifServicess {
     );
 
     try {
-      const record = await NotificationRepository.update(id,  io, {
+      const record = await NotificationRepository.update(id, io, {
         ...this.options,
         session,
       });
@@ -71,7 +71,6 @@ export default class NotifServicess {
     );
 
     try {
-
       const record = await NotificationRepository.updateStatus(id, data, io, {
         ...this.options,
         session,
@@ -120,11 +119,19 @@ export default class NotifServicess {
   }
 
   async findAllAutocomplete(search, limit) {
-    return NotificationRepository.findAllAutocomplete(search, limit, this.options);
+    return NotificationRepository.findAllAutocomplete(
+      search,
+      limit,
+      this.options
+    );
   }
 
   async findAndCountAll(args) {
     return NotificationRepository.findAndCountAll(args, this.options);
+  }
+
+  async countAll() {
+    return NotificationRepository.unreadSummary(this.options);
   }
 
   async import(data, importHash) {

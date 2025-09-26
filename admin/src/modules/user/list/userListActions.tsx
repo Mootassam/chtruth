@@ -45,6 +45,10 @@ const userListActions = {
   COUNT_SUCCESS: `${prefix}_COUNT_SUCCESS`,
   COUNT_ERROR: `${prefix}_COUNT_ERROR`,
 
+  NOTIFICATION_STARTED: `${prefix}_NOTIFICATION_STARTED`,
+  NOTIFICATION_SUCCESS: `${prefix}_NOTIFICATION_SUCCESS`,
+  NOTIFICATION_ERROR: `${prefix}_NOTIFICATION_ERROR`,
+
   countAll: () => async (dispatch, getState) => {
     try {
       dispatch({
@@ -65,6 +69,33 @@ const userListActions = {
       });
     }
   },
+
+count: () => async (dispatch, getState) => {
+  try {
+    dispatch({
+      type: userListActions.NOTIFICATION_STARTED,
+    });
+
+    const response = await UserService.allNotification();
+
+    dispatch({
+      type: userListActions.NOTIFICATION_SUCCESS,
+      kyc: response.kyc,
+      deposit: response.deposit,   // fixed typo
+      future: response.futures,    // fixed key
+      withdraw: response.withdraw,
+    });
+
+    return response;
+  } catch (error) {
+    Errors.handle(error);
+    dispatch({
+      type: userListActions.NOTIFICATION_ERROR,
+    });
+  }
+},
+
+
   doClearAllSelected() {
     return {
       type: userListActions.CLEAR_ALL_SELECTED,

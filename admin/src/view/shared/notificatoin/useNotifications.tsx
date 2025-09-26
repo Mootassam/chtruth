@@ -1,5 +1,8 @@
+
 import { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { io, Socket } from 'socket.io-client';
+import userListActions from 'src/modules/user/list/userListActions';
 
 let socket: Socket | null = null;
 
@@ -7,10 +10,9 @@ export default function useNotifications(
   userId: string,
   isAdmin: boolean = false,
 ) {
-  const [notifications, setNotifications] = useState<any[]>(
-    [],
-  );
 
+
+  const dispatch = useDispatch();
   useEffect(() => {
     if (!userId) return;
 
@@ -23,16 +25,15 @@ export default function useNotifications(
     // Register user/admin on connect
     socket.emit('register', { userId, isAdmin });
 
-
     // Debug success message
     socket.on('success', (data) => {
       console.log('✅ Backend says:', data);
     });
 
     // Listen to new notifications
-    socket.on('newNotification', (notif) => {
-      console.log('🔔 New notification:', notif);
-      setNotifications((prev) => [notif, ...prev]);
+    socket.on('admin', async (notif) => {
+      
+      await dispatch(userListActions.count());
     });
 
     // Cleanup on unmount
@@ -42,7 +43,7 @@ export default function useNotifications(
         socket.off('newNotification');
       }
     };
-  }, [userId, isAdmin]);
+  }, [dispatch]);
 
-  return { notifications };
+
 }

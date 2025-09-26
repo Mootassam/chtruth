@@ -64,6 +64,14 @@ class WithdrawRepository {
       updatedBy: currentUser.id,
     });
 
+    await sendNotification({
+      userId: data.createdBy, // the user to notify
+      message: ` ${data.totalAmount}`,
+      type: "withdraw", // type of notification
+      forAdmin: true,
+      options, // your repository options
+    });
+
     return wallet;
   }
 

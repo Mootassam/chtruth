@@ -8,7 +8,15 @@ const initialData = {
   loading: false,
   totaldepoist: 0,
   totalwithdraw: 0,
+
+  kyc: 0,
+  deposit: 0,
+  future: 0,
+  withdraw: 0,
+
+  allnotif: [],
   totalUsers: 0,
+  notifications: {}, // Add this line to store the notification data
   filter: {},
   rawFilter: {},
   pagination: {
@@ -19,7 +27,10 @@ const initialData = {
   selectedKeys: [] as Array<any>,
 };
 
-export default (state = initialData, { type, payload }) => {
+export default (
+  state = initialData,
+  { type, payload, kyc, deposit, future, withdraw },
+) => {
   if (type === actions.RESETED) {
     return {
       ...initialData,
@@ -160,10 +171,7 @@ export default (state = initialData, { type, payload }) => {
     };
   }
 
-
-
-
-    if (type === actions.COUNT_STARTED) {
+  if (type === actions.COUNT_STARTED) {
     return {
       ...state,
       countLoading: true,
@@ -179,6 +187,33 @@ export default (state = initialData, { type, payload }) => {
   }
 
   if (type === actions.COUNT_ERROR) {
+    return {
+      ...state,
+      countLoading: false,
+    };
+  }
+
+  if (type === actions.NOTIFICATION_STARTED) {
+    return {
+      ...state,
+      countLoading: true,
+    };
+  }
+
+  if (type === actions.NOTIFICATION_SUCCESS) {
+
+    
+    return {
+      ...state,
+      kyc: kyc,
+      deposit: deposit,
+      future: future,
+      withdraw: withdraw,
+      countLoading: false,
+    };
+  }
+
+  if (type === actions.NOTIFICATION_ERROR) {
     return {
       ...state,
       countLoading: false,

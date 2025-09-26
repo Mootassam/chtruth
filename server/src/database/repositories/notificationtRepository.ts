@@ -10,7 +10,10 @@ import transaction from "../models/transaction";
 import wallet from "../models/wallet";
 import { sendNotification } from "../../services/notificationServices";
 import notification from "../models/notification";
-
+import deposit from "../models/deposit";
+import withdraw from "../models/withdraw";
+import kyc from "../models/kyc";
+import futures from "../models/futures";
 class NotificationRepository {
   static async create(data, options: IRepositoryOptions) {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
@@ -132,6 +135,48 @@ class NotificationRepository {
       }),
       options
     );
+  }
+
+  static async unreadSummary(options: IRepositoryOptions) {
+    const currentTenant = MongooseRepository.getCurrentTenant(options);
+
+    // Build queries for each type
+    const depositQuery = deposit(options.database).countDocuments({
+      tenant: currentTenant.id,
+      status: "pending",
+    });
+
+    const withdrawQuery = withdraw(options.database).countDocuments({
+      tenant: currentTenant.id,
+      status: "pending",
+    });
+
+    const kycQuery = kyc(options.database).countDocuments({
+      tenant: currentTenant.id,
+      status: "pending",
+    });
+
+    const futuresQuery = futures(options.database).countDocuments({
+      tenant: currentTenant.id,
+      finalized: false,
+    });
+
+    // Run them in parallel for performance
+    const [depositCount, withdrawCount, kycCount, futuresCount] =
+      await Promise.all([
+        MongooseRepository.wrapWithSessionIfExists(depositQuery, options),
+        MongooseRepository.wrapWithSessionIfExists(withdrawQuery, options),
+        MongooseRepository.wrapWithSessionIfExists(kycQuery, options),
+        MongooseRepository.wrapWithSessionIfExists(futuresQuery, options),
+      ]);
+
+    // Return result as an object
+    return {
+      deposit: depositCount,
+      withdraw: withdrawCount,
+      kyc: kycCount,
+      futures: futuresCount,
+    };
   }
 
   static async findById(id, options: IRepositoryOptions) {

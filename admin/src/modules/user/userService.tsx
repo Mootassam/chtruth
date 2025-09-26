@@ -82,6 +82,15 @@ export default class UserService {
     return response.data.count;
   }
 
+  static async allNotification() {
+    const tenantId = AuthCurrentTenant.get();
+    const response = await authAxios.get(
+      `/tenant/${tenantId}/allnotif`,
+    );
+
+    return response.data;
+  }
+
   static async destroy(ids) {
     const params = {
       ids,

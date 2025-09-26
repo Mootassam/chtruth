@@ -34,6 +34,8 @@ export default class kycServicess {
         "vip"
       );
 
+      
+
       throw error;
     }
   }

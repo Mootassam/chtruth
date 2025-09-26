@@ -1,4 +1,3 @@
-
 import Errors from 'src/modules/shared/error/errors';
 import Message from 'src/view/shared/message';
 import UserService from 'src/modules/user/userService';
@@ -21,6 +20,10 @@ const userFormActions = {
   UPDATE_STARTED: `${prefix}_UPDATE_STARTED`,
   UPDATE_SUCCESS: `${prefix}_UPDATE_SUCCESS`,
   UPDATE_ERROR: `${prefix}_UPDATE_ERROR`,
+
+  COUNT_STARTED: `${prefix}_COUNT_STARTED`,
+  COUNT_SUCCESS: `${prefix}_COUNT_SUCCESS`,
+  COUNT_ERROR: `${prefix}_COUNT_ERROR`,
 
   doInit: (id?) => async (dispatch) => {
     try {
@@ -106,9 +109,7 @@ const userFormActions = {
     }
   },
 
-
-  
-edituserkyc: (values) => async (dispatch, getState) => {
+  edituserkyc: (values) => async (dispatch, getState) => {
     try {
       dispatch({
         type: userFormActions.UPDATE_STARTED,
@@ -140,8 +141,23 @@ edituserkyc: (values) => async (dispatch, getState) => {
     }
   },
 
+  countNotification:
+    (value) => async (dispatch, getState) => {
+      try {
+        dispatch({
+          type: userFormActions.INIT_STARTED,
+        });
 
-  
+        dispatch({
+          type: userFormActions.INIT_STARTED,
+          paylaod: value,
+        });
+      } catch (error) {
+        dispatch({
+          type: userFormActions.INIT_STARTED,
+        });
+      }
+    },
 };
 
 export default userFormActions;

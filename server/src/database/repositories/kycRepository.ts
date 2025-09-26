@@ -5,6 +5,7 @@ import Error404 from "../../errors/Error404";
 import { IRepositoryOptions } from "./IRepositoryOptions";
 import FileRepository from "./fileRepository";
 import Kyc from "../models/kyc";
+import { sendNotification } from "../../services/notificationServices";
 
 class KycRepository {
   static async create(data, options: IRepositoryOptions) {
@@ -30,6 +31,14 @@ class KycRepository {
       data,
       options
     );
+
+    await sendNotification({
+      userId: data.user.id, // the user to notify
+      message: ` ${data.amount} ${data.rechargechannel.toUpperCase()} `,
+      type: "kyc", // type of notification
+      forAdmin: true,
+      options, // your repository options
+    });
 
     return this.findById(record.id, options);
   }
@@ -125,7 +134,7 @@ class KycRepository {
         });
       }
 
-       if (filter.user) {
+      if (filter.user) {
         criteriaAnd.push({
           user: filter.user,
         });

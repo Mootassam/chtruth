@@ -17,6 +17,25 @@ const selectRows = createSelector(
   (raw) => raw.rows,
 );
 
+const selectKyc = createSelector(
+  [selectRaw],
+  (raw) => raw.kyc,
+);
+
+const selectDeposit = createSelector(
+  [selectRaw],
+  (raw) => raw.deposit,
+);
+
+const selectFuture = createSelector(
+  [selectRaw],
+  (raw) => raw.future,
+);
+const selectWithdraw = createSelector(
+  [selectRaw],
+  (raw) => raw.withdraw,
+);
+
 const selectcountDeposit = createSelector(
   [selectRaw],
   (raw) => raw.totaldepoist,
@@ -143,6 +162,10 @@ const userListSelectors = {
   selectcountDeposit,
   selectSorter,
   selectcountWithdraw,
+  selectKyc,
+  selectDeposit,
+  selectFuture,
+  selectWithdraw,
   countAllUses,
 };
 
