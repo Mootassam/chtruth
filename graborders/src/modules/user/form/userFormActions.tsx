@@ -30,6 +30,10 @@ const userFormActions = {
   MEMBERS_SUCCESS: `${prefix}_MEMBERS_SUCCESS`,
   MEMBERS_ERROR: `${prefix}_MEMBERS_ERROR`,
 
+  REWARD_STARTED: `${prefix}_REWARD_STARTED`,
+  REWARD_SUCCESS: `${prefix}_REWARD_SUCCESS`,
+  REWARD_ERROR: `${prefix}_REWARD_ERROR`,
+
   doInit: (id?) => async (dispatch) => {
     try {
       dispatch({
@@ -96,7 +100,6 @@ const userFormActions = {
 
       const response = await UserService.userBylevel(values);
 
-
       dispatch({
         type: userFormActions.MEMBERS_SUCCESS,
         payload: response,
@@ -106,6 +109,27 @@ const userFormActions = {
 
       dispatch({
         type: userFormActions.MEMBERS_ERROR,
+      });
+    }
+  },
+
+  rewardCount: () => async (dispatch, getState) => {
+    try {
+      dispatch({
+        type: userFormActions.REWARD_STARTED,
+      });
+
+      const response = await UserService.countReward();
+
+      dispatch({
+        type: userFormActions.REWARD_SUCCESS,
+        payload: response.total,
+      });
+    } catch (error) {
+      Errors.handle(error);
+
+      dispatch({
+        type: userFormActions.REWARD_ERROR,
       });
     }
   },

@@ -17,9 +17,7 @@ export default class TransactionService {
       this.options.database
     );
 
-
     try {
-
       // // await this.checkpermission(this.options)
       // await this.checkSolde(data, { ...this.options });
 
@@ -44,15 +42,11 @@ export default class TransactionService {
     }
   }
 
-  async checkPasswprd(data, options) {}
-
-  async checkpermission(options) { 
+  async checkpermission(options) {
     const currentUser = MongooseRepository.getCurrentUser(options);
-if( currentUser.withdraw) return 
+    if (currentUser.withdraw) return;
 
-throw new Error405("Should be contact the customer service about this");
-
-
+    throw new Error405("Should be contact the customer service about this");
   }
 
   async checkSolde(data, options) {
@@ -65,19 +59,17 @@ throw new Error405("Should be contact the customer service about this");
     const type = data.type;
 
     if (type === "withdraw") {
-      
-      if(currentUser.withdrawPassword == data.withdrawPassword) {
-      if (currentUser.balance < amount) {
+      if (currentUser.withdrawPassword == data.withdrawPassword) {
+        if (currentUser.balance < amount) {
+          throw new Error405(
+            "It looks like your withdrawal amount exceeds your balance"
+          );
+        }
+      } else {
         throw new Error405(
-          "It looks like your withdrawal amount exceeds your balance"
+          "Your withdraw Password is not correct please check again"
         );
       }
-    }
-    else { 
-      throw new Error405(
-        "Your withdraw Password is not correct please check again"
-      ); 
-    }
     }
   }
 
@@ -144,8 +136,12 @@ throw new Error405("Should be contact the customer service about this");
     return TransactionRepository.findAndCountAll(args, this.options);
   }
 
-    async findAndCountAllMobile(args) {
+  async findAndCountAllMobile(args) {
     return TransactionRepository.findAndCountAllMobile(args, this.options);
+  }
+
+  async countReward(options) {
+    return TransactionRepository.totalReward(this.options);
   }
 
   async findAndCountByUser(args) {

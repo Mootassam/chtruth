@@ -25,6 +25,12 @@ export default (app) => {
   );
 
 
+  app.get(
+    `/tenant/:tenantId/reward`,
+    require("./transactionReward").default
+  );
+
+
     app.get(
     `/tenant/:tenantId/transactionMobile`,
     require("./transactionListMobile").default

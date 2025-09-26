@@ -25,8 +25,6 @@ export default class UserService {
   }
 
   static async userBylevel(data) {
-   
-   
     const tenantId = AuthCurrentTenant.get();
     const response = await authAxios.post(
       `/tenant/${tenantId}/usersByLevel`,
@@ -151,6 +149,12 @@ export default class UserService {
   static async find(id) {
     const tenantId = AuthCurrentTenant.get();
     const response = await authAxios.get(`/tenant/${tenantId}/user/${id}`);
+    return response.data;
+  }
+
+  static async countReward() {
+    const tenantId = AuthCurrentTenant.get();
+    const response = await authAxios.get(`/tenant/${tenantId}/reward`);
     return response.data;
   }
 

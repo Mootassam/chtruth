@@ -6,8 +6,9 @@ const initialData = {
   loading: false,
   user: null,
   member: null,
-  users: null, 
-  listLoading: false
+  users: null,
+  reward: 0,
+  listLoading: false,
 };
 
 export default (state = initialData, { type, payload }) => {
@@ -56,6 +57,25 @@ export default (state = initialData, { type, payload }) => {
     };
   }
 
+  if (type === actions.REWARD_STARTED) {
+    return {
+      ...state,
+    };
+  }
+
+  if (type === actions.REWARD_SUCCESS) {
+    return {
+      ...state,
+      reward: payload,
+    };
+  }
+
+  if (type === actions.REWARD_ERROR) {
+    return {
+      ...state,
+    };
+  }
+
   if (type === actions.UPDATE_STARTED) {
     return {
       ...state,
@@ -98,7 +118,6 @@ export default (state = initialData, { type, payload }) => {
       listLoading: false,
     };
   }
-
 
   if (type === actions.FETCH_STARTED) {
     return {

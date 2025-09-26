@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import authSelectors from "src/modules/auth/authSelectors";
 import userFormActions from "src/modules/user/form/userFormActions";
 import userFormSelectors from "src/modules/user/form/userFormSelectors";
+import UserService from "src/modules/user/userService";
 import SubHeader from "src/view/shared/Header/SubHeader";
 import Dates from "src/view/shared/utils/Dates";
 
@@ -13,7 +14,7 @@ function Invitation() {
   const Loading = useSelector(userFormSelectors.loading);
   const listUser = useSelector(userFormSelectors.lisUsers);
   const userLoading = useSelector(userFormSelectors.usersLoading);
-
+  const totalReward = useSelector(userFormSelectors.reward);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalData, setModalData] = useState({
     title: "",
@@ -24,6 +25,7 @@ function Invitation() {
 
   useEffect(() => {
     if (currentUser?.refcode) {
+      dispatch(userFormActions.rewardCount());
       dispatch(userFormActions.doTree(currentUser.refcode));
     }
   }, [dispatch, currentUser?.refcode]);
@@ -62,10 +64,16 @@ function Invitation() {
 
     switch (platform) {
       case "whatsapp":
-        window.open(`https://wa.me/?text=${encodeURIComponent(shareText)}`, "_blank");
+        window.open(
+          `https://wa.me/?text=${encodeURIComponent(shareText)}`,
+          "_blank"
+        );
         break;
       case "email":
-        window.open(`mailto:?subject=Join NEXUS&body=${encodeURIComponent(shareText)}`, "_blank");
+        window.open(
+          `mailto:?subject=Join NEXUS&body=${encodeURIComponent(shareText)}`,
+          "_blank"
+        );
         break;
       case "sms":
         window.open(`sms:?body=${encodeURIComponent(shareText)}`, "_blank");
@@ -136,8 +144,8 @@ function Invitation() {
       <div className="invite-earn-section">
         <div className="invite-section-title">Earn Together</div>
         <div className="invite-desc">
-          Invite friends to join NEXUS and earn rewards when they sign up
-          and start trading.
+          Invite friends to join NEXUS and earn rewards when they sign up and
+          start trading.
         </div>
 
         {/* Referral Code */}
@@ -172,25 +180,12 @@ function Invitation() {
       </div>
 
       {/* Rewards Section */}
-      <div className="rewards-container">
-        <div className="invite-section-title">Your Rewards</div>
-        <div className="rewards-grid-container">
-          <div className="reward-item">
-            <div className="reward-amount">$125</div>
-            <div className="reward-text">Total Earned</div>
-          </div>
-          <div className="reward-item">
-            <div className="reward-amount">15</div>
-            <div className="reward-text">Friends Invited</div>
-          </div>
-          <div className="reward-item">
-            <div className="reward-amount">$25</div>
-            <div className="reward-text">Per Friend</div>
-          </div>
-          <div className="reward-item">
-            <div className="reward-amount">5</div>
-            <div className="reward-text">Pending Rewards</div>
-          </div>
+      {/* Total Earned Section */}
+      <div className="total-earned-section">
+        <div className="total-earned-card">
+          <div className="total-earned-label">Total Earned</div>
+          <div className="total-earned-amount">{totalReward} USDT</div>
+          <div className="total-earned-subtitle">All Time Commission</div>
         </div>
       </div>
 
@@ -370,10 +365,7 @@ function Invitation() {
       {/* Members Modal */}
       {isModalOpen && (
         <div className="modal-overlay " onClick={handleCloseModal}>
-          <div
-            className="modal-content"
-            onClick={(e) => e.stopPropagation()}
-          >
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h3 className="modal-title">{modalData.title}</h3>
               <button className="modal-close-btn" onClick={handleCloseModal}>
@@ -434,24 +426,22 @@ function Invitation() {
         </div>
       )}
 
-
-
       {/* Toast Notification */}
-      <div 
-        className="toast-notification" 
+      <div
+        className="toast-notification"
         id="referralToast"
         style={{
-          display: copySuccess ? 'block' : 'none',
-          position: 'fixed',
-          bottom: '20px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          background: '#00C076',
-          color: 'white',
-          padding: '12px 24px',
-          borderRadius: '8px',
-          fontWeight: '500',
-          zIndex: '1001'
+          display: copySuccess ? "block" : "none",
+          position: "fixed",
+          bottom: "20px",
+          left: "50%",
+          transform: "translateX(-50%)",
+          background: "#00C076",
+          color: "white",
+          padding: "12px 24px",
+          borderRadius: "8px",
+          fontWeight: "500",
+          zIndex: "1001",
         }}
       >
         Referral code copied to clipboard!
@@ -471,8 +461,17 @@ function Invitation() {
           </div>
           <div className="modal-body">
             {userLoading ? (
-              <div style={{textAlign: 'center', padding: '40px', color: '#F3BA2F'}}>
-                <i className="fas fa-spinner fa-spin" style={{fontSize: '24px', marginBottom: '15px'}}></i>
+              <div
+                style={{
+                  textAlign: "center",
+                  padding: "40px",
+                  color: "#F3BA2F",
+                }}
+              >
+                <i
+                  className="fas fa-spinner fa-spin"
+                  style={{ fontSize: "24px", marginBottom: "15px" }}
+                ></i>
                 <p>Loading members...</p>
               </div>
             ) : listUser && listUser.length > 0 ? (
@@ -510,7 +509,7 @@ function Invitation() {
           </div>
         </div>
       </div>
-          <style>{`
+      <style>{`
         /* Modal Styles */
         .modal-overlay {
           position: fixed;
@@ -716,6 +715,51 @@ function Invitation() {
             padding: 12px 20px;
           }
         }
+
+          .total-earned-section {
+    margin: 20px 0;
+  }
+
+  .total-earned-card {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+    border-radius: 16px;
+    padding: 30px 20px;
+    border: 1px solid #333333;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  }
+
+  .total-earned-label {
+    color: #aaaaaa;
+    font-size: 14px;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .total-earned-amount {
+    font-size: 42px;
+    font-weight: bold;
+    color: #F3BA2F;
+    margin-bottom: 8px;
+    text-shadow: 0 2px 10px rgba(243, 186, 47, 0.3);
+  }
+
+  .total-earned-subtitle {
+    color: #666666;
+    font-size: 12px;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 480px) {
+    .total-earned-card {
+      padding: 25px 15px;
+    }
+
+    .total-earned-amount {
+      font-size: 36px;
+    }
+  }
       `}</style>
     </div>
   );

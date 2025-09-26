@@ -119,6 +119,31 @@ class TransactionRepository {
     );
   }
 
+  static async totalReward(options: IRepositoryOptions) {
+    const currentTenant = MongooseRepository.getCurrentTenant(options);
+    const currentUser = MongooseRepository.getCurrentUser(options);
+
+    const { ObjectId } = require("mongoose").Types;
+    const result = await Transaction(options.database).aggregate([
+      {
+        $match: {
+          type: "reward",
+          asset: "USDT",
+          user: ObjectId(currentUser.id),
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          totalAmount: { $sum: "$amount" },
+        },
+      },
+    ]);
+
+    // If no results, return 0
+    return { total: result.length > 0 ? result[0].totalAmount : 0 };
+  }
+
   static async findById(id, options: IRepositoryOptions) {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
 
@@ -145,7 +170,6 @@ class TransactionRepository {
     criteriaAnd.push({
       tenant: currentTenant.id,
     });
-   
 
     //   criteriaAnd.push({
     //     user: currentUser.id,
@@ -244,7 +268,6 @@ class TransactionRepository {
     criteriaAnd.push({
       tenant: currentTenant.id,
     });
-   
 
     //   criteriaAnd.push({
     //     user: currentUser.id,
@@ -332,7 +355,6 @@ class TransactionRepository {
     return { rows, count };
   }
 
-
   static async findAndCountByUser(
     { filter, limit = 0, offset = 0, orderBy = "" },
     options: IRepositoryOptions
@@ -346,7 +368,7 @@ class TransactionRepository {
       tenant: currentTenant.id,
     });
 
-       criteriaAnd.push({
+    criteriaAnd.push({
       user: currentUser.id,
     });
     if (filter) {
@@ -439,8 +461,6 @@ class TransactionRepository {
 
     return { rows, count };
   }
-  
-
 
   static async findAllAutocomplete(search, limit, options: IRepositoryOptions) {
     const currentTenant = MongooseRepository.getCurrentTenant(options);

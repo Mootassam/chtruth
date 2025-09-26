@@ -6,6 +6,8 @@ const selectUser = createSelector([selectRaw], (raw) => raw.user);
 
 const listMembers = createSelector([selectRaw], (raw) => raw.member);
 const loading = createSelector([selectRaw], (raw) => raw.loading);
+const reward = createSelector([selectRaw], (raw) => raw.reward);
+
 const lisUsers = createSelector([selectRaw], (raw) => raw.users);
 const usersLoading = createSelector([selectRaw], (raw) => raw.listLoading);
 
@@ -23,6 +25,7 @@ const userFormSelectors = {
   selectUser,
   listMembers,
   loading,
+  reward,
   lisUsers,
   usersLoading,
   selectRaw,
