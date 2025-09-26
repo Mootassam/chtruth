@@ -23,7 +23,7 @@ export default (app, io) => {
     `/tenant/:tenantId/notification/autocomplete`,
     require("./notificationAutocomplete").default
   );
-  app.get(`/tenant/:tenantId/allnotif`, require("./notificationcount").default);
+  app.get(`/tenant/:tenantId/allnotif`, require("./notificationCount").default);
   app.get(
     `/tenant/:tenantId/notification`,
     require("./notificationList").default

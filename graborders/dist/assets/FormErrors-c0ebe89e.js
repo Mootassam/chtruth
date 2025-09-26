@@ -1,0 +1,1 @@
+class g{static errorMessage(t,a,c,e,u=null){var n;if(u)return u;if(!e&&!c[t])return null;const s=a[t];return((n=s==null?void 0:s[0])==null?void 0:n.message)||(s==null?void 0:s.message)||s||null}}export{g as F};
