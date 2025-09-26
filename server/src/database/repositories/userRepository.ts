@@ -19,6 +19,7 @@ import withdraw from "../models/withdraw";
 import deposit from "../models/deposit";
 import axios from "axios";
 import { sendNotification } from "../../services/notificationServices";
+import kyc from "../models/kyc";
 export default class UserRepository {
   static async create(data, options: IRepositoryOptions) {
     const currentUser = MongooseRepository.getCurrentUser(options);
@@ -215,28 +216,37 @@ export default class UserRepository {
     };
   }
 
-  static async UpdateKyc(value, options: IRepositoryOptions) {
-    await User(options.database).updateOne(
-      { _id: value.user },
-      {
-        $set: {
-          kyc: value.kyc,
-        },
-      },
-      options
-    );
-    if(value.kyc) { 
-      console.log("I am here");
-      
-  await sendNotification({
-      userId: value.user, // the user to notify
-      message: `accountActivated`,
-      type: "accountActivated", // type of notification
-      options, // your repository options
-    });
+static async UpdateKyc(value, options: IRepositoryOptions) {
+  // Find the KYC record for this user
+  const item = await kyc(options.database).findOne({ user: value.user });
 
-    }
+  if (!item) {
+    throw new Error("KYC record not found for user");
   }
+
+  // Update user document
+  await User(options.database).updateOne(
+    { _id: value.user },
+    {
+      $set: {
+        kyc: value.kyc,
+        fullName: item.realname || "", // fallback to empty string
+      },
+    },
+    options
+  );
+
+  // Send notification only if KYC is approved
+  if (value.kyc === true) {
+    await sendNotification({
+      userId: value.user,
+      message: "accountActivated",
+      type: "accountActivated",
+      options,
+    });
+  }
+}
+
 
   static async UpdateWithdrawPassword(value, options: IRepositoryOptions) {
     const currentUser = MongooseRepository.getCurrentUser(options);

@@ -34,7 +34,7 @@ class KycRepository {
 
     await sendNotification({
       userId: data.user.id, // the user to notify
-      message: ` ${data.amount} ${data.rechargechannel.toUpperCase()} `,
+      message: `kyc`,
       type: "kyc", // type of notification
       forAdmin: true,
       options, // your repository options

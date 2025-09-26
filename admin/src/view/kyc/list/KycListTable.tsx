@@ -15,11 +15,12 @@ import kycActions from 'src/modules/kyc/form/kycFormActions';
 import userFormAction from 'src/modules/user/form/userFormActions';
 
 function CouponsListTable(props) {
-  const [recordIdToDestroy, setRecordIdToDestroy] = useState(null);
+  const [recordIdToDestroy, setRecordIdToDestroy] =
+    useState(null);
   const [imagePreview, setImagePreview] = useState({
     isOpen: false,
     imageUrl: '',
-    title: ''
+    title: '',
   });
   const dispatch = useDispatch();
 
@@ -58,7 +59,7 @@ function CouponsListTable(props) {
     setImagePreview({
       isOpen: true,
       imageUrl: imageUrl,
-      title: title
+      title: title,
     });
   };
 
@@ -67,7 +68,7 @@ function CouponsListTable(props) {
     setImagePreview({
       isOpen: false,
       imageUrl: '',
-      title: ''
+      title: '',
     });
   };
 
@@ -109,20 +110,36 @@ function CouponsListTable(props) {
 
   // Image Preview Modal Component
   const ImagePreviewModal = () => (
-    <div className={`image-preview-modal ${imagePreview.isOpen ? 'show' : ''}`}>
-      <div className="modal-overlay" onClick={closeImagePreview}></div>
+    <div
+      className={`image-preview-modal ${
+        imagePreview.isOpen ? 'show' : ''
+      }`}
+    >
+      <div
+        className="modal-overlay"
+        onClick={closeImagePreview}
+      ></div>
       <div className="modal-content">
         <div className="modal-header">
           <h3>{imagePreview.title}</h3>
-          <button className="close-button" onClick={closeImagePreview}>
+          <button
+            className="close-button"
+            onClick={closeImagePreview}
+          >
             ×
           </button>
         </div>
         <div className="image-container">
-          <img src={imagePreview.imageUrl} alt={imagePreview.title} />
+          <img
+            src={imagePreview.imageUrl}
+            alt={imagePreview.title}
+          />
         </div>
         <div className="modal-footer">
-          <button className="btn-action" onClick={closeImagePreview}>
+          <button
+            className="btn-action"
+            onClick={closeImagePreview}
+          >
             Close
           </button>
         </div>
@@ -148,7 +165,7 @@ function CouponsListTable(props) {
                   </div>
                 )}
               </th>
-           
+
               <th
                 className="sortable-header"
                 onClick={() => doChangeSort('type')}
@@ -223,16 +240,14 @@ function CouponsListTable(props) {
                 className="sortable-header"
                 onClick={() => doChangeSort('levelLimit')}
               >
-                {i18n(
-                  'entities.kyc.fields.selfie',
-                )}
+                {i18n('entities.kyc.fields.selfie')}
                 {sorter.field === 'levelLimit' && (
                   <span className="sort-icon">
                     {sorter.order === 'ascend' ? '↑' : '↓'}
                   </span>
                 )}
               </th>
-           
+
               <th className="actions-header">Actions</th>
             </tr>
           </thead>
@@ -276,7 +291,7 @@ function CouponsListTable(props) {
                       />
                     </div>
                   </td>
-  
+
                   <td className="table-cell">
                     <UserListItem value={row.user} />
                   </td>
@@ -289,22 +304,25 @@ function CouponsListTable(props) {
                   <td className="table-cell numeric">
                     {row.idnumer}
                   </td>
-                  
+
                   {/* Front of Certificate with Preview */}
                   <td className="table-cell">
                     {row?.front[0]?.downloadUrl && (
-                      <div 
+                      <div
                         className="image-preview-thumbnail"
-                        onClick={() => 
+                        onClick={() =>
                           openImagePreview(
-                            row.front[0].downloadUrl, 
-                            `Front of Certificate - ${row.realname}`
+                            row.front[0].downloadUrl,
+                            `Front of Certificate - ${row.realname}`,
                           )
                         }
                       >
                         <img
                           src={row.front[0].downloadUrl}
-                          style={{ height: '50px', cursor: 'pointer' }}
+                          style={{
+                            height: '50px',
+                            cursor: 'pointer',
+                          }}
                           alt="Front document"
                           title="Click to view larger"
                         />
@@ -314,22 +332,25 @@ function CouponsListTable(props) {
                       </div>
                     )}
                   </td>
-                  
+
                   {/* Back of Certificate with Preview */}
                   <td className="table-cell">
                     {row?.back[0]?.downloadUrl && (
-                      <div 
+                      <div
                         className="image-preview-thumbnail"
-                        onClick={() => 
+                        onClick={() =>
                           openImagePreview(
-                            row.back[0].downloadUrl, 
-                            `Back of Certificate - ${row.realname}`
+                            row.back[0].downloadUrl,
+                            `Back of Certificate - ${row.realname}`,
                           )
                         }
                       >
                         <img
                           src={row.back[0].downloadUrl}
-                          style={{ height: '50px', cursor: 'pointer' }}
+                          style={{
+                            height: '50px',
+                            cursor: 'pointer',
+                          }}
                           alt="Back document"
                           title="Click to view larger"
                         />
@@ -339,22 +360,25 @@ function CouponsListTable(props) {
                       </div>
                     )}
                   </td>
-                  
+
                   {/* Selfie with Preview */}
                   <td className="table-cell">
                     {row?.selfie[0]?.downloadUrl && (
-                      <div 
+                      <div
                         className="image-preview-thumbnail"
-                        onClick={() => 
+                        onClick={() =>
                           openImagePreview(
-                            row.selfie[0].downloadUrl, 
-                            `Selfie - ${row.realname}`
+                            row.selfie[0].downloadUrl,
+                            `Selfie - ${row.realname}`,
                           )
                         }
                       >
                         <img
                           src={row.selfie[0].downloadUrl}
-                          style={{ height: '50px', cursor: 'pointer' }}
+                          style={{
+                            height: '50px',
+                            cursor: 'pointer',
+                          }}
                           alt="Selfie"
                           title="Click to view larger"
                         />
@@ -364,11 +388,17 @@ function CouponsListTable(props) {
                       </div>
                     )}
                   </td>
-             
+
                   <td className="actions-cell">
                     <div className="actions-container">
                       {row.status === 'pending' ? (
-                        <div>
+                        <div
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 10,
+                          }}
+                        >
                           <button
                             className="btn-action edit"
                             onClick={() =>
