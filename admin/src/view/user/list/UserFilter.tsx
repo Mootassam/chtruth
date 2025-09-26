@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
@@ -104,6 +105,9 @@ function UserFilter(props) {
   }, [dispatch]);
 
   const onSubmit = (values) => {
+
+console.log(values)
+
     const rawValues = form.getValues();
     dispatch(actions.doFetch(values, rawValues));
     setExpanded(false);

@@ -42,6 +42,7 @@ export default
         type: String,
         enum: ["unread", "read"],
         default: "unread",
+        
       },
 
       forAdmin: {

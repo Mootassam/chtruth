@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import SubHeader from "src/view/shared/Header/SubHeader";
 import { useDispatch, useSelector } from "react-redux";
 import notificationFormActions from "src/modules/notification/form/notificationFormActions";
@@ -56,54 +56,87 @@ const typeConfig = {
 function Notification() {
   const dispatch = useDispatch();
   const allNotification = useSelector(notificationListSelectors.selectRows);
+  const loadingNotification = useSelector(
+    notificationListSelectors.selectLoading
+  );
+  const [activeFilter, setActiveFilter] = useState("all"); // Track active filter
 
   useEffect(() => {
-    dispatch(notificationListActions.doFetch());
-  }, [dispatch]);
+    // Send empty string for "All" filter, otherwise send the status
+    const status = activeFilter === "all" ? "" : activeFilter;
+    dispatch(notificationListActions.doFetch(status));
+  }, [dispatch, activeFilter]);
 
   const markAsRead = (id) => {
     dispatch(notificationFormActions.doUpdate(id));
   };
 
+  const handleFilterChange = (filter) => {
+    setActiveFilter(filter);
+  };
+
+  // Filter tabs configuration
+  const filterTabs = [
+    { key: "all", label: "All" },
+    { key: "unread", label: "Unread" },
+    { key: "read", label: "Read" },
+  ];
+
   return (
     <div className="container">
       <SubHeader title="Notification" />
+      
+      {/* Filter Tabs */}
       <div className="filter-tabs">
-        <button className="filter-tab active">All</button>
-        <button className="filter-tab">Unread</button>
-        <button className="filter-tab">Read</button>
+        {filterTabs.map((tab) => (
+          <button
+            key={tab.key}
+            className={`filter-tab ${activeFilter === tab.key ? "active" : ""}`}
+            onClick={() => handleFilterChange(tab.key)}
+          >
+            {tab.label}
+          </button>
+        ))}
       </div>
 
+      {/* Notification Content */}
       <div className="notification-container">
-        {allNotification?.length > 0 ? (
-          allNotification.map((item) => {
-            const config = typeConfig[item.type] || typeConfig.custom;
-            return (
-              <div
-                key={item.id}
-                className={`notification-item ${
-                  item.status === "unread" ? "unread" : ""
-                }`}
-                onClick={() => markAsRead(item.id)}
-              >
-                <div className="notification-icon">
-                  <i className={config.icon} />
-                </div>
-                <div className="notification-content">
-                  <div className="notification-title">{config.title}</div>
-                  <div className="notification-message">
-                    {config.getMessage(item)}
+        {loadingNotification ? (
+          <div className="loading-state">
+            <div className="binance-spinner"></div>
+            <span>Loading</span>
+          </div>
+        ) : allNotification?.length > 0 ? (
+          <div className="notification-list">
+            {allNotification.map((item) => {
+              const config = typeConfig[item.type] || typeConfig.custom;
+              return (
+                <div
+                  key={item.id}
+                  className={`notification-item ${
+                    item.status === "unread" ? "unread" : ""
+                  }`}
+                  onClick={() => markAsRead(item.id)}
+                >
+                  <div className="notification-icon">
+                    <i className={config.icon} />
                   </div>
-                  <div className="notification-time">
-                    {Dates.Monthago(item.createdAt)}
+                  <div className="notification-content">
+                    <div className="notification-title">{config.title}</div>
+                    <div className="notification-message">
+                      {config.getMessage(item)}
+                    </div>
+                    <div className="notification-time">
+                      {Dates.Monthago(item.createdAt)}
+                    </div>
                   </div>
+                  {item.status === "unread" && (
+                    <div className="unread-indicator" />
+                  )}
                 </div>
-                {item.status === "unread" && (
-                  <div className="unread-indicator" />
-                )}
-              </div>
-            );
-          })
+              );
+            })}
+          </div>
         ) : (
           <div className="empty-notification-state">
             <div className="empty-icon">
@@ -111,26 +144,72 @@ function Notification() {
             </div>
             <div className="empty-title">No notifications yet</div>
             <div className="empty-message">
-              When you get notifications, they'll appear here
+              {activeFilter === "all" 
+                ? "You don't have any notifications yet" 
+                : `No ${activeFilter} notifications found`}
             </div>
           </div>
         )}
       </div>
 
       <style>{`
-      
-      .empty-notification-state{ 
-      display: flex;
-    align-items: center;
-    flex-direction: column;
-    padding: 30px;
-    justify-content: center;
-      }
-
-
-      .empty-message{ 
-      text-align :center}
-      
+        .loading-state {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 12px;
+          padding: 40px;
+          color: #666;
+          font-size: 14px;
+        }
+        
+        .binance-spinner {
+          width: 20px;
+          height: 20px;
+          border: 2px solid #f0b90b;
+          border-top: 2px solid transparent;
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+        
+        .unread-indicator {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          margin-left: 10px;
+        }
+        
+        .empty-notification-state {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 60px 30px;
+          text-align: center;
+          color: #666;
+        }
+        
+        .empty-icon {
+          font-size: 48px;
+          margin-bottom: 20px;
+          color: #ddd;
+        }
+        
+        .empty-title {
+          font-size: 18px;
+          font-weight: 600;
+          margin-bottom: 10px;
+        }
+        
+        .empty-message {
+          font-size: 14px;
+          line-height: 1.4;
+        }
       `}</style>
     </div>
   );

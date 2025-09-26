@@ -32,8 +32,7 @@ export default function useNotifications(
 
     // Listen to new notifications
     socket.on('admin', async (notif) => {
-      
-      await dispatch(userListActions.count());
+            await dispatch(userListActions.count());
     });
 
     // Cleanup on unmount

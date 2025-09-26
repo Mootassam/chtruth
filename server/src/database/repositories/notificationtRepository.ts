@@ -203,11 +203,15 @@ class NotificationRepository {
 
     let criteriaAnd: any = [];
 
+
     criteriaAnd.push({
       tenant: currentTenant.id,
     });
     criteriaAnd.push({
       userId: currentUser.id,
+    });
+    criteriaAnd.push({
+      status: filter,
     });
 
     if (filter) {
@@ -220,6 +224,12 @@ class NotificationRepository {
       if (filter.user) {
         criteriaAnd.push({
           user: filter.user,
+        });
+      }
+
+      if (filter.user) {
+        criteriaAnd.push({
+          status: filter.status,
         });
       }
 
@@ -240,7 +250,6 @@ class NotificationRepository {
     let rows = await Notification(options.database)
       .find(criteria)
       .skip(skip)
-      .limit(limitEscaped)
       .sort(sort)
       .populate("userId");
 
