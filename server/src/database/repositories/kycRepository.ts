@@ -228,7 +228,9 @@ class KycRepository {
 
     const output = record.toObject ? record.toObject() : record;
 
-    output.photo = await FileRepository.fillDownloadUrl(output.photo);
+    output.front = await FileRepository.fillDownloadUrl(output.front);
+    output.back = await FileRepository.fillDownloadUrl(output.back);
+    output.selfie = await FileRepository.fillDownloadUrl(output.selfie);
 
     return output;
   }

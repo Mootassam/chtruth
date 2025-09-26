@@ -129,6 +129,7 @@ class TransactionRepository {
         $match: {
           type: "reward",
           asset: "USDT",
+          status: "completed",
           user: ObjectId(currentUser.id),
         },
       },

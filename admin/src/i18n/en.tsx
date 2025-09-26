@@ -115,6 +115,7 @@ const en = {
         idnumber: 'ID Number',
         frontofcertificate: 'Front of certificate',
         backofcertificate: 'Back of certificate',
+        selfie: 'Selfie',
         status: 'Status',
       },
 
