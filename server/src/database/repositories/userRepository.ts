@@ -117,52 +117,62 @@ export default class UserRepository {
     );
   }
 
-  static async StatsDeposit(options: IRepositoryOptions) {
-    // Pairs we want to track
-    const symbols = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "XRPUSDT"];
 
-    // Fetch all prices from Binance
-    const prices: Record<string, number> = {};
-    for (const symbol of symbols) {
-      const res = await axios.get(
-        `https://api.binance.com/api/v3/ticker/price?symbol=${symbol}`
-      );
-      // Example: "BTCUSDT" → store as prices["btc"] = 65000
-      prices[symbol.replace("USDT", "").toLowerCase()] = parseFloat(
-        res.data.price
-      );
+static async StatsDeposit(options: IRepositoryOptions) {
+  // Map of CoinGecko IDs to our symbol keys
+  const coinMap: Record<string, string> = {
+    bitcoin: "btc",
+    ethereum: "eth",
+    solana: "sol",
+    ripple: "xrp",
+    tether: "usdt",
+  };
+
+  // Fetch all prices in one request from CoinGecko
+  const res = await axios.get(
+    "https://api.coingecko.com/api/v3/simple/price",
+    {
+      params: {
+        ids: Object.keys(coinMap).join(","), // "bitcoin,ethereum,solana,ripple,tether"
+        vs_currencies: "usd",
+      },
     }
+  );
 
-    // USDT is always 1
-    prices["usdt"] = 1;
-
-    // Fetch successful deposits
-    const deposits = await deposit(options.database).find({
-      status: "success",
-    });
-
-    let totalInUSDT = 0;
-
-    for (const d of deposits) {
-      // normalize channel: "usd" in DB should be treated as "usdt"
-      const channelRaw = d.rechargechannel?.toLowerCase();
-      const channel = channelRaw === "usd" ? "usdt" : channelRaw;
-
-      const amount = parseFloat(d.amount);
-
-      if (!amount || !channel || !prices[channel]) continue;
-
-      // Convert deposit to USDT
-      totalInUSDT += amount * prices[channel];
-    }
-
-    return {
-      totalDepositUSDT: totalInUSDT || 0,
-      totalCount: deposits.length || 0,
-    };
+  // Normalize prices like before (btc, eth, sol, xrp, usdt)
+  const prices: Record<string, number> = {};
+  for (const [id, symbol] of Object.entries(coinMap)) {
+    prices[symbol] = res.data[id]?.usd || 0;
   }
 
-  static async countAll(options: IRepositoryOptions) {
+  // Fetch successful deposits
+  const deposits = await deposit(options.database).find({
+    status: "success",
+  });
+
+  let totalInUSDT = 0;
+
+  for (const d of deposits) {
+    // normalize channel: "usd" in DB should be treated as "usdt"
+    const channelRaw = d.rechargechannel?.toLowerCase();
+    const channel = channelRaw === "usd" ? "usdt" : channelRaw;
+
+    const amount = parseFloat(d.amount);
+
+    if (!amount || !channel || !prices[channel]) continue;
+
+    // Convert deposit to USDT (CoinGecko gives in USD)
+    totalInUSDT += amount * prices[channel];
+  }
+
+  return {
+    totalDepositUSDT: totalInUSDT || 0,
+    totalCount: deposits.length || 0,
+  };
+}
+
+
+static async countAll(options: IRepositoryOptions) {
     let rows = await User(options.database).countDocuments({
       "tenants.roles": "member",
       "tenants.status": "active",
@@ -171,50 +181,60 @@ export default class UserRepository {
     return { count: rows };
   }
 
-  static async StatsWithdraw(options: IRepositoryOptions) {
-    // Pairs we want to track
-    const symbols = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "XRPUSDT"];
 
-    // Fetch all prices from Binance
-    const prices: Record<string, number> = {};
-    for (const symbol of symbols) {
-      const res = await axios.get(
-        `https://api.binance.com/api/v3/ticker/price?symbol=${symbol}`
-      );
-      prices[symbol.replace("USDT", "").toLowerCase()] = parseFloat(
-        res.data.price
-      );
+static async StatsWithdraw(options: IRepositoryOptions) {
+  // Map of CoinGecko IDs to our symbol keys
+  const coinMap: Record<string, string> = {
+    bitcoin: "btc",
+    ethereum: "eth",
+    solana: "sol",
+    ripple: "xrp",
+    tether: "usdt",
+  };
+
+  // Fetch all prices in one request from CoinGecko
+  const res = await axios.get(
+    "https://api.coingecko.com/api/v3/simple/price",
+    {
+      params: {
+        ids: Object.keys(coinMap).join(","), // "bitcoin,ethereum,solana,ripple,tether"
+        vs_currencies: "usd",
+      },
     }
+  );
 
-    // USDT always equals 1
-    prices["usdt"] = 1;
-
-    // Fetch successful withdrawals
-    const withdrawals = await withdraw(options.database).find({
-      status: "success",
-    });
-
-    let totalInUSDT = 0;
-
-    for (const w of withdrawals) {
-      // normalize: "usd" → "usdt"
-      const channelRaw = w.currency?.toLowerCase();
-
-      const channel = channelRaw === "usd" ? "usdt" : channelRaw;
-
-      const amount = parseFloat(w.withdrawAmount);
-
-      if (!amount || !channel || !prices[channel]) continue;
-
-      // Convert withdrawal to USDT
-      totalInUSDT += amount * prices[channel];
-    }
-
-    return {
-      totalWithdrawUSDT: totalInUSDT || 0,
-      totalCount: withdrawals.length || 0,
-    };
+  // Normalize prices like before (btc, eth, sol, xrp, usdt)
+  const prices: Record<string, number> = {};
+  for (const [id, symbol] of Object.entries(coinMap)) {
+    prices[symbol] = res.data[id]?.usd || 0;
   }
+
+  // Fetch successful withdrawals
+  const withdrawals = await withdraw(options.database).find({
+    status: "success",
+  });
+
+  let totalInUSDT = 0;
+
+  for (const w of withdrawals) {
+    // normalize: "usd" → "usdt"
+    const channelRaw = w.currency?.toLowerCase();
+    const channel = channelRaw === "usd" ? "usdt" : channelRaw;
+
+    const amount = parseFloat(w.withdrawAmount);
+
+    if (!amount || !channel || !prices[channel]) continue;
+
+    // Convert withdrawal to USDT (CoinGecko gives in USD)
+    totalInUSDT += amount * prices[channel];
+  }
+
+  return {
+    totalWithdrawUSDT: totalInUSDT || 0,
+    totalCount: withdrawals.length || 0,
+  };
+}
+
 
 static async UpdateKyc(value, options: IRepositoryOptions) {
   // Find the KYC record for this user
