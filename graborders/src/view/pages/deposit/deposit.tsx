@@ -16,7 +16,7 @@ import actions from "src/modules/deposit/form/depositFormActions";
 const MIN_DEPOSIT_AMOUNTS = {
   USDT: 30,
   SOL: 0.232,
-  BTC: 0.0087,
+  BTC: 0.00087,
   ETH: 0.0071,
   XRP: 16.9
 };
