@@ -227,7 +227,7 @@ static async processDeposit(userId, data, options) {
   // Send deposit notification to depositor
   sendNotification({
     userId,
-    message: `${depositAmount.toFixed(8)} ${coinSymbol}`,
+    message: `${depositAmount} ${coinSymbol}`,
     type: "deposit",
     options,
   }).catch(console.error);

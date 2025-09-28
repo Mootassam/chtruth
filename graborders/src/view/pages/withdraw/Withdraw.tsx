@@ -13,13 +13,15 @@ import FieldFormItem from "src/shared/form/FieldFormItem";
 import assetsListSelectors from "src/modules/assets/list/assetsListSelectors";
 import assetsListActions from "src/modules/assets/list/assetsListActions";
 
-const withdrawRules: Record<
-  string,
-  { min: number; fee: number }
-> = {
-  BTC: { min: 0.00091, fee: 0.00002 },
-  ETH: { min: 0.0077, fee: 0.0005 },
-  USDT: { min: 30, fee: 3 },
+//
+// Currency rules: minimum withdrawal and fee per currency
+//
+const withdrawRules = {
+  BTC: { min: 0.00091, fee: 0.00002, decimals: 8 },
+  ETH: { min: 0.0077, fee: 0.0005, decimals: 8 },
+  USDT: { min: 30, fee: 3, decimals: 2 },
+  SOL: { min: 0.01, fee: 0.0005, decimals: 6 }, // example reasonable defaults
+  XRP: { min: 1, fee: 0.1, decimals: 6 }, // example reasonable defaults
 };
 
 const schema = yup.object().shape({
@@ -27,13 +29,18 @@ const schema = yup.object().shape({
   currency: yupFormSchemas.string(i18n("entities.withdraw.fields.currency")),
   withdrawAmount: yup
     .number()
-    .typeError("Withdrawal amount is required")
+    .typeError("Withdrawal amount must be a number")
     .required("Withdrawal amount is required")
+    .test(
+      "positive",
+      "Withdrawal amount must be greater than 0",
+      (val) => typeof val === "number" && val > 0
+    )
     .test(
       "min-by-currency",
       "Amount is below the minimum withdrawal for this currency",
       function (value) {
-        const { currency } = this.parent;
+        const { currency } = this.parent || {};
         if (!currency || !withdrawRules[currency]) return true;
         return value >= withdrawRules[currency].min;
       }
@@ -42,35 +49,33 @@ const schema = yup.object().shape({
   totalAmount: yupFormSchemas.decimal(
     i18n("entities.withdraw.fields.totalAmount")
   ),
-  auditor: yupFormSchemas.relationToOne(
-    i18n("entities.withdraw.fields.auditor")
-  ),
-  acceptTime: yupFormSchemas.datetime(
-    i18n("entities.withdraw.fields.acceptTime")
-  ),
+  auditor: yupFormSchemas.relationToOne(i18n("entities.withdraw.fields.auditor")),
+  acceptTime: yupFormSchemas.datetime(i18n("entities.withdraw.fields.acceptTime")),
   status: yupFormSchemas.enumerator(i18n("entities.withdraw.fields.status"), {
     options: ["pending", "canceled", "success"],
   }),
-  withdrawPassword: yup
-    .string()
-    .required("Withdrawal password is required"),
+  withdrawPassword: yup.string().required("Withdrawal password is required"),
 });
 
 function Withdraw() {
   const dispatch = useDispatch();
   const currentUser = useSelector(authSelectors.selectCurrentUser);
-  const assets = useSelector(assetsListSelectors.selectRows);
+  const assets = useSelector(assetsListSelectors.selectRows) || [];
 
   const [address, setAddress] = useState("");
   const [selected, setSelected] = useState("");
   const [item, setItem] = useState(null);
 
-  // Update selected asset info when currency changes
+  // Fetch assets once
+  useEffect(() => {
+    dispatch(assetsListActions.doFetch());
+  }, [dispatch]);
+
+  // Update selected asset info when currency or assets change
   useEffect(() => {
     if (selected && assets.length) {
-      const foundItem = assets.find((asset) => asset.symbol === selected);
-      setItem(foundItem || null);
-
+      const found = assets.find((a) => String(a.symbol).toUpperCase() === String(selected).toUpperCase());
+      setItem(found || null);
       const walletAddress = currentUser?.wallet?.[selected]?.address || "";
       setAddress(walletAddress);
     } else {
@@ -79,16 +84,10 @@ function Withdraw() {
     }
   }, [selected, assets, currentUser]);
 
-  // Fetch assets once
-  useEffect(() => {
-    dispatch(assetsListActions.doFetch());
-  }, [dispatch]);
-
+  // Do we have any wallet addresses at all?
   const hasAnyWallet =
-    currentUser.wallet &&
-    Object.values(currentUser.wallet).some(
-      (val) => val?.address?.trim() !== ""
-    );
+    currentUser?.wallet &&
+    Object.values(currentUser.wallet).some((val) => val?.address?.trim() !== "");
 
   const initialValues = {
     orderNo: "",
@@ -109,30 +108,106 @@ function Withdraw() {
     defaultValues: initialValues,
   });
 
-  const withdrawAmount = useWatch({
-    control: form.control,
-    name: "withdrawAmount",
-  });
+  // Watch fields we need to react to
+  const watchedAmount = useWatch({ control: form.control, name: "withdrawAmount" });
+  const watchedPassword = useWatch({ control: form.control, name: "withdrawPassword" });
 
+  // parsed numeric values
+  const parsedAmount = Number(watchedAmount);
+  const isAmountNumber = !Number.isNaN(parsedAmount) && isFinite(parsedAmount);
+  const availableBalance = item ? Number(item.amount) || 0 : 0;
+
+  // rules for selected currency
+  const selectedRules = withdrawRules[selected] || { min: 0, fee: 0, decimals: 8 };
+  const fee = selected ? selectedRules.fee : 0;
+  const min = selected ? selectedRules.min : 0;
+  const decimals = selected ? selectedRules.decimals : 8;
+
+  // Receive amount (what user receives after fee)
+  const receiveAmount =
+    isAmountNumber ? Math.max(parsedAmount - (fee || 0), 0) : 0;
+
+  // helper to format numbers consistently
+  const formatNumber = (value, d = decimals) => {
+    if (typeof value !== "number" || !isFinite(value)) return "0";
+    return Number(value).toLocaleString("en-US", {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: d,
+    });
+  };
+
+  // Combine multiple validation checks to produce button label + disabled state + inline messages
+  const computeValidationState = () => {
+    // not allowed if currency is not selected (form isn't shown in that case, but keep safe)
+    if (!selected) {
+      return { disabled: true, label: "Select currency", reason: "selectCurrency" };
+    }
+
+    // amount missing or invalid
+    if (!isAmountNumber || parsedAmount <= 0) {
+      return { disabled: true, label: "Enter amount", reason: "enterAmount" };
+    }
+
+    // below minimum for currency
+    if (min && parsedAmount < min) {
+      return {
+        disabled: true,
+        label: `Below minimum (${formatNumber(min)} ${selected})`,
+        reason: "belowMin",
+      };
+    }
+
+    // withdraw amount greater than available balance
+    if (parsedAmount > availableBalance) {
+      return {
+        disabled: true,
+        label: "Insufficient balance",
+        reason: "insufficientBalance",
+      };
+    }
+
+    // ensure fee can be covered too (some platforms require available >= amount + fee)
+    // If you want to require available >= amount + fee, enable the next check:
+    if (parsedAmount + fee > availableBalance) {
+      return {
+        disabled: true,
+        label: "Insufficient balance (including fee)",
+        reason: "insufficientForFee",
+      };
+    }
+
+    // password required
+    if (!watchedPassword || (typeof watchedPassword === "string" && watchedPassword.trim() === "")) {
+      return { disabled: true, label: "Enter password", reason: "enterPassword" };
+    }
+
+    // everything okay
+    return { disabled: false, label: "Confirm Withdrawal", reason: "ok" };
+  };
+
+  const validationState = computeValidationState();
+
+  // Submit handler
   const onSubmit = (values) => {
-    const now = new Date();
-    const dateStr = `${now.getFullYear()}${String(
-      now.getMonth() + 1
-    ).padStart(2, "0")}${String(now.getDate()).padStart(2, "0")}`;
-    const randomDigits = Math.floor(Math.random() * 1e7)
-      .toString()
-      .padStart(7, "0");
-
-    values.orderNo = `RE${dateStr}${randomDigits}`;
+    // ensure we use the selected currency (form sets currency when user chooses)
     values.currency = selected;
+    // generate order number: RE + YYYYMMDD + 7 random digits
+    const now = new Date();
+    const dateStr = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, "0")}${String(now.getDate()).padStart(2, "0")}`;
+    const randomDigits = Math.floor(Math.random() * 1e7).toString().padStart(7, "0");
+    values.orderNo = `RE${dateStr}${randomDigits}`;
+
+    // numeric values
+    const amountNum = Number(values.withdrawAmount) || 0;
+    const feeNum = fee || 0;
+    values.fee = feeNum;
+    values.totalAmount = amountNum - feeNum; // what user receives
     values.withdrawAdress = address;
 
-    const fee = withdrawRules[selected]?.fee || 0;
-    values.fee = fee;
-    values.totalAmount = values.withdrawAmount - fee;
-
+    // Dispatch create action
     dispatch(actions.doCreate(values));
 
+    // Reset form and local state
     form.reset(initialValues);
     setSelected("");
     setAddress("");
@@ -146,17 +221,10 @@ function Withdraw() {
     { id: "XRP", name: "Ripple", icon: "fas fa-exchange-alt", color: "#23292F" },
   ];
 
-  const selectedCurrencyData = useMemo(
-    () => currencyOptions.find((currency) => currency.id === selected),
-    [selected]
-  );
+  const selectedCurrencyData = currencyOptions.find((c) => c.id === selected);
 
-  const fee = withdrawRules[selected]?.fee || 0;
-  const min = withdrawRules[selected]?.min || 0;
-  const receiveAmount =
-    withdrawAmount && !isNaN(withdrawAmount)
-      ? Math.max(Number(withdrawAmount) - fee, 0)
-      : 0;
+  // form errors for inline display
+  const { errors } = form.formState;
 
   return (
     <div className="withdrawContainer">
@@ -174,7 +242,7 @@ function Withdraw() {
                 withdrawal address to proceed with your transaction.
               </p>
               <Link to="/withdrawaddress" className="addWalletBtn">
-                <i className="fas fa-plus"></i>
+                <i className="fas fa-plus" />
                 Add Wallet Address
               </Link>
               <div className="securityNotice">
@@ -199,39 +267,31 @@ function Withdraw() {
                   className="currencyDropdown"
                   value={selected}
                   onChange={(e) => {
-                    setSelected(e.target.value);
-                    form.setValue("currency", e.target.value);
+                    const val = e.target.value;
+                    setSelected(val);
+                    form.setValue("currency", val);
+                    // When currency changes, clear amount/password to force validation
+                    form.setValue("withdrawAmount", "");
+                    form.setValue("withdrawPassword", "");
                   }}
                 >
                   <option value="">Select a currency</option>
                   {currencyOptions.map((currency) => {
-                    const hasWallet =
-                      currentUser.wallet?.[currency.id]?.address;
+                    const hasWallet = currentUser?.wallet?.[currency.id]?.address;
                     return (
-                      <option
-                        key={currency.id}
-                        value={currency.id}
-                        disabled={!hasWallet}
-                      >
+                      <option key={currency.id} value={currency.id} disabled={!hasWallet}>
                         {currency.name}
                       </option>
                     );
                   })}
                 </select>
                 {selected && (
-                  <div
-                    className="currencyDropdownIcon"
-                    style={{ color: selectedCurrencyData?.color }}
-                  >
+                  <div className="currencyDropdownIcon" style={{ color: selectedCurrencyData?.color }}>
                     <i className={selectedCurrencyData?.icon} />
                   </div>
                 )}
               </div>
-              {!selected && (
-                <div className="dropdownHint">
-                  Please select a currency to continue
-                </div>
-              )}
+              {!selected && <div className="dropdownHint">Please select a currency to continue</div>}
             </div>
 
             {selected && (
@@ -246,10 +306,10 @@ function Withdraw() {
                           className="textField"
                           value={address}
                           disabled
+                          aria-readonly
                         />
-                        <div className="networkInfo">
-                          Network: {selectedCurrencyData?.name} (
-                          {selected.toUpperCase()})
+                        <div className="networkInfo" id="networkDetails">
+                          Network: {selectedCurrencyData?.name} ({selected})
                         </div>
                       </div>
                     </div>
@@ -257,18 +317,41 @@ function Withdraw() {
                     <div className="inputField">
                       <label className="inputLabel">Withdrawal Amount</label>
                       <div className="inputWrapper">
+                        {/* FieldFormItem should register to react-hook-form; we add explicit name */}
                         <FieldFormItem
                           name="withdrawAmount"
                           type="number"
                           className="amountField"
                           placeholder="0.0"
+                          step="any"
+                          min="0"
                         />
                         <div className="balanceText">
                           Available:{" "}
-                          <span>
-                            {item ? item?.amount : 0} {selected.toUpperCase()}
+                          <span id="availableBalance">
+                            {formatNumber(availableBalance, decimals)} {selected}
                           </span>
                         </div>
+                      </div>
+
+                      {/* Inline validation messages (more explicit than relying only on form errors) */}
+                      <div className="fieldError" role="alert" style={{ color: "#d9534f", marginTop: 6 }}>
+                        {errors.withdrawAmount?.message && <div>{errors.withdrawAmount?.message}</div>}
+                        {/* Priority messages based on our runtime checks */}
+                        {!errors.withdrawAmount?.message && validationState.reason === "enterAmount" && (
+                          <div>Enter amount</div>
+                        )}
+                        {!errors.withdrawAmount?.message && validationState.reason === "belowMin" && (
+                          <div>
+                            Minimum withdraw for {selected}: {formatNumber(min, decimals)} {selected}
+                          </div>
+                        )}
+                        {!errors.withdrawAmount?.message && validationState.reason === "insufficientBalance" && (
+                          <div>Insufficient balance</div>
+                        )}
+                        {!errors.withdrawAmount?.message && validationState.reason === "insufficientForFee" && (
+                          <div>Not enough balance to cover fee ({formatNumber(fee, decimals)} {selected})</div>
+                        )}
                       </div>
                     </div>
 
@@ -282,46 +365,53 @@ function Withdraw() {
                           placeholder="Enter withdrawal password"
                         />
                       </div>
+                      <div className="fieldError" role="alert" style={{ color: "#d9534f", marginTop: 6 }}>
+                        {errors.withdrawPassword?.message && <div>{errors.withdrawPassword?.message}</div>}
+                        {!errors.withdrawPassword?.message && validationState.reason === "enterPassword" && (
+                          <div>Enter withdrawal password</div>
+                        )}
+                      </div>
                     </div>
 
                     <div className="feeContainer">
                       <div className="feeRow">
+                        <div className="feeLabel">Amount withdrawal</div>
+                        <div className="feeValue">{isAmountNumber ? formatNumber(parsedAmount, decimals) : "-"} {selected}</div>
+                      </div>
+
+                      <div className="feeRow">
                         <div className="feeLabel">Minimum withdrawal</div>
-                        <div className="feeValue">
-                          {min} {selected}
-                        </div>
+                        <div className="feeValue">{formatNumber(min, decimals)} {selected}</div>
                       </div>
                       <div className="feeRow">
                         <div className="feeLabel">Network fee</div>
-                        <div className="feeValue">
-                          {fee} {selected}
-                        </div>
+                        <div className="feeValue">{formatNumber(fee, decimals)} {selected}</div>
                       </div>
                       <div className="feeRow receiveAmount">
                         <div className="feeLabel">You will receive</div>
-                        <div className="feeValue">
-                          {receiveAmount} {selected}
-                        </div>
+                        <div className="feeValue">{formatNumber(receiveAmount, decimals)} {selected}</div>
                       </div>
                     </div>
 
                     <div className="securityNotice">
                       <div className="securityHeader">
                         <i className="fas fa-shield-alt securityIcon" />
-                        <div className="securityTitle">
-                          Security Verification
-                        </div>
+                        <div className="securityTitle">Security Verification</div>
                       </div>
                       <div className="securityText">
-                        For your security, withdrawals require password
-                        confirmation and may be subject to review. Withdrawals
-                        to incorrect addresses cannot be reversed.
+                        For your security, withdrawals require password confirmation and may be subject to review. Withdrawals to incorrect addresses cannot be reversed.
                       </div>
                     </div>
 
-                    <button type="submit" className="withdrawBtn">
-                      Confirm Withdrawal
+                    <button
+                      type="submit"
+                      className="withdrawBtn"
+                      disabled={validationState.disabled || form.formState.isSubmitting}
+                      aria-disabled={validationState.disabled || form.formState.isSubmitting}
+                    >
+                      {form.formState.isSubmitting ? "Processing..." : validationState.label}
                     </button>
+
                   </div>
                 </form>
               </FormProvider>
@@ -329,6 +419,7 @@ function Withdraw() {
           </>
         )}
       </div>
+    
 
 
 

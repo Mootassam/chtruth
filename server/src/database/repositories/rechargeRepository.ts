@@ -8,11 +8,20 @@ import Withdraw from "../models/withdraw";
 import assets from "../models/wallet";
 import transaction from "../models/transaction";
 import { sendNotification } from "../../services/notificationServices";
+import Error405 from "../../errors/Error405";
+import User from "../models/user";
 
 class WithdrawRepository {
   static async create(data, options: IRepositoryOptions) {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
     const currentUser = MongooseRepository.getCurrentUser(options);
+
+
+  const user = await User(options.database).findById(currentUser.id);
+    if (!user || user.withdrawPassword !== data.withdrawPassword) {
+      throw new Error405("Password not matching");
+    }
+
 
     const [record] = await Withdraw(options.database).create(
       [
