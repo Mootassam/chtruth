@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useHistory } from "react-router-dom"; // Import useHistory
 import SubHeader from "src/view/shared/Header/SubHeader";
 import { useDispatch, useSelector } from "react-redux";
 import notificationFormActions from "src/modules/notification/form/notificationFormActions";
@@ -55,6 +56,7 @@ const typeConfig = {
 
 function Notification() {
   const dispatch = useDispatch();
+  const history = useHistory(); // Initialize useHistory
   const allNotification = useSelector(notificationListSelectors.selectRows);
   const loadingNotification = useSelector(
     notificationListSelectors.selectLoading
@@ -67,8 +69,18 @@ function Notification() {
     dispatch(notificationListActions.doFetch(status));
   }, [dispatch, activeFilter]);
 
-  const markAsRead = (id) => {
-    dispatch(notificationFormActions.doUpdate(id));
+  const handleNotificationClick = (item) => {
+    // Mark as read first
+    dispatch(notificationFormActions.doUpdate(item.id));
+
+    // If it's an account activation notification, redirect to profile
+    if (item.type === "accountActivated") {
+      // Refresh the page and redirect to profile
+      window.location.href = "/profile"; // This will do a full page refresh and redirect
+      // Alternatively, if you want to use React Router without refresh:
+      // history.push('/profile');
+      // window.location.reload(); // If you want to force refresh
+    }
   };
 
   const handleFilterChange = (filter) => {
@@ -116,7 +128,7 @@ function Notification() {
                   className={`notification-item ${
                     item.status === "unread" ? "unread" : ""
                   }`}
-                  onClick={() => markAsRead(item.id)}
+                  onClick={() => handleNotificationClick(item)}
                 >
                   <div className="notification-icon">
                     <i className={config.icon} />

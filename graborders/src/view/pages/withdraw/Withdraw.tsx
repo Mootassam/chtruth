@@ -2,52 +2,42 @@ import React, { useMemo, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import SubHeader from "src/view/shared/Header/SubHeader";
 import { useDispatch, useSelector } from "react-redux";
-import { useForm, FormProvider } from "react-hook-form";
+import { useForm, FormProvider, useWatch } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import yupFormSchemas from "src/modules/shared/yup/yupFormSchemas";
 import { i18n } from "../../../i18n";
 import authSelectors from "src/modules/auth/authSelectors";
 import actions from "src/modules/withdraw/form/withdrawFormActions";
+import FieldFormItem from "src/shared/form/FieldFormItem";
 import assetsListSelectors from "src/modules/assets/list/assetsListSelectors";
 import assetsListActions from "src/modules/assets/list/assetsListActions";
 
-// Network fee configuration
-const networkFees = {
-  BTC: {
-    minAmount: 0.00091,
-    fee: 0.00002,
-    network: "Bitcoin",
-  },
-  ETH: {
-    minAmount: 0.0077,
-    fee: 0.0005,
-    network: "Ethereum (ERC20)",
-  },
-  USDT: {
-    minAmount: 30,
-    fee: 3,
-    network: "Tron (TRC20)",
-  },
-  SOL: {
-    minAmount: 0.01,
-    fee: 0.000005,
-    network: "Solana",
-  },
-  XRP: {
-    minAmount: 10,
-    fee: 0.1,
-    network: "Ripple",
-  },
+const withdrawRules: Record<
+  string,
+  { min: number; fee: number }
+> = {
+  BTC: { min: 0.00091, fee: 0.00002 },
+  ETH: { min: 0.0077, fee: 0.0005 },
+  USDT: { min: 30, fee: 3 },
 };
 
 const schema = yup.object().shape({
   orderNo: yupFormSchemas.string(i18n("entities.withdraw.fields.orderNo")),
   currency: yupFormSchemas.string(i18n("entities.withdraw.fields.currency")),
-  withdrawAmount: yupFormSchemas.decimal(
-    i18n("entities.withdraw.fields.withdrawAmount"),
-    { required: true }
-  ),
+  withdrawAmount: yup
+    .number()
+    .typeError("Withdrawal amount is required")
+    .required("Withdrawal amount is required")
+    .test(
+      "min-by-currency",
+      "Amount is below the minimum withdrawal for this currency",
+      function (value) {
+        const { currency } = this.parent;
+        if (!currency || !withdrawRules[currency]) return true;
+        return value >= withdrawRules[currency].min;
+      }
+    ),
   fee: yupFormSchemas.decimal(i18n("entities.withdraw.fields.fee")),
   totalAmount: yupFormSchemas.decimal(
     i18n("entities.withdraw.fields.totalAmount")
@@ -63,8 +53,7 @@ const schema = yup.object().shape({
   }),
   withdrawPassword: yup
     .string()
-    .required("Withdrawal password is required")
-    .min(6, "Withdrawal password must be at least 6 characters"),
+    .required("Withdrawal password is required"),
 });
 
 function Withdraw() {
@@ -75,9 +64,6 @@ function Withdraw() {
   const [address, setAddress] = useState("");
   const [selected, setSelected] = useState("");
   const [item, setItem] = useState(null);
-  const [withdrawAmount, setWithdrawAmount] = useState("");
-  const [errors, setErrors] = useState({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Update selected asset info when currency changes
   useEffect(() => {
@@ -85,7 +71,6 @@ function Withdraw() {
       const foundItem = assets.find((asset) => asset.symbol === selected);
       setItem(foundItem || null);
 
-      // Update address from wallet if available
       const walletAddress = currentUser?.wallet?.[selected]?.address || "";
       setAddress(walletAddress);
     } else {
@@ -99,9 +84,8 @@ function Withdraw() {
     dispatch(assetsListActions.doFetch());
   }, [dispatch]);
 
-  // Check if user has any wallet
   const hasAnyWallet =
-    currentUser?.wallet &&
+    currentUser.wallet &&
     Object.values(currentUser.wallet).some(
       (val) => val?.address?.trim() !== ""
     );
@@ -125,129 +109,41 @@ function Withdraw() {
     defaultValues: initialValues,
   });
 
-  // Watch form values
-  const withdrawPassword = form.watch("withdrawPassword");
-  const formWithdrawAmount = form.watch("withdrawAmount");
+  const withdrawAmount = useWatch({
+    control: form.control,
+    name: "withdrawAmount",
+  });
 
-  // Sync form withdrawAmount with local state
-  useEffect(() => {
-    if (formWithdrawAmount !== withdrawAmount) {
-      setWithdrawAmount(formWithdrawAmount || "");
-    }
-  }, [formWithdrawAmount]);
+  const onSubmit = (values) => {
+    const now = new Date();
+    const dateStr = `${now.getFullYear()}${String(
+      now.getMonth() + 1
+    ).padStart(2, "0")}${String(now.getDate()).padStart(2, "0")}`;
+    const randomDigits = Math.floor(Math.random() * 1e7)
+      .toString()
+      .padStart(7, "0");
 
-  // Calculate received amount
-  const calculateReceivedAmount = () => {
-    if (!selected || !withdrawAmount) return 0;
+    values.orderNo = `RE${dateStr}${randomDigits}`;
+    values.currency = selected;
+    values.withdrawAdress = address;
 
-    const amount = parseFloat(withdrawAmount);
-    if (isNaN(amount)) return 0;
+    const fee = withdrawRules[selected]?.fee || 0;
+    values.fee = fee;
+    values.totalAmount = values.withdrawAmount - fee;
 
-    const fee = networkFees[selected]?.fee || 0;
-    return Math.max(0, amount - fee);
-  };
+    dispatch(actions.doCreate(values));
 
-  // Validate withdrawal amount
-  const validateWithdrawal = () => {
-    const newErrors = {};
-
-    if (!selected) {
-      newErrors.currency = "Please select a currency";
-    }
-
-    if (!withdrawAmount) {
-      newErrors.amount = "Please enter withdrawal amount";
-    } else {
-      const amount = parseFloat(withdrawAmount);
-      const minAmount = networkFees[selected]?.minAmount || 0;
-      const availableBalance = item?.amount || 0;
-
-      if (isNaN(amount) || amount <= 0) {
-        newErrors.amount = "Please enter a valid amount";
-      } else if (amount < minAmount) {
-        newErrors.amount = `Minimum withdrawal is ${minAmount} ${selected}`;
-      } else if (amount > availableBalance) {
-        newErrors.amount = `Insufficient balance. Available: ${availableBalance} ${selected}`;
-      }
-    }
-
-    if (!withdrawPassword) {
-      newErrors.password = "Withdrawal password is required";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const onSubmit = async (values) => {
-    console.log("Form submitted with values:", values);
-    
-    if (!validateWithdrawal()) {
-      console.log("Validation failed");
-      return;
-    }
-
-    try {
-      setIsSubmitting(true);
-
-      // Generate order number in format: RE + YYYYMMDD + 7 random digits
-      const now = new Date();
-      const dateStr = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(
-        2,
-        "0"
-      )}${String(now.getDate()).padStart(2, "0")}`;
-      const randomDigits = Math.floor(Math.random() * 1e7)
-        .toString()
-        .padStart(7, "0");
-
-      const submitData = {
-        ...values,
-        orderNo: `RE${dateStr}${randomDigits}`,
-        currency: selected,
-        withdrawAmount: parseFloat(withdrawAmount),
-        totalAmount: parseFloat(withdrawAmount),
-        withdrawAdress: address,
-        fee: networkFees[selected]?.fee || 0,
-        status: "pending",
-      };
-
-      console.log("Dispatching with data:", submitData);
-
-      // Dispatch the action
-      await dispatch(actions.doCreate(submitData));
-
-      // Reset form on success
-      form.reset(initialValues);
-      setSelected("");
-      setAddress("");
-      setWithdrawAmount("");
-      setErrors({});
-      
-      console.log("Withdrawal request submitted successfully");
-
-    } catch (error) {
-      console.error("Error submitting withdrawal:", error);
-    } finally {
-      setIsSubmitting(false);
-    }
+    form.reset(initialValues);
+    setSelected("");
+    setAddress("");
   };
 
   const currencyOptions = [
     { id: "BTC", name: "Bitcoin", icon: "fab fa-btc", color: "#F3BA2F" },
     { id: "ETH", name: "Ethereum", icon: "fab fa-ethereum", color: "#627EEA" },
-    {
-      id: "USDT",
-      name: "Tether",
-      icon: "fas fa-dollar-sign",
-      color: "#26A17B",
-    },
+    { id: "USDT", name: "Tether", icon: "fas fa-dollar-sign", color: "#26A17B" },
     { id: "SOL", name: "Solana", icon: "fas fa-bolt", color: "#00FFA3" },
-    {
-      id: "XRP",
-      name: "Ripple",
-      icon: "fas fa-exchange-alt",
-      color: "#23292F",
-    },
+    { id: "XRP", name: "Ripple", icon: "fas fa-exchange-alt", color: "#23292F" },
   ];
 
   const selectedCurrencyData = useMemo(
@@ -255,11 +151,12 @@ function Withdraw() {
     [selected]
   );
 
-  const currentFeeConfig = selected ? networkFees[selected] : null;
-  const receivedAmount = calculateReceivedAmount();
-
-  // Check if form is valid for enabling the button
-  const isFormValid = selected && withdrawAmount && withdrawPassword && !isSubmitting;
+  const fee = withdrawRules[selected]?.fee || 0;
+  const min = withdrawRules[selected]?.min || 0;
+  const receiveAmount =
+    withdrawAmount && !isNaN(withdrawAmount)
+      ? Math.max(Number(withdrawAmount) - fee, 0)
+      : 0;
 
   return (
     <div className="withdrawContainer">
@@ -303,22 +200,20 @@ function Withdraw() {
                   value={selected}
                   onChange={(e) => {
                     setSelected(e.target.value);
-                    setErrors({});
                     form.setValue("currency", e.target.value);
                   }}
                 >
                   <option value="">Select a currency</option>
                   {currencyOptions.map((currency) => {
                     const hasWallet =
-                      currentUser?.wallet?.[currency.id]?.address;
+                      currentUser.wallet?.[currency.id]?.address;
                     return (
                       <option
                         key={currency.id}
                         value={currency.id}
                         disabled={!hasWallet}
                       >
-                        {currency.name} ({currency.id})
-                        {!hasWallet && " - No wallet address"}
+                        {currency.name}
                       </option>
                     );
                   })}
@@ -328,17 +223,10 @@ function Withdraw() {
                     className="currencyDropdownIcon"
                     style={{ color: selectedCurrencyData?.color }}
                   >
-                    <img
-                      src={`https://images.weserv.nl/?url=https://bin.bnbstatic.com/static/assets/logos/${selectedCurrencyData?.id.toUpperCase()}.png`}
-                      style={{ width: 25, height: 25 }}
-                      alt={selectedCurrencyData?.id}
-                    />
+                    <i className={selectedCurrencyData?.icon} />
                   </div>
                 )}
               </div>
-              {errors.currency && (
-                <div className="errorText">{errors.currency}</div>
-              )}
               {!selected && (
                 <div className="dropdownHint">
                   Please select a currency to continue
@@ -350,101 +238,71 @@ function Withdraw() {
               <FormProvider {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)}>
                   <div className="formSection">
-                    {/* Withdrawal Address */}
                     <div className="inputField">
                       <label className="inputLabel">Withdrawal Address</label>
                       <div className="inputWrapper">
                         <input
                           type="text"
                           className="textField"
-                          id="withdrawalAddress"
-                          placeholder="Enter wallet address"
                           value={address}
                           disabled
                         />
-                        <div className="networkInfo" id="networkDetails">
-                          Network: {currentFeeConfig?.network}
+                        <div className="networkInfo">
+                          Network: {selectedCurrencyData?.name} (
+                          {selected.toUpperCase()})
                         </div>
                       </div>
                     </div>
 
-                    {/* Withdrawal Amount */}
                     <div className="inputField">
                       <label className="inputLabel">Withdrawal Amount</label>
                       <div className="inputWrapper">
-                        <input
+                        <FieldFormItem
+                          name="withdrawAmount"
                           type="number"
-                          step="any"
                           className="amountField"
                           placeholder="0.0"
-                          value={withdrawAmount}
-                          onChange={(e) => {
-                            const value = e.target.value;
-                            setWithdrawAmount(value);
-                            form.setValue("withdrawAmount", value);
-                            setErrors({ ...errors, amount: null });
-                          }}
                         />
                         <div className="balanceText">
                           Available:{" "}
-                          <span id="availableBalance">
+                          <span>
                             {item ? item?.amount : 0} {selected.toUpperCase()}
                           </span>
                         </div>
                       </div>
-                      {errors.amount && (
-                        <div className="errorText">{errors.amount}</div>
-                      )}
                     </div>
 
-                    {/* Withdrawal Password */}
                     <div className="inputField">
                       <label className="inputLabel">Withdrawal Password</label>
                       <div className="inputWrapper">
-                        <input
+                        <FieldFormItem
+                          name="withdrawPassword"
                           type="password"
                           className="textField"
                           placeholder="Enter withdrawal password"
-                          {...form.register("withdrawPassword")}
-                          onChange={(e) => {
-                            form.setValue("withdrawPassword", e.target.value);
-                            setErrors({ ...errors, password: null });
-                          }}
                         />
                       </div>
-                      {errors.password && (
-                        <div className="errorText">{errors.password}</div>
-                      )}
                     </div>
 
-                    {/* Fee Information */}
                     <div className="feeContainer">
-                      {currentFeeConfig && (
-                        <>
-                          <div className="feeRow">
-                            <div className="feeLabel">Minimum withdrawal</div>
-                            <div className="feeValue">
-                              {currentFeeConfig.minAmount} {selected}
-                            </div>
-                          </div>
-                          <div className="feeRow">
-                            <div className="feeLabel">Network fee</div>
-                            <div className="feeValue">
-                              {currentFeeConfig.fee} {selected}
-                            </div>
-                          </div>
-                          <div className="feeRow">
-                            <div className="feeLabel">Service fee</div>
-                            <div className="feeValue">0.0000 {selected}</div>
-                          </div>
-                          <div className="feeRow receiveAmount">
-                            <div className="feeLabel">You will receive</div>
-                            <div className="feeValue">
-                              {receivedAmount.toFixed(8)} {selected}
-                            </div>
-                          </div>
-                        </>
-                      )}
+                      <div className="feeRow">
+                        <div className="feeLabel">Minimum withdrawal</div>
+                        <div className="feeValue">
+                          {min} {selected}
+                        </div>
+                      </div>
+                      <div className="feeRow">
+                        <div className="feeLabel">Network fee</div>
+                        <div className="feeValue">
+                          {fee} {selected}
+                        </div>
+                      </div>
+                      <div className="feeRow receiveAmount">
+                        <div className="feeLabel">You will receive</div>
+                        <div className="feeValue">
+                          {receiveAmount} {selected}
+                        </div>
+                      </div>
                     </div>
 
                     <div className="securityNotice">
@@ -461,12 +319,8 @@ function Withdraw() {
                       </div>
                     </div>
 
-                    <button
-                      type="submit"
-                      className="withdrawBtn"
-                      disabled={!isFormValid || isSubmitting}
-                    >
-                      {isSubmitting ? "Processing..." : "Confirm Withdrawal"}
+                    <button type="submit" className="withdrawBtn">
+                      Confirm Withdrawal
                     </button>
                   </div>
                 </form>
@@ -474,11 +328,9 @@ function Withdraw() {
             )}
           </>
         )}
-
-        <div className="toastMsg" id="toastNotification">
-          Withdrawal address copied!
-        </div>
       </div>
+
+
 
       <style>{`
         .withdrawContainer {
@@ -546,7 +398,6 @@ function Withdraw() {
           font-weight: bold;
           margin-bottom: 12px;
           font-size: 16px;
-          color: #FFFFFF;
         }
         
         .currencyDropdownContainer {
@@ -588,12 +439,6 @@ function Withdraw() {
           margin-top: 8px;
         }
         
-        .errorText {
-          color: #FF4444;
-          font-size: 14px;
-          margin-top: 5px;
-        }
-        
         /* Form Styles */
         .formSection {
           margin-top: 20px;
@@ -614,11 +459,6 @@ function Withdraw() {
           background-color: #2A2A2A;
           border-radius: 12px;
           padding: 15px;
-          border: 1px solid #333333;
-        }
-        
-        .inputWrapper:focus-within {
-          border-color: #F3BA2F;
         }
         
         .textField {
@@ -628,10 +468,6 @@ function Withdraw() {
           color: #FFFFFF;
           font-size: 16px;
           outline: none;
-        }
-        
-        .textField:disabled {
-          color: #777777;
         }
         
         .networkInfo {
@@ -661,7 +497,6 @@ function Withdraw() {
           border-radius: 12px;
           padding: 15px;
           margin-bottom: 20px;
-          border: 1px solid #333333;
         }
         
         .feeRow {
@@ -685,7 +520,6 @@ function Withdraw() {
           padding-top: 12px;
           margin-top: 12px;
           font-weight: bold;
-          font-size: 16px;
         }
         
         .securityNotice {
@@ -733,7 +567,7 @@ function Withdraw() {
           transition: background-color 0.3s ease;
         }
         
-        .withdrawBtn:hover:not(:disabled) {
+        .withdrawBtn:hover {
           background-color: #e6ab0a;
         }
         
