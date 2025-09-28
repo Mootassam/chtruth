@@ -20,7 +20,7 @@ function termservice() {
       <div className="section-title">1. Acceptance of Terms</div>
       <div className="section-content">
         <p>
-          By accessing or using CryptoWallet services, you agree to be bound by
+          By accessing or using NUXES services, you agree to be bound by
           these Terms of Service and all terms incorporated by reference.
         </p>
       </div>
@@ -30,7 +30,7 @@ function termservice() {
       <div className="section-content">
         <p>
           You must be at least 18 years old to use our Services. By using
-          CryptoWallet, you represent and warrant that you meet all eligibility
+          NUXES, you represent and warrant that you meet all eligibility
           requirements.
         </p>
       </div>
@@ -56,7 +56,7 @@ function termservice() {
       <div className="section-title">4. Services Description</div>
       <div className="section-content">
         <p>
-          CryptoWallet provides a digital platform for cryptocurrency storage,
+          NUXES provides a digital platform for cryptocurrency storage,
           transactions, and related services. We may modify, suspend, or
           discontinue any aspect of our Services at any time.
         </p>
@@ -106,7 +106,7 @@ function termservice() {
       <div className="section-title">8. Intellectual Property</div>
       <div className="section-content">
         <p>
-          All content, features, and functionality of CryptoWallet are owned by
+          All content, features, and functionality of NUXES are owned by
           us or our licensors and are protected by international copyright,
           trademark, and other intellectual property laws.
         </p>
@@ -126,7 +126,7 @@ function termservice() {
       <div className="section-title">10. Limitation of Liability</div>
       <div className="section-content">
         <p>
-          To the maximum extent permitted by law, CryptoWallet shall not be
+          To the maximum extent permitted by law, NUXES shall not be
           liable for any indirect, incidental, special, consequential, or
           punitive damages, or any loss of profits or revenues.
         </p>
@@ -156,7 +156,7 @@ function termservice() {
       <div className="section-content">
         <p>For questions about these Terms, please contact us at:</p>
         <p>
-          Email: legal@cryptowallet.com
+          Email: legal@NUXES.com
           <br />
           Address: 123 Crypto Street, Wilmington, DE 19801
         </p>
@@ -179,7 +179,7 @@ function termservice() {
   </button>
   {/* Footer */}
   <div className="footer">
-    © 2024 CryptoWallet. All rights reserved. | <a href="#">Privacy Policy</a>
+    © 2024 NUXES. All rights reserved. | <a href="#">Privacy Policy</a>
   </div>
 </div>
 

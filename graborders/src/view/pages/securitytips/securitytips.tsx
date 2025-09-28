@@ -184,7 +184,7 @@ function securitytips() {
     </ul>
     <div className="emergency-contact">
       <div className="contact-title">24/7 Security Support</div>
-      <div className="contact-info">support@cryptowallet.com</div>
+      <div className="contact-info">support@NUXES.com</div>
     </div>
   </div>
   {/* Resources Section */}

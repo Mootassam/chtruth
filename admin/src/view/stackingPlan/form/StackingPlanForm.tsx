@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useForm, FormProvider, useWatch } from 'react-hook-form';
 import * as yup from 'yup';
@@ -118,7 +119,6 @@ function StackingPlanForm(props) {
               <InputFormItem
                 name="dailyRate"
                 label={i18n('entities.stackingPlan.fields.dailyRate')}
-                type="number"
                 required
               />
             </div>
@@ -127,7 +127,6 @@ function StackingPlanForm(props) {
               <InputFormItem
                 name="minimumStake"
                 label={i18n('entities.stackingPlan.fields.minimumStake')}
-                type="number"
                 required
               />
             </div>
@@ -136,7 +135,6 @@ function StackingPlanForm(props) {
               <InputFormItem
                 name="maxStake"
                 label={i18n('entities.stackingPlan.fields.maxStake')}
-                type="number"
                 required
               />
             </div>
@@ -154,7 +152,6 @@ function StackingPlanForm(props) {
               <InputFormItem
                 name="estimatedRewards"
                 label={i18n('entities.stackingPlan.fields.estimatedRewards')}
-                type="number"
                 disabled
               />
             </div>

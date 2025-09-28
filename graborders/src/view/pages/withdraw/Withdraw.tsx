@@ -9,7 +9,6 @@ import yupFormSchemas from "src/modules/shared/yup/yupFormSchemas";
 import { i18n } from "../../../i18n";
 import authSelectors from "src/modules/auth/authSelectors";
 import actions from "src/modules/withdraw/form/withdrawFormActions";
-import FieldFormItem from "src/shared/form/FieldFormItem";
 import assetsListSelectors from "src/modules/assets/list/assetsListSelectors";
 import assetsListActions from "src/modules/assets/list/assetsListActions";
 
@@ -78,6 +77,7 @@ function Withdraw() {
   const [item, setItem] = useState(null);
   const [withdrawAmount, setWithdrawAmount] = useState("");
   const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Update selected asset info when currency changes
   useEffect(() => {
@@ -101,7 +101,7 @@ function Withdraw() {
 
   // Check if user has any wallet
   const hasAnyWallet =
-    currentUser.wallet &&
+    currentUser?.wallet &&
     Object.values(currentUser.wallet).some(
       (val) => val?.address?.trim() !== ""
     );
@@ -124,6 +124,17 @@ function Withdraw() {
     mode: "all",
     defaultValues: initialValues,
   });
+
+  // Watch form values
+  const withdrawPassword = form.watch("withdrawPassword");
+  const formWithdrawAmount = form.watch("withdrawAmount");
+
+  // Sync form withdrawAmount with local state
+  useEffect(() => {
+    if (formWithdrawAmount !== withdrawAmount) {
+      setWithdrawAmount(formWithdrawAmount || "");
+    }
+  }, [formWithdrawAmount]);
 
   // Calculate received amount
   const calculateReceivedAmount = () => {
@@ -160,7 +171,7 @@ function Withdraw() {
       }
     }
 
-    if (!form.watch("withdrawPassword")) {
+    if (!withdrawPassword) {
       newErrors.password = "Withdrawal password is required";
     }
 
@@ -168,32 +179,57 @@ function Withdraw() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const onSubmit = (values) => {
-    if (!validateWithdrawal()) return;
+  const onSubmit = async (values) => {
+    console.log("Form submitted with values:", values);
+    
+    if (!validateWithdrawal()) {
+      console.log("Validation failed");
+      return;
+    }
 
-    // Generate order number in format: RE + YYYYMMDD + 7 random digits
-    const now = new Date();
-    const dateStr = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(
-      2,
-      "0"
-    )}${String(now.getDate()).padStart(2, "0")}`;
-    const randomDigits = Math.floor(Math.random() * 1e7)
-      .toString()
-      .padStart(7, "0");
+    try {
+      setIsSubmitting(true);
 
-    values.orderNo = `RE${dateStr}${randomDigits}`;
-    values.currency = selected;
-    values.totalAmount = values.withdrawAmount;
-    values.withdrawAdress = address;
-    values.fee = networkFees[selected]?.fee || 0;
+      // Generate order number in format: RE + YYYYMMDD + 7 random digits
+      const now = new Date();
+      const dateStr = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(
+        2,
+        "0"
+      )}${String(now.getDate()).padStart(2, "0")}`;
+      const randomDigits = Math.floor(Math.random() * 1e7)
+        .toString()
+        .padStart(7, "0");
 
-    dispatch(actions.doCreate(values));
+      const submitData = {
+        ...values,
+        orderNo: `RE${dateStr}${randomDigits}`,
+        currency: selected,
+        withdrawAmount: parseFloat(withdrawAmount),
+        totalAmount: parseFloat(withdrawAmount),
+        withdrawAdress: address,
+        fee: networkFees[selected]?.fee || 0,
+        status: "pending",
+      };
 
-    form.reset(initialValues);
-    setSelected("");
-    setAddress("");
-    setWithdrawAmount("");
-    setErrors({});
+      console.log("Dispatching with data:", submitData);
+
+      // Dispatch the action
+      await dispatch(actions.doCreate(submitData));
+
+      // Reset form on success
+      form.reset(initialValues);
+      setSelected("");
+      setAddress("");
+      setWithdrawAmount("");
+      setErrors({});
+      
+      console.log("Withdrawal request submitted successfully");
+
+    } catch (error) {
+      console.error("Error submitting withdrawal:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const currencyOptions = [
@@ -221,6 +257,9 @@ function Withdraw() {
 
   const currentFeeConfig = selected ? networkFees[selected] : null;
   const receivedAmount = calculateReceivedAmount();
+
+  // Check if form is valid for enabling the button
+  const isFormValid = selected && withdrawAmount && withdrawPassword && !isSubmitting;
 
   return (
     <div className="withdrawContainer">
@@ -265,12 +304,13 @@ function Withdraw() {
                   onChange={(e) => {
                     setSelected(e.target.value);
                     setErrors({});
+                    form.setValue("currency", e.target.value);
                   }}
                 >
                   <option value="">Select a currency</option>
                   {currencyOptions.map((currency) => {
                     const hasWallet =
-                      currentUser.wallet?.[currency.id]?.address;
+                      currentUser?.wallet?.[currency.id]?.address;
                     return (
                       <option
                         key={currency.id}
@@ -339,8 +379,9 @@ function Withdraw() {
                           placeholder="0.0"
                           value={withdrawAmount}
                           onChange={(e) => {
-                            setWithdrawAmount(e.target.value);
-                            form.setValue("withdrawAmount", e.target.value);
+                            const value = e.target.value;
+                            setWithdrawAmount(value);
+                            form.setValue("withdrawAmount", value);
                             setErrors({ ...errors, amount: null });
                           }}
                         />
@@ -365,9 +406,10 @@ function Withdraw() {
                           className="textField"
                           placeholder="Enter withdrawal password"
                           {...form.register("withdrawPassword")}
-                          onChange={() =>
-                            setErrors({ ...errors, password: null })
-                          }
+                          onChange={(e) => {
+                            form.setValue("withdrawPassword", e.target.value);
+                            setErrors({ ...errors, password: null });
+                          }}
                         />
                       </div>
                       {errors.password && (
@@ -422,11 +464,9 @@ function Withdraw() {
                     <button
                       type="submit"
                       className="withdrawBtn"
-                      disabled={
-                        !withdrawAmount || !form.watch("withdrawPassword")
-                      }
+                      disabled={!isFormValid || isSubmitting}
                     >
-                      Confirm Withdrawal
+                      {isSubmitting ? "Processing..." : "Confirm Withdrawal"}
                     </button>
                   </div>
                 </form>

@@ -1,3 +1,4 @@
+
 import { useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { Link } from "react-router-dom";
@@ -25,6 +26,11 @@ function SubHeader(props) {
         <div className="back-button" onClick={() => goBack()}>
           <i className="fas fa-arrow-left" />
         </div>
+        <Link to="/" className="notification-link">
+          <i className="fas fa-home header-icon" style={{
+            color: "white", marginLeft: 9
+          }} />
+        </Link>
         <div className="page-title">{props?.title}</div>
         <div className="header-icons">
           <Link to="/notification" className="notification-link">
@@ -32,7 +38,14 @@ function SubHeader(props) {
             {notificationCount > 0 && (
               <span className="notification-badge">{count}</span>
             )}
+
           </Link>
+          <Link to="/profile" className="notification-link">
+            <i className="fas fa-user header-icon" style={{
+              color: "white", marginLeft: 9
+            }} />
+          </Link>
+
         </div>
       </div>
       <style>{` /* Header Section */

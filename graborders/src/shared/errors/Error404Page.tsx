@@ -9,7 +9,7 @@ function Error404Page() {
       <div className="container">
   <div className="logo">
     <i className="fas fa-coins logo-icon" />
-    <div className="logo-text">CryptoWallet</div>
+    <div className="logo-text">NUXES</div>
   </div>
   <div className="error-content">
     <div className="error-icon">
@@ -46,7 +46,7 @@ function Error404Page() {
     </div>
   </div>
   <div className="footer">
-    <p>© 2023 CryptoWallet. All rights reserved.</p>
+    <p>© 2023 NUXES. All rights reserved.</p>
   </div>
 </div>
 

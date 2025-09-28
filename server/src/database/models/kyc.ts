@@ -16,7 +16,6 @@ export default (database) => {
         ref: "user",
         required: true,
       },
-
       Documenttype: {
         type: String,
       },
@@ -26,7 +25,10 @@ export default (database) => {
       idnumer: {
         type: String,
       },
-
+      address: {
+        type: String,
+        required: true,
+      },
       front: [FileSchema],
       back: [FileSchema],
       selfie: [FileSchema],
@@ -35,7 +37,6 @@ export default (database) => {
         enum: ["pending", "canceled", "success"],
         default: "pending",
       },
-
       tenant: {
         type: Schema.Types.ObjectId,
         ref: "tenant",

@@ -15,35 +15,39 @@ import transactionEnumerators from "src/modules/transaction/transactionEnumerato
 import ImagesFormItem from "src/shared/form/ImagesFormItems";
 import Storage from "src/security/storage";
 
-const schema = yup.object().shape({
-  user: yupFormSchemas.relationToOne(i18n("entities.vip.fields.title"), {
-    
-  }),
-  Documenttype: yupFormSchemas.string(i18n("Document Type")),
-  realname: yupFormSchemas.string(i18n("Full Name"), {    required: true,}),
-  idnumer: yupFormSchemas.string(i18n("Document Number"), {    required: true,}),
-  front: yupFormSchemas.images(i18n("Front Side"), { required: true}),
-  back: yupFormSchemas.images(i18n("Back Side"), { required: true}),
+// Create a dynamic schema that changes based on document type
+const createSchema = (documentType) => {
+  return yup.object().shape({
+    user: yupFormSchemas.relationToOne(i18n("entities.vip.fields.title"), {
+      
+    }),
+    Documenttype: yupFormSchemas.string(i18n("Document Type")),
+    realname: yupFormSchemas.string(i18n("Full Name"), { required: true }),
+    idnumer: yupFormSchemas.string(i18n("Document Number"), { required: true }),
+    address: yupFormSchemas.string(i18n("Address"), { required: true }),
+    front: yupFormSchemas.images(i18n("Front Side"), { required: true }),
+    // Make back required only if document type is NOT passport
+    back: documentType === "passport" 
+      ? yupFormSchemas.images(i18n("Back Side")) // Not required
+      : yupFormSchemas.images(i18n("Back Side"), { required: true }),
+    selfie: yupFormSchemas.images(i18n("Selfie"), { required: true }),
+    status: yupFormSchemas.enumerator(
+      i18n('entities.transaction.fields.status'),
+      {
+        options: transactionEnumerators.status,
+      },
+    ),
+  });
+};
 
-  selfie: yupFormSchemas.images(i18n("Selfie"), {required: true}),
-status: yupFormSchemas.enumerator(
-    i18n('entities.transaction.fields.status'),
-    {
-      options: transactionEnumerators.status,
-    },
-  ),
-});
-
-function proof() {
-
-
+function Proof() {
   const history = useHistory();
-  const [document, setdocument] = useState("passport");
+  const [document, setDocument] = useState("passport");
   const currentUser = useSelector(authSelectors.selectCurrentUser);
-
   const dispatch = useDispatch();
 
-  // const loading = useSelector(selectors.selectLoading);
+  // Create schema based on current document type
+  const [currentSchema, setCurrentSchema] = useState(() => createSchema(document));
 
   const [initialValues] = useState(() => {
     return {
@@ -51,6 +55,7 @@ function proof() {
       Documenttype: document,
       realname: "",
       idnumer: "",
+      address: "",
       front: [],
       back: [],
       selfie: [],
@@ -59,24 +64,46 @@ function proof() {
   });
 
   const form = useForm({
-    resolver: yupResolver(schema),
+    resolver: yupResolver(currentSchema),
     mode: "all",
     defaultValues: initialValues,
   });
 
-  const onSubmit = (values) => {
+  // Update schema when document type changes
+  useEffect(() => {
+    const newSchema = createSchema(document);
+    setCurrentSchema(newSchema);
+    
+    // Update form validation schema
+    form.clearErrors(); // Clear existing errors
+  }, [document, form]);
 
-     const data = {
-      user :currentUser,
+  const onSubmit = (values) => {
+    const data = {
+      user: currentUser,
       Documenttype: document,
       ...values
     };
+
+    // If passport, remove back field from data or set to empty
+    if (document === "passport") {
+      data.back = []; // or you can delete data.back if your backend expects it to be absent
+    }
 
     dispatch(actions.doCreate(data));
   };
 
   const goBack = () => {
-    history.goBack(); // This will take you back to the previous page
+    history.goBack();
+  };
+
+  const handleDocumentChange = (newDocumentType) => {
+    setDocument(newDocumentType);
+    
+    // Reset back field when switching to passport
+    if (newDocumentType === "passport") {
+      form.setValue("back", []);
+    }
   };
 
   const documentTypeOptions = [
@@ -96,28 +123,31 @@ function proof() {
       icon: "fas fa-id-card-alt",
     },
   ];
+
   return (
     <div className="container">
       {/* Header Section */}
       <div className="header">
         <div className="header-content">
-          <div className="back-button" onClick={() => goBack()}>
+          <div className="back-button" onClick={goBack}>
             <i className="fas fa-arrow-left" />
           </div>
-
           <div className="page-title">Identity Verification</div>
           <div className="placeholder" />
         </div>
       </div>
+      
       {/* Instructions */}
       <div className="instructions">
         Verify your identity to access all features of your crypto wallet
       </div>
+      
       {/* Form Section */}
       <FormProvider {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <div className="form-section">
             <div className="proof-section-title">Document Information</div>
+            
             {/* Document Type */}
             <div className="input-group">
               <label className="input-label">
@@ -126,11 +156,11 @@ function proof() {
               <div className="radio-group">
                 {documentTypeOptions.map((item) => (
                   <div
-                    key={item.icon}
+                    key={item.value}
                     className={`radio-option ${
-                      item.value == document ? "selected" : ""
+                      item.value === document ? "selected" : ""
                     }`}
-                    onClick={() => setdocument(item.value)}
+                    onClick={() => handleDocumentChange(item.value)}
                   >
                     <i className={`${item.icon} radio-icon`} />
                     <span className="radio-text">{item.label}</span>
@@ -138,13 +168,13 @@ function proof() {
                 ))}
               </div>
             </div>
+            
             {/* Personal Information */}
-
             <InputFormItem
               type="text"
               name="realname"
               className="text-input"
-              placeholder="Enter your first name"
+              placeholder="Enter your full name"
               label="Full Name"
             />
 
@@ -155,35 +185,46 @@ function proof() {
               placeholder="Enter your document number"
               label="Document Number"
             />
+
+            {/* New Address Field */}
+            <InputFormItem
+              type="text"
+              name="address"
+              className="text-input"
+              placeholder="Enter your complete address"
+              label="Address"
+            />
           </div>
+          
           {/* Document Upload Section */}
           <div className="form-section">
             <div className="proof-section-title">Document Upload</div>
 
-
-            {/* Front of ID */}
+            {/* Front of Document */}
             <ImagesFormItem
-                name="front"
-                label={i18n('Front of Document')}
-                storage={Storage.values.categoryPhoto}
-                text="Upload front side of your document"
-              />
+              name="front"
+              label={i18n('Front of Document')}
+              storage={Storage.values.categoryPhoto}
+              text="Upload front side of your document"
+            />
 
-            {/* Back of ID */}
-             <ImagesFormItem
+            {/* Back of Document - Only show if NOT passport */}
+            {document !== "passport" && (
+              <ImagesFormItem
                 name="back"
-                label={i18n(' Back of Document')}
+                label={i18n('Back of Document')}
                 storage={Storage.values.categoryPhoto}
                 text="Upload back side of your document"
               />
+            )}
 
             {/* Selfie with Document */}
-               <ImagesFormItem
-                name="selfie"
-                label={i18n('Selfie with Document')}
-                storage={Storage.values.categoryPhoto}
-                text="Upload a selfie holding your document"
-              />
+            <ImagesFormItem
+              name="selfie"
+              label={i18n('Selfie with Document')}
+              storage={Storage.values.categoryPhoto}
+              text="Upload a selfie holding your document"
+            />
           </div>
 
           {/* Security Note */}
@@ -198,15 +239,17 @@ function proof() {
               manually by our security team to ensure your account's safety.
             </div>
           </div>
+          
           {/* Submit Button */}
           <button
+            type="submit"
             className="submit-button"
-            onClick={form.handleSubmit(onSubmit)}
           >
             VALIDATE DOCUMENTS
           </button>
         </form>
       </FormProvider>
+      
       {/* Footer */}
       <div className="footer">
         © 2025 CryptoWallet. All rights reserved. |
@@ -216,4 +259,4 @@ function proof() {
   );
 }
 
-export default proof;
+export default Proof;

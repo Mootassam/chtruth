@@ -8,7 +8,7 @@ function Error403Page() {
     <div className="error-container-403">
       <div className="error-logo-403">
         <i className="fas fa-coins error-logo-icon-403" />
-        <div className="error-logo-text-403">CryptoWallet</div>
+        <div className="error-logo-text-403">NUXES</div>
       </div>
       <div className="error-content-403">
         <div className="error-icon-403">
@@ -45,7 +45,7 @@ function Error403Page() {
         </div>
       </div>
       <div className="error-footer-403">
-        <p>© 2023 CryptoWallet. All rights reserved.</p>
+        <p>© 2023 NUXES. All rights reserved.</p>
       </div>
     </div>
   )
