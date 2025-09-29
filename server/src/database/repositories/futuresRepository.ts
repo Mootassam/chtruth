@@ -12,6 +12,7 @@ import cron from "node-cron";
 // 1. CORRECT THE IMPORT: Import the Queue, not the Worker
 import { futuresQueue } from "../utils/futuresQueue"; // ✅ Import the QUEUE
 import { sendNotification } from "../../services/notificationServices";
+import Error405 from "../../errors/Error405";
 
 class FuturesRepository {
   // inside FuturesRepository class:
@@ -82,140 +83,167 @@ class FuturesRepository {
     return this.findById(record.id, options);
   }
 
-  static async update(id, data, options /*: IRepositoryOptions */) {
-    const currentTenant = MongooseRepository.getCurrentTenant(options);
-    const currentUser = MongooseRepository.getCurrentUser(options);
+ static async update(id, data, options /*: IRepositoryOptions */) {
+  const currentTenant = MongooseRepository.getCurrentTenant(options);
+  const currentUser = MongooseRepository.getCurrentUser(options);
 
-    const FuturesModel = Futures(options.database);
-    const walletModel = Wallet(options.database);
-    const transactionModel = transaction(options.database);
+  const FuturesModel = Futures(options.database);
+  const walletModel = Wallet(options.database);
+  const transactionModel = transaction(options.database);
 
-    // load record
-    let record = await FuturesModel.findById(id);
+  // load record
+  let record = await FuturesModel.findById(id);
 
-    if (!record || String(record.tenant) !== String(currentTenant.id)) {
-      throw new Error404();
-    }
+  if (!record || String(record.tenant) !== String(currentTenant.id)) {
+    throw new Error404();
+  }
 
-    if (record.finalized) {
-      throw new Error(
-        "This futures entry is already finalized and cannot be changed."
-      );
-    }
+  if (record.finalized) {
+    throw new Error405(
+      "This futures entry is already finalized and cannot be changed."
+    );
+  }
 
-    if (record.expiryTime && new Date() >= new Date(record.expiryTime)) {
-      throw new Error(
-        "Contract duration already expired; entry will be/has been auto-finalized."
-      );
-    }
+  if (record.expiryTime && new Date() >= new Date(record.expiryTime)) {
+    throw new Error405(
+      "Contract duration already expired; entry will be/has been auto-finalized."
+    );
+  }
 
-    const isControlUpdate =
-      data.control === "loss" || data.control === "profit";
+  const isControlUpdate = data.control === "loss" || data.control === "profit";
 
-    try {
-      if (isControlUpdate) {
-        const selectedWallet = await walletModel.findOne({
-          user: record.createdBy,
-          symbol: "USDT",
-          tenant: currentTenant.id,
-        });
+  try {
+    if (isControlUpdate) {
+      const selectedWallet = await walletModel.findOne({
+        user: record.createdBy,
+        symbol: "USDT",
+        tenant: currentTenant.id,
+      });
 
-        if (!selectedWallet) {
-          throw new Error(`USDT wallet not found for user ${record.createdBy}`);
-        }
-
-        const amountForProfit = Number(record.profitAndLossAmount || 0);
-        const amountForLoss = Number(record.futuresAmount || 0);
-
-        if (data.control === "profit") {
-          if (!(amountForProfit > 0)) {
-            throw new Error("Profit amount is zero or invalid.");
-          }
-
-          await walletModel.findOneAndUpdate(
-            { _id: selectedWallet._id, tenant: currentTenant.id },
-            {
-              $inc: { amount: amountForProfit },
-              $set: { updatedBy: currentUser.id, updatedAt: new Date() },
-            },
-            { new: true }
-          );
-        } else {
-          const debit = amountForLoss;
-
-          if (!(debit > 0)) {
-            throw new Error("Loss amount is zero or invalid.");
-          }
-
-          const updatedWallet = await walletModel.findOneAndUpdate(
-            {
-              _id: selectedWallet._id,
-              tenant: currentTenant.id,
-              amount: { $gte: debit },
-            },
-            {
-              $inc: { amount: -debit },
-              $set: { updatedBy: currentUser.id, updatedAt: new Date() },
-            },
-            { new: true }
-          );
-
-          if (!updatedWallet) {
-            throw new Error("Insufficient funds in wallet");
-          }
-        }
-
-        const transactionType =
-          data.control === "profit" ? "futures_profit" : "futures_loss";
-        const transactionDirection = data.control === "profit" ? "in" : "out";
-        const txnAmount =
-          data.control === "profit"
-            ? Math.abs(amountForProfit)
-            : Math.abs(amountForLoss);
-
-        await transactionModel.create({
-          type: transactionType,
-          referenceId: record._id,
-          wallet: selectedWallet._id,
-          asset: "USDT",
-          amount: txnAmount,
-          status: "completed",
-          direction: transactionDirection,
-          user: record.createdBy,
-          tenant: currentTenant.id,
-          createdBy: currentUser.id,
-          updatedBy: currentUser.id,
-          dateTransaction: new Date(),
-        });
-
-        await FuturesModel.updateOne(
-          { _id: id, tenant: currentTenant.id, finalized: { $ne: true } },
-          {
-            $set: {
-              control: data.control,
-              finalized: true,
-              finalizedAt: new Date(),
-              updatedBy: currentUser.id,
-              profitAndLossAmount:
-                data.control === "profit" ? amountForProfit : -amountForLoss,
-            },
-          }
-        );
-      } else {
-        await FuturesModel.updateOne(
-          { _id: id, tenant: currentTenant.id },
-          { ...data, updatedBy: currentUser.id }
-        );
+      if (!selectedWallet) {
+        throw new Error405(`USDT wallet not found for user ${record.createdBy}`);
       }
 
-      await this._createAuditLog(AuditLogRepository.UPDATE, id, data, options);
+      const amountForProfit = Number(record.profitAndLossAmount || 0);
+      const amountForLoss = Number(record.futuresAmount || 0);
 
-      record = await this.findById(id, options);
-      return record;
-    } catch (err) {
-      throw err;
+      // ✅ calculate closing price
+      let closePrice = record.openPositionPrice;
+      if (record.futuresStatus === "long") {
+        if (data.control === "profit") {
+          closePrice =
+            record.openPositionPrice *
+            (1 + amountForProfit / (record.futuresAmount * record.leverage));
+        } else {
+          closePrice =
+            record.openPositionPrice * (1 - 1 / record.leverage);
+        }
+      } else if (record.futuresStatus === "short") {
+        if (data.control === "profit") {
+          closePrice =
+            record.openPositionPrice *
+            (1 - amountForProfit / (record.futuresAmount * record.leverage));
+        } else {
+          closePrice =
+            record.openPositionPrice * (1 + 1 / record.leverage);
+        }
+      }
+
+      // ✅ handle wallet updates
+      if (data.control === "profit") {
+        if (!(amountForProfit > 0)) {
+          throw new Error405("Profit amount is zero or invalid.");
+        }
+
+        await walletModel.findOneAndUpdate(
+          { _id: selectedWallet._id, tenant: currentTenant.id },
+          {
+            $inc: { amount: amountForProfit },
+            $set: { updatedBy: currentUser.id, updatedAt: new Date() },
+          },
+          { new: true }
+        );
+      } else {
+        const debit = amountForLoss;
+
+        if (!(debit > 0)) {
+          throw new Error405("Loss amount is zero or invalid.");
+        }
+
+        const updatedWallet = await walletModel.findOneAndUpdate(
+          {
+            _id: selectedWallet._id,
+            tenant: currentTenant.id,
+            amount: { $gte: debit },
+          },
+          {
+            $inc: { amount: -debit },
+            $set: { updatedBy: currentUser.id, updatedAt: new Date() },
+          },
+          { new: true }
+        );
+
+        if (!updatedWallet) {
+          throw new Error405("Insufficient funds in wallet");
+        }
+      }
+
+      // ✅ create transaction
+      const transactionType =
+        data.control === "profit" ? "futures_profit" : "futures_loss";
+      const transactionDirection = data.control === "profit" ? "in" : "out";
+      const txnAmount =
+        data.control === "profit"
+          ? Math.abs(amountForProfit)
+          : Math.abs(amountForLoss);
+
+      await transactionModel.create({
+        type: transactionType,
+        referenceId: record._id,
+        wallet: selectedWallet._id,
+        asset: "USDT",
+        amount: txnAmount,
+        status: "completed",
+        direction: transactionDirection,
+        user: record.createdBy,
+        tenant: currentTenant.id,
+        createdBy: currentUser.id,
+        updatedBy: currentUser.id,
+        dateTransaction: new Date(),
+      });
+
+      // ✅ finalize futures record
+      await FuturesModel.updateOne(
+        { _id: id, tenant: currentTenant.id, finalized: { $ne: true } },
+        {
+          $set: {
+            control: data.control,
+            finalized: true,
+            finalizedAt: new Date(),
+            updatedBy: currentUser.id,
+            profitAndLossAmount:
+              data.control === "profit" ? amountForProfit : -amountForLoss,
+            closePositionPrice: closePrice, // ✅ new
+            closePositionTime: new Date(), // ✅ new
+          },
+        }
+      );
+    } else {
+      await FuturesModel.updateOne(
+        { _id: id, tenant: currentTenant.id },
+        { ...data, updatedBy: currentUser.id }
+      );
     }
+
+    await this._createAuditLog(AuditLogRepository.UPDATE, id, data, options);
+
+    record = await this.findById(id, options);
+    return record;
+  } catch (err) {
+    throw err;
   }
+}
+
 
   static async parseDurationToMs(duration: string | number | undefined) {
     if (duration == null) return 0;
