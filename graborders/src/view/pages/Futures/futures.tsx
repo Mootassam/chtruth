@@ -72,6 +72,10 @@ function Futures() {
   const [balances, setBalances] = useState<{ [key: string]: number }>({});
   const [usdtBalance, setUsdtBalance] = useState<number>(0);
   const [assetsLoaded, setAssetsLoaded] = useState<boolean>(false);
+  const [openingOrders, setOpeningOrders] = useState<any[]>([]);
+
+
+  console.log(openingOrders);
 
   // Safe number formatting with fallback
   const safeToFixed = (value: any, decimals: number = 2): string => {
@@ -172,7 +176,7 @@ function Futures() {
         acc[item.symbol] = item.amount;
         return acc;
       }, {} as { [key: string]: number });
-      
+
       setBalances(formatted);
       setUsdtBalance(formatted['USDT'] || 0);
       setAssetsLoaded(true);
@@ -182,7 +186,7 @@ function Futures() {
   // Fetch initial data via REST API before WebSocket connects
   useEffect(() => {
     let isMounted = true;
-    
+
     const fetchInitialData = async () => {
       try {
         setIsLoading(true);
@@ -225,7 +229,7 @@ function Futures() {
     if (!selectedCoin) return;
 
     let isMounted = true;
-    
+
     // Update the current coin reference
     currentCoinRef.current = selectedCoin;
 
@@ -247,7 +251,7 @@ function Futures() {
       tickerWs.current.onmessage = (event: MessageEvent) => {
         // Check if component is still mounted
         if (!isMounted) return;
-        
+
         try {
           const tickerData: BinanceTicker = JSON.parse(event.data);
 
@@ -285,7 +289,7 @@ function Futures() {
 
     return () => {
       isMounted = false;
-      
+
       if (tickerWs.current && tickerWs.current.readyState === WebSocket.OPEN) {
         tickerWs.current.close();
       }
@@ -295,7 +299,7 @@ function Futures() {
   // Simulate loading orders data
   useEffect(() => {
     let isMounted = true;
-    
+
     const timer = setTimeout(() => {
       if (isMounted) {
         setIsOrdersLoading(false);
@@ -311,7 +315,7 @@ function Futures() {
   // Fetch data on component mount
   useEffect(() => {
     let isMounted = true;
-    
+
     const fetchData = async () => {
       try {
         await dispatch(futuresListAction.doFetch());
@@ -333,7 +337,7 @@ function Futures() {
   // Calculate balances when assets data changes
   useEffect(() => {
     let isMounted = true;
-    
+
     if (isMounted) {
       calculateBalances();
     }
@@ -409,9 +413,8 @@ function Futures() {
           <div className="market-info">
             <div className="market-icon">
               <img
-                src={`https://images.weserv.nl/?url=https://bin.bnbstatic.com/static/assets/logos/${
-                  selectedCoin.split("USDT")[0]
-                }.png`}
+                src={`https://images.weserv.nl/?url=https://bin.bnbstatic.com/static/assets/logos/${selectedCoin.split("USDT")[0]
+                  }.png`}
                 style={{ width: 30, height: 30 }}
                 alt={selectedCoin}
                 loading="lazy"
@@ -495,10 +498,10 @@ function Futures() {
       {/* Tabs for Open Orders/Recent Orders */}
       <div className="section-tabs">
         <div
-className={`tab ${activeTab === "openOrders" ? "active" : ""}`}
+          className={`tab ${activeTab === "openOrders" ? "active" : ""}`}
           onClick={() => setActiveTab("openOrders")}
         >
-          Open Orders ({isOrdersLoading ? "..." : 0})
+          Open Orders ({openingOrders.length})
         </div>
         <div
           className={`tab ${activeTab === "recentOrders" ? "active" : ""}`}
@@ -512,7 +515,64 @@ className={`tab ${activeTab === "openOrders" ? "active" : ""}`}
       {activeTab === "openOrders" && (
         <div className="orders-container">
           <>
-         
+            {openingOrders &&
+              openingOrders.map((order) => (
+                <div
+                  key={order.id}
+                  className="order-card"
+                  onClick={() => handleOpenOrderModal(order)}
+                >
+                  <div className="order-header">
+                    <div className="order-pair">{order.symbol || "BTC/USDT"}</div>
+                    <div
+                      className={`order-direction ${order.futuresStatus === "long" ? "buy" : "sell"
+                        }`}
+                    >
+                      {order.futuresStatus === "long" ? "BUY UP" : "BUY DOWN"}
+                    </div>
+                  </div>
+                  <div
+                    className={`order-status ${order.closePositionTime ? "closed" : "open"
+                      }`}
+                  >
+                    ● {order.closePositionTime ? "Closed" : "Open"}
+                  </div>
+                  <div className="order-details">
+                    <div className="order-row">
+                      <span className="order-label">Futures Amount:</span>
+                      <span className="order-value">${order.futuresAmount}</span>
+                    </div>
+                    <div className="order-row">
+                      <span className="order-label">Open Price:</span>
+                      <span className="order-value">
+                        {formatNumber(
+                          order?.openPositionPrice?.toString(),
+                          order?.openPositionPrice > 1000 ? 0 : 2
+                        )}
+                      </span>
+                    </div>
+                    <div className="order-row">
+                      <span className="order-label">Open Time:</span>
+                      <span className="order-value">
+                        {formatDateTime(order.openPositionTime)}
+                      </span>
+                    </div>
+
+                    <div className="order-row">
+                      <span className="order-label">Leverage:</span>
+                      <span className="order-value">{order.leverage}x</span>
+                    </div>
+
+
+                  </div>
+                </div>
+              ))}
+            {openingOrders.length === 0 && (
+              <div className="no-orders">
+                <i className="fas fa-file-invoice" />
+                <div>No recent orders</div>
+              </div>
+            )}
           </>
         </div>
       )}
@@ -520,7 +580,7 @@ className={`tab ${activeTab === "openOrders" ? "active" : ""}`}
       {/* Recent Orders */}
       {activeTab === "recentOrders" && (
         <div className="orders-container">
-          {countFutures  && !futuretLoading &&
+          {countFutures && !futuretLoading &&
             listFutures.map((order) => (
               <div
                 key={order.id}
@@ -530,17 +590,15 @@ className={`tab ${activeTab === "openOrders" ? "active" : ""}`}
                 <div className="order-header">
                   <div className="order-pair">{order.symbol || "BTC/USDT"}</div>
                   <div
-                    className={`order-direction ${
-                      order.futuresStatus === "long" ? "buy" : "sell"
-                    }`}
+                    className={`order-direction ${order.futuresStatus === "long" ? "buy" : "sell"
+                      }`}
                   >
                     {order.futuresStatus === "long" ? "BUY UP" : "BUY DOWN"}
                   </div>
                 </div>
                 <div
-                  className={`order-status ${
-                    order.closePositionTime ? "closed" : "open"
-                  }`}
+                  className={`order-status ${order.closePositionTime ? "closed" : "open"
+                    }`}
                 >
                   ● {order.closePositionTime ? "Closed" : "Open"}
                 </div>
@@ -558,19 +616,19 @@ className={`tab ${activeTab === "openOrders" ? "active" : ""}`}
                       )}
                     </span>
                   </div>
-               <div className="order-row">
+                  <div className="order-row">
                     <span className="order-label">Open Time:</span>
                     <span className="order-value">
                       {formatDateTime(order.openPositionTime)}
                     </span>
                   </div>
-             
+
                   <div className="order-row">
                     <span className="order-label">Leverage:</span>
                     <span className="order-value">{order.leverage}x</span>
                   </div>
-             
-                 
+
+
                 </div>
               </div>
             ))}
@@ -600,24 +658,22 @@ className={`tab ${activeTab === "openOrders" ? "active" : ""}`}
                     {selectedOrder.symbol || selectedOrder.pair}
                   </span>
                   <span
-                    className={`detail-direction ${
-                      selectedOrder.futuresStatus === "long" ||
-                      selectedOrder.direction === "BUY UP"
+                    className={`detail-direction ${selectedOrder.futuresStatus === "long" ||
+                        selectedOrder.direction === "BUY UP"
                         ? "buy"
                         : "sell"
-                    }`}
+                      }`}
                   >
                     {selectedOrder.futuresStatus === "long"
                       ? "BUY UP"
                       : selectedOrder.futuresStatus === "short"
-                      ? "BUY DOWN"
-                      : selectedOrder.direction}
+                        ? "BUY DOWN"
+                        : selectedOrder.direction}
                   </span>
                 </div>
                 <div
-                  className={`detail-status ${
-                    selectedOrder.closePositionTime ? "closed" : "open"
-                  }`}
+                  className={`detail-status ${selectedOrder.closePositionTime ? "closed" : "open"
+                    }`}
                 >
                   ● {selectedOrder.closePositionTime ? "Closed" : "Open"}
                 </div>
@@ -685,8 +741,7 @@ className={`tab ${activeTab === "openOrders" ? "active" : ""}`}
                 <div className="detail-row">
                   <span className="detail-label">Profit And Loss Amount:</span>
                   <span
-                    className={`detail-value ${
-                      (selectedOrder.control === "profit" ? "profit" : "loss")}`}>
+                    className={`detail-value ${(selectedOrder.control === "profit" ? "profit" : "loss")}`}>
                     {safeToFixed(
                       selectedOrder.profitAndLossAmount || selectedOrder.pnl,
                       2
@@ -722,8 +777,9 @@ className={`tab ${activeTab === "openOrders" ? "active" : ""}`}
         selectedCoin={selectedCoin}
         marketPrice={marketPrice}
         availableBalance={usdtBalance}
+        setOpeningOrders={setOpeningOrders}
       />
-      
+
 
       <CoinListModal
         isOpen={isCoinModalOpen}

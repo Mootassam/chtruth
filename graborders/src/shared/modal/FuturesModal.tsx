@@ -14,6 +14,7 @@ interface FuturesModalProps {
   selectedCoin: string;
   marketPrice: string;
   availableBalance: number;
+  setOpeningOrders
 }
 
 const FuturesModal: React.FC<FuturesModalProps> = ({
@@ -25,6 +26,7 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
   selectedCoin,
   marketPrice,
   availableBalance,
+  setOpeningOrders
 }) => {
   const [selectedDuration, setSelectedDuration] = useState<string>("120");
   const [selectedLeverage, setSelectedLeverage] = useState<string>("2");
@@ -73,6 +75,7 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
     let interval: NodeJS.Timeout | null = null;
 
     if (tradeStatus === "in-progress") {
+
       if (timeLeft > 0) {
         interval = setInterval(() => {
           setTimeLeft((prev) => prev - 1);
@@ -118,6 +121,18 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
         closePositionTime: null
       });
 
+   setOpeningOrders(prev => [...prev, {
+  id: futureId, // Use the actual ID from created record
+  futuresAmount,
+  contractDuration: selectedDuration,
+  futuresStatus: direction === "up" ? "long" : "short",
+  openPositionPrice: parseFloat(marketPrice || "0") || 0,
+  closePositionPrice: null,
+  leverage: parseInt(selectedLeverage, 10),
+  openPositionTime: new Date().toISOString(),
+  closePositionTime: null
+}]);
+
       // ensure timeLeft set from chosen duration (seconds)
       const secs = parseInt(selectedDuration, 10) || 0;
       setTimeLeft(secs);
@@ -134,6 +149,7 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
   // completeTrade: fetch finalized trade from backend and show real PnL
   const completeTrade = async () => {
     // ensure we have a future id
+    setOpeningOrders([]);
     if (!futureId) {
       // no id => nothing we can fetch; fallback to internal calculation
       const calculatedIsWin = false; // fallback: treat as loss
@@ -239,6 +255,7 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
 
   const resetTrade = () => {
     setTradeStatus("configuring");
+    setOpeningOrders([]);
     setTradeResult(null);
     setTimeLeft(0);
     setFutureId(null);
@@ -362,8 +379,8 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
                     ? `Trade Successful! ${pnlDisplay}`
                     : `Trade Failed! ${pnlDisplay}`
                   : tradeResult === "win"
-                  ? `Trade Successful! +${calculateProfit(futuresAmount, selectedLeverage, selectedDuration).toFixed(2)} USDT`
-                  : `Trade Failed! -${futuresAmount.toFixed(2)} USDT`}
+                    ? `Trade Successful! +${calculateProfit(futuresAmount, selectedLeverage, selectedDuration).toFixed(2)} USDT`
+                    : `Trade Failed! -${futuresAmount.toFixed(2)} USDT`}
               </div>
             )}
 

@@ -7,7 +7,7 @@ const authAxios = axios.create({
   //  baseURL: "http://159.198.77.158:8084/api",
   
   // Local link
-   baseURL: "http://localhost:8084/api",
+   baseURL: "http://159.198.77.158:8084/api",
 
 });
 
