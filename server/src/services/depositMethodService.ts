@@ -2,9 +2,9 @@
 import Error400 from "../errors/Error400";
 import MongooseRepository from "../database/repositories/mongooseRepository";
 import { IServiceOptions } from "./IServiceOptions";
-import StackingPlanRepository from "../database/repositories/stackingPlanRepository";
+import depositMethodRepository from "../database/repositories/depositMethodRepository";
 
-export default class StackingServices {
+export default class depositMethodService {
   options: IServiceOptions;
 
   constructor(options) {
@@ -17,7 +17,7 @@ export default class StackingServices {
     );
 
     try {
-      const record = await StackingPlanRepository.create(data, {
+      const record = await depositMethodRepository.create(data, {
         ...this.options,
         session,
       });
@@ -38,13 +38,13 @@ export default class StackingServices {
     }
   }
 
-  async update(id, data, io) {
+  async update(id, data,) {
     const session = await MongooseRepository.createSession(
       this.options.database
     );
 
     try {
-      const record = await StackingPlanRepository.update(id, data, io, {
+      const record = await depositMethodRepository.update(id, data, {
         ...this.options,
         session,
       });
@@ -72,7 +72,7 @@ export default class StackingServices {
 
     try {
       for (const id of ids) {
-        await StackingPlanRepository.destroy(id, {
+        await depositMethodRepository.destroy(id, {
           ...this.options,
           session,
         });
@@ -86,15 +86,15 @@ export default class StackingServices {
   }
 
   async findById(id) {
-    return StackingPlanRepository.findById(id, this.options);
+    return depositMethodRepository.findById(id, this.options);
   }
 
   async findAllAutocomplete(search, limit) {
-    return StackingPlanRepository.findAllAutocomplete(search, limit, this.options);
+    return depositMethodRepository.findAllAutocomplete(search, limit, this.options);
   }
 
   async findAndCountAll(args) {
-    return StackingPlanRepository.findAndCountAll(args, this.options);
+    return depositMethodRepository.findAndCountAll(args, this.options);
   }
 
   async import(data, importHash) {
@@ -121,7 +121,7 @@ export default class StackingServices {
   }
 
   async _isImportHashExistent(importHash) {
-    const count = await StackingPlanRepository.count(
+    const count = await depositMethodRepository.count(
       {
         importHash,
       },

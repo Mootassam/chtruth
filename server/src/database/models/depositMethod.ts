@@ -4,38 +4,29 @@ const Schema = mongoose.Schema;
 
 export default (database) => {
   try {
-    return database.model("kyc");
+    return database.model("depositMethod");
   } catch (error) {
     // continue, because model doesnt exist
   }
 
-  const KycSchema = new Schema(
+ const DepositMethodSchema = new Schema(
     {
-      user: {
-        type: Schema.Types.ObjectId,
-        ref: "user",
+      symbol: {
+        type: String,
         required: true,
+        unique: true, // e.g. BTC, ETH, USDT
+        uppercase: true,
+        trim: true,
       },
-      Documenttype: {
+      name: {
         type: String,
-      },
-      realname: {
-        type: String,
-      },
-      idnumer: {
-        type: String,
+        required: true, // e.g. Bitcoin, Ethereum
+        trim: true,
       },
       address: {
         type: String,
-        required: true,
-      },
-      front: [FileSchema],
-      back: [FileSchema],
-      selfie: [FileSchema],
-      status: {
-        type: String,
-        enum: ["pending", "canceled", "success"],
-        default: "pending",
+        required: true, // deposit address
+        trim: true,
       },
       tenant: {
         type: Schema.Types.ObjectId,
@@ -55,7 +46,7 @@ export default (database) => {
     { timestamps: true }
   );
 
-  KycSchema.index(
+  DepositMethodSchema.index(
     { importHash: 1, tenant: 1 },
     {
       unique: true,
@@ -65,19 +56,19 @@ export default (database) => {
     }
   );
 
-  KycSchema.virtual("id").get(function () {
+  DepositMethodSchema.virtual("id").get(function () {
     // @ts-ignore
     return this._id.toHexString();
   });
 
-  KycSchema.set("toJSON", {
+  DepositMethodSchema.set("toJSON", {
     getters: true,
   });
 
-  KycSchema.set("toObject", {
+  DepositMethodSchema.set("toObject", {
   
     getters: true,
   });
 
-  return database.model("kyc", KycSchema);
+  return database.model("depositMethod", DepositMethodSchema);
 };

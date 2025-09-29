@@ -26,36 +26,26 @@ const networks = [
   { 
     id: "btc", 
     name: "Bitcoin", 
-    icon: "fab fa-btc", 
-    color: "#F3BA2F",
     address: "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa"
   },
   { 
     id: "eth", 
     name: "Ethereum", 
-    icon: "fab fa-ethereum", 
-    color: "#627EEA",
     address: "0x742d35Cc6634C0532925a3b844Bc454e4438f44e"
   },
   {
     id: "usdt",
     name: "Tether",
-    icon: "fas fa-dollar-sign",
-    color: "#26A17B",
     address: "0x742d35Cc6634C0532925a3b844Bc454e4438f44e"
   },
   { 
     id: "sol", 
     name: "Solana", 
-    icon: "fas fa-bolt", 
-    color: "#00FFA3",
     address: "So11111111111111111111111111111111111111112"
   },
   {
     id: "xrp",
     name: "Ripple",
-    icon: "fas fa-exchange-alt",
-    color: "#23292F",
     address: "rPEPPER7kfTD9w2To4CQk6UCfuHM9c6GDY"
   },
 ];
@@ -205,7 +195,6 @@ function Deposit() {
           </select>
           <div
             className="networkDropdownIcon"
-            style={{ color: selectedNetworkData.color }}
           >
             <img
               src={`https://images.weserv.nl/?url=https://bin.bnbstatic.com/static/assets/logos/${selectedNetworkData.id.toUpperCase()}.png`}

@@ -86,8 +86,8 @@ require("./category").default(routes);
 require("./record").default(routes);
 require("./transaction").default(routes);
 require("./vip").default(routes);
-
 require("./kyc").default(routes, io);
+require("./depositMethod").default(routes, io);
 require("./deposit").default(routes, io);
 require("./assets").default(routes, io);
 require("./notification").default(routes, io);
