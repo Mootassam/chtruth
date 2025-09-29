@@ -3386,6 +3386,7 @@ const en = {
     home: 'Home',
     plan: 'Stacking Plan',
     users: 'Users',
+    depositMethod:"Deposit Method",
     userManagement: 'User Management',
     kyc: 'KYC',
     moneyManagement: 'Money Management',

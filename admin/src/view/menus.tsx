@@ -133,7 +133,8 @@ export default [
     id: 'user-messages',
     path: '/depositMethod',
     exact: true,
-    icon: 'fas fa-money',
+    icon: 'fas fa-university',
+    
     label: i18n('dashboard.depositMethod'),
     className: 'menu-li side-menue sub-item',
     permissionRequired: permissions.categoryRead,

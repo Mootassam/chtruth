@@ -45,7 +45,7 @@ const DepopsitFormActions = {
         type: DepopsitFormActions.INIT_ERROR,
       });
 
-      getHistory().push('/stacking');
+      getHistory().push('/depositMethod');
     }
   },
 
@@ -62,7 +62,8 @@ const DepopsitFormActions = {
       });
 
       Message.success(
-        i18n('entities.vip.create.success'),
+        i18n('entities.depositMethod.create.success'),
+
       );
 
       getHistory().push('/depositMethod');
@@ -88,10 +89,10 @@ const DepopsitFormActions = {
       });
 
       Message.success(
-        i18n('entities.vip.update.success'),
+        i18n('entities.depositMethod.update.success'),
       );
 
-      getHistory().push('/stackingPlan');
+      getHistory().push('/depositMethod');
     } catch (error) {
       Errors.handle(error);
 

@@ -24,7 +24,7 @@ function StackingPlanListPage(props) {
           <Row>
             <Col xs={9}>
               <PageTitle>
-                {i18n('entities.stackingPlan.list.title')}
+                {i18n('entities.depositMethod.list.title')}
               </PageTitle>
             </Col>
             <Col md="auto">

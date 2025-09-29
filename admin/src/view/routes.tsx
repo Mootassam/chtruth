@@ -610,7 +610,7 @@ const privateRoutes = [
   {
     path: '/stacking/:id/edit',
     loader: () =>
-      import('src/view/stacking/form/stackingForm'),
+      import('src/view/stacking/form/stackingFormPage'),
     permissionRequired: permissions.categoryRead,
     exact: true,
   },
@@ -639,7 +639,7 @@ const privateRoutes = [
   {
     path: '/depositMethod/:id/edit',
     loader: () =>
-      import('src/view/depositMethod/form/DepositMethodForm'),
+      import('src/view/depositMethod/form/DepositMethodFormPage'),
     permissionRequired: permissions.categoryRead,
     exact: true,
     

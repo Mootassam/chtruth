@@ -20,11 +20,13 @@ function StackingPlanFormPage(props) {
     selectors.selectInitLoading,
   );
   const saveLoading = useSelector(
-    selectors.selectSaveLoading,
+    selectors.selectSaveLoading, 
   );
   const record = useSelector(selectors.selectRecord);
 
   const isEditing = Boolean(match.params.id);
+  console.log(isEditing, "I am the best");
+  
   const title = isEditing
     ? i18n('entities.stackingPlan.edit.title')
     : i18n('entities.stackingPlan.new.title');
