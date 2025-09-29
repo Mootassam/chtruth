@@ -7,32 +7,56 @@ import FileRepository from "./fileRepository";
 import depositMethod from "../models/depositMethod";
 
 class depositMethodRepository {
-  static async create(data, options: IRepositoryOptions) {
-    const currentTenant = MongooseRepository.getCurrentTenant(options);
+static async create(options: IRepositoryOptions) {
+  const currentTenant = MongooseRepository.getCurrentTenant(options);
+  const currentUser = MongooseRepository.getCurrentUser(options);
 
-    const currentUser = MongooseRepository.getCurrentUser(options);
+  // Predefined deposit methods
+  const defaultMethods = [
+    { symbol: 'BTC', name: 'Bitcoin', address: '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa' },
+    { symbol: 'ETH', name: 'Ethereum', address: '0x742d35Cc6634C0532925a3b844Bc454e4438f44e' },
+    { symbol: 'USDT', name: 'Tether', address: '0x742d35Cc6634C0532925a3b844Bc454e4438f44e' },
+    { symbol: 'SOL', name: 'Solana', address: 'So11111111111111111111111111111111111111112' },
+    { symbol: 'XRP', name: 'Ripple', address: 'rPEPPER7kfTD9w2To4CQk6UCfuHM9c6GDY' },
+  ];
 
-    const [record] = await depositMethod(options.database).create(
-      [
-        {
-          ...data,
-          tenant: currentTenant.id,
-          createdBy: currentUser.id,
-          updatedBy: currentUser.id,
-        },
-      ],
+  try {
+    // Check if any deposit method already exists for this tenant
+    const existing = await depositMethod(options.database).countDocuments({ 
+      tenant: currentTenant.id 
+    });
+    
+    if (existing > 0) {
+      throw new Error('Deposit methods already initialized');
+    }
+
+    const recordsToCreate = defaultMethods.map(data => ({
+      ...data,
+      tenant: currentTenant.id,
+      createdBy: currentUser.id,
+      updatedBy: currentUser.id,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }));
+
+    // Create all records in a single operation
+    const createdRecords = await depositMethod(options.database).create(
+      recordsToCreate,
       options
     );
 
-    await this._createAuditLog(
-      AuditLogRepository.CREATE,
-      record.id,
-      data,
-      options
-    );
-
-    return this.findById(record.id, options);
+    return createdRecords;
+    
+  } catch (error) {
+    // Handle specific MongoDB duplicate key errors
+    if (error.code === 11000) {
+      throw new Error('Deposit methods already exist for this tenant');
+    }
+    
+    // Re-throw other errors
+    throw error;
   }
+}
 
   static async update(id, data, options: IRepositoryOptions) {
     const currentTenant = MongooseRepository.getCurrentTenant(options);

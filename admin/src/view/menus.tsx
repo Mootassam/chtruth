@@ -1,3 +1,4 @@
+
 import Permissions from 'src/security/permissions';
 import { i18n } from 'src/i18n';
 
@@ -125,6 +126,15 @@ export default [
     exact: true,
     icon: 'fas fa-envelope',
     label: i18n('dashboard.userMessages'),
+    className: 'menu-li side-menue sub-item',
+    permissionRequired: permissions.categoryRead,
+  },
+    {
+    id: 'user-messages',
+    path: '/depositMethod',
+    exact: true,
+    icon: 'fas fa-money',
+    label: i18n('dashboard.depositMethod'),
     className: 'menu-li side-menue sub-item',
     permissionRequired: permissions.categoryRead,
   },

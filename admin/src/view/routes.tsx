@@ -614,6 +614,39 @@ const privateRoutes = [
     permissionRequired: permissions.categoryRead,
     exact: true,
   },
+
+
+
+  // deposit method 
+
+
+  {
+    path: '/depositMethod',
+    loader: () =>
+      import('src/view/depositMethod/list/DepositMethodListPage'),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+
+  {
+    path: '/depositMethod/new',
+    loader: () =>
+      import('src/view/depositMethod/form/DepositMethodFormPage'),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+
+  {
+    path: '/depositMethod/:id/edit',
+    loader: () =>
+      import('src/view/depositMethod/form/DepositMethodForm'),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+    
+  },
+
+
+
   // {
 
   //   path: '/stacking/:id',

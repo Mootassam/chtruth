@@ -17,7 +17,7 @@ export default class depositMethodService {
     );
 
     try {
-      const record = await depositMethodRepository.create(data, {
+      const record = await depositMethodRepository.create({
         ...this.options,
         session,
       });

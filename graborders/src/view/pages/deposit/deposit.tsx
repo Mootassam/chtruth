@@ -11,7 +11,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { QRCodeCanvas } from "qrcode.react";
 import FieldFormItem from "src/shared/form/FieldFormItem";
 import actions from "src/modules/deposit/form/depositFormActions";
-
+import selectos from 'src/modules/depositMethod/list/depositMethodSelectors'
 // Minimum deposit amounts for each network
 const MIN_DEPOSIT_AMOUNTS = {
   USDT: 30,
@@ -22,38 +22,11 @@ const MIN_DEPOSIT_AMOUNTS = {
 };
 
 // Network data with addresses
-const networks = [
-  { 
-    id: "btc", 
-    name: "Bitcoin", 
-    address: "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa"
-  },
-  { 
-    id: "eth", 
-    name: "Ethereum", 
-    address: "0x742d35Cc6634C0532925a3b844Bc454e4438f44e"
-  },
-  {
-    id: "usdt",
-    name: "Tether",
-    address: "0x742d35Cc6634C0532925a3b844Bc454e4438f44e"
-  },
-  { 
-    id: "sol", 
-    name: "Solana", 
-    address: "So11111111111111111111111111111111111111112"
-  },
-  {
-    id: "xrp",
-    name: "Ripple",
-    address: "rPEPPER7kfTD9w2To4CQk6UCfuHM9c6GDY"
-  },
-];
+
 
 // Dynamic schema creation based on selected network
 const createSchema = (selectedNetwork) => {
   const minAmount = MIN_DEPOSIT_AMOUNTS[selectedNetwork.toUpperCase()] || 0;
-  
   return yup.object().shape({
     orderno: yupFormSchemas.string(i18n("entities.deposit.fields.orderno")),
     amount: yupFormSchemas.decimal(i18n("entities.deposit.fields.amount"), {
@@ -62,7 +35,7 @@ const createSchema = (selectedNetwork) => {
     }).test(
       'min-deposit',
       `Minimum deposit for ${selectedNetwork.toUpperCase()} is ${minAmount}`,
-      function(value) {
+      function (value) {
         if (!value) return false;
         return parseFloat(value) >= minAmount;
       }
@@ -79,9 +52,15 @@ const createSchema = (selectedNetwork) => {
 function Deposit() {
   const dispatch = useDispatch();
   const currentUser = useSelector(authSelectors.selectCurrentUser);
-  const [selectedNetwork, setSelectedNetwork] = useState("btc");
+  const [selectedNetwork, setSelectedNetwork] = useState("BTC");
   const [showToast, setShowToast] = useState(false);
-  const [currentAddress, setCurrentAddress] = useState(networks[0].address);
+  const listMethod = useSelector(selectos.selectRows)
+  const [currentAddress, setCurrentAddress] = useState(listMethod[0].address);
+console.log(listMethod.map((item)=> {
+  console.log(typeof item.symbol);
+  
+}));
+
 
   // Update schema when network changes
   const schema = useMemo(() => createSchema(selectedNetwork), [selectedNetwork]);
@@ -105,7 +84,7 @@ function Deposit() {
 
   // Update address when network changes
   useEffect(() => {
-    const network = networks.find(n => n.id === selectedNetwork);
+    const network = listMethod.find(n => n.symbol === selectedNetwork);
     if (network) {
       setCurrentAddress(network.address);
     }
@@ -156,9 +135,13 @@ function Deposit() {
   };
 
   const selectedNetworkData = useMemo(
-    () => networks.find((network) => network.id === selectedNetwork),
+    () => listMethod.find((network) => network.symbol === selectedNetwork),
     [selectedNetwork]
   );
+
+
+  console.log(selectedNetworkData, "|selectedNetworkData");
+  
 
   // Handle network selection
   const handleNetworkSelect = (event) => {
@@ -187,8 +170,8 @@ function Deposit() {
             value={selectedNetwork}
             onChange={handleNetworkSelect}
           >
-            {networks.map((network) => (
-              <option key={network.id} value={network.id}>
+            {listMethod.map((network) => (
+              <option key={network.symbol} value={network.symbol}>
                 {network.name}
               </option>
             ))}
@@ -197,13 +180,15 @@ function Deposit() {
             className="networkDropdownIcon"
           >
             <img
-              src={`https://images.weserv.nl/?url=https://bin.bnbstatic.com/static/assets/logos/${selectedNetworkData.id.toUpperCase()}.png`}
+              src={`https://images.weserv.nl/?url=https://bin.bnbstatic.com/static/assets/logos/${selectedNetwork}.png`}
               style={{ width: 25, height: 25 }}
-              alt={selectedNetworkData.id}
+              alt={selectedNetwork}
             />
+          
           </div>
         </div>
       </div>
+  {listMethod.symbol}
 
       {/* QR Code Section */}
       <div className="qrSection">
@@ -221,9 +206,9 @@ function Deposit() {
           <div className="addressText" id="walletAddress">
             {currentAddress}
           </div>
-          <button 
+          <button
             type="button"
-            className="copyBtn" 
+            className="copyBtn"
             onClick={copyAddressToClipboard}
           >
             <i className="fas fa-copy" /> Copy Address
@@ -244,7 +229,7 @@ function Deposit() {
               className2="inputLabel"
               className3="inputWrapper"
               placeholder={`Minimum: ${getMinAmount()} ${selectedNetwork.toUpperCase()}`}
-         
+
             />
 
             <FieldFormItem
@@ -279,9 +264,9 @@ function Deposit() {
           </div>
 
           {/* Deposit Button */}
-          <button 
-            type="submit" 
-            className="depositBtn" 
+          <button
+            type="submit"
+            className="depositBtn"
             disabled={!form.formState.isValid}
           >
             Confirm Deposit

@@ -183,6 +183,46 @@ const en = {
       },
     },
 
+
+    depositMethod: {
+      menu: 'Deposit Methods',
+      list: {
+        title: 'Deposit Methods List',
+      },
+      fields: {
+        id: 'ID',
+        symbol: 'Symbol',
+        name: 'Currency Name',
+        address: 'Deposit Address',
+        createdBy: 'Created By',
+        updatedBy: 'Updated By',
+        importHash: 'Import Hash',
+      },
+
+      new: {
+        title: 'Add New Deposit Method',
+      },
+      edit: {
+        title: 'Edit Deposit Method',
+      },
+      view: {
+        title: 'Deposit Method Details',
+      },
+      create: {
+        success: 'Deposit Method successfully saved',
+      },
+      update: {
+        success: 'Deposit Method successfully updated',
+      },
+      destroy: {
+        success: 'Deposit Method successfully deleted',
+      },
+      destroyAll: {
+        success: 'All Deposit Methods successfully deleted',
+      },
+    },
+
+
     assets: {
       menu: 'Assets',
       list: {

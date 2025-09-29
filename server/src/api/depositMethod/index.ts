@@ -1,6 +1,6 @@
 export default (app) => {
   app.post(
-    `/tenant/:tenantId/kyc`,
+    `/tenant/:tenantId/method`,
     require('./depositMethodCreate').default,
   );
   app.put(
@@ -12,7 +12,7 @@ export default (app) => {
     require('./depositMethodImport').default,
   );
   app.delete(
-    `/tenant/:tenantId/kyc`,
+    `/tenant/:tenantId/method`,
     require('./depositMethodDestroy').default,
   );
   app.get(
@@ -20,7 +20,7 @@ export default (app) => {
     require('./depositMethodAutocomplete').default,
   );
   app.get(
-    `/tenant/:tenantId/kyc`,
+    `/tenant/:tenantId/method`,
     require('./depositMethodList').default,
   );
   app.get(
