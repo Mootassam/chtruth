@@ -44,9 +44,9 @@ function Home() {
   // State for image slider
   const [currentSlide, setCurrentSlide] = useState(0);
   const sliderImages = [
-    "https://public.bnbstatic.com/image/cms/blog/20210728/b0ac64ca-9452-4ee2-b6fe-6ecbe8eeaddd.png",
-    "https://cdn.builtin.com/cdn-cgi/image/f=auto,fit=cover,w=1200,h=635,q=80/sites/www.builtin.com/files/2022-07/cryptocurrency-coins-crypto-trading-platform.png",
-    "https://observervoice.com/wp-content/uploads/2025/02/Crypto-Market-Faces-Continued-Slump.jpg.avif",
+    "https://mtecx.cc/uploads/20231209/93dc8d50425310d792c509fc88778de6.png",
+    "https://mtecx.cc/uploads/20231209/0a9caa10080a6a09609699c580b4cc5b.png",
+    "https://mtecx.cc/uploads/20231209/8be0db045a7d2cdf72f0897311706c67.png",
   ];
 
   // Notification state
@@ -180,91 +180,33 @@ function Home() {
     };
   }, []);
 
-  const [activeItem, setActiveItem] = useState<string>("/deposit");
-
-  const icons = [
-    {
-      path: "/deposit",
-      icon: "fas fa-chart-line feature-icon",
-      name: "deposit",
-    },
-
-    {
-      path: "/Withdraw",
-      icon: "fas fa-chart-line feature-icon",
-      name: "Withdraw",
-    },
-    {
-      path: "/History",
-      icon: "fas fa-chart-line feature-icon",
-      name: "deposit",
-    },
-    {
-      path: "/Security",
-      icon: "fas fa-chart-line feature-icon",
-      name: "Security",
-    },
-
-    {
-      path: "/Support",
-      icon: "fas fa-chart-line feature-icon",
-      name: "Support",
-    },
-  ];
-
-  const buttons = [
-    {
-      path: "/p2p",
-      icon: "fas fa-chart-line feature-icon",
-      name: "P2P",
-    },
-    {
-      path: "/invitation",
-      icon: "fas fa-gift feature-icon",
-      name: "Refer Friends",
-    },
-
-    {
-      path: "/stacking",
-      icon: "fas fa-coins feature-icon",
-      name: "Stacking",
-    },
-    {
-      path: "/securitytips",
-      icon: "fas fa-shield-alt feature-icon",
-      name: " Security Tips",
-    },
-  ];
+  const [activeItem, setActiveItem] = useState<string>("/security-tips");
 
   const handleItemClick = (path: string) => {
     setActiveItem(path);
   };
 
-  const quickActions = [
+  // New Quick Access data - Replaced Support with Terms of Use
+  const quickAccessItems = [
     {
-      path: "/deposit",
-      icon: "fas fa-wallet",
-      name: "Deposit",
-    },
-    {
-      path: "/withdraw",
-      icon: "fas fa-money-bill-wave",
-      name: "Withdraw",
-    },
-    {
-      path: "/history",
-      icon: "fas fa-history",
-      name: "History",
-    },
-    {
-      path: "/security",
+      path: "/security-tips",
       icon: "fas fa-shield-alt",
-      name: "Security",
+      name: "Security Tips",
     },
     {
-      path: "/support",
+      path: "/faq-center",
       icon: "fas fa-question-circle",
-      name: "Support",
+      name: "FAQ Center",
+    },
+    {
+      path: "/terms-of-use",
+      icon: "fas fa-file-contract",
+      name: "Terms of Use",
+    },
+    {
+      path: "/privacy-portal",
+      icon: "fas fa-user-shield",
+      name: "Privacy Portal",
     },
   ];
 
@@ -320,45 +262,41 @@ function Home() {
             {sliderImages.map((_, index) => (
               <div
                 key={index}
-                className={`slider-indicator ${
-                  index === currentSlide ? "active" : ""
-                }`}
+                className={`slider-indicator ${index === currentSlide ? "active" : ""
+                  }`}
               />
             ))}
           </div>
         </div>
       </div>
 
-      {/* Quick Action Buttons */}
-      <div className="quick-actions">
-        {quickActions.map((item) => (
-          <Link
-            to={item.path}
-            className="action-btn remove_blue"
-            role="button"
-            aria-label="Deposit cryptocurrency"
-          >
-            <div
-              className={`action-circle ${
-                activeItem === item.path ? "buy" : "other"
-              }`}
-            >
-              <i className={`${item.icon} action-icon`} aria-hidden="true" />
+      {/* Quick Access Section - Replaced the old quick-actions and feature-shortcuts */}
+      <div className="quick-access">
+        <div className="section-header">
+          <h2 className="section-title">Quick Access</h2>
+          <Link to="/deposit" className="deposit-header-button remove_blue">
+            <div className="deposit-header-icon">
+              <i className="fas fa-wallet" />
             </div>
-            <span className="action-text">{item.name}</span>
+            <span className="deposit-header-text">Deposit</span>
           </Link>
-        ))}
+        </div>
+        <div className="access-grid">
+          {quickAccessItems.map((item) => (
+            <Link
+              to={item.path}
+              key={item.path}
+              className="access-card remove_blue"
+            >
+              <div className="access-icon">
+                <i className={item.icon} />
+              </div>
+              <span className="access-text">{item.name}</span>
+            </Link>
+          ))}
+        </div>
       </div>
 
-      {/* Feature Shortcuts */}
-      <div className="feature-shortcuts">
-        {buttons.map((item, index) => (
-          <Link to={item.path} className="feature-btn remove_blue">
-            <i className={item.icon} />
-            <span>{item.name}</span>
-          </Link>
-        ))}
-      </div>
       {/* Portfolio Section */}
 
       {/* Favorites Section */}
@@ -386,9 +324,8 @@ function Home() {
                   style={{ backgroundColor: crypto.bgColor }}
                 >
                   <img
-                    src={`https://images.weserv.nl/?url=https://bin.bnbstatic.com/static/assets/logos/${
-                      displayName?.split("/")[0]
-                    }.png`}
+                    src={`https://images.weserv.nl/?url=https://bin.bnbstatic.com/static/assets/logos/${displayName?.split("/")[0]
+                      }.png`}
                     className={crypto.icon}
                     style={{ width: 40 }}
                   />
@@ -405,9 +342,8 @@ function Home() {
                   {data ? `$${data.price}` : "Loading..."}
                 </div>
                 <div
-                  className={`change ${
-                    data ? (data.isPositive ? "positive" : "negative") : ""
-                  }`}
+                  className={`change ${data ? (data.isPositive ? "positive" : "negative") : ""
+                    }`}
                 >
                   {data
                     ? `${data.isPositive ? "+" : ""}${data.changePercent}%`
@@ -433,14 +369,12 @@ function Home() {
       {/* News Section */}
       <News topic={selectNews} loading={selectloadingNews} />
 
-      {/* Add CSS styles for the header and slider */}
+      {/* Add CSS styles for the new Quick Access section */}
       <style>
         {`
-      
           /* Slider Styles */
           .slider-container {
             width: 100%;
-            margin: 0px 0px 20px 0;
             overflow: hidden;
             position: relative;
             border-radius: 12px;
@@ -450,7 +384,6 @@ function Home() {
           .slider {
             position: relative;
             width: 100%;
-            height: 200px;
             overflow: hidden;
           }
           
@@ -467,8 +400,8 @@ function Home() {
           
           .slide img {
             width: 100%;
-            height: 100%;
-            object-fit: cover;
+            // height: 100%;
+            object-fit: contain;
             border-radius: 12px;
           }
           
@@ -495,21 +428,141 @@ function Home() {
             width: 20px;
             border-radius: 4px;
           }
-          
+
+          /* Quick Access Styles */
+          .quick-access {
+            margin: 0px 0px 20px;
+            // padding: 0 15px;
+          }
+
+          .section-header {
+            margin-bottom: 15px;
+          }
+
+          .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #FFFFFF;
+          }
+
+          .access-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            padding: 0 15px;
+          }
+
+          .access-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #1A1A1A;
+            border-radius: 10px;
+            padding: 15px 8px;
+            transition: transform 0.2s;
+            text-align: center;
+          }
+
+          .access-card:hover {
+            transform: translateY(-3px);
+          }
+
+          .access-icon {
+            font-size: 24px;
+            color: #F3BA2F;
+            margin-bottom: 8px;
+          }
+
+          .access-text {
+            font-size: 12px;
+            font-weight: 500;
+            color: #FFFFFF;
+            line-height: 1.3;
+          }
+
           @media (max-width: 480px) {
             .slider {
-              height: 180px;
+              // height: 180px;
             }
             
-            .notifications-dropdown {
-              width: 280px;
-              right: -50px;
+            .access-grid {
+              grid-template-columns: repeat(2, 1fr);
+              gap: 12px;
             }
-            
-            .logo-text {
-              font-size: 18px;
+
+            .access-card {
+              padding: 12px 6px;
+            }
+
+            .access-icon {
+              font-size: 22px;
+              margin-bottom: 6px;
+            }
+
+            .access-text {
+              font-size: 11px;
             }
           }
+
+          .deposit-header-button {
+  display: flex;
+  align-items: center;
+  background: linear-gradient(135deg, #F3BA2F, #FF9800);
+  border-radius: 8px;
+  padding: 8px 16px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(243, 186, 47, 0.3);
+  text-decoration: none;
+}
+
+.deposit-header-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(243, 186, 47, 0.4);
+  background: linear-gradient(135deg, #FF9800, #F3BA2F);
+}
+
+.deposit-header-icon {
+  font-size: 14px;
+  color: #FFFFFF;
+  margin-right: 6px;
+}
+
+.deposit-header-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: #FFFFFF;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .section-header {
+    padding: 0 15px;
+  }
+  
+  .section-title {
+    font-size: 16px;
+  }
+  
+  .deposit-header-button {
+    padding: 6px 12px;
+  }
+  
+  .deposit-header-icon {
+    font-size: 12px;
+    margin-right: 4px;
+  }
+  
+  .deposit-header-text {
+    font-size: 12px;
+  }
+  
+  .access-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+}
+
+
         `}
       </style>
     </div>

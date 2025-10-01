@@ -18,7 +18,7 @@ function SubHeader(props) {
   };
 
   // Example notification count - you can replace this with actual data
-  const notificationCount = 3; // This should come from your state/props
+ // This should come from your state/props
 
   return (
     <div className="header">
@@ -35,7 +35,7 @@ function SubHeader(props) {
         <div className="header-icons">
           <Link to="/notification" className="notification-link">
             <i className="fas fa-bell header-icon" />
-            {notificationCount > 0 && (
+            {count > 0 && (
               <span className="notification-badge">{count}</span>
             )}
 

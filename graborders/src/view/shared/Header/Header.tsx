@@ -19,7 +19,8 @@ function Header() {
             <div className="notification-containers">
               <button className="notification-btn" aria-label="Notifications">
                 <i className="fas fa-bell"></i>
-                <span className="notification-badge">{count}</span>
+                {count > 0 && <span className="notification-badge">{count}</span>}
+
               </button>
             </div>
           </Link>
