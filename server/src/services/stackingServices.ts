@@ -96,6 +96,10 @@ export default class StackingServices {
     return StackingRepository.findAndCountAll(args, this.options);
   }
 
+  async findAndCountAllMobile(args) {
+    return StackingRepository.findAndCountAllMobile(args, this.options);
+  }
+
   async import(data, importHash) {
     if (!importHash) {
       throw new Error400(

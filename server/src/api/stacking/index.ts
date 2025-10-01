@@ -23,6 +23,11 @@ export default (app) => {
     `/tenant/:tenantId/stacking`,
     require('./stackingList').default,
   );
+
+   app.get(
+    `/tenant/:tenantId/stacking/mobile`,
+    require('./stackingMobile').default,
+  );
   app.get(
     `/tenant/:tenantId/stacking/:id`,
     require('./stackingFind').default,

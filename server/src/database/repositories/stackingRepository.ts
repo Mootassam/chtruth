@@ -203,6 +203,8 @@ class StackingRepository {
       tenant: currentTenant.id,
     });
 
+
+
     if (filter) {
       if (filter.id) {
         criteriaAnd.push({
@@ -260,112 +262,190 @@ class StackingRepository {
     return { rows, count };
   }
 
+
+
+  static async findAndCountAllMobile(
+    { filter, limit = 50, offset = 0, orderBy = "" },
+    options: IRepositoryOptions
+  ) {
+    const currentTenant = MongooseRepository.getCurrentTenant(options);
+    const currentUser = MongooseRepository.getCurrentUser(options);
+
+    let criteriaAnd: any = [];
+
+    criteriaAnd.push({
+      tenant: currentTenant.id,
+    });
+
+
+    criteriaAnd.push({
+      user: currentUser.id,
+    });
+
+
+
+    if (filter) {
+      if (filter.id) {
+        criteriaAnd.push({
+          ["_id"]: MongooseQueryUtils.uuid(filter.id),
+        });
+      }
+
+      if (filter.user) {
+        criteriaAnd.push({
+          user: filter.user,
+        });
+      }
+
+      if (filter.plan) {
+        criteriaAnd.push({
+          plan: filter.plan,
+        });
+      }
+
+      if (filter.status) {
+        criteriaAnd.push({
+          status: filter.status,
+        });
+      }
+
+      if (filter.idnumer) {
+        criteriaAnd.push({
+          idnumer: {
+            $regex: MongooseQueryUtils.escapeRegExp(filter.idnumer),
+            $options: "i",
+          },
+        });
+      }
+    }
+
+    const sort = MongooseQueryUtils.sort(orderBy || "createdAt_DESC");
+    const skip = Number(offset || 0) || undefined;
+    const limitEscaped = Number(limit || 0) || undefined;
+    const criteria = criteriaAnd.length ? { $and: criteriaAnd } : null;
+    let rows = await Stacking(options.database)
+      .find(criteria)
+      .skip(skip)
+      .limit(limitEscaped)
+      .sort(sort)
+      .populate("plan");
+
+    const count = await Stacking(options.database).countDocuments(criteria);
+
+    // Process rewards and status for all rows
+    rows = await Promise.all(
+      rows.map((row) => this._processStacking(row, options))
+    );
+    rows = await Promise.all(rows.map(this._fillFileDownloadUrls));
+
+    return { rows, count };
+  }
   // Process stacking rewards and status
 
-static async _processStacking(record, options: IRepositoryOptions) {
-  if (record.status !== 'active') {
-    return record;
-  }
+  static async _processStacking(record, options: IRepositoryOptions) {
+    if (record.status !== 'active') {
+      return record;
+    }
 
-  const now = new Date();
-  const endDate = new Date(record.endDate);
-  const startDate = new Date(record.startDate);
+    const now = new Date();
+    const endDate = new Date(record.endDate);
+    const startDate = new Date(record.startDate);
 
-  let daysElapsed = Math.floor((now.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
-  if (now >= endDate) {
-    daysElapsed = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
-  }
+    let daysElapsed = Math.floor((now.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+    if (now >= endDate) {
+      daysElapsed = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+    }
 
-  const dailyRate = record.plan.dailyRate;
-  const earnedRewards = record.amount * (dailyRate / 100) * daysElapsed;
+    const dailyRate = record.plan.dailyRate;
+    const earnedRewards = record.amount * (dailyRate / 100) * daysElapsed;
 
-  // ✅ If completed
-  if (now >= endDate) {
-    await Stacking(options.database).updateOne(
-      { _id: record._id },
-      {
-        status: 'completed',
-        earnedRewards,
-        updatedBy: MongooseRepository.getCurrentUser(options).id,
-      },
-      options
-    );
+    // ✅ If completed
+    if (now >= endDate) {
+      await Stacking(options.database).updateOne(
+        { _id: record._id },
+        {
+          status: 'completed',
+          earnedRewards,
+          updatedBy: MongooseRepository.getCurrentUser(options).id,
+        },
+        options
+      );
 
-    record.status = 'completed';
-    record.earnedRewards = earnedRewards;
+      record.status = 'completed';
+      record.earnedRewards = earnedRewards;
 
-    // 🔥 Update or create wallet
-    const wallets = await wallet(options.database).findOneAndUpdate(
-      {
-        user: record.user,
-        symbol: record.plan.currency,
-        tenant: record.tenant,
-      },
-      {
-        $inc: { amount: earnedRewards }, // add rewards
-        updatedBy: MongooseRepository.getCurrentUser(options).id,
-      },
-      {
-        new: true,
-        upsert: true, // create if not exists
+      // 🔥 Update or create wallet
+      const wallets = await wallet(options.database).findOneAndUpdate(
+        {
+          user: record.user,
+          symbol: record.plan.currency,
+          tenant: record.tenant,
+        },
+        {
+          $inc: { amount: earnedRewards }, // add rewards
+          updatedBy: MongooseRepository.getCurrentUser(options).id,
+        },
+        {
+          new: true,
+          upsert: true, // create if not exists
+        }
+      );
+      if (!wallets) {
+        throw new Error("Wallet not found for user.");
       }
-    );
-if (!wallets) {
-    throw new Error("Wallet not found for user.");
-  }
 
-await transaction(options.database).create(
-    [
-      {
-        type: "stacking",
-        referenceId: record._id, // link stacking record
-        wallet: wallets._id,
-        asset: record.symbol, // "BTC"
-        amount: earnedRewards,
-        direction: "in",
-        status: "completed", // stacking rewards are instantly settled
-        user: record.user,
-        tenant: record.tenant,
-        createdBy: MongooseRepository.getCurrentUser(options).id,
-        updatedBy: MongooseRepository.getCurrentUser(options).id,
-      },
-    ],
-    options
-  );
+      await transaction(options.database).create(
+        [
+          {
+            type: "stacking",
+            referenceId: record._id, // link stacking record
+            wallet: wallets._id,
+            asset: record.symbol, // "BTC"
+            amount: earnedRewards,
+            direction: "in",
+            status: "completed", // stacking rewards are instantly settled
+            user: record.user,
+            tenant: record.tenant,
+            createdBy: MongooseRepository.getCurrentUser(options).id,
+            updatedBy: MongooseRepository.getCurrentUser(options).id,
+          },
+        ],
+        options
+      );
 
-    await this._createAuditLog(
-      AuditLogRepository.UPDATE,
-      record._id,
-      { status: 'completed', earnedRewards, walletBalance: wallets.amount },
-      options
-    );
+      await this._createAuditLog(
+        AuditLogRepository.UPDATE,
+        record._id,
+        { status: 'completed', earnedRewards, walletBalance: wallets.amount },
+        options
+      );
+
+      return record;
+    }
+
+    // ✅ If still active (update daily rewards but not wallet yet)
+    if (earnedRewards !== record.earnedRewards) {
+      await Stacking(options.database).updateOne(
+        { _id: record._id },
+        {
+          earnedRewards,
+          updatedBy: MongooseRepository.getCurrentUser(options).id,
+        },
+        options
+      );
+
+      record.earnedRewards = earnedRewards;
+
+      await this._createAuditLog(
+        AuditLogRepository.UPDATE,
+        record._id,
+        { earnedRewards },
+        options
+      );
+    }
 
     return record;
   }
-
-  // ✅ If still active (update daily rewards but not wallet yet)
-  if (earnedRewards !== record.earnedRewards) {
-    await Stacking(options.database).updateOne(
-      { _id: record._id },
-      {
-        earnedRewards,
-        updatedBy: MongooseRepository.getCurrentUser(options).id,
-      },
-      options
-    );
-
-    record.earnedRewards = earnedRewards;
-
-    await this._createAuditLog(
-      AuditLogRepository.UPDATE,
-      record._id,
-      { earnedRewards },
-      options
-    );
-  }
-
-  return record;
-}
 
 
   static async findAllAutocomplete(search, limit, options: IRepositoryOptions) {

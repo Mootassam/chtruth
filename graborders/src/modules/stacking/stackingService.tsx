@@ -84,7 +84,7 @@ export default class stackingService {
     const tenantId = AuthCurrentTenant.get();
 
     const response = await authAxios.get(
-      `/tenant/${tenantId}/stacking`,
+      `/tenant/${tenantId}/stacking/mobile`,
       {
         params,
       },

@@ -191,6 +191,7 @@ class FuturesRepository {
       // ✅ create transaction
       const transactionType =
         data.control === "profit" ? "futures_profit" : "futures_loss";
+        
       const transactionDirection = data.control === "profit" ? "in" : "out";
       const txnAmount =
         data.control === "profit"
@@ -398,7 +399,7 @@ class FuturesRepository {
       }
 
       criteriaAnd.push({
-        user: currentUser.id,
+        createdBy: currentUser.id,
       });
 
       if (filter.idnumer) {
