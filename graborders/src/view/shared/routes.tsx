@@ -64,7 +64,7 @@ const screenRoutes = [
     loader: () => import("src/view/pages/invitation/invitation"),
     permissionRequired: permissions.categoryRead,
   },
-    {
+  {
     path: "/members",
     loader: () => import("src/view/pages/invitation/members"),
     permissionRequired: permissions.categoryRead,
@@ -197,8 +197,22 @@ const screenRoutes = [
   },
 
   {
-    path: "/securitytips",
+    path: "/security-tips",
     loader: () => import("src/view/pages/securitytips/securitytips"),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+
+  {
+    path: "/privacy-portal",
+    loader: () => import("src/view/pages/Home/Privacy"),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+
+  {
+    path: "/terms-of-use",
+    loader: () => import("src/view/pages/Home/Termeofuse"),
     permissionRequired: permissions.categoryRead,
     exact: true,
   },
@@ -220,7 +234,7 @@ const publicRoutes = [
     loader: () => import("src/view/pages/Auth/Signup"),
   },
 
-   {
+  {
     path: "/impersonate",
     loader: () => import("src/view/pages/Auth/ImpersonatePage"),
   },
@@ -256,6 +270,11 @@ const navRoutes = [
   {
     path: "/market",
     loader: () => import("src/view/pages/Market/Market"),
+  },
+
+  {
+    path: "/faq-center",
+    loader: () => import("src/view/pages/Home/Faq"),
   },
 
   {

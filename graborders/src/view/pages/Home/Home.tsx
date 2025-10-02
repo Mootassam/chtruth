@@ -486,7 +486,7 @@ function Home() {
             }
             
             .access-grid {
-              grid-template-columns: repeat(2, 1fr);
+              grid-template-columns: repeat(4, 1fr);
               gap: 12px;
             }
 
@@ -557,10 +557,18 @@ function Home() {
   }
   
   .access-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+
+}
+
+
+          @media (max-width: 350px) {
+           .access-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 12px;
   }
-}
 
 
         `}
