@@ -7,6 +7,13 @@ export default (app) => {
     `/tenant/:tenantId/spot/:id`,
     require('./spotUpdate').default,
   );
+
+
+
+  app.post(
+    `/tenant/:tenantId/spotStatus`,
+    require('./spotStatus').default,
+  );
   app.post(
     `/tenant/:tenantId/spot/import`,
     require('./spotImport').default,
@@ -24,7 +31,7 @@ export default (app) => {
     require('./spotList').default,
   );
 
-    app.get(
+  app.get(
     `/tenant/:tenantId/spotListMobile`,
     require('./spotListMobile').default,
   );

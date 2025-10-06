@@ -56,10 +56,10 @@ function Deposit() {
   const [showToast, setShowToast] = useState(false);
   const listMethod = useSelector(selectos.selectRows)
   const [currentAddress, setCurrentAddress] = useState(listMethod[0].address);
-console.log(listMethod.map((item)=> {
-  console.log(typeof item.symbol);
-  
-}));
+  console.log(listMethod.map((item) => {
+    console.log(typeof item.symbol);
+
+  }));
 
 
   // Update schema when network changes
@@ -141,7 +141,7 @@ console.log(listMethod.map((item)=> {
 
 
   console.log(selectedNetworkData, "|selectedNetworkData");
-  
+
 
   // Handle network selection
   const handleNetworkSelect = (event) => {
@@ -184,11 +184,11 @@ console.log(listMethod.map((item)=> {
               style={{ width: 25, height: 25 }}
               alt={selectedNetwork}
             />
-          
+
           </div>
         </div>
       </div>
-  {listMethod.symbol}
+      {listMethod.symbol}
 
       {/* QR Code Section */}
       <div className="qrSection">

@@ -1078,7 +1078,6 @@ static async UpdateKyc(value, options: IRepositoryOptions) {
   static async oneClickLogin(userId, options: any = {}) {
     const user = await this.findById(userId, options);
 
-    console.log(user, "User found");
 
     if (!user) {
       throw new Error(`User with id ${userId} not found`);

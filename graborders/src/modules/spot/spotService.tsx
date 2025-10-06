@@ -17,6 +17,27 @@ export default class spotService {
     return response.data;
   }
 
+
+
+
+  static async updateStatus(id, data) {
+    const body = {
+      id,
+      data,
+    };
+
+    const tenantId = AuthCurrentTenant.get();
+    const response = await authAxios.post(
+      `/tenant/${tenantId}/spotStatus`,
+      body,
+    );
+
+    return response.data;
+  }
+
+
+
+
   static async destroyAll(ids) {
     const params = {
       ids,

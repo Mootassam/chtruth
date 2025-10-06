@@ -23,7 +23,7 @@ export default (database) => {
         type: String,
         required: true,
       },
-     
+
       rechargechannel: {
         type: String,
         required: true,

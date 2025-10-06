@@ -614,12 +614,7 @@ const privateRoutes = [
     permissionRequired: permissions.categoryRead,
     exact: true,
   },
-
-
-
   // deposit method 
-
-
   {
     path: '/depositMethod',
     loader: () =>

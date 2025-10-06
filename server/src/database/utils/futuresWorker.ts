@@ -16,14 +16,12 @@ export const futuresWorker = new Worker(
 );
 
 futuresWorker.on('completed', (job) => {
-  console.log(`✅ Job ${job?.id} completed`);
 });
 
 futuresWorker.on('failed', (job, err) => {
   console.error(`❌ Job ${job?.id} failed: ${err.message}`);
 });
 
-console.log('🚀 Futures worker started...');
 
 process.on('SIGTERM', async () => {
   await futuresWorker.close();

@@ -8,7 +8,6 @@ import Spot from "../models/spot";
 
 class SpotRepository {
   static async create(data, options: IRepositoryOptions) {
-    console.log(data);
     const currentTenant = MongooseRepository.getCurrentTenant(options);
     const currentUser = MongooseRepository.getCurrentUser(options);
 
@@ -61,6 +60,35 @@ class SpotRepository {
     record = await this.findById(id, options);
 
     return record;
+  }
+
+  static async UpdateStatus(id, data, options: IRepositoryOptions) {
+    const currentTenant = MongooseRepository.getCurrentTenant(options);
+
+    // Find and validate record
+    let record = await Spot(options.database).findById(id);
+    if (!record || String(record.tenant) !== String(currentTenant.id)) {
+      throw new Error404();
+    }
+
+    // Prepare update data
+    const updateData = {
+      ...data,
+      updatedBy: MongooseRepository.getCurrentUser(options).id,
+    };
+
+    // Update record
+    await Spot(options.database).updateOne(
+      { _id: id },
+      { status: data, updatedBy: updateData.updatedBy },
+      options
+    );
+
+    // Create audit log
+    await this._createAuditLog(AuditLogRepository.UPDATE, id, data, options);
+
+    // Return updated record
+    return await this.findById(id, options);
   }
 
   static async destroy(id, options: IRepositoryOptions) {

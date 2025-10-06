@@ -51,27 +51,27 @@ class FuturesRepository {
       options, // your repository options
     });
     // === NEW JOB SCHEDULE ===
-    try {
-      await futuresQueue.add(
-        `auto-finalize-${record.id}`,
-        {
-          futureId: record.id,
-          tenantId: currentTenant.id,
-        },
-        {
-          delay: durationMs,
-          jobId: `auto-finalize-${record.id}`, // prevents duplicate jobs
-          attempts: 3,
-          backoff: { type: "exponential", delay: 1000 },
-        }
-      );
+    // try {
+    //   await futuresQueue.add(
+    //     `auto-finalize-${record.id}`,
+    //     {
+    //       futureId: record.id,
+    //       tenantId: currentTenant.id,
+    //     },
+    //     {
+    //       delay: durationMs,
+    //       jobId: `auto-finalize-${record.id}`, // prevents duplicate jobs
+    //       attempts: 3,
+    //       backoff: { type: "exponential", delay: 1000 },
+    //     }
+    //   );
 
-      console.log(
-        `📅 Scheduled auto-finalize job for future ${record.id} at ${expiryTime}`
-      );
-    } catch (error) {
-      console.error("Failed to schedule auto-finalize job:", error);
-    }
+    //   console.log(
+    //     `📅 Scheduled auto-finalize job for future ${record.id} at ${expiryTime}`
+    //   );
+    // } catch (error) {
+    //   console.error("Failed to schedule auto-finalize job:", error);
+    // }
 
     await this._createAuditLog(
       AuditLogRepository.CREATE,

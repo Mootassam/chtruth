@@ -7,6 +7,8 @@ import spotListActions from "src/modules/spot/list/spotListActions";
 import spotFormActions from "src/modules/spot/form/spotFormActions";
 import assetsActions from "src/modules/assets/list/assetsListActions";
 import assetsListSelectors from "src/modules/assets/list/assetsListSelectors";
+import spotService from "src/modules/spot/spotService";
+import { stat } from "fs";
 
 // Utility: safe parseFloat that returns NaN if invalid
 const safeParse = (v) => {
@@ -96,7 +98,7 @@ function Trade() {
     if (tickerWs.current) {
       try {
         tickerWs.current.close();
-      } catch (e) {}
+      } catch (e) { }
       tickerWs.current = null;
     }
 
@@ -137,7 +139,7 @@ function Trade() {
       if (tickerWs.current) {
         try {
           tickerWs.current.close();
-        } catch (e) {}
+        } catch (e) { }
         tickerWs.current = null;
       }
     };
@@ -150,7 +152,7 @@ function Trade() {
     if (depthWs.current) {
       try {
         depthWs.current.close();
-      } catch (e) {}
+      } catch (e) { }
       depthWs.current = null;
     }
 
@@ -181,7 +183,7 @@ function Trade() {
       if (depthWs.current) {
         try {
           depthWs.current.close();
-        } catch (e) {}
+        } catch (e) { }
         depthWs.current = null;
       }
     };
@@ -381,6 +383,16 @@ function Trade() {
     if (!selectedCoin) return "";
     return selectedCoin.replace("USDT", "");
   }, [selectedCoin]);
+
+
+
+
+  const updateStatus = async (id) => {
+    dispatch(spotFormActions.doUpdate(id, { status: 'cancelled' }))
+  }
+
+
+
 
   return (
     <div className="container">
@@ -650,8 +662,8 @@ function Trade() {
 
                   <div className="order-actions">
                     {String(order.status).toLowerCase() === "pending" ||
-                    String(order.status).toLowerCase() === "partially filled" ? (
-                      <button className="cancel-order-btn" onClick={() => handleCancelOrder(order.id)}>
+                      String(order.status).toLowerCase() === "partially filled" ? (
+                      <button className="cancel-order-btn" onClick={() => updateStatus(order.id)}>
                         Cancel
                       </button>
                     ) : (
@@ -679,7 +691,7 @@ function Trade() {
         onClose={handleCloseCoinModal}
         onSelectCoin={handleSelectCoin}
       />
-    
+
 
       <style>{`
         /* Trade Header Section */
@@ -1128,6 +1140,9 @@ function Trade() {
           color: #00C076;
         }
 
+          .order-status.cancelled {
+          color: #e01515ff;
+        }
         .order-status.pending {
           color: #F3BA2F;
         }

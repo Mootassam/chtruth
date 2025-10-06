@@ -20,7 +20,6 @@ export const setSocketIO = (socketIOInstance: SocketIOServer) => {
   io.admins = io.admins || {};
 
   io.on("connection", (socket) => {
-    // console.log("✅ User connected:", socket.id);
 
     // Send immediate success message (optional)
     socket.emit("success", "Connected successfully!");
@@ -32,17 +31,14 @@ export const setSocketIO = (socketIOInstance: SocketIOServer) => {
         if (!userId) return;
         if (isAdmin) {
           io.admins![userId] = socket.id;
-          // console.log(`🛡️ Admin registered: ${userId} -> ${socket.id}`);
         } else {
           io.users![userId] = socket.id;
-          // console.log(`👤 User registered: ${userId} -> ${socket.id}`);
         }
       }
     );
 
     // Handle disconnect
     socket.on("disconnect", () => {
-      console.log("❌ Disconnected:", socket.id);
       for (const [id, sid] of Object.entries(io.users!)) {
         if (sid === socket.id) delete io.users![id];
       }
@@ -87,9 +83,7 @@ export async function sendNotification({
     const socketId = io.users![userId];
     if (socketId) {
       io.to(socketId).emit("newNotification", unread);
-      // console.log(`📩 Sent notification to user ${userId}`);
     } else {
-      // console.log(`⚠️ No active socket found for user ${userId}`);
     }
   }
 

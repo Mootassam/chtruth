@@ -1,9 +1,11 @@
 
-import vipService from 'src/modules/spot/spotService';
+
+import spotService from 'src/modules/spot/spotService';
 import Errors from 'src/modules/shared/error/errors';
 import Message from 'src/view/shared/message';
 import { getHistory } from 'src/modules/store';
 import { i18n } from '../../../i18n';
+import spotListActions from '../list/spotListActions';
 
 const prefix = 'COUPONS_FORM';
 
@@ -30,7 +32,7 @@ const vipFormActions = {
       const isEdit = Boolean(id);
 
       if (isEdit) {
-        record = await vipService.find(id);
+        record = await spotService.find(id);
       }
 
       dispatch({
@@ -46,7 +48,7 @@ const vipFormActions = {
         type: vipFormActions.INIT_ERROR,
       });
 
-   
+
     }
   },
 
@@ -56,7 +58,7 @@ const vipFormActions = {
         type: vipFormActions.CREATE_STARTED,
       });
 
-      await vipService.create(values);
+      await spotService.create(values);
 
       dispatch({
         type: vipFormActions.CREATE_SUCCESS,
@@ -79,19 +81,14 @@ const vipFormActions = {
       dispatch({
         type: vipFormActions.UPDATE_STARTED,
       });
-
-      await vipService.update(id, values);
-
+      await spotService.updateStatus(id, values);
       dispatch({
         type: vipFormActions.UPDATE_SUCCESS,
       });
-
-
+      dispatch(spotListActions.doFetch())
       Message.success(
         i18n('entities.spot.update.success'),
       );
-
-
     } catch (error) {
       Errors.handle(error);
 

@@ -38,6 +38,11 @@ export default class kycServicess {
     }
   }
 
+
+  async updateStatus(id, status) {
+    return SpotRepository.UpdateStatus(id, status, this.options);
+  }
+
   async update(id, data) {
     const session = await MongooseRepository.createSession(
       this.options.database,
@@ -109,13 +114,13 @@ export default class kycServicess {
   }
 
 
-    async findAndCountAllMobile(args) {
+  async findAndCountAllMobile(args) {
     return SpotRepository.findAndCountAllMobile(
       args,
       this.options,
     );
   }
-  
+
 
   async import(data, importHash) {
     if (!importHash) {

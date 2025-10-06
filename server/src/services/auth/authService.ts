@@ -148,7 +148,6 @@ class AuthService {
 
       // Now create assets with completeUser.tenant
 
-      console.log("Authservice", tenantId);
 
       await AssetRepository.createDefaultAssets(newUser, tenantId, options);
 
