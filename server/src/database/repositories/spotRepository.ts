@@ -5,34 +5,209 @@ import Error404 from "../../errors/Error404";
 import { IRepositoryOptions } from "./IRepositoryOptions";
 import FileRepository from "./fileRepository";
 import Spot from "../models/spot";
+import Transaction from "../models/transaction";
+import Wallet from "../models/wallet";
 
 class SpotRepository {
-  static async create(data, options: IRepositoryOptions) {
+static async create(data, options: IRepositoryOptions) {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
     const currentUser = MongooseRepository.getCurrentUser(options);
 
-    const [record] = await Spot(options.database).create(
-      [
-        {
-          ...data,
-          userAccount: currentUser.id,
-          tenant: currentTenant.id,
-          createdBy: currentUser.id,
-          updatedBy: currentUser.id,
-        },
-      ],
-      options
-    );
+    console.log('data', data);
 
-    await this._createAuditLog(
-      AuditLogRepository.CREATE,
-      record.id,
-      data,
-      options
-    );
+    try {
+        // Get the trading pair and extract base/quote currencies
+        const [baseCurrency, quoteCurrency] = data.tradingPair.split('/');
+        let targetWallet;
+        let sourceWallet;
+        
+        if (data.direction === "BUY") {
+            // BUY LOGIC: Convert quote currency to base currency
+            
+            // 1. Find or create the target wallet (base currency)
+            targetWallet = await Wallet(options.database).findOne({
+                user: currentUser.id,
+                symbol: baseCurrency,
+                tenant: currentTenant.id
+            });
 
-    return this.findById(record.id, options);
-  }
+            if (!targetWallet) {
+                // Create new wallet for the base currency
+                [targetWallet] = await Wallet(options.database).create([{
+                    user: currentUser.id,
+                    symbol: baseCurrency,
+                    coinName: baseCurrency,
+                    amount: 0,
+                    status: "available",
+                    tenant: currentTenant.id,
+                    createdBy: currentUser.id,
+                    updatedBy: currentUser.id
+                }]);
+            }
+
+            // 2. Find the source wallet (quote currency - usually USDT)
+            sourceWallet = await Wallet(options.database).findOne({
+                user: currentUser.id,
+                symbol: quoteCurrency,
+                tenant: currentTenant.id
+            });
+
+            if (!sourceWallet) {
+                throw new Error(`Wallet for ${quoteCurrency} not found. Please deposit ${quoteCurrency} first.`);
+            }
+
+            // 3. Check if source wallet has sufficient balance
+            const requiredAmount = data.entrustedValue || data.orderQuantity * data.commissionPrice;
+            
+            if (sourceWallet.amount < requiredAmount) {
+                throw new Error(`Insufficient ${quoteCurrency} balance. Available: ${sourceWallet.amount}, Required: ${requiredAmount}`);
+            }
+
+            // 4. Execute the trade (only for MARKET orders immediately)
+            if (data.delegateType === "MARKET") {
+                // Deduct from source wallet (quote currency)
+                sourceWallet.amount -= requiredAmount;
+                await sourceWallet.save();
+
+                // Add to target wallet (base currency)
+                const receivedAmount = data.orderQuantity;
+                targetWallet.amount += receivedAmount;
+                await targetWallet.save();
+
+                // Update order status to completed for market orders
+                data.status = "completed";
+                data.transactionQuantity = receivedAmount;
+                data.transactionValue = requiredAmount;
+                data.closingPrice = data.commissionPrice;
+                data.closingTime = new Date();
+            }
+
+        } else if (data.direction === "SELL") {
+            // SELL LOGIC: Convert base currency to quote currency
+            
+            // 1. Find the source wallet (base currency)
+            sourceWallet = await Wallet(options.database).findOne({
+                user: currentUser.id,
+                symbol: baseCurrency,
+                tenant: currentTenant.id
+            });
+
+            if (!sourceWallet) {
+                throw new Error(`Wallet for ${baseCurrency} not found. Please deposit ${baseCurrency} first.`);
+            }
+
+            // 2. Check if source wallet has sufficient balance
+            if (sourceWallet.amount < data.orderQuantity) {
+                throw new Error(`Insufficient ${baseCurrency} balance. Available: ${sourceWallet.amount}, Required: ${data.orderQuantity}`);
+            }
+
+            // 3. Find or create target wallet (quote currency)
+            targetWallet = await Wallet(options.database).findOne({
+                user: currentUser.id,
+                symbol: quoteCurrency,
+                tenant: currentTenant.id
+            });
+
+            if (!targetWallet) {
+                [targetWallet] = await Wallet(options.database).create([{
+                    user: currentUser.id,
+                    symbol: quoteCurrency,
+                    coinName: quoteCurrency,
+                    amount: 0,
+                    status: "available",
+                    tenant: currentTenant.id,
+                    createdBy: currentUser.id,
+                    updatedBy: currentUser.id
+                }]);
+            }
+
+            // 4. Execute the trade (only for MARKET orders immediately)
+            if (data.delegateType === "MARKET") {
+                // Deduct from source wallet (base currency)
+                sourceWallet.amount -= data.orderQuantity;
+                await sourceWallet.save();
+
+                // Add to target wallet (quote currency)
+                const receivedAmount = data.entrustedValue || data.orderQuantity * data.commissionPrice;
+                targetWallet.amount += receivedAmount;
+                await targetWallet.save();
+
+                // Update order status to completed for market orders
+                data.status = "completed";
+                data.transactionQuantity = data.orderQuantity;
+                data.transactionValue = receivedAmount;
+                data.closingPrice = data.commissionPrice;
+                data.closingTime = new Date();
+            }
+        }
+
+        // Create the spot order record
+        const [record] = await Spot(options.database).create(
+            [{
+                ...data,
+                userAccount: currentUser.id,
+                tenant: currentTenant.id,
+                createdBy: currentUser.id,
+                updatedBy: currentUser.id,
+                commissionTime: new Date()
+            }],
+            options
+        );
+
+        // Create transaction records for completed trades
+        if (data.delegateType === "MARKET") {
+            const [baseCurrency, quoteCurrency] = data.tradingPair.split('/');
+            
+            if (data.direction === "BUY") {
+                // Create transaction for the BUY operation
+                await Transaction(options.database).create([{
+                    type: "convert_in",
+                    wallet: targetWallet._id,
+                    asset: baseCurrency,
+                    relatedAsset: quoteCurrency,
+                    amount: data.orderQuantity,
+                    status: "completed",
+                    direction: "in",
+                    user: currentUser.id,
+                    tenant: currentTenant.id,
+                    dateTransaction: new Date(),
+                    createdBy: currentUser.id,
+                    updatedBy: currentUser.id
+                }], options);
+
+            } else if (data.direction === "SELL") {
+                // Create transaction for the SELL operation  
+                await Transaction(options.database).create([{
+                    type: "convert_out", 
+                    wallet: sourceWallet._id,
+                    asset: baseCurrency,
+                    relatedAsset: quoteCurrency,
+                    amount: data.orderQuantity,
+                    status: "completed",
+                    direction: "out",
+                    user: currentUser.id,
+                    tenant: currentTenant.id,
+                    dateTransaction: new Date(),
+                    createdBy: currentUser.id,
+                    updatedBy: currentUser.id
+                }], options);
+            }
+        }
+
+        // Create audit log
+        await this._createAuditLog(
+            AuditLogRepository.CREATE,
+            record.id,
+            data,
+            options
+        );
+
+        return this.findById(record.id, options);
+
+    } catch (error) {
+        throw error;
+    }
+}
 
   static async update(id, data, options: IRepositoryOptions) {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
