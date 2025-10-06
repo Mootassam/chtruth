@@ -8,7 +8,6 @@ import spotFormActions from "src/modules/spot/form/spotFormActions";
 import assetsActions from "src/modules/assets/list/assetsListActions";
 import assetsListSelectors from "src/modules/assets/list/assetsListSelectors";
 import spotService from "src/modules/spot/spotService";
-import { stat } from "fs";
 
 // Utility: safe parseFloat that returns NaN if invalid
 const safeParse = (v) => {
@@ -26,13 +25,14 @@ function Trade() {
 
   // Local UI state
   const [selectedCoin, setSelectedCoin] = useState("BTCUSDT");
-  const [marketPrice, setMarketPrice] = useState("51248.06");
-  const [priceChangePercent, setPriceChangePercent] = useState("0.37");
+  const [marketPrice, setMarketPrice] = useState("0");
+  const [priceChangePercent, setPriceChangePercent] = useState("0");
   const [isCoinModalOpen, setIsCoinModalOpen] = useState(false);
-  const [orderType, setOrderType] = useState("LIMIT"); // "LIMIT" | "MARKET"
-  const [price, setPrice] = useState("51248.06");
+  const [orderType, setOrderType] = useState("LIMIT");
+  const [price, setPrice] = useState("0");
   const [quantity, setQuantity] = useState("");
-  const [activeTab, setActiveTab] = useState("buy"); // "buy" | "sell"
+  const [amountInUSDT, setAmountInUSDT] = useState("");
+  const [activeTab, setActiveTab] = useState("buy");
   const [orderBook, setOrderBook] = useState({ asks: [], bids: [] });
   const [isLoading, setIsLoading] = useState(true);
   const [placing, setPlacing] = useState(false);
@@ -44,7 +44,7 @@ function Trade() {
   const lastTickerUpdate = useRef(0);
   const lastDepthUpdate = useRef(0);
 
-  // Map balances (memoized)
+  // Memoized balances mapping
   const balances = useMemo(() => {
     if (!Array.isArray(listAssets)) return {};
     return listAssets.reduce((acc, item) => {
@@ -52,6 +52,20 @@ function Trade() {
       return acc;
     }, {});
   }, [listAssets]);
+
+  // Derived symbols
+  const baseSymbol = useMemo(() => {
+    return selectedCoin.replace("USDT", "");
+  }, [selectedCoin]);
+
+  // Current balance based on active tab
+  const currentBalance = useMemo(() => {
+    if (activeTab === "buy") {
+      return balances.USDT || 0;
+    } else {
+      return balances[baseSymbol] || 0;
+    }
+  }, [activeTab, baseSymbol, balances]);
 
   // Generate unique order number
   const generateOrderNumber = useCallback(() => {
@@ -64,23 +78,63 @@ function Trade() {
   useEffect(() => {
     dispatch(assetsActions.doFetch());
     dispatch(spotListActions.doFetch());
-    // simulate loading skeleton a short time for UX
     const t = setTimeout(() => setIsLoading(false), 800);
     return () => clearTimeout(t);
   }, [dispatch]);
 
-  // Update price when switching to MARKET
+  // Update price when market price changes or coin changes
   useEffect(() => {
-    if (orderType === "MARKET") {
+    if (marketPrice && marketPrice !== "0") {
       setPrice(marketPrice);
-    }
-    // If switching from MARKET to LIMIT and price is empty, set to marketPrice
-    if (orderType === "LIMIT" && (!price || isNaN(Number(price)))) {
-      setPrice(marketPrice);
-    }
-  }, [orderType, marketPrice]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Format function (keeps safe behavior)
+      // Also update amount in USDT if quantity exists
+      if (quantity && !isNaN(Number(quantity))) {
+        const calculatedUSDT = Number(quantity) * Number(marketPrice);
+        setAmountInUSDT(calculatedUSDT.toFixed(2));
+      }
+    }
+  }, [marketPrice]);
+
+  // Sync quantity and amountInUSDT
+  const syncQuantityFromUSDT = useCallback((usdtValue) => {
+    const usdtNum = safeParse(usdtValue);
+    const priceNum = safeParse(price);
+
+    if (Number.isFinite(usdtNum) && Number.isFinite(priceNum) && priceNum > 0) {
+      const calculatedQuantity = usdtNum / priceNum;
+      setQuantity(calculatedQuantity.toFixed(8));
+    } else {
+      setQuantity("");
+    }
+  }, [price]);
+
+  const syncUSDTFromQuantity = useCallback((qtyValue) => {
+    const qtyNum = safeParse(qtyValue);
+    const priceNum = safeParse(price);
+
+    if (Number.isFinite(qtyNum) && Number.isFinite(priceNum)) {
+      const calculatedUSDT = qtyNum * priceNum;
+      setAmountInUSDT(calculatedUSDT.toFixed(2));
+    } else {
+      setAmountInUSDT("");
+    }
+  }, [price]);
+
+  // Handle quantity change
+  const handleQuantityChange = useCallback((e) => {
+    const value = e.target.value;
+    setQuantity(value);
+    syncUSDTFromQuantity(value);
+  }, [syncUSDTFromQuantity]);
+
+  // Handle amount in USDT change
+  const handleAmountInUSDTChange = useCallback((e) => {
+    const value = e.target.value;
+    setAmountInUSDT(value);
+    syncQuantityFromUSDT(value);
+  }, [syncQuantityFromUSDT]);
+
+  // Format function
   const formatNumber = useCallback((num, decimals = 2) => {
     const n = Number(num);
     if (!Number.isFinite(n)) return (0).toFixed(decimals);
@@ -94,7 +148,7 @@ function Trade() {
   useEffect(() => {
     if (!selectedCoin) return;
 
-    // cleanup previous
+    // Cleanup previous
     if (tickerWs.current) {
       try {
         tickerWs.current.close();
@@ -114,23 +168,20 @@ function Trade() {
           // throttle to ~200ms
           if (now - lastTickerUpdate.current > 180) {
             lastTickerUpdate.current = now;
-            if (data.c !== undefined) setMarketPrice(data.c);
-            if (data.P !== undefined) setPriceChangePercent(data.P);
-            if (orderType === "MARKET" && data.c !== undefined) {
-              setPrice(data.c);
+            if (data.c !== undefined) {
+              setMarketPrice(data.c);
             }
+            if (data.P !== undefined) setPriceChangePercent(data.P);
           }
         } catch (err) {
           // ignore malformed messages
-          // console.warn("ticker parse error", err);
         }
       };
 
-      ws.onclose = () => {
-        // attempt gentle reconnect after small delay
-        // but avoid infinite reconnect loops — only if component still mounted
-        // we'll just rely on React re-mounting or user action to change symbol
+      ws.onerror = (error) => {
+        console.error("Ticker WebSocket error:", error);
       };
+
     } catch (err) {
       console.error("Ticker WS init error", err);
     }
@@ -143,7 +194,7 @@ function Trade() {
         tickerWs.current = null;
       }
     };
-  }, [selectedCoin, orderType]);
+  }, [selectedCoin]);
 
   // Throttled depth websocket
   useEffect(() => {
@@ -207,25 +258,42 @@ function Trade() {
     setSelectedCoin(coin);
     setIsCoinModalOpen(false);
     setIsLoading(true);
+    // Reset form fields when coin changes
+    setQuantity("");
+    setAmountInUSDT("");
     // brief UX loading while updating streams
     const t = setTimeout(() => setIsLoading(false), 600);
     return () => clearTimeout(t);
   }, []);
 
   const handlePriceChange = useCallback((e) => {
-    setPrice(e.target.value);
-  }, []);
+    const newPrice = e.target.value;
+    setPrice(newPrice);
 
-  const handleQuantityChange = useCallback((e) => {
-    setQuantity(e.target.value);
-  }, []);
+    // Update USDT amount when price changes
+    const qtyNum = safeParse(quantity);
+    if (Number.isFinite(qtyNum)) {
+      const calculatedUSDT = qtyNum * Number(newPrice);
+      setAmountInUSDT(calculatedUSDT.toFixed(2));
+    }
+  }, [quantity]);
 
-  const calculateTotal = useCallback(() => {
-    const p = safeParse(price);
-    const q = safeParse(quantity);
-    if (!Number.isFinite(p) || !Number.isFinite(q)) return "0.00";
-    return (p * q).toFixed(2);
-  }, [price, quantity]);
+  // Percentage quick select handlers
+  const handlePercentageSelect = useCallback((percentage) => {
+    if (activeTab === "buy") {
+      // For BUY: Calculate based on USDT balance
+      const availableUSDT = currentBalance;
+      const maxSpend = availableUSDT * percentage;
+      setAmountInUSDT(maxSpend.toFixed(2));
+      syncQuantityFromUSDT(maxSpend);
+    } else {
+      // For SELL: Calculate based on coin balance
+      const availableCoin = currentBalance;
+      const sellAmount = availableCoin * percentage;
+      setQuantity(sellAmount.toFixed(8));
+      syncUSDTFromQuantity(sellAmount);
+    }
+  }, [activeTab, currentBalance, syncQuantityFromUSDT, syncUSDTFromQuantity]);
 
   const handleIncrementPrice = useCallback(() => {
     const p = safeParse(price);
@@ -236,22 +304,9 @@ function Trade() {
   const handleDecrementPrice = useCallback(() => {
     const p = safeParse(price);
     if (!Number.isFinite(p)) return;
-    const next = Math.max(0, p - 1);
+    const next = Math.max(0.0001, p - 1);
     setPrice(next.toString());
   }, [price]);
-
-  const handleIncrementQuantity = useCallback(() => {
-    const q = safeParse(quantity);
-    const next = Number.isFinite(q) ? (q + 0.001) : 0.001;
-    setQuantity(next.toFixed(3).toString());
-  }, [quantity]);
-
-  const handleDecrementQuantity = useCallback(() => {
-    const q = safeParse(quantity);
-    if (!Number.isFinite(q)) return;
-    const next = Math.max(0, q - 0.001);
-    setQuantity(next.toFixed(3).toString());
-  }, [quantity]);
 
   const handleOrderBookClick = useCallback((clickPrice) => {
     if (orderType === "LIMIT" && clickPrice !== undefined) {
@@ -263,25 +318,41 @@ function Trade() {
   const handlePlaceOrder = useCallback(async () => {
     setErrorMessage("");
     if (placing) return;
+
     const q = safeParse(quantity);
+    const p = orderType === "MARKET" ? safeParse(marketPrice) : safeParse(price);
+
+    // Validation
     if (!Number.isFinite(q) || q <= 0) {
       setErrorMessage("Please enter a valid quantity.");
       return;
     }
-    const p = orderType === "MARKET" ? safeParse(marketPrice) : safeParse(price);
+
     if (!Number.isFinite(p) || p <= 0) {
       setErrorMessage("Please enter a valid price.");
       return;
     }
 
-    // available balance check for SELL or for BUY vs stable coin balance might be needed
-    // Here we simply check minimums
+    // Balance validation
+    if (activeTab === "buy") {
+      const totalCost = p * q;
+      if (totalCost > currentBalance) {
+        setErrorMessage(`Insufficient USDT balance. Available: ${formatNumber(currentBalance, 2)} USDT`);
+        return;
+      }
+    } else {
+      if (q > currentBalance) {
+        setErrorMessage(`Insufficient ${baseSymbol} balance. Available: ${formatNumber(currentBalance, 6)} ${baseSymbol}`);
+        return;
+      }
+    }
+
     setPlacing(true);
     try {
       const orderPrice = p;
       const orderQty = q;
       const totalValue = orderPrice * orderQty;
-      const estimatedFee = totalValue * 0.001; // 0.1%
+      const estimatedFee = totalValue * 0.001;
 
       const orderData = {
         orderNo: generateOrderNumber(),
@@ -302,14 +373,12 @@ function Trade() {
         closingTime: orderType === "MARKET" ? new Date().toISOString() : null,
       };
 
-      // dispatch create and refresh list
       await dispatch(spotFormActions.doCreate(orderData));
       dispatch(spotListActions.doFetch());
 
-      // Reset quantity for market orders (limit orders keep values for user convenience)
-      if (orderType === "MARKET") {
-        setQuantity("");
-      }
+      // Reset form
+      setQuantity("");
+      setAmountInUSDT("");
 
     } catch (err) {
       console.error("Place order error", err);
@@ -318,81 +387,13 @@ function Trade() {
       setPlacing(false);
     }
   }, [
-    placing,
-    quantity,
-    orderType,
-    marketPrice,
-    price,
-    selectedCoin,
-    activeTab,
-    dispatch,
-    generateOrderNumber,
+    placing, quantity, orderType, marketPrice, price, selectedCoin,
+    activeTab, dispatch, generateOrderNumber, currentBalance, baseSymbol, formatNumber
   ]);
-
-  const handleCancelOrder = useCallback((orderId) => {
-    // Real app should dispatch action
-    // dispatch(spotListActions.doDelete(orderId));
-    // For now simulate optimistic UI
-    console.log("Cancel requested for", orderId);
-  }, []);
-
-  // Simulate matching for limit orders (kept but non-blocking)
-  useEffect(() => {
-    let mounted = true;
-    const interval = setInterval(() => {
-      if (!mounted) return;
-      if (orderType === "LIMIT" && listspot.length > 0) {
-        const updated = listspot.map((order) => {
-          if (order.status === "pending" && order.orderType === "limit") {
-            const commissionPrice = safeParse(order.commissionPrice);
-            const marketP = safeParse(marketPrice);
-            if (!Number.isFinite(commissionPrice) || !Number.isFinite(marketP)) return order;
-            const priceTolerance = marketP * 0.001;
-            if (Math.abs(commissionPrice - marketP) <= priceTolerance) {
-              return {
-                ...order,
-                status: "completed",
-                delegateState: "Filled",
-                transactionQuantity: order.orderQuantity,
-                transactionValue: order.orderQuantity * order.commissionPrice,
-                closingPrice: marketPrice,
-                closingTime: new Date().toISOString(),
-                handlingFee: order.orderQuantity * order.commissionPrice * 0.001,
-              };
-            }
-          }
-          return order;
-        });
-
-        const changed = updated.filter((o, i) => o.status !== listspot[i]?.status);
-        if (changed.length > 0) {
-          console.log("Matched orders (sim):", changed);
-          // In a real app: dispatch action to persist changes
-        }
-      }
-    }, 5000);
-
-    return () => {
-      mounted = false;
-      clearInterval(interval);
-    };
-  }, [listspot, marketPrice, orderType]);
-
-  // Derived vars for UI
-  const baseSymbol = useMemo(() => {
-    if (!selectedCoin) return "";
-    return selectedCoin.replace("USDT", "");
-  }, [selectedCoin]);
-
-
-
 
   const updateStatus = async (id) => {
     dispatch(spotFormActions.doUpdate(id, { status: 'cancelled' }))
   }
-
-
-
 
   return (
     <div className="container">
@@ -503,7 +504,7 @@ function Trade() {
               </div>
             )}
 
-            {/* Quantity */}
+            {/* Quantity in Coin */}
             <div className="input-group">
               <div className="input-label">Amount ({baseSymbol})</div>
               {isLoading ? (
@@ -518,27 +519,34 @@ function Trade() {
                     inputMode="decimal"
                     aria-label="quantity"
                   />
-                  <div className="value-buttons">
-                    <button className="value-button" onClick={handleIncrementQuantity} aria-label="increase quantity">+</button>
-                    <button className="value-button" onClick={handleDecrementQuantity} aria-label="decrease quantity">-</button>
-                  </div>
+       
                 </div>
               )}
             </div>
 
-            {/* Amount */}
-            {isLoading ? (
-              <div className="skeleton-input" />
-            ) : (
-              <div className="amount-display">{calculateTotal()} USDT</div>
-            )}
+            {/* Amount in USDT */}
+            <div className="input-group">
+              <div className="input-label">Amount (USDT)</div>
+              {isLoading ? (
+                <div className="skeleton-input" />
+              ) : (
+                <input
+                  className="value-input"
+                  value={amountInUSDT}
+                  onChange={handleAmountInUSDTChange}
+                  placeholder="0.0"
+                  inputMode="decimal"
+                  aria-label="amount in usdt"
+                />
+              )}
+            </div>
 
-            {/* Balance */}
+            {/* Balance Display */}
             {isLoading ? (
               <div className="skeleton-balance" />
             ) : (
               <div className="balance-info">
-                Available: {formatNumber(balances[baseSymbol] || 0, 6)} {baseSymbol}
+                Available: {formatNumber(currentBalance, activeTab === "buy" ? 2 : 6)} {activeTab === "buy" ? "USDT" : baseSymbol}
               </div>
             )}
 
