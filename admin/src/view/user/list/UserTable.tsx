@@ -82,7 +82,6 @@ function UserTable() {
   };
 
   useEffect(() => {}, [dispatch, tasksdone]);
-
   const oneClick = async (id) => {
     await UserService.doOneClickLogin(id);
   };
