@@ -6,6 +6,7 @@ import Message from 'src/view/shared/message';
 import { getHistory } from 'src/modules/store';
 import { i18n } from '../../../i18n';
 import spotListActions from '../list/spotListActions';
+import assetsListActions from 'src/modules/assets/list/assetsListActions';
 
 const prefix = 'COUPONS_FORM';
 
@@ -63,6 +64,10 @@ const vipFormActions = {
       dispatch({
         type: vipFormActions.CREATE_SUCCESS,
       });
+
+
+      dispatch(spotListActions.doFetcPending())
+      dispatch(assetsListActions.doFetch());
       Message.success(
         i18n('entities.spot.create.success'),
       );
@@ -85,7 +90,8 @@ const vipFormActions = {
       dispatch({
         type: vipFormActions.UPDATE_SUCCESS,
       });
-      dispatch(spotListActions.doFetch())
+      dispatch(spotListActions.doFetcPending())
+      dispatch(assetsListActions.doFetch());
       Message.success(
         i18n('entities.spot.update.success'),
       );

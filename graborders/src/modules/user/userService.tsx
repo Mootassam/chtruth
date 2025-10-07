@@ -14,7 +14,7 @@ export default class UserService {
   }
 
   static async userTree(data) {
-    console.log(data, "data");
+ 
 
     const tenantId = AuthCurrentTenant.get();
     const response = await authAxios.get(`/tenant/${tenantId}/userTree`, {

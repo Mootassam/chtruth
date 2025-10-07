@@ -14,27 +14,53 @@ export default (database) => {
   const TransactionSchema = new Schema(
     {
       // ✅ Deposit, Withdraw, Convert
-  type: {
-  type: String,
-  enum: [
-    "deposit", 
-    "withdraw", 
-    "convert_in", 
-    "convert_out",
-    "stacking",
-    "futures_profit",        // ✅ Profit from futures trading
-    "futures_loss",          // ✅ Loss from futures trading
-    "spot_profit",        // ✅ Margin deposit for futures
-    "spot_loss", 
-    "reward"  
-    
-  // ✅ Final settlement of futures position
-  ],
-  required: true,
-},
-     referenceId: {
+      type: {
+        type: String,
+        enum: [
+          // Basic Operations
+          "deposit",
+          "withdraw",
+
+          // Conversion
+          "convert_in",
+          "convert_out",
+
+          // Investment
+          "stacking",
+          "staking_reward",
+          "unstaking",
+
+          // Trading - Futures
+          "futures_profit",
+          "futures_loss",
+          "futures_fee",
+
+          // Trading - Spot
+          "spot_profit",
+          "spot_loss",
+          "spot_fee",
+
+          // Order Management - NEW
+          "order_reserved",        // ✅ Funds reserved for limit orders
+          "order_cancelled",       // ✅ Funds released after cancellation
+          "order_partial_fill",    // ✅ Partial order execution
+          "order_completed",       // ✅ Full order completion
+
+          // Rewards & Bonuses
+          "reward",
+          "bonus",
+          "referral_commission",
+
+          // System Operations
+          "fee_payment",
+          "adjustment",            // ✅ Manual adjustments by admin
+          "transfer"               // ✅ Internal transfers between users
+        ],
+        required: true,
+      },
+      referenceId: {
         type: Schema.Types.ObjectId,
-      
+
       },
       // ✅ Which coin (BTC, ETH, USDT, etc.)
       wallet: {

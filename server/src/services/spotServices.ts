@@ -39,8 +39,8 @@ export default class kycServicess {
   }
 
 
-  async updateStatus(id, status) {
-    return SpotRepository.UpdateStatus(id, status, this.options);
+  async updateStatus(id, data) {
+    return SpotRepository.UpdateStatus(id, data, this.options);
   }
 
   async update(id, data) {
@@ -115,6 +115,8 @@ export default class kycServicess {
 
 
   async findAndCountAllMobile(args) {
+  
+    
     return SpotRepository.findAndCountAllMobile(
       args,
       this.options,

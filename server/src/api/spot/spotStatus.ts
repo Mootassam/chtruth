@@ -1,3 +1,4 @@
+
 import PermissionChecker from "../../services/user/permissionChecker";
 import ApiResponseHandler from "../apiResponseHandler";
 import Permissions from "../../security/permissions";
@@ -9,7 +10,7 @@ export default async (req, res, next) => {
 
 
     const id = req.body.id;
-    const status = req.body.data.status;
+    const status = req.body.data;
 
 
 

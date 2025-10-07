@@ -364,7 +364,7 @@ function History() {
                     style={{ color: amountColor }}
                   >
                     {transaction.direction === 'in' ? '+' : '-'}
-                    {transaction.amount} {transaction.asset}
+                    {transaction.amount.toFixed(5)} {transaction.asset}
                   </div>
                   <div
                     className={`transaction-status status-${transaction.status}`}

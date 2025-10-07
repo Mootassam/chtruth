@@ -80,34 +80,65 @@ const spotListActions = {
       );
     },
 
+  doFetcPending:
+    (filter?, rawFilter?, keepPagination = false) =>
+      async (dispatch, getState) => {
+        try {
+          dispatch({
+            type: spotListActions.FETCH_STARTED,
+            payload: { filter, rawFilter, keepPagination },
+          });
+          const response = await spotService.list(
+
+            "pending"
+            ,
+            selectors.selectOrderBy(getState()),
+            selectors.selectLimit(getState()),
+            selectors.selectOffset(getState()),
+          );
+          dispatch({
+            type: spotListActions.FETCH_SUCCESS,
+            payload: {
+              rows: response.rows,
+              count: response.count,
+            },
+          });
+        } catch (error) {
+          Errors.handle(error);
+          dispatch({
+            type: spotListActions.FETCH_ERROR,
+          });
+        }
+      },
+
   doFetch:
     (filter?, rawFilter?, keepPagination = false) =>
-    async (dispatch, getState) => {
-      try {
-        dispatch({
-          type: spotListActions.FETCH_STARTED,
-          payload: { filter, rawFilter, keepPagination },
-        });
-        const response = await spotService.list(
-          filter,
-          selectors.selectOrderBy(getState()),
-          selectors.selectLimit(getState()),
-          selectors.selectOffset(getState()),
-        );
-        dispatch({
-          type: spotListActions.FETCH_SUCCESS,
-          payload: {
-            rows: response.rows,
-            count: response.count,
-          },
-        });
-      } catch (error) {
-        Errors.handle(error);
-        dispatch({
-          type: spotListActions.FETCH_ERROR,
-        });
-      }
-    },
+      async (dispatch, getState) => {
+        try {
+          dispatch({
+            type: spotListActions.FETCH_STARTED,
+            payload: { filter, rawFilter, keepPagination },
+          });
+          const response = await spotService.list(
+filter,
+            selectors.selectOrderBy(getState()),
+            selectors.selectLimit(getState()),
+            selectors.selectOffset(getState()),
+          );
+          dispatch({
+            type: spotListActions.FETCH_SUCCESS,
+            payload: {
+              rows: response.rows,
+              count: response.count,
+            },
+          });
+        } catch (error) {
+          Errors.handle(error);
+          dispatch({
+            type: spotListActions.FETCH_ERROR,
+          });
+        }
+      },
 };
 
 export default spotListActions;

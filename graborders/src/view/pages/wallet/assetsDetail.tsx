@@ -16,7 +16,7 @@ function AssetsDetail() {
     const assetLoading = useSelector(assetsSelectors.selectLoading);
     const Transactionloading = useSelector(transactionListSelector.selectLoading);
     const loading = assetLoading || Transactionloading;
-    
+
     const [filterModalOpen, setFilterModalOpen] = useState(false);
     const [filters, setFilters] = useState({
         status: 'all',
@@ -49,12 +49,12 @@ function AssetsDetail() {
         const now = new Date();
         const isToday = date.toDateString() === now.toDateString();
         const isYesterday = new Date(now.setDate(now.getDate() - 1)).toDateString() === date.toDateString();
-        
+
         if (isToday) return `Today, ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
         if (isYesterday) return `Yesterday, ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
-        
-        return date.toLocaleDateString([], { 
-            month: 'short', 
+
+        return date.toLocaleDateString([], {
+            month: 'short',
             day: 'numeric',
             hour: '2-digit',
             minute: '2-digit'
@@ -71,94 +71,110 @@ function AssetsDetail() {
             amountColor: direction === 'in' ? '#2ff378' : '#FF6838'
         };
 
-        switch (type) {
-            case 'deposit':
-                config.icon = 'fa-arrow-down';
-                config.typeText = 'Deposit';
-                config.iconClass = 'deposit';
-                config.color = '#F3BA2F';
-                config.amountColor = '#2ff378';
-                break;
-                
-            case 'withdraw':
-                config.icon = 'fa-arrow-up';
-                config.typeText = 'Withdrawal';
-                config.iconClass = 'withdraw';
-                config.color = '#FF6838';
-                config.amountColor = '#FF6838';
-                break;
-                
-            case 'convert_in':
-                config.icon = 'fa-exchange-alt';
-                config.typeText = relatedAsset ? `Converted from ${relatedAsset}` : 'Conversion In';
-                config.iconClass = 'convert-in';
-                config.color = '#9C27B0';
-                config.amountColor = '#2ff378';
-                break;
-                
-            case 'convert_out':
-                config.icon = 'fa-exchange-alt';
-                config.typeText = relatedAsset ? `Converted to ${relatedAsset}` : 'Conversion Out';
-                config.iconClass = 'convert-out';
-                config.color = '#9C27B0';
-                config.amountColor = '#FF6838';
-                break;
-                
-            case 'stacking':
-                config.icon = 'fa-lock';
-                config.typeText = 'Stacking Reward';
-                config.iconClass = 'stacking';
-                config.color = '#4CAF50';
-                config.amountColor = '#2ff378';
-                break;
-                
-            case 'futures_profit':
-                config.icon = 'fa-chart-line';
-                config.typeText = 'Futures Profit';
-                config.iconClass = 'futures-profit';
-                config.color = '#00BCD4';
-                config.amountColor = '#2ff378';
-                break;
-                
-            case 'futures_loss':
-                config.icon = 'fa-chart-line';
-                config.typeText = 'Futures Loss';
-                config.iconClass = 'futures-loss';
-                config.color = '#FF5722';
-                config.amountColor = '#FF6838';
-                break;
-                
-            case 'spot_profit':
-                config.icon = 'fa-coins';
-                config.typeText = 'Spot Trading Profit';
-                config.iconClass = 'spot-profit';
-                config.color = '#4CAF50';
-                config.amountColor = '#2ff378';
-                break;
-                
-            case 'spot_loss':
-                config.icon = 'fa-coins';
-                config.typeText = 'Spot Trading Loss';
-                config.iconClass = 'spot-loss';
-                config.color = '#FF5722';
-                config.amountColor = '#FF6838';
-                break;
-                
+    switch (type) {
+    case 'deposit':
+        config.icon = 'fa-arrow-down';
+        config.typeText = 'Deposit';
+        config.iconClass = 'deposit';
+        config.color = '#F3BA2F';
+        config.amountColor = '#2ff378';
+        break;
 
-                case 'reward':
-                config.icon = 'fa-hand-holding-dollar';
-                config.typeText = 'Referral Reward';
-                config.iconClass = 'spot-profit';
-                config.color = '#63f211ff';
-                config.amountColor = '#5ffc1bff';
-                break;
-            default:
-                config.icon = 'fa-exchange-alt';
-                config.typeText = 'Transaction';
-                config.iconClass = 'default';
-                config.color = '#627EEA';
-        }
+    case 'withdraw':
+        config.icon = 'fa-arrow-up';
+        config.typeText = 'Withdrawal';
+        config.iconClass = 'withdraw';
+        config.color = '#FF6838';
+        config.amountColor = '#FF6838';
+        break;
 
+    case 'convert_in':
+        config.icon = 'fa-exchange-alt';
+        config.typeText = relatedAsset ? `Converted from ${relatedAsset}` : 'Conversion In';
+        config.iconClass = 'convert-in';
+        config.color = '#9C27B0';
+        config.amountColor = '#2ff378';
+        break;
+
+    case 'convert_out':
+        config.icon = 'fa-exchange-alt';
+        config.typeText = relatedAsset ? `Converted to ${relatedAsset}` : 'Conversion Out';
+        config.iconClass = 'convert-out';
+        config.color = '#9C27B0';
+        config.amountColor = '#FF6838';
+        break;
+
+    case 'stacking':
+        config.icon = 'fa-lock';
+        config.typeText = 'Stacking Reward';
+        config.iconClass = 'stacking';
+        config.color = '#4CAF50';
+        config.amountColor = '#2ff378';
+        break;
+
+    case 'futures_profit':
+        config.icon = 'fa-chart-line';
+        config.typeText = 'Futures Profit';
+        config.iconClass = 'futures-profit';
+        config.color = '#00BCD4';
+        config.amountColor = '#2ff378';
+        break;
+
+    case 'futures_loss':
+        config.icon = 'fa-chart-line';
+        config.typeText = 'Futures Loss';
+        config.iconClass = 'futures-loss';
+        config.color = '#FF5722';
+        config.amountColor = '#FF6838';
+        break;
+
+    case 'spot_profit':
+        config.icon = 'fa-coins';
+        config.typeText = 'Spot Trading Profit';
+        config.iconClass = 'spot-profit';
+        config.color = '#4CAF50';
+        config.amountColor = '#2ff378';
+        break;
+
+    case 'spot_loss':
+        config.icon = 'fa-coins';
+        config.typeText = 'Spot Trading Loss';
+        config.iconClass = 'spot-loss';
+        config.color = '#FF5722';
+        config.amountColor = '#FF6838';
+        break;
+
+    case 'reward':
+        config.icon = 'fa-hand-holding-dollar';
+        config.typeText = 'Referral Reward';
+        config.iconClass = 'spot-profit';
+        config.color = '#63f211ff';
+        config.amountColor = '#5ffc1bff';
+        break;
+
+    case 'order_reserved':
+        config.icon = 'fa-clock';
+        config.typeText = 'Order Reserved';
+        config.iconClass = 'order-reserved';
+        config.color = '#FF9800';
+        config.amountColor = '#FF9800';
+        break;
+
+    case 'order_cancelled':
+        config.icon = 'fa-ban';
+        config.typeText = 'Order Cancelled';
+        config.iconClass = 'order-cancelled';
+        config.color = '#9E9E9E';
+        config.amountColor = '#9E9E9E';
+        break;
+
+    default:
+        config.icon = 'fa-exchange-alt';
+        config.typeText = 'Transaction';
+        config.iconClass = 'default';
+        config.color = '#627EEA';
+        config.amountColor = '#627EEA';
+}
         return config;
     };
 
@@ -175,7 +191,7 @@ function AssetsDetail() {
     return (
         <div className="container">
             <SubHeader title="Detail" />
-            
+
             {/* Asset Card with Loading Placeholder */}
             {loading ? (
                 <div className="asset-card-placeholder">
@@ -192,10 +208,10 @@ function AssetsDetail() {
                         loading="lazy"
                     />
                     <div className="asset-name">{details?.coinName}</div>
-                    <div className="asset-amount">{details?.amount} {details?.symbol}</div>
+                    <div className="asset-amount">{details?.amount.toFixed(8)} {details?.symbol}</div>
                 </div>
             )}
-            
+
             <div className="transaction-history">
                 <div className="section-header">
                     <div className="section-title">Transaction History</div>
@@ -204,7 +220,7 @@ function AssetsDetail() {
                         Filter
                     </div>
                 </div>
-                
+
                 {/* Transaction List with Loading Placeholder */}
                 <div className="transaction-list">
                     {loading ? (
@@ -230,7 +246,7 @@ function AssetsDetail() {
                                 tx.direction,
                                 tx.relatedAsset
                             );
-                            
+
                             return (
                                 <div className="transaction-item" key={tx._id}>
                                     <div className="transaction-info">
@@ -247,11 +263,10 @@ function AssetsDetail() {
                                     <div className="transaction-amount">
                                         <div className="transaction-value" style={{ color: amountColor }}>
                                             {tx.direction === 'in' ? '+' : '-'}
-                                            {tx.amount} {tx.asset}
+                                            {tx.amount.toFixed(5)} {tx.asset}
                                         </div>
-                                        <div className={`transaction-status ${
-                                            tx.status === 'pending' ? 'pending' : tx.status === "canceled" ? 'canceled' : ''
-                                        }`}>
+                                        <div className={`transaction-status ${tx.status === 'pending' ? 'pending' : tx.status === "canceled" ? 'canceled' : ''
+                                            }`}>
                                             {tx.status.charAt(0).toUpperCase() + tx.status.slice(1)}
                                         </div>
                                     </div>
@@ -281,9 +296,9 @@ function AssetsDetail() {
                         <div className="modal-body">
                             <div className="filter-group">
                                 <label>Status</label>
-                                <select 
-                                    value={filters.status} 
-                                    onChange={(e) => setFilters({...filters, status: e.target.value})}
+                                <select
+                                    value={filters.status}
+                                    onChange={(e) => setFilters({ ...filters, status: e.target.value })}
                                 >
                                     <option value="all">All Statuses</option>
                                     <option value="completed">Completed</option>
@@ -293,9 +308,9 @@ function AssetsDetail() {
                             </div>
                             <div className="filter-group">
                                 <label>Type</label>
-                                <select 
-                                    value={filters.type} 
-                                    onChange={(e) => setFilters({...filters, type: e.target.value})}
+                                <select
+                                    value={filters.type}
+                                    onChange={(e) => setFilters({ ...filters, type: e.target.value })}
                                 >
                                     <option value="all">All Types</option>
                                     <option value="deposit">Deposit</option>
@@ -311,9 +326,9 @@ function AssetsDetail() {
                             </div>
                             <div className="filter-group">
                                 <label>Direction</label>
-                                <select 
-                                    value={filters.direction} 
-                                    onChange={(e) => setFilters({...filters, direction: e.target.value})}
+                                <select
+                                    value={filters.direction}
+                                    onChange={(e) => setFilters({ ...filters, direction: e.target.value })}
                                 >
                                     <option value="all">Both Directions</option>
                                     <option value="in">Incoming</option>
@@ -322,18 +337,18 @@ function AssetsDetail() {
                             </div>
                             <div className="filter-group">
                                 <label>Start Date</label>
-                                <input 
-                                    type="date" 
+                                <input
+                                    type="date"
                                     value={filters.startDate}
-                                    onChange={(e) => setFilters({...filters, startDate: e.target.value})}
+                                    onChange={(e) => setFilters({ ...filters, startDate: e.target.value })}
                                 />
                             </div>
                             <div className="filter-group">
                                 <label>End Date</label>
-                                <input 
-                                    type="date" 
+                                <input
+                                    type="date"
                                     value={filters.endDate}
-                                    onChange={(e) => setFilters({...filters, endDate: e.target.value})}
+                                    onChange={(e) => setFilters({ ...filters, endDate: e.target.value })}
                                 />
                             </div>
                         </div>

@@ -56,10 +56,7 @@ function Deposit() {
   const [showToast, setShowToast] = useState(false);
   const listMethod = useSelector(selectos.selectRows)
   const [currentAddress, setCurrentAddress] = useState(listMethod[0].address);
-  console.log(listMethod.map((item) => {
-    console.log(typeof item.symbol);
 
-  }));
 
 
   // Update schema when network changes
@@ -140,7 +137,6 @@ function Deposit() {
   );
 
 
-  console.log(selectedNetworkData, "|selectedNetworkData");
 
 
   // Handle network selection

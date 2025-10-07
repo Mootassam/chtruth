@@ -77,7 +77,7 @@ function Trade() {
   // Fetch assets and spot list on mount
   useEffect(() => {
     dispatch(assetsActions.doFetch());
-    dispatch(spotListActions.doFetch());
+    dispatch(spotListActions.doFetcPending());
     const t = setTimeout(() => setIsLoading(false), 800);
     return () => clearTimeout(t);
   }, [dispatch]);
@@ -374,7 +374,8 @@ function Trade() {
       };
 
       await dispatch(spotFormActions.doCreate(orderData));
-      dispatch(spotListActions.doFetch());
+   
+
 
       // Reset form
       setQuantity("");
@@ -391,8 +392,9 @@ function Trade() {
     activeTab, dispatch, generateOrderNumber, currentBalance, baseSymbol, formatNumber
   ]);
 
-  const updateStatus = async (id) => {
-    dispatch(spotFormActions.doUpdate(id, { status: 'cancelled' }))
+  const updateStatus = async (id, data) => {
+    data.status ="canceled"
+    dispatch(spotFormActions.doUpdate(id, data))
   }
 
   return (
@@ -671,7 +673,7 @@ function Trade() {
                   <div className="order-actions">
                     {String(order.status).toLowerCase() === "pending" ||
                       String(order.status).toLowerCase() === "partially filled" ? (
-                      <button className="cancel-order-btn" onClick={() => updateStatus(order.id)}>
+                      <button className="cancel-order-btn" onClick={() => updateStatus(order.id ,order) }>
                         Cancel
                       </button>
                     ) : (
