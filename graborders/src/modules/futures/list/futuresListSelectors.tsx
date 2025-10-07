@@ -17,6 +17,26 @@ const selectRows = createSelector(
   (raw) => raw.rows,
 );
 
+
+const pendingRows = createSelector(
+  [selectRaw],
+  (raw) => raw.pendingrows,
+);
+
+const pendingLoading = createSelector(
+  [selectRaw],
+  (raw) => raw.pendingLoading,
+);
+
+const pendingcount = createSelector(
+  [selectRaw],
+  (raw) => raw.pendingcount,
+);
+
+
+
+
+
 const selectCount = createSelector(
   [selectRaw],
   (raw) => raw.count,
@@ -126,6 +146,9 @@ const couponsListSelectors = {
   selectRawFilter,
   selectIsAllSelected,
   selectSorter,
+  pendingRows,
+  pendingLoading,
+  pendingcount
 };
 
 export default couponsListSelectors;

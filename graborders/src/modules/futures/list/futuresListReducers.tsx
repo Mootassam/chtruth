@@ -6,6 +6,9 @@ const initialData = {
   rows: [] as Array<any>,
   count: 0,
   loading: false,
+  pendingcount: 0,
+  pendingLoading: false,
+  pendingrows: [] as Array<any>,
   filter: {},
   rawFilter: {},
   pagination: {
@@ -85,14 +88,14 @@ export default (state = initialData, { type, payload }) => {
       loading: true,
       selectedKeys: [],
       filter: payload ? payload.filter : {},
-rawFilter: payload ? payload.rawFilter : {},
+      rawFilter: payload ? payload.rawFilter : {},
       pagination:
         payload && payload.keepPagination
           ? state.pagination
           : {
-              current: 1,
-              pageSize: INITIAL_PAGE_SIZE,
-            },
+            current: 1,
+            pageSize: INITIAL_PAGE_SIZE,
+          },
     };
   }
 
@@ -113,6 +116,46 @@ rawFilter: payload ? payload.rawFilter : {},
       count: 0,
     };
   }
+
+
+
+  if (type === actions.PENDING_FETCH_STARTED) {
+    return {
+      ...state,
+      pendingLoading: true,
+      selectedKeys: [],
+      filter: payload ? payload.filter : {},
+      rawFilter: payload ? payload.rawFilter : {},
+      pagination:
+        payload && payload.keepPagination
+          ? state.pagination
+          : {
+            current: 1,
+            pageSize: INITIAL_PAGE_SIZE,
+          },
+    };
+  }
+
+  if (type === actions.PENDING_FETCH_SUCCESS) {
+    return {
+      ...state,
+      pendingLoading: false,
+      pendingrows: payload.rows,
+      pendingcount: payload.count,
+    };
+  }
+
+  if (type === actions.PENDING_FETCH_ERROR) {
+    return {
+      ...state,
+      pendingLoading: false,
+      pendingrows: [],
+      pendingcount: 0,
+    };
+  }
+
+
+
 
   if (type === actions.EXPORT_STARTED) {
     return {

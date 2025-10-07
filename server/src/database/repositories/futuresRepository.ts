@@ -13,128 +13,200 @@ import cron from "node-cron";
 import { futuresQueue } from "../utils/futuresQueue"; // ✅ Import the QUEUE
 import { sendNotification } from "../../services/notificationServices";
 import Error405 from "../../errors/Error405";
-
+import Transaction from '../models/transaction'
 class FuturesRepository {
   // inside FuturesRepository class:
 
-  static async create(data, options: IRepositoryOptions) {
+static async create(data, options: IRepositoryOptions) {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
     const currentUser = MongooseRepository.getCurrentUser(options);
 
-    const openPositionTime = data.openPositionTime
-      ? new Date(data.openPositionTime)
-      : new Date();
+    // Validate futures amount
+    if (!data.futuresAmount || data.futuresAmount <= 0) {
+      throw new Error('Futures amount must be greater than 0');
+    }
 
-    const durationMs = await this.parseDurationToMs(
-      data.contractDuration || "60s"
-    );
-    const expiryTime = new Date(openPositionTime.getTime() + durationMs);
-
-    const payload = {
-      ...data,
-      openPositionTime,
-      expiryTime,
-      finalized: false,
-      finalizedAt: null,
-      tenant: currentTenant.id,
-      createdBy: currentUser.id,
-      updatedBy: currentUser.id,
-    };
-
-    const [record] = await Futures(options.database).create([payload], options);
-
-    await sendNotification({
-      userId: data.createdBy, // the user to notify
-      message: ` ${data.futuresAmount}} `,
-      type: "futures", // type of notification
-      forAdmin: true,
-      options, // your repository options
-    });
-    // === NEW JOB SCHEDULE ===
-    // try {
-    //   await futuresQueue.add(
-    //     `auto-finalize-${record.id}`,
-    //     {
-    //       futureId: record.id,
-    //       tenantId: currentTenant.id,
-    //     },
-    //     {
-    //       delay: durationMs,
-    //       jobId: `auto-finalize-${record.id}`, // prevents duplicate jobs
-    //       attempts: 3,
-    //       backoff: { type: "exponential", delay: 1000 },
-    //     }
-    //   );
-
-    //   
-
-    //     `📅 Scheduled auto-finalize job for future ${record.id} at ${expiryTime}`
-    //   );
-    // } catch (error) {
-    //   console.error("Failed to schedule auto-finalize job:", error);
-    // }
-
-    await this._createAuditLog(
-      AuditLogRepository.CREATE,
-      record.id,
-      payload,
-      options
-    );
-
-    return this.findById(record.id, options);
-  }
-
-  static async update(id, data, options /*: IRepositoryOptions */) {
-    const currentTenant = MongooseRepository.getCurrentTenant(options);
-    const currentUser = MongooseRepository.getCurrentUser(options);
-
-    const FuturesModel = Futures(options.database);
+    // Get user's USDT wallet and check balance
     const walletModel = Wallet(options.database);
-    const transactionModel = transaction(options.database);
+    const transactionModel = Transaction(options.database);
+    
+    const usdtWallet = await walletModel.findOne({
+      user: currentUser.id,
+      symbol: "USDT",
+      tenant: currentTenant.id,
+    });
 
-    // load record
-    let record = await FuturesModel.findById(id);
-
-    if (!record || String(record.tenant) !== String(currentTenant.id)) {
-      throw new Error404();
+    if (!usdtWallet) {
+      throw new Error('USDT wallet not found');
     }
 
-    if (record.finalized) {
-      throw new Error405(
-        "This futures entry is already finalized and cannot be changed."
-      );
+    if (usdtWallet.amount < data.futuresAmount) {
+      throw new Error('Insufficient USDT balance');
     }
 
-    if (record.expiryTime && new Date() >= new Date(record.expiryTime)) {
-      throw new Error405(
-        "Contract duration already expired; entry will be/has been auto-finalized."
-      );
+    if (usdtWallet.status !== 'available') {
+      throw new Error('USDT wallet is not available for trading');
     }
-
-    const isControlUpdate = data.control === "loss" || data.control === "profit";
 
     try {
-      if (isControlUpdate) {
-        const selectedWallet = await walletModel.findOne({
-          user: record.createdBy,
-          symbol: "USDT",
+      // 1. Deduct the futures amount from USDT wallet
+      const updatedWallet = await walletModel.findOneAndUpdate(
+        { 
+          _id: usdtWallet._id, 
           tenant: currentTenant.id,
-        });
+          amount: { $gte: data.futuresAmount }
+        },
+        {
+          $inc: { amount: -data.futuresAmount },
+          $set: { updatedBy: currentUser.id, updatedAt: new Date() },
+        },
+        { new: true }
+      );
 
-        if (!selectedWallet) {
-          throw new Error405(`USDT wallet not found for user ${record.createdBy}`);
-        }
+      if (!updatedWallet) {
+        throw new Error('Insufficient funds in wallet after validation');
+      }
 
-        const amountForProfit = Number(record.profitAndLossAmount || 0);
-        const amountForLoss = Number(record.futuresAmount || 0);
+      const openPositionTime = data.openPositionTime
+        ? new Date(data.openPositionTime)
+        : new Date();
 
-        // ✅ calculate closing price
-        let closePrice = record.openPositionPrice;
+      const durationMs = await this.parseDurationToMs(
+        data.contractDuration || "60s"
+      );
+
+      const expiryTime = new Date(openPositionTime.getTime() + durationMs);
+
+      const payload = {
+        ...data,
+        openPositionTime,
+        expiryTime,
+        finalized: false,
+        finalizedAt: null,
+        tenant: currentTenant.id,
+        createdBy: currentUser.id,
+        updatedBy: currentUser.id,
+      };
+
+      // 2. Create the futures trade
+      const [record] = await Futures(options.database).create([payload], options);
+
+      // 3. Create transaction record for the deduction
+      await transactionModel.create({
+        type: "futures_reserved",
+        referenceId: record._id,
+        wallet: usdtWallet._id,
+        asset: "USDT",
+        amount: data.futuresAmount,
+        status: "completed",
+        direction: "out",
+        user: currentUser.id,
+        tenant: currentTenant.id,
+        createdBy: currentUser.id,
+        updatedBy: currentUser.id,
+        dateTransaction: new Date(),
+        description: `Futures trade reserved: ${data.futuresAmount} USDT for ${data.futuresStatus} position`
+      });
+
+      await sendNotification({
+        userId: currentUser.id,
+        message: `Futures trade created: ${data.futuresAmount} USDT`,
+        type: "futures",
+        forAdmin: true,
+        options,
+      });
+
+      await this._createAuditLog(
+        AuditLogRepository.CREATE,
+        record.id,
+        payload,
+        options
+      );
+
+      return this.findById(record.id, options);
+
+    } catch (error) {
+      console.error('Futures creation failed:', error);
+      throw error;
+    }
+  }
+
+static async update(id, data, options: IRepositoryOptions) {
+  const currentTenant = MongooseRepository.getCurrentTenant(options);
+  const currentUser = MongooseRepository.getCurrentUser(options);
+
+  const FuturesModel = Futures(options.database);
+  const walletModel = Wallet(options.database);
+  const transactionModel = Transaction(options.database);
+
+  // Load record
+  let record = await FuturesModel.findById(id);
+
+  if (!record || String(record.tenant) !== String(currentTenant.id)) {
+    throw new Error404();
+  }
+
+  if (record.finalized) {
+    throw new Error405(
+      "This futures entry is already finalized and cannot be changed."
+    );
+  }
+
+  const isControlUpdate = data.control === "loss" || data.control === "profit";
+
+  // Your profit calculation formula with null checks
+  const calculateProfit = (
+    amount: number,
+    leverage: any,
+    duration: any
+  ): number => {
+    // Convert to numbers with proper null checks
+    const leverageNum = parseInt(leverage?.toString() || '0', 10);
+    const durationNum = parseInt(duration?.toString() || '0', 10);
+    const amountNum = amount || 0;
+    
+    return (amountNum * leverageNum * durationNum) / 10000;
+  };
+
+  try {
+    if (isControlUpdate) {
+      const selectedWallet = await walletModel.findOne({
+        user: record.createdBy,
+        symbol: "USDT",
+        tenant: currentTenant.id,
+      });
+
+      if (!selectedWallet) {
+        throw new Error405(`USDT wallet not found for user ${record.createdBy}`);
+      }
+
+      // CALCULATE PROFIT USING YOUR FORMULA WITH SAFE ACCESS
+      const profitAmount = calculateProfit(
+        record.futuresAmount,
+        record.leverage, // No need to call toString() here
+        record.contractDuration  // No need to call toString() here
+      );
+
+   
+      
+      
+      const lossAmount = record.futuresAmount;
+
+      // VALIDATE AND USE MANUAL CLOSING PRICE (MAX $100)
+      let closePrice = data.closePositionPrice; // Use provided closing price
+      
+      // Validate closing price doesn't exceed $100
+      if (closePrice && closePrice > 100) {
+        throw new Error405("Closing price cannot exceed $100");
+      }
+      
+      // If no manual closing price provided, calculate it
+      if (!closePrice) {
         if (record.futuresStatus === "long") {
           if (data.control === "profit") {
             closePrice =
               record.openPositionPrice *
-              (1 + amountForProfit / (record.futuresAmount * record.leverage));
+              (1 + profitAmount / (record.futuresAmount * record.leverage));
           } else {
             closePrice =
               record.openPositionPrice * (1 - 1 / record.leverage);
@@ -143,109 +215,158 @@ class FuturesRepository {
           if (data.control === "profit") {
             closePrice =
               record.openPositionPrice *
-              (1 - amountForProfit / (record.futuresAmount * record.leverage));
+              (1 - profitAmount / (record.futuresAmount * record.leverage));
           } else {
             closePrice =
               record.openPositionPrice * (1 + 1 / record.leverage);
           }
         }
+      }
 
-        // ✅ handle wallet updates
-        if (data.control === "profit") {
-          if (!(amountForProfit > 0)) {
-            throw new Error405("Profit amount is zero or invalid.");
-          }
+      // USE MANUAL CLOSE TIME OR CURRENT TIME
+      const closeTime = data.closePositionTime || new Date();
 
-          await walletModel.findOneAndUpdate(
-            { _id: selectedWallet._id, tenant: currentTenant.id },
-            {
-              $inc: { amount: amountForProfit },
-              $set: { updatedBy: currentUser.id, updatedAt: new Date() },
-            },
-            { new: true }
-          );
-        } else {
-          const debit = amountForLoss;
+      // USE MANUAL PROFIT/LOSS AMOUNT OR CALCULATE IT
+      let finalProfitLossAmount;
+      if (data.profitAndLossAmount !== undefined) {
+        finalProfitLossAmount = data.profitAndLossAmount;
+      } else {
+        // Use your profit formula for profit, keep existing logic for loss
+        finalProfitLossAmount = data.control === "profit" ? profitAmount : -lossAmount;
+      }
 
-          if (!(debit > 0)) {
-            throw new Error405("Loss amount is zero or invalid.");
-          }
-
-          const updatedWallet = await walletModel.findOneAndUpdate(
-            {
-              _id: selectedWallet._id,
-              tenant: currentTenant.id,
-              amount: { $gte: debit },
-            },
-            {
-              $inc: { amount: -debit },
-              $set: { updatedBy: currentUser.id, updatedAt: new Date() },
-            },
-            { new: true }
-          );
-
-          if (!updatedWallet) {
-            throw new Error405("Insufficient funds in wallet");
-          }
+      // Handle wallet updates based on profit/loss
+      if (data.control === "profit") {
+        if (!(profitAmount > 0)) {
+          throw new Error405("Profit amount is zero or invalid.");
         }
 
-        // ✅ create transaction
-        const transactionType =
-          data.control === "profit" ? "futures_profit" : "futures_loss";
+        // Add profit to wallet (original amount + profit)
+        await walletModel.findOneAndUpdate(
+          { _id: selectedWallet._id, tenant: currentTenant.id },
+          {
+            $inc: { amount: profitAmount + record.futuresAmount },
+            $set: { updatedBy: currentUser.id, updatedAt: new Date() },
+          },
+          { new: true }
+        );
 
-        const transactionDirection = data.control === "profit" ? "in" : "out";
-        const txnAmount =
-          data.control === "profit"
-            ? Math.abs(amountForProfit)
-            : Math.abs(amountForLoss);
-
+        // Create profit transaction
         await transactionModel.create({
-          type: transactionType,
+          type: "futures_profit",
           referenceId: record._id,
           wallet: selectedWallet._id,
           asset: "USDT",
-          amount: txnAmount,
+          amount: profitAmount + record.futuresAmount,
           status: "completed",
-          direction: transactionDirection,
+          direction: "in",
           user: record.createdBy,
           tenant: currentTenant.id,
           createdBy: currentUser.id,
           updatedBy: currentUser.id,
           dateTransaction: new Date(),
+          description: `Futures profit: ${profitAmount} USDT profit + ${record.futuresAmount} USDT returned`
         });
 
-        // ✅ finalize futures record
-        await FuturesModel.updateOne(
-          { _id: id, tenant: currentTenant.id, finalized: { $ne: true } },
-          {
-            $set: {
-              control: data.control,
-              finalized: true,
-              finalizedAt: new Date(),
-              updatedBy: currentUser.id,
-              profitAndLossAmount:
-                data.control === "profit" ? amountForProfit : -amountForLoss,
-              closePositionPrice: closePrice, // ✅ new
-              closePositionTime: new Date(), // ✅ new
-            },
-          }
-        );
       } else {
-        await FuturesModel.updateOne(
-          { _id: id, tenant: currentTenant.id },
-          { ...data, updatedBy: currentUser.id }
-        );
+        // For loss - amount was already deducted during creation
+        // Just record the loss transaction (no wallet update needed)
+        const lossAmount = record.futuresAmount;
+
+        if (!(lossAmount > 0)) {
+          throw new Error405("Loss amount is zero or invalid.");
+        }
+
+        // Create loss transaction (amount already deducted during trade creation)
+        await transactionModel.create({
+          type: "futures_loss",
+          referenceId: record._id,
+          wallet: selectedWallet._id,
+          asset: "USDT",
+          amount: lossAmount,
+          status: "completed",
+          direction: "out",
+          user: record.createdBy,
+          tenant: currentTenant.id,
+          createdBy: currentUser.id,
+          updatedBy: currentUser.id,
+          dateTransaction: new Date(),
+          description: `Futures loss: ${lossAmount} USDT (Trade amount lost)`
+        });
       }
 
-      await this._createAuditLog(AuditLogRepository.UPDATE, id, data, options);
+      // Finalize futures record WITH MANUAL VALUES
+      await FuturesModel.updateOne(
+        { _id: id, tenant: currentTenant.id, finalized: { $ne: true } },
+        {
+          $set: {
+            control: data.control,
+            finalized: true,
+            finalizedAt: new Date(),
+            updatedBy: currentUser.id,
+            profitAndLossAmount: finalProfitLossAmount,
+            closePositionPrice: closePrice,
+            closePositionTime: closeTime,
+          },
+        }
+      );
 
-      record = await this.findById(id, options);
-      return record;
-    } catch (err) {
-      throw err;
+    } else {
+      // Regular update (non-control update) - allow updating closing price and time
+      const updateData = { ...data, updatedBy: currentUser.id };
+      
+      // Validate closing price for regular updates too
+      if (data.closePositionPrice && data.closePositionPrice > 100) {
+        throw new Error405("Closing price cannot exceed $100");
+      }
+      
+      await FuturesModel.updateOne(
+        { _id: id, tenant: currentTenant.id },
+        updateData
+      );
     }
-  }
 
+    await this._createAuditLog(AuditLogRepository.UPDATE, id, data, options);
+
+    record = await this.findById(id, options);
+    return record;
+
+  } catch (err) {
+    throw err;
+  }
+}
+
+  // Helper method to calculate profit amount
+  static calculateProfitAmount(futuresRecord) {
+    // Your profit calculation logic here
+    // This is a simplified example - adjust based on your business rules
+    const baseAmount = futuresRecord.futuresAmount;
+    const leverage = futuresRecord.leverage;
+    const duration = futuresRecord.contractDuration;
+    
+    // Example calculation: profit = baseAmount * leverage * durationMultiplier
+    let durationMultiplier = 1;
+    
+    // Adjust profit based on contract duration
+    switch (futuresRecord.contractDuration) {
+      case '60s':
+        durationMultiplier = 0.10; // 10%
+        break;
+      case '120s':
+        durationMultiplier = 0.20; // 20%
+        break;
+      case '180s':
+        durationMultiplier = 0.40; // 40%
+        break;
+      case '240s':
+        durationMultiplier = 0.80; // 80%
+        break;
+      default:
+        durationMultiplier = 0.10; // 10% default
+    }
+    
+    return baseAmount * leverage * durationMultiplier;
+  }
 
   static async parseDurationToMs(duration: string | number | undefined) {
     if (duration == null) return 0;
@@ -277,7 +398,6 @@ class FuturesRepository {
         return v * 1000;
     }
   }
-
   static async destroy(id, options: IRepositoryOptions) {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
 
@@ -395,10 +515,16 @@ class FuturesRepository {
     });
 
     criteriaAnd.push({
-      createdBy: currentTenant.id,
+      createdBy: currentUser.id,
     });
 
+  
+
     if (filter) {
+      criteriaAnd.push({
+        finalized: filter,
+      });
+
       if (filter.id) {
         criteriaAnd.push({
           ["_id"]: MongooseQueryUtils.uuid(filter.id),
@@ -427,7 +553,6 @@ class FuturesRepository {
       .find(criteria)
       .skip(skip)
       .sort(sort)
-      .populate("user")
       .populate("createdBy");
 
     const count = await Futures(options.database).countDocuments(criteria);

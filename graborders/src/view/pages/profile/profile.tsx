@@ -39,6 +39,16 @@ const MENU_ITEMS = [
     requiresKyc: true,
   },
   {
+    path: "/terms-of-use",
+    icon: "fas fa-file-contract",
+    name: "Terms of Use",
+  },
+  {
+    path: "/privacy-portal",
+    icon: "fas fa-user-shield",
+    name: "Privacy Portal",
+  },
+  {
     icon: "fas fa-info-circle",
     path: "/about",
     name: "About Us",

@@ -199,14 +199,14 @@ function Home() {
       name: "FAQ Center",
     },
     {
-      path: "/terms-of-use",
-      icon: "fas fa-file-contract",
-      name: "Terms of Use",
+      icon: "fas fa-gift",
+      path: "/invitation",
+      name: "Invitation",
     },
     {
-      path: "/privacy-portal",
-      icon: "fas fa-user-shield",
-      name: "Privacy Portal",
+      path: "/stacking",
+      icon: "fas fa-coins ",
+      name: "Staking",
     },
   ];
 

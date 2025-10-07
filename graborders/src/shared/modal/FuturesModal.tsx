@@ -121,17 +121,17 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
         closePositionTime: null
       });
 
-   setOpeningOrders(prev => [...prev, {
-  id: futureId, // Use the actual ID from created record
-  futuresAmount,
-  contractDuration: selectedDuration,
-  futuresStatus: direction === "up" ? "long" : "short",
-  openPositionPrice: parseFloat(marketPrice || "0") || 0,
-  closePositionPrice: null,
-  leverage: parseInt(selectedLeverage, 10),
-  openPositionTime: new Date().toISOString(),
-  closePositionTime: null
-}]);
+      setOpeningOrders(prev => [...prev, {
+        id: futureId, // Use the actual ID from created record
+        futuresAmount,
+        contractDuration: selectedDuration,
+        futuresStatus: direction === "up" ? "long" : "short",
+        openPositionPrice: parseFloat(marketPrice || "0") || 0,
+        closePositionPrice: null,
+        leverage: parseInt(selectedLeverage, 10),
+        openPositionTime: new Date().toISOString(),
+        closePositionTime: null
+      }]);
 
       // ensure timeLeft set from chosen duration (seconds)
       const secs = parseInt(selectedDuration, 10) || 0;
@@ -198,7 +198,8 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
       setTradeStatus("completed");
 
       // refresh lists/view after finalization
-      dispatch(futuresListAction.doFetch());
+      dispatch(futuresListAction.doFetchPending());
+
     } catch (err) {
       console.error("completeTrade error", err);
       // fallback to computed display
@@ -222,14 +223,12 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
 
     const payload = {
       futuresStatus: direction === "up" ? "long" : "short",
-      profitAndLossAmount:
-        (futuresAmount * parseInt(selectedLeverage, 10) * parseInt(selectedDuration, 10)) /
-        10000,
+      profitAndLossAmount: '',
       leverage: parseInt(selectedLeverage, 10),
       control: "loss", // default — worker/ admin may set later
       operate: "low",
-      closePositionTime: new Date(Date.now() + parseInt(selectedDuration, 10) * 1000).toISOString(),
-      closePositionPrice: closePrice,
+      closePositionTime: '',
+      closePositionPrice: '',
       openPositionTime: new Date().toISOString(),
       openPositionPrice: currentPrice,
       contractDuration: selectedDuration,
@@ -369,20 +368,6 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
               </div>
             )}
 
-            {tradeStatus === "completed" && (
-              <div
-                className={`trade-result ${tradeResult ?? ""}`}
-                style={{ color: tradeResult === "win" ? "#00C076" : "#FF6838" }}
-              >
-                {pnlDisplay
-                  ? tradeResult === "win"
-                    ? `Trade Successful! ${pnlDisplay}`
-                    : `Trade Failed! ${pnlDisplay}`
-                  : tradeResult === "win"
-                    ? `Trade Successful! +${calculateProfit(futuresAmount, selectedLeverage, selectedDuration).toFixed(2)} USDT`
-                    : `Trade Failed! -${futuresAmount.toFixed(2)} USDT`}
-              </div>
-            )}
 
             <div className="trade-actions">
               {tradeStatus === "in-progress" && (

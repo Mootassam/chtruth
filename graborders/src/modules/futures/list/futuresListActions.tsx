@@ -10,6 +10,12 @@ const futuresListActions = {
   FETCH_SUCCESS: `${prefix}_FETCH_SUCCESS`,
   FETCH_ERROR: `${prefix}_FETCH_ERROR`,
 
+
+  PENDING_FETCH_STARTED: `${prefix}_PENDING_FETCH_STARTED`,
+  PENDING_FETCH_SUCCESS: `${prefix}_PENDING_FETCH_SUCCESS`,
+  PENDING_FETCH_ERROR: `${prefix}_PENDING_FETCH_ERROR`,
+
+
   RESETED: `${prefix}_RESETED`,
   TOGGLE_ONE_SELECTED: `${prefix}_TOGGLE_ONE_SELECTED`,
   TOGGLE_ALL_SELECTED: `${prefix}_TOGGLE_ALL_SELECTED`,
@@ -82,32 +88,65 @@ const futuresListActions = {
 
   doFetch:
     (filter?, rawFilter?, keepPagination = false) =>
-    async (dispatch, getState) => {
-      try {
-        dispatch({
-          type: futuresListActions.FETCH_STARTED,
-          payload: { filter, rawFilter, keepPagination },
-        });
-        const response = await futuresService.list(
-          filter,
-          selectors.selectOrderBy(getState()),
-          selectors.selectLimit(getState()),
-          selectors.selectOffset(getState()),
-        );
-        dispatch({
-          type: futuresListActions.FETCH_SUCCESS,
-          payload: {
-            rows: response.rows,
-            count: response.count,
-          },
-        });
-      } catch (error) {
-        Errors.handle(error);
-        dispatch({
-          type: futuresListActions.FETCH_ERROR,
-        });
-      }
-    },
+      async (dispatch, getState) => {
+        try {
+          dispatch({
+            type: futuresListActions.FETCH_STARTED,
+            payload: { filter, rawFilter, keepPagination },
+          });
+          const response = await futuresService.list(
+            `${true}`,
+            selectors.selectOrderBy(getState()),
+            selectors.selectLimit(getState()),
+            selectors.selectOffset(getState()),
+          );
+          dispatch({
+            type: futuresListActions.FETCH_SUCCESS,
+            payload: {
+              rows: response.rows,
+              count: response.count,
+            },
+          });
+        } catch (error) {
+          Errors.handle(error);
+          dispatch({
+            type: futuresListActions.FETCH_ERROR,
+          });
+        }
+      },
+
+  doFetchPending:
+    (filter?, rawFilter?, keepPagination = false) =>
+      async (dispatch, getState) => {
+        try {
+          dispatch({
+            type: futuresListActions.PENDING_FETCH_STARTED,
+            payload: { filter, rawFilter, keepPagination },
+          });
+          const response = await futuresService.list(
+            `${false}`,
+            selectors.selectOrderBy(getState()),
+            selectors.selectLimit(getState()),
+            selectors.selectOffset(getState()),
+          );
+          dispatch({
+            type: futuresListActions.PENDING_FETCH_SUCCESS,
+            payload: {
+              rows: response.rows,
+              count: response.count,
+            },
+          });
+        } catch (error) {
+          Errors.handle(error);
+          dispatch({
+            type: futuresListActions.PENDING_FETCH_ERROR,
+          });
+        }
+      },
+
+
+
+
 };
 
 export default futuresListActions;

@@ -40,6 +40,18 @@ export default (database) => {
           "spot_loss",
           "spot_fee",
 
+          "futures_reserved",      // ✅ Funds reserved when futures trade opens
+
+
+          "futures_settlement",    // ✅ Final settlement transaction
+
+          "futures_refund",        // ✅ Refund if trade fails to open
+
+          // Manual Operations
+          "manual_profit",         // ✅ Admin manually set profit
+
+          "manual_adjustment",     // ✅ Manual balance adjustment
+
           // Order Management - NEW
           "order_reserved",        // ✅ Funds reserved for limit orders
           "order_cancelled",       // ✅ Funds released after cancellation
@@ -51,10 +63,7 @@ export default (database) => {
           "bonus",
           "referral_commission",
 
-          // System Operations
-          "fee_payment",
-          "adjustment",            // ✅ Manual adjustments by admin
-          "transfer"               // ✅ Internal transfers between users
+
         ],
         required: true,
       },

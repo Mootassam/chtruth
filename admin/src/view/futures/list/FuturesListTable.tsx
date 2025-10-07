@@ -242,7 +242,7 @@ function FuturesListTable() {
                   <td className="actions-cell">
                     <div className="actions-container">
                       {row.finalized ? (
-                        <span className="status-badge">{row.control}</span>
+                        <span className={`badge__action ${row.control}`}>{row.control}</span>
                       ) : (
                         ['profit', 'loss'].map((status) => (
                           <button

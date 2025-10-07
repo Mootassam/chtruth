@@ -71,7 +71,7 @@ function AssetsDetail() {
             amountColor: direction === 'in' ? '#2ff378' : '#FF6838'
         };
 
-    switch (type) {
+switch (type) {
     case 'deposit':
         config.icon = 'fa-arrow-down';
         config.typeText = 'Deposit';
@@ -112,22 +112,97 @@ function AssetsDetail() {
         config.amountColor = '#2ff378';
         break;
 
+    // Futures Trading Transactions
+    case 'futures_reserved':
+        config.icon = 'fa-lock';
+        config.typeText = 'Futures Reserved';
+        config.iconClass = 'futures-reserved';
+        config.color = '#FF9800';
+        config.amountColor = '#FF9800';
+        break;
+
     case 'futures_profit':
         config.icon = 'fa-chart-line';
         config.typeText = 'Futures Profit';
         config.iconClass = 'futures-profit';
-        config.color = '#00BCD4';
-        config.amountColor = '#2ff378';
+        config.color = '#00C076';
+        config.amountColor = '#00C076';
         break;
 
     case 'futures_loss':
         config.icon = 'fa-chart-line';
         config.typeText = 'Futures Loss';
         config.iconClass = 'futures-loss';
-        config.color = '#FF5722';
+        config.color = '#FF6838';
         config.amountColor = '#FF6838';
         break;
 
+    case 'futures_settlement':
+        config.icon = 'fa-file-contract';
+        config.typeText = 'Futures Settlement';
+        config.iconClass = 'futures-settlement';
+        config.color = '#9C27B0';
+        config.amountColor = '#9C27B0';
+        break;
+
+    case 'futures_fee':
+        config.icon = 'fa-receipt';
+        config.typeText = 'Futures Fee';
+        config.iconClass = 'futures-fee';
+        config.color = '#607D8B';
+        config.amountColor = '#607D8B';
+        break;
+
+    case 'futures_refund':
+        config.icon = 'fa-undo';
+        config.typeText = 'Futures Refund';
+        config.iconClass = 'futures-refund';
+        config.color = '#4CAF50';
+        config.amountColor = '#4CAF50';
+        break;
+
+    case 'futures_bonus':
+        config.icon = 'fa-gift';
+        config.typeText = 'Futures Bonus';
+        config.iconClass = 'futures-bonus';
+        config.color = '#E91E63';
+        config.amountColor = '#E91E63';
+        break;
+
+    case 'futures_commission':
+        config.icon = 'fa-handshake';
+        config.typeText = 'Futures Commission';
+        config.iconClass = 'futures-commission';
+        config.color = '#795548';
+        config.amountColor = '#795548';
+        break;
+
+    // Manual Control Operations
+    case 'manual_profit':
+        config.icon = 'fa-user-check';
+        config.typeText = 'Manual Profit';
+        config.iconClass = 'manual-profit';
+        config.color = '#00C076';
+        config.amountColor = '#00C076';
+        break;
+
+    case 'manual_loss':
+        config.icon = 'fa-user-slash';
+        config.typeText = 'Manual Loss';
+        config.iconClass = 'manual-loss';
+        config.color = '#FF6838';
+        config.amountColor = '#FF6838';
+        break;
+
+    case 'manual_adjustment':
+        config.icon = 'fa-cog';
+        config.typeText = 'Manual Adjustment';
+        config.iconClass = 'manual-adjustment';
+        config.color = '#9C27B0';
+        config.amountColor = '#9C27B0';
+        break;
+
+    // Spot Trading
     case 'spot_profit':
         config.icon = 'fa-coins';
         config.typeText = 'Spot Trading Profit';
@@ -144,6 +219,7 @@ function AssetsDetail() {
         config.amountColor = '#FF6838';
         break;
 
+    // Rewards & Bonuses
     case 'reward':
         config.icon = 'fa-hand-holding-dollar';
         config.typeText = 'Referral Reward';
@@ -152,6 +228,23 @@ function AssetsDetail() {
         config.amountColor = '#5ffc1bff';
         break;
 
+    case 'bonus':
+        config.icon = 'fa-gift';
+        config.typeText = 'Bonus';
+        config.iconClass = 'bonus';
+        config.color = '#E91E63';
+        config.amountColor = '#E91E63';
+        break;
+
+    case 'referral_commission':
+        config.icon = 'fa-users';
+        config.typeText = 'Referral Commission';
+        config.iconClass = 'referral-commission';
+        config.color = '#FF9800';
+        config.amountColor = '#FF9800';
+        break;
+
+    // Order Management
     case 'order_reserved':
         config.icon = 'fa-clock';
         config.typeText = 'Order Reserved';
@@ -166,6 +259,47 @@ function AssetsDetail() {
         config.iconClass = 'order-cancelled';
         config.color = '#9E9E9E';
         config.amountColor = '#9E9E9E';
+        break;
+
+    case 'order_partial_fill':
+        config.icon = 'fa-chart-pie';
+        config.typeText = 'Order Partial Fill';
+        config.iconClass = 'order-partial';
+        config.color = '#FF9800';
+        config.amountColor = '#FF9800';
+        break;
+
+    case 'order_completed':
+        config.icon = 'fa-check-circle';
+        config.typeText = 'Order Completed';
+        config.iconClass = 'order-completed';
+        config.color = '#4CAF50';
+        config.amountColor = '#4CAF50';
+        break;
+
+    // System Operations
+    case 'fee_payment':
+        config.icon = 'fa-receipt';
+        config.typeText = 'Fee Payment';
+        config.iconClass = 'fee-payment';
+        config.color = '#607D8B';
+        config.amountColor = '#607D8B';
+        break;
+
+    case 'adjustment':
+        config.icon = 'fa-sliders-h';
+        config.typeText = 'Balance Adjustment';
+        config.iconClass = 'adjustment';
+        config.color = '#9C27B0';
+        config.amountColor = '#9C27B0';
+        break;
+
+    case 'transfer':
+        config.icon = 'fa-exchange-alt';
+        config.typeText = 'Transfer';
+        config.iconClass = 'transfer';
+        config.color = '#2196F3';
+        config.amountColor = '#2196F3';
         break;
 
     default:
