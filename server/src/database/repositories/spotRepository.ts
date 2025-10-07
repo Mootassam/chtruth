@@ -508,7 +508,7 @@ class SpotRepository {
 
       if (filter.user) {
         criteriaAnd.push({
-          user: filter.user,
+          createdBy: filter.user,
         });
       }
 

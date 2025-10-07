@@ -19,18 +19,19 @@ const schema = yup.object().shape({
   user: yupFilterSchemas.relationToOne(
     i18n('entities.transaction.fields.user'),
   ),
-  idnumber: yupFilterSchemas.decimal(
-    i18n('entities.kyc.fields.idnumber'),
-  ),
- });
+  idnumber: yupFilterSchemas.string
+    (
+      i18n('entities.kyc.fields.idnumber'),
+    ),
+});
 
 const emptyValues = {
-user: null,
+  user: null,
   levellimit: null,
 };
 
 const previewRenders = {
- user: {
+  user: {
     label: i18n('entities.transaction.fields.user'),
     render: filterRenders.relationToOne(),
   },
@@ -107,14 +108,14 @@ function CouponsListFilter(props) {
             <form onSubmit={form.handleSubmit(onSubmit)}>
               <div className="row">
                 <div className="col-lg-6 col-12">
-                     <UserAutocompleteFormItem
+                  <UserAutocompleteFormItem
                     name="user"
                     label={i18n(
                       'entities.transaction.fields.user',
                     )}
                   />
                 </div>
-           
+
                 <div className="col-lg-6 col-12">
                   <InputFormItem
                     name="idnumber"
@@ -123,8 +124,8 @@ function CouponsListFilter(props) {
                     )}
                   />
                 </div>
-             
-            
+
+
               </div>
 
               <div className="row">

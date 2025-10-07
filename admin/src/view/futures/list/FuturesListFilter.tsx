@@ -22,15 +22,15 @@ const schema = yup.object().shape({
   idnumber: yupFilterSchemas.decimal(
     i18n('entities.futures.fields.idnumber'),
   ),
- });
+});
 
 const emptyValues = {
-user: null,
+  user: null,
   levellimit: null,
 };
 
 const previewRenders = {
- user: {
+  user: {
     label: i18n('entities.transaction.fields.user'),
     render: filterRenders.relationToOne(),
   },
@@ -107,24 +107,16 @@ function FuturesListFilter(props) {
             <form onSubmit={form.handleSubmit(onSubmit)}>
               <div className="row">
                 <div className="col-lg-6 col-12">
-                     <UserAutocompleteFormItem
+                  <UserAutocompleteFormItem
                     name="user"
                     label={i18n(
                       'entities.transaction.fields.user',
                     )}
                   />
                 </div>
-           
-                <div className="col-lg-6 col-12">
-                  <InputFormItem
-                    name="idnumber"
-                    label={i18n(
-                      'entities.futures.fields.idnumber',
-                    )}
-                  />
-                </div>
-             
-            
+
+
+
               </div>
 
               <div className="row">

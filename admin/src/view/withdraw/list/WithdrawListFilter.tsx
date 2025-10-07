@@ -1,3 +1,4 @@
+
 import { i18n } from 'src/i18n';
 import actions from 'src/modules/withdraw/list/withdrawListActions';
 import selectors from 'src/modules/withdraw/list/withdrawListSelectors';
@@ -19,9 +20,7 @@ const schema = yup.object().shape({
   user: yupFilterSchemas.relationToOne(
     i18n('entities.transaction.fields.user'),
   ),
-  idnumber: yupFilterSchemas.decimal(
-    i18n('entities.withdraw.fields.idnumber'),
-  ),
+
  });
 
 const emptyValues = {
@@ -34,10 +33,7 @@ const previewRenders = {
     label: i18n('entities.transaction.fields.user'),
     render: filterRenders.relationToOne(),
   },
-  idnumer: {
-    label: i18n('entities.withdraw.fields.idnumer'),
-    render: filterRenders.decimal(),
-  },
+
 
 };
 
@@ -115,14 +111,7 @@ function WithdrawListFilter(props) {
                   />
                 </div>
            
-                <div className="col-lg-6 col-12">
-                  <InputFormItem
-                    name="idnumber"
-                    label={i18n(
-                      'entities.withdraw.fields.idnumber',
-                    )}
-                  />
-                </div>
+           
              
             
               </div>

@@ -139,6 +139,7 @@ static async create(options: IRepositoryOptions) {
   ) {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
 
+
     let criteriaAnd: any = [];
 
     criteriaAnd.push({
@@ -154,7 +155,7 @@ static async create(options: IRepositoryOptions) {
 
       if (filter.user) {
         criteriaAnd.push({
-          user: filter.user,
+          createdBy: filter.user,
         });
       }
 

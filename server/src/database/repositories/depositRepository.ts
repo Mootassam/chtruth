@@ -51,8 +51,8 @@ class DepositRepository {
       updatedBy: currentUser.id,
     });
 
- 
-   await sendNotification({
+
+    await sendNotification({
       userId: data.createdBy, // the user to notify
       message: ` ${data.amount} ${data.rechargechannel.toUpperCase()} `,
       type: "deposit", // type of notification
@@ -193,7 +193,7 @@ class DepositRepository {
 
       if (filter.user) {
         criteriaAnd.push({
-          user: filter.user,
+          createdBy: filter.user,
         });
       }
 

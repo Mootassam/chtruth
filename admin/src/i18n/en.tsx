@@ -145,7 +145,7 @@ const en = {
     deposit: {
       menu: 'Vip',
       list: {
-        title: 'Recharge Orders',
+        title: 'Deposit Orders',
       },
       fields: {
         id: 'id',
@@ -3390,7 +3390,7 @@ const en = {
     userManagement: 'User Management',
     kyc: 'KYC',
     moneyManagement: 'Money Management',
-    rechargeOrders: 'Recharge Orders',
+    rechargeOrders: 'Deposit Orders',
     withdrawalManagement: 'Withdrawal Management',
     balanceEditor: 'Balance Editor',
     transactionManagement: 'Transaction Management',

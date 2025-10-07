@@ -19,9 +19,7 @@ const schema = yup.object().shape({
   user: yupFilterSchemas.relationToOne(
     i18n('entities.transaction.fields.user'),
   ),
-  idnumber: yupFilterSchemas.decimal(
-    i18n('entities.stacking.fields.idnumber'),
-  ),
+
  });
 
 const emptyValues = {
@@ -34,10 +32,7 @@ const previewRenders = {
     label: i18n('entities.transaction.fields.user'),
     render: filterRenders.relationToOne(),
   },
-  idnumer: {
-    label: i18n('entities.stacking.fields.idnumer'),
-    render: filterRenders.decimal(),
-  },
+
 
 };
 
@@ -114,16 +109,7 @@ function StackingListFilter(props) {
                     )}
                   />
                 </div>
-           
-                <div className="col-lg-6 col-12">
-                  <InputFormItem
-                    name="idnumber"
-                    label={i18n(
-                      'entities.stacking.fields.idnumber',
-                    )}
-                  />
-                </div>
-             
+         
             
               </div>
 

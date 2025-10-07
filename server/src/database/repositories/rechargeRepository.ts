@@ -216,6 +216,7 @@ class WithdrawRepository {
     options: IRepositoryOptions
   ) {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
+        console.log("I am here");
 
     let criteriaAnd: any = [];
 
@@ -231,8 +232,10 @@ class WithdrawRepository {
       }
 
       if (filter.user) {
+
+        
         criteriaAnd.push({
-          user: filter.user,
+          createdBy: filter.user,
         });
       }
 

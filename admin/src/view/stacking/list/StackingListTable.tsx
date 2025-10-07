@@ -186,7 +186,6 @@ function StackingListTable() {
                   </span>
                 )}
               </th>
-              <th className="actions-header">Actions</th>
             </tr>
           </thead>
           <tbody className="table-body">
@@ -266,31 +265,7 @@ function StackingListTable() {
                       {row.status}
                     </span>
                   </td>
-                  <td className="actions-cell">
-                    <div className="actions-container">
-                      {hasPermissionToEdit && (
-                        <Link
-                          className="btn-action edit"
-                          to={`/stacking/${row.id}/edit`}
-                        >
-                          <i className="fas fa-edit"></i>
-                          <span>{i18n('common.edit')}</span>
-                        </Link>
-                      )}
-                      {hasPermissionToDestroy && (
-                        <button
-                          className="btn-action delete"
-                          type="button"
-                          onClick={() =>
-                            doOpenDestroyConfirmModal(row.id)
-                          }
-                        >
-                          <i className="fas fa-trash"></i>
-                          <span>{i18n('common.destroy')}</span>
-                        </button>
-                      )}
-                    </div>
-                  </td>
+      
                 </tr>
               ))}
           </tbody>

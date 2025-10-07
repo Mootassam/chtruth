@@ -177,7 +177,7 @@ class StackingRepository {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
 
     let record = await MongooseRepository.wrapWithSessionIfExists(
-      Stacking(options.database).findById(id).populate("plan"),
+      Stacking(options.database).findById(id).populate("plan").populate("user"),
       options
     );
 
@@ -249,7 +249,8 @@ class StackingRepository {
       .skip(skip)
       .limit(limitEscaped)
       .sort(sort)
-      .populate("plan");
+      .populate("plan")
+      .populate("user");
 
     const count = await Stacking(options.database).countDocuments(criteria);
 
@@ -328,7 +329,8 @@ class StackingRepository {
       .skip(skip)
       .limit(limitEscaped)
       .sort(sort)
-      .populate("plan");
+      .populate("plan")
+      .populate("user");
 
     const count = await Stacking(options.database).countDocuments(criteria);
 

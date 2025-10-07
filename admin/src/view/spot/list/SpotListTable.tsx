@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
@@ -237,7 +238,7 @@ function SpotListTable() {
                   </span>
                 )}
               </th>
-              <th className="actions-header">Actions</th>
+ 
             </tr>
           </thead>
           <tbody className="table-body">
@@ -296,26 +297,7 @@ function SpotListTable() {
                   <td className="table-cell">{row.commissionTime}</td>
                   <td className="table-cell">{row.closingTime}</td>
                   <td className="table-cell"><UserListItem value={row.createdBy} /></td>
-                  <td className="actions-cell">
-                    <div className="actions-container">
-                      {hasPermissionToEdit && (
-                        <Link className="btn-action edit" to={`/spot/${row.id}/edit`}>
-                          <i className="fas fa-edit"></i>
-                          <span>Edit</span>
-                        </Link>
-                      )}
-                      {hasPermissionToDestroy && (
-                        <button 
-                          className="btn-action delete" 
-                          type="button" 
-                          onClick={() => doOpenDestroyConfirmModal(row.id)}
-                        >
-                          <i className="fas fa-trash"></i>
-                          <span>Delete</span>
-                        </button>
-                      )}
-                    </div>
-                  </td>
+            
                 </tr>
               ))}
           </tbody>

@@ -19,9 +19,7 @@ const schema = yup.object().shape({
   user: yupFilterSchemas.relationToOne(
     i18n('entities.transaction.fields.user'),
   ),
-  idnumber: yupFilterSchemas.decimal(
-    i18n('entities.spot.fields.idnumber'),
-  ),
+
  });
 
 const emptyValues = {
@@ -33,10 +31,6 @@ const previewRenders = {
  user: {
     label: i18n('entities.transaction.fields.user'),
     render: filterRenders.relationToOne(),
-  },
-  idnumer: {
-    label: i18n('entities.spot.fields.idnumer'),
-    render: filterRenders.decimal(),
   },
 
 };
@@ -115,15 +109,6 @@ function SpotListFilter(props) {
                   />
                 </div>
            
-                <div className="col-lg-6 col-12">
-                  <InputFormItem
-                    name="idnumber"
-                    label={i18n(
-                      'entities.spot.fields.idnumber',
-                    )}
-                  />
-                </div>
-             
             
               </div>
 
