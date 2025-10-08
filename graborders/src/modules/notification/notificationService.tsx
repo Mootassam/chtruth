@@ -82,7 +82,7 @@ export default class notificationService {
 
     const tenantId = AuthCurrentTenant.get();
 
-    const response = await authAxios.get(`/tenant/${tenantId}/notification`, {
+    const response = await authAxios.get(`/tenant/${tenantId}/notificationMobile`, {
       params,
     });
 

@@ -244,6 +244,9 @@ const publicRoutes = [
     path: "/auth/signin",
     loader: () => import("src/view/pages/Auth/Signin"),
   },
+
+
+  
   {
     path: "/auth/signup",
     loader: () => import("src/view/pages/Auth/Signup"),
