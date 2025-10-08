@@ -102,6 +102,63 @@ const en = {
       },
     },
 
+
+    notification: {
+  menu: 'Notifications',
+  new: {
+    title: 'Add new Notification',
+  },
+  fields: {
+    user: 'User',
+    type: 'Type',
+    message: 'Message',
+    status: 'Status',
+    forAdmin: 'For Admin',
+    createdBy: 'Created By',
+    updatedBy: 'Updated By',
+    createdAt: 'Created At',
+    updatedAt: 'Updated At',
+  },
+  list: {
+    title: 'List of Notifications',
+  },
+  view: {
+    title: 'Notification Detail',
+  },
+  edit: {
+    title: 'Edit Notification',
+  },
+  create: {
+    success: 'Notification successfully saved',
+  },
+  update: {
+    success: 'Notification successfully updated',
+  },
+  destroy: {
+    success: 'Notification successfully deleted',
+  },
+  destroyAll: {
+    success: 'Notifications successfully deleted',
+  },
+  enumerators: {
+    status: {
+      unread: 'Unread',
+      read: 'Read',
+    },
+    type: {
+      deposit: 'Deposit',
+      withdraw: 'Withdraw',
+      staking: 'Staking',
+      kyc: 'KYC',
+      commission: 'Commission',
+      futures: 'Futures',
+      accountActivated: 'Account Activated',
+      custom: 'Custom',
+    },
+  },
+},
+
+
     kyc: {
       menu: 'KYC',
       list: {
@@ -3385,9 +3442,9 @@ const en = {
   dashboard: {
     home: 'Home',
     plan: 'Stacking Plan',
-    aboutUs:"About Us",
+    aboutUs: "About Us",
     users: 'Users',
-    depositMethod:"Deposit Method",
+    depositMethod: "Deposit Method",
     userManagement: 'User Management',
     kyc: 'KYC',
     moneyManagement: 'Money Management',
@@ -3400,6 +3457,7 @@ const en = {
     futures: 'Futures',
     walletMonitor: 'Wallet Monitor',
     operationRelated: 'Operation Related',
+    notifications: "notifications",
     userMessages: 'User Messages',
     miningFinancialManagement:
       'Mining Financial Management',

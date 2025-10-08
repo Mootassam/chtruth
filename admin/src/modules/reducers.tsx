@@ -14,6 +14,7 @@ import product from 'src/modules/product/productReducers'
 import record from 'src/modules/record/recordReducers'
 import company from 'src/modules/company/companyReducers';
 import method from 'src/modules/depositMethod/depositMethodReducers'
+import notification from 'src/modules/notification/notificationReducers'
 import { combineReducers } from 'redux';
 export default (history) =>
   combineReducers({
@@ -31,6 +32,7 @@ export default (history) =>
     method,
     company,
     auditLog,
+    notification,
     settings,
     numbers,
 

@@ -75,10 +75,10 @@ export default class NotifServicess {
         ...this.options,
         session,
       });
-      await WalletRepository.updateAmount(data.createdBy.id, data, {
-        ...this.options,
-        session,
-      });
+      // await WalletRepository.updateAmount(data.createdBy.id, data, {
+      //   ...this.options,
+      //   session,
+      // });
 
       await MongooseRepository.commitTransaction(session);
     } catch (error) {
@@ -128,6 +128,10 @@ export default class NotifServicess {
 
   async findAndCountAll(args) {
     return NotificationRepository.findAndCountAll(args, this.options);
+  }
+
+    async findAndCountAllMobile(args) {
+    return NotificationRepository.findAndCountAllMobile(args, this.options);
   }
 
   async countAll() {

@@ -28,6 +28,12 @@ export default (app, io) => {
     `/tenant/:tenantId/notification`,
     require("./notificationList").default
   );
+
+  app.get(
+    `/tenant/:tenantId/notificationMobile`,
+    require("./notificationListMobile").default
+  );
+  
   app.get(
     `/tenant/:tenantId/notification/:id`,
     require("./notificationFind").default

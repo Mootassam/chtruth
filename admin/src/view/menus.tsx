@@ -120,6 +120,17 @@ export default [
     label: i18n('dashboard.operationRelated'),
     permissionRequired: permissions.categoryRead,
   },
+
+
+  {
+    id: 'user-notifications',
+    path: '/notification',
+    exact: true,
+    icon: 'fas fa-bell', // notification bell icon
+    label: i18n('dashboard.notifications'),
+    className: 'menu-li side-menue sub-item',
+    permissionRequired: permissions.categoryRead,
+  },
   {
     id: 'user-messages',
     path: '/message',
@@ -130,7 +141,10 @@ export default [
     permissionRequired: permissions.categoryRead,
   },
 
-    {
+
+
+
+  {
     id: 'user-messages',
     path: '/companydetail',
     exact: true,

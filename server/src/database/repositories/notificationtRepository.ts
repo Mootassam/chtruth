@@ -207,16 +207,13 @@ class NotificationRepository {
     criteriaAnd.push({
       tenant: currentTenant.id,
     });
-    criteriaAnd.push({
-      userId: currentUser.id,
-    });
+ 
 
-    
-    if(filter){ 
-    criteriaAnd.push({
-      status: filter,
-    });
-}
+    if (filter) {
+      criteriaAnd.push({
+        status: filter,
+      });
+    }
     if (filter) {
       if (filter.id) {
         criteriaAnd.push({
@@ -265,6 +262,82 @@ class NotificationRepository {
 
     return { rows, count };
   }
+
+
+
+    static async findAndCountAllMobile(
+    { filter, limit = 0, offset = 0, orderBy = "" },
+    options: IRepositoryOptions
+  ) {
+    const currentTenant = MongooseRepository.getCurrentTenant(options);
+    const currentUser = MongooseRepository.getCurrentUser(options);
+
+    let criteriaAnd: any = [];
+
+
+    criteriaAnd.push({
+      tenant: currentTenant.id,
+    });
+    criteriaAnd.push({
+      userId: currentUser.id,
+    });
+
+
+    if (filter) {
+      criteriaAnd.push({
+        status: filter,
+      });
+    }
+    if (filter) {
+      if (filter.id) {
+        criteriaAnd.push({
+          ["_id"]: MongooseQueryUtils.uuid(filter.id),
+        });
+      }
+
+      if (filter.user) {
+        criteriaAnd.push({
+          user: filter.user,
+        });
+      }
+
+      if (filter.user) {
+        criteriaAnd.push({
+          status: filter.status,
+        });
+      }
+
+      if (filter.idnumer) {
+        criteriaAnd.push({
+          idnumer: {
+            $regex: MongooseQueryUtils.escapeRegExp(filter.idnumer),
+            $options: "i",
+          },
+        });
+      }
+    }
+
+    const sort = MongooseQueryUtils.sort(orderBy || "createdAt_DESC");
+    const skip = Number(offset || 0) || undefined;
+    const limitEscaped = Number(limit || 0) || undefined;
+    const criteria = criteriaAnd.length ? { $and: criteriaAnd } : null;
+    let rows = await Notification(options.database)
+      .find(criteria)
+      .skip(skip)
+      .sort(sort)
+      .populate("userId");
+
+    const count = await Notification(options.database).countDocuments({
+      userId: currentUser.id,
+      status: "unread",
+    });
+
+    rows = await Promise.all(rows.map(this._fillFileDownloadUrls));
+
+    return { rows, count };
+  }
+
+
 
   static async findAllAutocomplete(search, limit, options: IRepositoryOptions) {
     const currentTenant = MongooseRepository.getCurrentTenant(options);

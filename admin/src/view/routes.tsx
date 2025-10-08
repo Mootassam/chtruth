@@ -53,10 +53,6 @@ const privateRoutes = [
     permissionRequired: permissions.categoryRead,
     exact: true,
   },
-
- 
-
-
   {
     path: '/tc',
     loader: () => import('src/view/company/Tc'),
@@ -163,6 +159,7 @@ const privateRoutes = [
   },
   {
     path: '/transaction/importer',
+
     loader: () =>
       import(
         'src/view/transaction/importer/TransactionImporterPage'
@@ -385,6 +382,58 @@ const privateRoutes = [
     permissionRequired: permissions.categoryRead,
     exact: true,
   },
+
+// Notification
+
+
+  {
+    path: '/notification',
+    loader: () =>
+      import('src/view/notification/list/NotificationListPage'),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+
+  {
+    path: '/notification/new',
+    loader: () =>
+      import('src/view/notification/form/NotificationFormPage'),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+  {
+    path: '/notification/importer',
+    loader: () =>
+      import(
+        'src/view/notification/importer/NotificationImporterPage'
+      ),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+  {
+    path: '/notification/:id/edit',
+    loader: () =>
+      import('src/view/notification/form/NotificationFormPage'),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+  {
+    path: '/notification/:id',
+    loader: () =>
+      import('src/view/notification/view/NotificationViewPage'),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+
+
+
+
+
+
+
+
+
+
 
   // Withdraw routes
 
