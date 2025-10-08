@@ -150,22 +150,22 @@ function Signin() {
       </div>
 
       {/* Divider */}
-      <div className="divider">
+      {/* <div className="divider">
         <div className="divider-line" />
         <div className="divider-text">or continue with</div>
         <div className="divider-line" />
-      </div>
+      </div> */}
 
       {/* Social Login - Add your social login buttons here */}
-      <div
+      {/* <div
         className="social-login"
         style={{ textAlign: "center", margin: "1rem 0" }}
       >
-        {/* Add Google, Facebook login buttons etc. */}
-      </div>
+      </div> */}
 
       {/* App Promotion */}
-      <div className="app-promotion">
+      {/* <div className="app-promotion">
+        console.log(`🚀 ~   <div className="app-promotion">
         <div className="promo-title">Trade Anywhere</div>
         <div className="promo-text">
           Download our app for the best mobile experience
@@ -180,7 +180,37 @@ function Signin() {
             <span>Play Store</span>
           </div>
         </div>
-      </div>
+      </div>:`,   <div className="app-promotion">
+        <div className="promo-title">Trade Anywhere</div>
+        <div className="promo-text">
+          Download our app for the best mobile experience
+        </div>
+        <div className="app-badges">
+          <div className="app-badge">
+            <i className="fab fa-apple" />
+            <span>App Store</span>
+          </div>
+          <div className="app-badge">
+            <i className="fab fa-google-play" />
+            <span>Play Store</span>
+          </div>
+        </div>
+      </div>)
+        <div className="promo-title">Trade Anywhere</div>
+        <div className="promo-text">
+          Download our app for the best mobile experience
+        </div>
+        <div className="app-badges">
+          <div className="app-badge">
+            <i className="fab fa-apple" />
+            <span>App Store</span>
+          </div>
+          <div className="app-badge">
+            <i className="fab fa-google-play" />
+            <span>Play Store</span>
+          </div>
+        </div>
+      </div> */}
     </div>
   );
 }

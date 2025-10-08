@@ -211,7 +211,7 @@ const Market: React.FC = () => {
       case "Losers":
         return filtered
           .filter((crypto) => !crypto.isPositive)
-          .sort((a, b) => Number(a.changePercent) - Number(b.changePercent));
+          .sort((a, b) => Number(b.changePercent) - Number(a.changePercent)); // Fixed: Biggest losers first
       case "Favorites":
         return filtered
           .filter((crypto) => favoriteCoins.includes(crypto.symbol))

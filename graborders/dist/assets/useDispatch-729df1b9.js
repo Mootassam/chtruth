@@ -1,0 +1,1 @@
+import{a3 as r,a4 as i,r as n}from"./index-9272ea36.js";function o(e){e===void 0&&(e=r);var t=e===r?i:function(){return n.useContext(e)};return function(){var u=t(),a=u.store;return a}}var f=o();function v(e){e===void 0&&(e=r);var t=e===r?f:o(e);return function(){var u=t();return u.dispatch}}var d=v();export{d as u};

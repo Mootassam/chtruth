@@ -342,7 +342,7 @@ switch (type) {
                         loading="lazy"
                     />
                     <div className="asset-name">{details?.coinName}</div>
-                    <div className="asset-amount">{details?.amount.toFixed(8)} {details?.symbol}</div>
+                    <div className="asset-amount">{details?.amount} {details?.symbol}</div>
                 </div>
             )}
 
@@ -397,7 +397,7 @@ switch (type) {
                                     <div className="transaction-amount">
                                         <div className="transaction-value" style={{ color: amountColor }}>
                                             {tx.direction === 'in' ? '+' : '-'}
-                                            {tx.amount.toFixed(5)} {tx.asset}
+                                            {tx.amount} {tx.asset}
                                         </div>
                                         <div className={`transaction-status ${tx.status === 'pending' ? 'pending' : tx.status === "canceled" ? 'canceled' : ''
                                             }`}>
