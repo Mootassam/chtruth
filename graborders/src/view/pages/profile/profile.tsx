@@ -8,12 +8,7 @@ import kycSelectors from "src/modules/kyc/list/kycListSelectors";
 import actions from "src/modules/kyc/list/kycListActions";
 // Constants for menu items (moved outside component to prevent recreation)
 const MENU_ITEMS = [
-  // {
-  //   icon: "fas fa-globe",
-  //   path: "/language",
-  //   name: "Language",
-  //   requiresKyc: false,
-  // },
+
   {
     icon: "fas fa-wallet",
     path: "/withdrawaddress",
@@ -55,7 +50,7 @@ const MENU_ITEMS = [
     requiresKyc: false,
   },
   {
-    icon: "fas fa-file-certificate",
+    icon: "fas fa-file-contract",
     path: "/approval",
     name: "MSB Approval",
     requiresKyc: false,

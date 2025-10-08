@@ -53,6 +53,10 @@ const privateRoutes = [
     permissionRequired: permissions.categoryRead,
     exact: true,
   },
+
+ 
+
+
   {
     path: '/tc',
     loader: () => import('src/view/company/Tc'),

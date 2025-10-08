@@ -24,9 +24,16 @@ const privateRoutes = [
     exact: true,
   },
 
-    {
+  {
     path: "/about",
     loader: () => import("src/view/pages/About/About"),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+
+  {
+    path: '/approval',
+    loader: () => import('src/view/pages/About/Approval'),
     permissionRequired: permissions.categoryRead,
     exact: true,
   },
