@@ -64,7 +64,7 @@ const CompanyFormActions = {
         i18n('entities.category.create.success'),
       );
 
-      getHistory().push('/company');
+     
     } catch (error) {
       Errors.handle(error);
 

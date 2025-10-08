@@ -5,6 +5,7 @@ import Error404 from "../../errors/Error404";
 import { IRepositoryOptions } from "./IRepositoryOptions";
 import FileRepository from "./fileRepository";
 import depositMethod from "../models/depositMethod";
+import Error405 from "../../errors/Error405";
 
 class depositMethodRepository {
 static async create(options: IRepositoryOptions) {
@@ -27,7 +28,7 @@ static async create(options: IRepositoryOptions) {
     });
     
     if (existing > 0) {
-      throw new Error('Deposit methods already initialized');
+      throw new Error405('Deposit methods already initialized');
     }
 
     const recordsToCreate = defaultMethods.map(data => ({
@@ -50,7 +51,7 @@ static async create(options: IRepositoryOptions) {
   } catch (error) {
     // Handle specific MongoDB duplicate key errors
     if (error.code === 11000) {
-      throw new Error('Deposit methods already exist for this tenant');
+      throw new Error405('Deposit methods already exist for this tenant');
     }
     
     // Re-throw other errors
@@ -139,7 +140,6 @@ static async create(options: IRepositoryOptions) {
   ) {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
 
-
     let criteriaAnd: any = [];
 
     criteriaAnd.push({
@@ -155,7 +155,7 @@ static async create(options: IRepositoryOptions) {
 
       if (filter.user) {
         criteriaAnd.push({
-          createdBy: filter.user,
+          user: filter.user,
         });
       }
 

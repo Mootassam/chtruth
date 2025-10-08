@@ -129,12 +129,24 @@ export default [
     className: 'menu-li side-menue sub-item',
     permissionRequired: permissions.categoryRead,
   },
+
     {
+    id: 'user-messages',
+    path: '/companydetail',
+    exact: true,
+    icon: 'fas fa-info-circle',
+    label: i18n('dashboard.aboutUs'),
+    className: 'menu-li side-menue sub-item',
+    permissionRequired: permissions.categoryRead,
+  },
+
+
+  {
     id: 'user-messages',
     path: '/depositMethod',
     exact: true,
     icon: 'fas fa-university',
-    
+
     label: i18n('dashboard.depositMethod'),
     className: 'menu-li side-menue sub-item',
     permissionRequired: permissions.categoryRead,
@@ -157,7 +169,7 @@ export default [
     permissionRequired: permissions.categoryRead,
   },
 
-    {
+  {
     id: 'mining-project',
     path: '/stackingPlan',
     exact: true,

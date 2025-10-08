@@ -13,7 +13,6 @@ export default (database) => {
     {
       symbol: {
         type: String,
-        
         required: true,
         unique: true, // e.g. BTC, ETH, USDT
         uppercase: true,

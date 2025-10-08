@@ -55,7 +55,7 @@ function Deposit() {
   const [selectedNetwork, setSelectedNetwork] = useState("BTC");
   const [showToast, setShowToast] = useState(false);
   const listMethod = useSelector(selectos.selectRows)
-  const [currentAddress, setCurrentAddress] = useState(listMethod[0].address);
+  const [currentAddress, setCurrentAddress] = useState(listMethod[0]?.address);
 
 
 

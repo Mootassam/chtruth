@@ -32,7 +32,7 @@ function StackingPlanListPage(props) {
             </Col>
           </Row>
         </Container>
-        {/* <DepositMethodListFilter /> */}
+        <DepositMethodListFilter />
         <DepositMethodListTable />
       </ContentWrapper>
     </>

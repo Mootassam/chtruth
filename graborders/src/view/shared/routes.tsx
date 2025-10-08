@@ -24,6 +24,13 @@ const privateRoutes = [
     exact: true,
   },
 
+    {
+    path: "/about",
+    loader: () => import("src/view/pages/About/About"),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+
   {
     path: "/",
     loader: () => import("src/view/pages/Home/Home"),
@@ -224,6 +231,7 @@ const screenRoutes = [
     exact: true,
   },
 ];
+
 const publicRoutes = [
   {
     path: "/auth/signin",

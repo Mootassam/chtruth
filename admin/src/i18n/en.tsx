@@ -3385,6 +3385,7 @@ const en = {
   dashboard: {
     home: 'Home',
     plan: 'Stacking Plan',
+    aboutUs:"About Us",
     users: 'Users',
     depositMethod:"Deposit Method",
     userManagement: 'User Management',

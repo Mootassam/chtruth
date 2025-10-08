@@ -89,76 +89,9 @@ function StackingPlanListFilter(props) {
   };
 
   return (
-    <FilterWrapper>
-      <FilterPreview
-        onClick={() => {
-          setExpanded(!expanded);
-        }}
-        renders={previewRenders}
-        values={rawFilter}
-        expanded={expanded}
-        onRemove={onRemove}
-      />
-      <div className="container">
-        <div
-          className={`collapse ${expanded ? 'show' : ''}`}
-        >
-          <FormProvider {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)}>
-              <div className="row">
-                <div className="col-lg-6 col-12">
-                     <UserAutocompleteFormItem
-                    name="user"
-                    label={i18n(
-                      'entities.transaction.fields.user',
-                    )}
-                  />
-                </div>
-           
-                <div className="col-lg-6 col-12">
-                  <InputFormItem
-                    name="idnumber"
-                    label={i18n(
-                      'entities.stackingPlan.fields.idnumber',
-                    )}
-                  />
-                </div>
-             
-            
-              </div>
-
-              <div className="row">
-                <div className="col-12 filter-buttons">
-                  <button
-                    className="btn btn-primary"
-                    type="submit"
-                    disabled={props.loading}
-                  >
-                    <ButtonIcon
-                      loading={props.loading}
-                      iconClass="fas fa-search"
-                    />
-                    {i18n('common.search')}
-                  </button>
-                  <button
-                    className="btn btn-light"
-                    type="button"
-                    onClick={onReset}
-                    disabled={props.loading}
-                  >
-                    <ButtonIcon
-                      loading={props.loading}
-                      iconClass="fas fa-undo"
-                    />
-                    {i18n('common.reset')}
-                  </button>
-                </div>
-              </div>
-            </form>
-          </FormProvider>
-        </div>
-      </div>
-    </FilterWrapper>
+    <>
+      
+    </>
   );
 }
 
