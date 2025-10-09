@@ -168,6 +168,40 @@ class FuturesRepository {
       return (amountNum * leverageNum * durationNum) / 10000;
     };
 
+    // NEW: Calculate closing price based on your data pattern
+// UPDATED: Calculate closing price based on your new requirements
+const calculateClosingPrice = (
+  openPrice: number,
+  direction: string, // "long" or "short" 
+  control: string,   // "profit" or "loss"
+  assetType: string  // "BTC/USDT", "ETH/USDT", etc.
+): number => {
+  const basePrice = openPrice;
+  
+  // Generate random value between 5 and 90
+  const randomValue = 5 + (Math.random() * 85); // 5 to 90
+
+  if (control === "profit") {
+    // For winning trades: open price + random value (5 to 90)
+    if (direction === "long") {
+      // BUY UP win: price increases by random value
+      return basePrice + randomValue;
+    } else {
+      // BUY FALL win: price decreases by random value  
+      return basePrice - randomValue;
+    }
+  } else {
+    // For losing trades: open price - random value (5 to 90)
+    if (direction === "long") {
+      // BUY UP loss: price decreases by random value
+      return basePrice - randomValue;
+    } else {
+      // BUY FALL loss: price increases by random value
+      return basePrice + randomValue;
+    }
+  }
+};
+
     try {
       if (isControlUpdate) {
         const selectedWallet = await walletModel.findOne({
@@ -183,12 +217,9 @@ class FuturesRepository {
         // CALCULATE PROFIT USING YOUR FORMULA WITH SAFE ACCESS
         const profitAmount = calculateProfit(
           record.futuresAmount,
-          record.leverage, // No need to call toString() here
-          record.contractDuration  // No need to call toString() here
+          record.leverage,
+          record.contractDuration
         );
-
-
-
 
         const lossAmount = record.futuresAmount;
 
@@ -200,27 +231,14 @@ class FuturesRepository {
           throw new Error405("Closing price cannot exceed $100");
         }
 
-        // If no manual closing price provided, calculate it
+        // If no manual closing price provided, calculate it USING NEW FORMULA
         if (!closePrice) {
-          if (record.futuresStatus === "long") {
-            if (data.control === "profit") {
-              closePrice =
-                record.openPositionPrice *
-                (1 + profitAmount / (record.futuresAmount * record.leverage));
-            } else {
-              closePrice =
-                record.openPositionPrice * (1 - 1 / record.leverage);
-            }
-          } else if (record.futuresStatus === "short") {
-            if (data.control === "profit") {
-              closePrice =
-                record.openPositionPrice *
-                (1 - profitAmount / (record.futuresAmount * record.leverage));
-            } else {
-              closePrice =
-                record.openPositionPrice * (1 + 1 / record.leverage);
-            }
-          }
+          closePrice = calculateClosingPrice(
+            record.openPositionPrice,
+            record.futuresStatus, // "long" or "short"
+            data.control, // "profit" or "loss"
+            record.futuresPair // "BTC/USDT", "ETH/USDT", etc.
+          );
         }
 
         // USE MANUAL CLOSE TIME OR CURRENT TIME
