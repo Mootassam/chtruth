@@ -1,1 +1,0 @@
-import{M as t,r,af as n,j as a,w as o}from"./index-aa7a6ac9.js";function u(){return new URLSearchParams(o().search)}function f(){const e=t(),s=u().get("token");return r.useEffect(()=>{s?(n.set(s,!0),e.replace("/")):e.replace("/auth/signin")},[s,e]),a.jsx("div",{children:"Logging in as user..."})}export{f as default};

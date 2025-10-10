@@ -5,12 +5,8 @@ import Error404 from "../../errors/Error404";
 import { IRepositoryOptions } from "./IRepositoryOptions";
 import FileRepository from "./fileRepository";
 import Futures from "../models/futures";
-import User from "../models/user";
 import Wallet from "../models/wallet";
-import transaction from "../models/transaction";
-import cron from "node-cron";
 // 1. CORRECT THE IMPORT: Import the Queue, not the Worker
-import { futuresQueue } from "../utils/futuresQueue"; // ✅ Import the QUEUE
 import { sendNotification } from "../../services/notificationServices";
 import Error405 from "../../errors/Error405";
 import Transaction from '../models/transaction'
@@ -165,7 +161,7 @@ class FuturesRepository {
       const durationNum = parseInt(duration?.toString() || '0', 10);
       const amountNum = amount || 0;
 
-      return (amountNum * leverageNum * durationNum) / 10000;
+      return (amountNum * leverageNum * durationNum) / 100;
     };
 
     // NEW: Calculate closing price based on your data pattern

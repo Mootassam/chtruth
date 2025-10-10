@@ -1,3 +1,4 @@
+
 // src/components/FuturesModal.tsx
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
@@ -267,7 +268,13 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
     leverage: string,
     duration: string
   ): number => {
-    return (amount * parseInt(leverage, 10) * parseInt(duration, 10)) / 10000;
+    console.log(duration, "duration");
+    console.log(leverage, "Leveraage")
+
+
+
+
+    return (amount * parseInt(leverage, 10) * parseInt(duration, 10)) /100 ;
   };
 
   const calculateProgress = (): number => {
@@ -410,8 +417,8 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
                     (option) => (
                       <button
                         key={option.duration}
-                        className={`option-btn ${selectedDuration === option.duration ? "selected" : ""}`}
-                        onClick={() => setSelectedDuration(option.duration)}
+                        className={`option-btn ${selectedDuration === option.payout ? "selected" : ""}`}
+                        onClick={() => setSelectedDuration(option.payout)}
                       >
                         {option.duration}s ({option.payout}%)
                       </button>
@@ -426,7 +433,7 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
                   <span>Leverage</span>
                 </div>
                 <div className="options-container">
-                  {["2", "5", "10", "20", "50"].map((leverage) => (
+                  {["1", "2", "5", "10", "20"].map((leverage) => (
                     <button
                       key={leverage}
                       className={`option-btn ${selectedLeverage === leverage ? "selected" : ""}`}

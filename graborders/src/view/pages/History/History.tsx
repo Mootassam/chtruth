@@ -26,7 +26,7 @@ function History() {
       typeText: 'Transaction',
       iconClass: 'swap',
       color: '#627EEA',
-      amountColor: direction === 'in' ? '#00C076' : '#FF6838'
+      amountColor: direction === 'in' ? '#2ff378' : '#FF6838'
     };
 
     switch (type) {
@@ -35,9 +35,9 @@ function History() {
         config.typeText = 'Deposit';
         config.iconClass = 'deposit';
         config.color = '#F3BA2F';
-        config.amountColor = '#00C076';
+        config.amountColor = '#2ff378';
         break;
-        
+
       case 'withdraw':
         config.icon = 'fa-arrow-up';
         config.typeText = 'Withdrawal';
@@ -45,15 +45,15 @@ function History() {
         config.color = '#FF6838';
         config.amountColor = '#FF6838';
         break;
-        
+
       case 'convert_in':
         config.icon = 'fa-exchange-alt';
         config.typeText = relatedAsset ? `Converted from ${relatedAsset}` : 'Conversion In';
         config.iconClass = 'convert-in';
         config.color = '#9C27B0';
-        config.amountColor = '#00C076';
+        config.amountColor = '#2ff378';
         break;
-        
+
       case 'convert_out':
         config.icon = 'fa-exchange-alt';
         config.typeText = relatedAsset ? `Converted to ${relatedAsset}` : 'Conversion Out';
@@ -61,39 +61,124 @@ function History() {
         config.color = '#9C27B0';
         config.amountColor = '#FF6838';
         break;
-        
+
       case 'stacking':
-        config.icon = 'fa-lock';
-        config.typeText = 'Stacking Reward';
+        config.icon = 'fa-coins'; // More relevant than lock
+        config.typeText = 'Staked Amount';
         config.iconClass = 'stacking';
-        config.color = '#4CAF50';
-        config.amountColor = '#00C076';
+        config.color = '#FF9800'; // Orange for investment/action
+        config.amountColor = '#FFB74D';
         break;
-        
+
+
+      case 'staking_reward':
+        config.icon = 'fa-gift'; // Or fa-trophy for achievement
+        config.typeText = 'Staking Rewards';
+        config.iconClass = 'staking_reward';
+        config.color = '#4CAF50'; // Green for earnings/growth
+        config.amountColor = '#81C784';
+        break;
+
+
+      // Futures Trading Transactions
+      case 'futures_reserved':
+        config.icon = 'fa-lock';
+        config.typeText = 'Futures Reserved';
+        config.iconClass = 'futures-reserved';
+        config.color = '#FF9800';
+        config.amountColor = '#FF9800';
+        break;
+
       case 'futures_profit':
         config.icon = 'fa-chart-line';
         config.typeText = 'Futures Profit';
         config.iconClass = 'futures-profit';
-        config.color = '#00BCD4';
+        config.color = '#00C076';
         config.amountColor = '#00C076';
         break;
-        
+
       case 'futures_loss':
         config.icon = 'fa-chart-line';
         config.typeText = 'Futures Loss';
         config.iconClass = 'futures-loss';
-        config.color = '#FF5722';
+        config.color = '#FF6838';
         config.amountColor = '#FF6838';
         break;
-        
+
+      case 'futures_settlement':
+        config.icon = 'fa-file-contract';
+        config.typeText = 'Futures Settlement';
+        config.iconClass = 'futures-settlement';
+        config.color = '#9C27B0';
+        config.amountColor = '#9C27B0';
+        break;
+
+      case 'futures_fee':
+        config.icon = 'fa-receipt';
+        config.typeText = 'Futures Fee';
+        config.iconClass = 'futures-fee';
+        config.color = '#607D8B';
+        config.amountColor = '#607D8B';
+        break;
+
+      case 'futures_refund':
+        config.icon = 'fa-undo';
+        config.typeText = 'Futures Refund';
+        config.iconClass = 'futures-refund';
+        config.color = '#4CAF50';
+        config.amountColor = '#4CAF50';
+        break;
+
+      case 'futures_bonus':
+        config.icon = 'fa-gift';
+        config.typeText = 'Futures Bonus';
+        config.iconClass = 'futures-bonus';
+        config.color = '#E91E63';
+        config.amountColor = '#E91E63';
+        break;
+
+      case 'futures_commission':
+        config.icon = 'fa-handshake';
+        config.typeText = 'Futures Commission';
+        config.iconClass = 'futures-commission';
+        config.color = '#795548';
+        config.amountColor = '#795548';
+        break;
+
+      // Manual Control Operations
+      case 'manual_profit':
+        config.icon = 'fa-user-check';
+        config.typeText = 'Manual Profit';
+        config.iconClass = 'manual-profit';
+        config.color = '#00C076';
+        config.amountColor = '#00C076';
+        break;
+
+      case 'manual_loss':
+        config.icon = 'fa-user-slash';
+        config.typeText = 'Manual Loss';
+        config.iconClass = 'manual-loss';
+        config.color = '#FF6838';
+        config.amountColor = '#FF6838';
+        break;
+
+      case 'manual_adjustment':
+        config.icon = 'fa-cog';
+        config.typeText = 'Manual Adjustment';
+        config.iconClass = 'manual-adjustment';
+        config.color = '#9C27B0';
+        config.amountColor = '#9C27B0';
+        break;
+
+      // Spot Trading
       case 'spot_profit':
         config.icon = 'fa-coins';
         config.typeText = 'Spot Trading Profit';
         config.iconClass = 'spot-profit';
         config.color = '#4CAF50';
-        config.amountColor = '#00C076';
+        config.amountColor = '#2ff378';
         break;
-        
+
       case 'spot_loss':
         config.icon = 'fa-coins';
         config.typeText = 'Spot Trading Loss';
@@ -101,14 +186,97 @@ function History() {
         config.color = '#FF5722';
         config.amountColor = '#FF6838';
         break;
-        
+
+      // Rewards & Bonuses
+      case 'reward':
+        config.icon = 'fa-hand-holding-dollar';
+        config.typeText = 'Referral Reward';
+        config.iconClass = 'spot-profit';
+        config.color = '#63f211ff';
+        config.amountColor = '#5ffc1bff';
+        break;
+
+      case 'bonus':
+        config.icon = 'fa-gift';
+        config.typeText = 'Bonus';
+        config.iconClass = 'bonus';
+        config.color = '#E91E63';
+        config.amountColor = '#E91E63';
+        break;
+
+      case 'referral_commission':
+        config.icon = 'fa-users';
+        config.typeText = 'Referral Commission';
+        config.iconClass = 'referral-commission';
+        config.color = '#FF9800';
+        config.amountColor = '#FF9800';
+        break;
+
+      // Order Management
+      case 'order_reserved':
+        config.icon = 'fa-clock';
+        config.typeText = 'Order Reserved';
+        config.iconClass = 'order-reserved';
+        config.color = '#FF9800';
+        config.amountColor = '#FF9800';
+        break;
+
+      case 'order_cancelled':
+        config.icon = 'fa-ban';
+        config.typeText = 'Order Cancelled';
+        config.iconClass = 'order-cancelled';
+        config.color = '#9E9E9E';
+        config.amountColor = '#9E9E9E';
+        break;
+
+      case 'order_partial_fill':
+        config.icon = 'fa-chart-pie';
+        config.typeText = 'Order Partial Fill';
+        config.iconClass = 'order-partial';
+        config.color = '#FF9800';
+        config.amountColor = '#FF9800';
+        break;
+
+      case 'order_completed':
+        config.icon = 'fa-check-circle';
+        config.typeText = 'Order Completed';
+        config.iconClass = 'order-completed';
+        config.color = '#4CAF50';
+        config.amountColor = '#4CAF50';
+        break;
+
+      // System Operations
+      case 'fee_payment':
+        config.icon = 'fa-receipt';
+        config.typeText = 'Fee Payment';
+        config.iconClass = 'fee-payment';
+        config.color = '#607D8B';
+        config.amountColor = '#607D8B';
+        break;
+
+      case 'adjustment':
+        config.icon = 'fa-sliders-h';
+        config.typeText = 'Balance Adjustment';
+        config.iconClass = 'adjustment';
+        config.color = '#9C27B0';
+        config.amountColor = '#9C27B0';
+        break;
+
+      case 'transfer':
+        config.icon = 'fa-exchange-alt';
+        config.typeText = 'Transfer';
+        config.iconClass = 'transfer';
+        config.color = '#2196F3';
+        config.amountColor = '#2196F3';
+        break;
+
       default:
         config.icon = 'fa-exchange-alt';
         config.typeText = 'Transaction';
         config.iconClass = 'default';
         config.color = '#627EEA';
+        config.amountColor = '#627EEA';
     }
-
     return config;
   };
 
@@ -119,13 +287,13 @@ function History() {
     return transaction.filter((tx) => {
       // Apply type filter
       if (typeFilter !== "all") {
-        const typeMatch = 
-          typeFilter === "deposits" ? (tx.type === "deposit" || tx.direction === "in") : 
-          typeFilter === "withdrawals" ? (tx.type === "withdraw" || tx.direction === "out") :
-          typeFilter === "profits" ? (tx.type.includes('profit') || (tx.direction === "in" && tx.type !== "deposit")) :
-          typeFilter === "losses" ? (tx.type.includes('loss') || (tx.direction === "out" && tx.type !== "withdraw")) :
-          typeFilter === "conversions" ? tx.type.includes('convert') :
-          typeFilter === "stacking" ? tx.type === "stacking" : true;
+        const typeMatch =
+          typeFilter === "deposits" ? (tx.type === "deposit" || tx.direction === "in") :
+            typeFilter === "withdrawals" ? (tx.type === "withdraw" || tx.direction === "out") :
+              typeFilter === "profits" ? (tx.type.includes('profit') || (tx.direction === "in" && tx.type !== "deposit")) :
+                typeFilter === "losses" ? (tx.type.includes('loss') || (tx.direction === "out" && tx.type !== "withdraw")) :
+                  typeFilter === "conversions" ? tx.type.includes('convert') :
+                    typeFilter === "stacking" ? tx.type === "stacking" : true;
         if (!typeMatch) return false;
       }
 
@@ -138,25 +306,25 @@ function History() {
       if (timeFilter !== "all") {
         const now = new Date();
         const transactionDate = new Date(tx.dateTransaction);
-        
+
         switch (timeFilter) {
           case "today":
             const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
             return transactionDate >= today;
-          
+
           case "week":
             const oneWeekAgo = new Date(now);
             oneWeekAgo.setDate(now.getDate() - 7);
             return transactionDate >= oneWeekAgo;
-          
+
           case "month":
             const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
             return transactionDate >= firstDayOfMonth;
-          
+
           case "year":
             const firstDayOfYear = new Date(now.getFullYear(), 0, 1);
             return transactionDate >= firstDayOfYear;
-          
+
           default:
             return true;
         }
@@ -171,7 +339,7 @@ function History() {
     const transactionDate = new Date(date);
     const now = new Date();
     const isToday = transactionDate.toDateString() === now.toDateString();
-    
+
     // Reset now date after checking today
     const yesterday = new Date(now);
     yesterday.setDate(now.getDate() - 1);
@@ -216,49 +384,43 @@ function History() {
           All
         </button>
         <button
-          className={`filter-option ${
-            typeFilter === "deposits" ? "active" : ""
-          }`}
+          className={`filter-option ${typeFilter === "deposits" ? "active" : ""
+            }`}
           onClick={() => setTypeFilter("deposits")}
         >
           Deposits
         </button>
         <button
-          className={`filter-option ${
-            typeFilter === "withdrawals" ? "active" : ""
-          }`}
+          className={`filter-option ${typeFilter === "withdrawals" ? "active" : ""
+            }`}
           onClick={() => setTypeFilter("withdrawals")}
         >
           Withdrawals
         </button>
         <button
-          className={`filter-option ${
-            typeFilter === "profits" ? "active" : ""
-          }`}
+          className={`filter-option ${typeFilter === "profits" ? "active" : ""
+            }`}
           onClick={() => setTypeFilter("profits")}
         >
           Profits
         </button>
         <button
-          className={`filter-option ${
-            typeFilter === "losses" ? "active" : ""
-          }`}
+          className={`filter-option ${typeFilter === "losses" ? "active" : ""
+            }`}
           onClick={() => setTypeFilter("losses")}
         >
           Losses
         </button>
         <button
-          className={`filter-option ${
-            typeFilter === "conversions" ? "active" : ""
-          }`}
+          className={`filter-option ${typeFilter === "conversions" ? "active" : ""
+            }`}
           onClick={() => setTypeFilter("conversions")}
         >
           Conversions
         </button>
         <button
-          className={`filter-option ${
-            typeFilter === "stacking" ? "active" : ""
-          }`}
+          className={`filter-option ${typeFilter === "stacking" ? "active" : ""
+            }`}
           onClick={() => setTypeFilter("stacking")}
         >
           Stacking
@@ -343,7 +505,7 @@ function History() {
             return (
               <div className="transaction-item" key={transaction.id}>
                 <div className="transaction-info">
-                  <div 
+                  <div
                     className={`transaction-icon ${iconClass}`}
                     style={{ backgroundColor: getTransactionConfig(transaction.type, transaction.direction, transaction.relatedAsset).color }}
                   >
@@ -359,8 +521,8 @@ function History() {
                   </div>
                 </div>
                 <div className="transaction-amount">
-                  <div 
-                    className="amount" 
+                  <div
+                    className="amount"
                     style={{ color: amountColor }}
                   >
                     {transaction.direction === 'in' ? '+' : '-'}
