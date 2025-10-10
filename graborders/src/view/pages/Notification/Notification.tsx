@@ -26,15 +26,15 @@ const typeConfig = {
     getMessage: (item) =>
       `You earned ${item.message} from your staking rewards.`,
   },
-  commission: {
-    icon: "fas fa-hand-holding-dollar",
-    title: "Commission Received",
-    getMessage: (item) => `You received a commission of ${item.message}.`,
-  },
   kyc: {
     icon: "fas fa-id-card",
     title: "KYC Update",
     getMessage: (item) => item.message || "Your account has been activated.",
+  },
+  commission: {
+    icon: "fas fa-hand-holding-dollar",
+    title: "Commission Received",
+    getMessage: (item) => `You received a commission of ${item.message}.`,
   },
   futures: {
     icon: "fas fa-chart-line",
@@ -51,6 +51,23 @@ const typeConfig = {
     icon: "fas fa-bell",
     title: "Notification",
     getMessage: (item) => item.message || "You have a new notification.",
+  },
+  cancel_deposit: {
+    icon: "fas fa-ban",
+    title: "Deposit Cancelled",
+    getMessage: (item) =>
+      `Your deposit of ${item.message} has been cancelled.`,
+  },
+  cancel_withdraw: {
+    icon: "fas fa-ban",
+    title: "Withdrawal Cancelled", 
+    getMessage: (item) =>
+      `Your withdrawal of ${item.message} has been cancelled.`,
+  },
+  cancel_activated: {
+    icon: "fas fa-user-slash",
+    title: "Activation Cancelled",
+    getMessage: () => "Your account activation has been cancelled.",
   },
 };
 

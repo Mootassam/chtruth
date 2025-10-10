@@ -5,7 +5,7 @@ import { getHistory } from "src/modules/store";
 import { i18n } from "../../../i18n";
 import assetsListActions from "src/modules/assets/list/assetsListActions";
 
-const prefix = "COUPONS_FORM";
+const prefix = "WITHDRAW_FORM";
 
 const vipFormActions = {
   INIT_STARTED: `${prefix}_INIT_STARTED`,
@@ -15,6 +15,12 @@ const vipFormActions = {
   CREATE_STARTED: `${prefix}_CREATE_STARTED`,
   CREATE_SUCCESS: `${prefix}_CREATE_SUCCESS`,
   CREATE_ERROR: `${prefix}_CREATE_ERROR`,
+
+
+  CLOSE_SUCCESS: `${prefix}_CLOSE_SUCCESS`,
+
+
+  
 
   UPDATE_STARTED: `${prefix}_UPDATE_STARTED`,
   UPDATE_SUCCESS: `${prefix}_UPDATE_SUCCESS`,
@@ -63,8 +69,6 @@ const vipFormActions = {
 
       dispatch(assetsListActions.doFetch());
 
-      Message.success(i18n("entities.withdraw.create.success"));
-
       getHistory().push("/withdraw");
     } catch (error) {
       Errors.handle(error);
@@ -74,6 +78,26 @@ const vipFormActions = {
       });
     }
   },
+
+
+
+
+
+  doClose: () => async (dispatch) => {
+    try {
+
+      dispatch({
+        type: vipFormActions.CLOSE_SUCCESS,
+      });
+
+
+
+    } catch (error) {
+      Errors.handle(error);
+
+    }
+  },
+
 
   doUpdate: (id, values) => async (dispatch, getState) => {
     try {

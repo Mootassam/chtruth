@@ -17,10 +17,18 @@ const selectSaveLoading = createSelector(
   (raw) => Boolean(raw.saveLoading),
 );
 
+
+const selectModal = createSelector(
+  [selectRaw],
+  (raw) => Boolean(raw.withdrawModal),
+);
+
+
 const couponsFormSelectors = {
   selectInitLoading,
   selectSaveLoading,
   selectRecord,
+  selectModal,
   selectRaw,
 };
 

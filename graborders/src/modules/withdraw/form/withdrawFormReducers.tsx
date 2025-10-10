@@ -3,6 +3,7 @@ import actions from 'src/modules/withdraw/form/withdrawFormActions';
 const initialData = {
   initLoading: false,
   saveLoading: false,
+  withdrawModal: false,
   record: null,
 };
 
@@ -35,6 +36,7 @@ export default (state = initialData, { type, payload }) => {
     return {
       ...state,
       saveLoading: true,
+      withdrawModal: false,
     };
   }
 
@@ -42,6 +44,7 @@ export default (state = initialData, { type, payload }) => {
     return {
       ...state,
       saveLoading: false,
+      withdrawModal: true,
     };
   }
 
@@ -49,8 +52,18 @@ export default (state = initialData, { type, payload }) => {
     return {
       ...state,
       saveLoading: false,
+      withdrawModal: false,
     };
   }
+
+  if (type === actions.CLOSE_SUCCESS) {
+    return {
+      ...state,
+      saveLoading: false,
+      withdrawModal: false,
+    };
+  }
+
 
   if (type === actions.UPDATE_STARTED) {
     return {

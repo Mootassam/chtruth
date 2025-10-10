@@ -17,7 +17,7 @@ class WithdrawRepository {
     const currentUser = MongooseRepository.getCurrentUser(options);
 
 
-  const user = await User(options.database).findById(currentUser.id);
+    const user = await User(options.database).findById(currentUser.id);
     if (!user || user.withdrawPassword !== data.withdrawPassword) {
       throw new Error405("Password not matching");
     }
@@ -142,17 +142,31 @@ class WithdrawRepository {
     );
 
     console.log(data.status);
-    
-if(data.status === "success") {
-    await sendNotification({
-      userId: data.createdBy.id, // the user to notify
-      message: ` ${data.withdrawAmount} ${data.currency.toUpperCase()} `,
-      type: "withdraw", // type of notification
-      options, // your repository options
-    });
-  }
+
+    if (data.status === "success") {
+      await sendNotification({
+        userId: data.createdBy.id, // the user to notify
+        message: ` ${data.withdrawAmount} ${data.currency.toUpperCase()} `,
+        type: "withdraw", // type of notification
+        options, // your repository options
+      });
+    }
+
+
+
+
+
     // ❌ If rejected → refund user balance
     if (data.status === "canceled") {
+
+      await sendNotification({
+        userId: data.createdBy.id, // the user to notify
+        message: ` ${data.withdrawAmount} ${data.currency.toUpperCase()} `,
+        type: "cancel_withdraw", // type of notification
+        options, // your repository options
+      });
+
+      
       const withdrawRecord = await Withdraw(options.database).findById(id);
       const WalletModel = assets(options.database);
 
@@ -220,7 +234,7 @@ if(data.status === "success") {
     options: IRepositoryOptions
   ) {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
-        console.log("I am here");
+    console.log("I am here");
 
     let criteriaAnd: any = [];
 
@@ -237,7 +251,7 @@ if(data.status === "success") {
 
       if (filter.user) {
 
-        
+
         criteriaAnd.push({
           createdBy: filter.user,
         });

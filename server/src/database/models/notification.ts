@@ -27,7 +27,10 @@ export default
             "commission",
             "futures",
             "accountActivated",
-            "custom"
+            "custom",
+            "cancel_deposit",
+            "cancel_withdraw",
+            "cancel_activated"
           ],
           required: true,
         },

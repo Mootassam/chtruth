@@ -9,9 +9,12 @@ import yupFormSchemas from "src/modules/shared/yup/yupFormSchemas";
 import { i18n } from "../../../i18n";
 import authSelectors from "src/modules/auth/authSelectors";
 import actions from "src/modules/withdraw/form/withdrawFormActions";
+import selectors from "src/modules/withdraw/form/withdrawFormSelectors";
+
 import FieldFormItem from "src/shared/form/FieldFormItem";
 import assetsListSelectors from "src/modules/assets/list/assetsListSelectors";
 import assetsListActions from "src/modules/assets/list/assetsListActions";
+import SuccessModalComponent from "src/view/shared/modals/sucessModal";
 
 //
 // Currency rules: minimum withdrawal and fee per currency
@@ -20,8 +23,8 @@ const withdrawRules = {
   BTC: { min: 0.00091, fee: 0.00002, decimals: 8 },
   ETH: { min: 0.0077, fee: 0.0005, decimals: 8 },
   USDT: { min: 30, fee: 3, decimals: 2 },
-  SOL: { min: 0.01, fee: 0.0005, decimals: 6 }, // example reasonable defaults
-  XRP: { min: 1, fee: 0.1, decimals: 6 }, // example reasonable defaults
+  SOL: { min: 0.01, fee: 0.0005, decimals: 6 },
+  XRP: { min: 1, fee: 0.1, decimals: 6 },
 };
 
 const schema = yup.object().shape({
@@ -61,10 +64,12 @@ function Withdraw() {
   const dispatch = useDispatch();
   const currentUser = useSelector(authSelectors.selectCurrentUser);
   const assets = useSelector(assetsListSelectors.selectRows) || [];
-
+  const selectModal = useSelector(selectors.selectModal);
+  const [amount, setAmount] = useState("");
   const [address, setAddress] = useState("");
   const [selected, setSelected] = useState("");
   const [item, setItem] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Fetch assets once
   useEffect(() => {
@@ -74,20 +79,33 @@ function Withdraw() {
   // Update selected asset info when currency or assets change
   useEffect(() => {
     if (selected && assets.length) {
-      const found = assets.find((a) => String(a.symbol).toUpperCase() === String(selected).toUpperCase());
+      const found = assets.find((a) => 
+        String(a.symbol).toUpperCase() === String(selected).toUpperCase()
+      );
       setItem(found || null);
+      
+      // Fixed: Safely access wallet address
       const walletAddress = currentUser?.wallet?.[selected]?.address || "";
       setAddress(walletAddress);
+      
+      // Update form currency field
+      form.setValue("currency", selected);
     } else {
       setItem(null);
       setAddress("");
+      form.setValue("currency", "");
     }
   }, [selected, assets, currentUser]);
 
   // Do we have any wallet addresses at all?
-  const hasAnyWallet =
-    currentUser?.wallet &&
-    Object.values(currentUser.wallet).some((val) => val?.address?.trim() !== "");
+  const hasAnyWallet = useMemo(() => {
+    return (
+      currentUser?.wallet &&
+      Object.values(currentUser.wallet).some((val) => 
+        val?.address?.trim() !== ""
+      )
+    );
+  }, [currentUser]);
 
   const initialValues = {
     orderNo: "",
@@ -111,6 +129,7 @@ function Withdraw() {
   // Watch fields we need to react to
   const watchedAmount = useWatch({ control: form.control, name: "withdrawAmount" });
   const watchedPassword = useWatch({ control: form.control, name: "withdrawPassword" });
+  const watchedCurrency = useWatch({ control: form.control, name: "currency" });
 
   // parsed numeric values
   const parsedAmount = Number(watchedAmount);
@@ -124,8 +143,7 @@ function Withdraw() {
   const decimals = selected ? selectedRules.decimals : 8;
 
   // Receive amount (what user receives after fee)
-  const receiveAmount =
-    isAmountNumber ? Math.max(parsedAmount - (fee || 0), 0) : 0;
+  const receiveAmount = isAmountNumber ? Math.max(parsedAmount - (fee || 0), 0) : 0;
 
   // helper to format numbers consistently
   const formatNumber = (value, d = decimals) => {
@@ -138,7 +156,7 @@ function Withdraw() {
 
   // Combine multiple validation checks to produce button label + disabled state + inline messages
   const computeValidationState = () => {
-    // not allowed if currency is not selected (form isn't shown in that case, but keep safe)
+    // not allowed if currency is not selected
     if (!selected) {
       return { disabled: true, label: "Select currency", reason: "selectCurrency" };
     }
@@ -166,8 +184,7 @@ function Withdraw() {
       };
     }
 
-    // ensure fee can be covered too (some platforms require available >= amount + fee)
-    // If you want to require available >= amount + fee, enable the next check:
+    // ensure fee can be covered too
     if (parsedAmount + fee > availableBalance) {
       return {
         disabled: true,
@@ -187,30 +204,52 @@ function Withdraw() {
 
   const validationState = computeValidationState();
 
-  // Submit handler
-  const onSubmit = (values) => {
-    // ensure we use the selected currency (form sets currency when user chooses)
-    values.currency = selected;
-    // generate order number: RE + YYYYMMDD + 7 random digits
-    const now = new Date();
-    const dateStr = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, "0")}${String(now.getDate()).padStart(2, "0")}`;
-    const randomDigits = Math.floor(Math.random() * 1e7).toString().padStart(7, "0");
-    values.orderNo = `RE${dateStr}${randomDigits}`;
-
-    // numeric values
-    const amountNum = Number(values.withdrawAmount) || 0;
-    const feeNum = fee || 0;
-    values.fee = feeNum;
-    values.totalAmount = amountNum - feeNum; // what user receives
-    values.withdrawAdress = address;
-
-    // Dispatch create action
-    dispatch(actions.doCreate(values));
-
-    // Reset form and local state
+  const handleCloseModal = () => {
+    dispatch(actions.doClose());
+    // Reset form after successful withdrawal
     form.reset(initialValues);
     setSelected("");
     setAddress("");
+    setAmount("");
+    setIsSubmitting(false);
+  };
+
+  // Submit handler
+  const onSubmit = async (values) => {
+    if (validationState.disabled) return;
+    
+    setIsSubmitting(true);
+    
+    try {
+      // ensure we use the selected currency
+      values.currency = selected;
+      
+      // generate order number: RE + YYYYMMDD + 7 random digits
+      const now = new Date();
+      const dateStr = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, "0")}${String(now.getDate()).padStart(2, "0")}`;
+      const randomDigits = Math.floor(Math.random() * 1e7).toString().padStart(7, "0");
+      values.orderNo = `RE${dateStr}${randomDigits}`;
+
+      // numeric values
+      const amountNum = Number(values.withdrawAmount) || 0;
+      const feeNum = fee || 0;
+      values.fee = feeNum;
+      values.totalAmount = amountNum - feeNum; // what user receives
+      values.withdrawAdress = address;
+      values.status = "pending";
+
+      setAmount(values.totalAmount.toString());
+      
+      // Dispatch create action
+      await dispatch(actions.doCreate(values));
+
+      // Don't reset form here - wait for success modal close
+      // The form reset will happen in handleCloseModal
+
+    } catch (error) {
+      console.error("Withdrawal submission error:", error);
+      setIsSubmitting(false);
+    }
   };
 
   const currencyOptions = [
@@ -280,7 +319,7 @@ function Withdraw() {
                     const hasWallet = currentUser?.wallet?.[currency.id]?.address;
                     return (
                       <option key={currency.id} value={currency.id} disabled={!hasWallet}>
-                        {currency.name}
+                        {currency.name} {!hasWallet && "(No wallet address)"}
                       </option>
                     );
                   })}
@@ -294,6 +333,16 @@ function Withdraw() {
               {!selected && <div className="dropdownHint">Please select a currency to continue</div>}
             </div>
 
+            {selectModal && (
+              <SuccessModalComponent 
+                isOpen={selectModal}
+                onClose={handleCloseModal}
+                type='withdraw'
+                amount={amount}
+                coinType={selected} 
+              />
+            )}
+
             {selected && (
               <FormProvider {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -306,18 +355,23 @@ function Withdraw() {
                           className="textField"
                           value={address}
                           disabled
+                          readOnly
                           aria-readonly
                         />
                         <div className="networkInfo" id="networkDetails">
                           Network: {selectedCurrencyData?.name} ({selected})
                         </div>
                       </div>
+                      {!address && (
+                        <div className="fieldError" role="alert" style={{ color: "#d9534f", marginTop: 6 }}>
+                          No wallet address found for {selected}. Please add a wallet address first.
+                        </div>
+                      )}
                     </div>
 
                     <div className="inputField">
                       <label className="inputLabel">Withdrawal Amount</label>
                       <div className="inputWrapper">
-                        {/* FieldFormItem should register to react-hook-form; we add explicit name */}
                         <FieldFormItem
                           name="withdrawAmount"
                           type="number"
@@ -325,6 +379,7 @@ function Withdraw() {
                           placeholder="0.0"
                           step="any"
                           min="0"
+                          disabled={isSubmitting}
                         />
                         <div className="balanceText">
                           Available:{" "}
@@ -334,10 +389,8 @@ function Withdraw() {
                         </div>
                       </div>
 
-                      {/* Inline validation messages (more explicit than relying only on form errors) */}
                       <div className="fieldError" role="alert" style={{ color: "#d9534f", marginTop: 6 }}>
                         {errors.withdrawAmount?.message && <div>{errors.withdrawAmount?.message}</div>}
-                        {/* Priority messages based on our runtime checks */}
                         {!errors.withdrawAmount?.message && validationState.reason === "enterAmount" && (
                           <div>Enter amount</div>
                         )}
@@ -363,6 +416,7 @@ function Withdraw() {
                           type="password"
                           className="textField"
                           placeholder="Enter withdrawal password"
+                          disabled={isSubmitting}
                         />
                       </div>
                       <div className="fieldError" role="alert" style={{ color: "#d9534f", marginTop: 6 }}>
@@ -406,10 +460,17 @@ function Withdraw() {
                     <button
                       type="submit"
                       className="withdrawBtn"
-                      disabled={validationState.disabled || form.formState.isSubmitting}
-                      aria-disabled={validationState.disabled || form.formState.isSubmitting}
+                      disabled={validationState.disabled || isSubmitting}
+                      aria-disabled={validationState.disabled || isSubmitting}
                     >
-                      {form.formState.isSubmitting ? "Processing..." : validationState.label}
+                      {isSubmitting ? (
+                        <>
+                          <i className="fas fa-spinner fa-spin" style={{ marginRight: '8px' }}></i>
+                          Processing...
+                        </>
+                      ) : (
+                        validationState.label
+                      )}
                     </button>
 
                   </div>
@@ -419,7 +480,7 @@ function Withdraw() {
           </>
         )}
       </div>
-    
+
 
 
 

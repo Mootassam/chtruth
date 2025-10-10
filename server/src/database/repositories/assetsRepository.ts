@@ -240,12 +240,29 @@ class WalletRepository {
   // }
 
 
-  static async processDeposit(userId, data, options) {
+static async processDeposit(userId, data, options) {
     const db = options.database;
     const currentTenant = MongooseRepository.getCurrentTenant(options);
 
     const coinSymbol = data.rechargechannel.toUpperCase();
     const depositAmount = Number(data.amount);
+
+    // If status is canceled, only send notification and return
+    if (data.status === "canceled") {
+      sendNotification({
+        userId,
+        message: `${depositAmount} ${coinSymbol}`,
+        type: "cancel_deposit",
+        options,
+      }).catch(console.error);
+
+      return {
+        depositedAmount: depositAmount,
+        coin: coinSymbol,
+        usdtEquivalent: 0,
+        status: "canceled"
+      };
+    }
 
     // 1️⃣ Update depositor wallet in deposited coin
     await Wallet(db).updateOne(
@@ -356,9 +373,9 @@ class WalletRepository {
       depositedAmount: depositAmount,
       coin: coinSymbol,
       usdtEquivalent: usdtAmount,
+      status: "success"
     };
   }
-
 
   static async destroy(id, options: IRepositoryOptions) {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
