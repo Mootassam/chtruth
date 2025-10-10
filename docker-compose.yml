@@ -17,7 +17,7 @@ services:
 
   worker:
     build: ./server
-    command: npx ts-node src/database/utils/futuresWorker.ts
+    command: npx ts-node src/database/utils/stackingQueue.ts
     restart: unless-stopped
     environment:
       DATABASE_CONNECTION: mongodb://db:27017/grap

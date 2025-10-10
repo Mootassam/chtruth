@@ -57,7 +57,7 @@ const SuccessModalComponent: React.FC<SuccessModalProps> = ({
       },
       withdraw: {
         title: 'Withdrawal Submitted!',
-        message: 'Your withdrawal has been processed successfully.'
+        message: 'Your withdrawal request has been received and is under review. We will process it within 24 hours.'
       }
     };
     return config[modalType as keyof typeof config] || config.deposit;
@@ -66,7 +66,7 @@ const SuccessModalComponent: React.FC<SuccessModalProps> = ({
   const createConfettiEffect = () => {
     const colors = ['#F3BA2F', '#00C076', '#627EEA', '#FFFFFF'];
     const modalContainer = document.querySelector('.success-modal-overlay');
-    
+
     if (!modalContainer) return;
 
     // Clear existing confetti
@@ -81,7 +81,7 @@ const SuccessModalComponent: React.FC<SuccessModalProps> = ({
       confetti.style.top = '-10px';
       confetti.style.animation = `successConfettiFall ${Math.random() * 3 + 2}s linear forwards`;
       confetti.style.animationDelay = Math.random() * 1 + 's';
-      
+
       modalContainer.appendChild(confetti);
 
       setTimeout(() => {
@@ -235,17 +235,17 @@ const SuccessModalComponent: React.FC<SuccessModalProps> = ({
           <div className="success-modal-icon">
             <i className="fas fa-check"></i>
           </div>
-          
+
           <div className="success-modal-title">{title}</div>
-          
+
           <div className="success-modal-amount">
             {amount} {coinType}
           </div>
-          
+
           <div className="success-modal-message">
             {message}
           </div>
-          
+
           <button className="success-modal-button" onClick={onClose}>
             Done
           </button>

@@ -495,8 +495,12 @@ function StackingPage() {
 
         /* Staking Options */
         .stacking-options {
-          margin: 0 0px 20px;
-        }
+             margin: 0 0px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+       
 
         .stacking-option-card {
           background-color: #1a1a1a;
