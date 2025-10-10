@@ -252,7 +252,10 @@ const publicRoutes = [
     path: "/auth/signin",
     loader: () => import("src/view/pages/Auth/Signin"),
   },
-
+  {
+    path: "/terms-of-use",
+    loader: () => import("src/view/pages/Terms/TermsofServicePage"),
+  },
 
 
   {

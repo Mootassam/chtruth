@@ -232,7 +232,7 @@ function Signup() {
       {/* Terms */}
       <div className="terms">
         By creating an account, you agree to our{" "}
-        <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+        <Link to="/terms-of-use"  className="remove_blue">Terms of Service</Link>
       </div>
     </div>
   );

@@ -268,11 +268,6 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
     leverage: string,
     duration: string
   ): number => {
-    console.log(duration, "duration");
-    console.log(leverage, "Leveraage")
-
-
-
 
     return (amount * parseInt(leverage, 10) * parseInt(duration, 10)) /100 ;
   };
