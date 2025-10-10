@@ -56,7 +56,7 @@ const SuccessModalComponent: React.FC<SuccessModalProps> = ({
         message: 'Your funds are now staked and earning rewards!'
       },
       withdraw: {
-        title: 'Withdrawal Successful!',
+        title: 'Withdrawal Submitted!',
         message: 'Your withdrawal has been processed successfully.'
       }
     };
