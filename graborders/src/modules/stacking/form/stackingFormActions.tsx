@@ -21,6 +21,10 @@ const vipFormActions = {
   UPDATE_SUCCESS: `${prefix}_UPDATE_SUCCESS`,
   UPDATE_ERROR: `${prefix}_UPDATE_ERROR`,
 
+
+
+  CLEAR_SUCCESS: `${prefix}_CLEAR_SUCCESS`,
+
   doInit: (id) => async (dispatch) => {
     try {
       dispatch({
@@ -62,11 +66,9 @@ const vipFormActions = {
         type: vipFormActions.CREATE_SUCCESS,
       });
 
-      Message.success(
-        i18n('entities.stacking.create.success'),
-      );
+
       dispatch(listActions.doFetchCurrentFilter());
-dispatch(assetsListActions.doFetch())
+      dispatch(assetsListActions.doFetch())
       getHistory().push('/stacking');
     } catch (error) {
       Errors.handle(error);
@@ -100,6 +102,20 @@ dispatch(assetsListActions.doFetch())
       dispatch({
         type: vipFormActions.UPDATE_ERROR,
       });
+    }
+
+  },
+
+
+  doClose: () => async (dispatch) => {
+    try {
+
+      dispatch({
+        type: vipFormActions.CLEAR_SUCCESS,
+      });
+
+    } catch (error) {
+      Errors.handle(error);
     }
   },
 };

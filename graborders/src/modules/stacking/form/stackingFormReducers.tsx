@@ -3,6 +3,7 @@ import actions from 'src/modules/stacking/form/stackingFormActions';
 const initialData = {
   initLoading: false,
   saveLoading: false,
+  showModal: false,
   record: null,
 };
 
@@ -31,17 +32,30 @@ export default (state = initialData, { type, payload }) => {
     };
   }
 
+
+  if (type === actions.CLEAR_SUCCESS) {
+    return {
+      ...state,
+      saveLoading: false,
+      showModal: false,
+    };
+  }
+
   if (type === actions.CREATE_STARTED) {
     return {
       ...state,
       saveLoading: true,
+      showModal: false,
     };
   }
+
+
 
   if (type === actions.CREATE_SUCCESS) {
     return {
       ...state,
       saveLoading: false,
+      showModal: true,
     };
   }
 
@@ -49,6 +63,7 @@ export default (state = initialData, { type, payload }) => {
     return {
       ...state,
       saveLoading: false,
+      showModal: false,
     };
   }
 

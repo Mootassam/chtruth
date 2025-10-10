@@ -12,11 +12,13 @@ import * as yup from "yup";
 import { FormProvider, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import stackingFormAction from "src/modules/stacking/form/stackingFormActions";
+import selector from "src/modules/stacking/form/stackingFormSelectors";
 import FieldFormItem from "src/shared/form/FieldFormItem";
 import authSelectors from "src/modules/auth/authSelectors";
 import assetsActions from "src/modules/assets/list/assetsListActions";
 import SubHeader from "src/view/shared/Header/SubHeader";
 import Dates from "src/view/shared/utils/Dates";
+import SuccessModalComponent from "src/view/shared/modals/sucessModal";
 
 const schema = yup.object().shape({
   user: yupFormSchemas.relationToOne(i18n("entities.stacking.fields.user"), {}),
@@ -52,6 +54,16 @@ function StackingPage() {
   const [cryptoPrices, setCryptoPrices] = useState({});
   const [balances, setBalances] = useState<{ [key: string]: number }>({});
 
+  const [amount, setAmount] = useState('')
+  const showModal = useSelector(selector.selectModal)
+
+
+  const handleCloseModal = () => {
+    dispatch(stackingFormAction.doClose())
+
+  };
+
+
   const [modalData, setModalData] = useState({
     crypto: "",
     daily: "",
@@ -75,7 +87,7 @@ function StackingPage() {
       earnedRewards: "",
     };
   });
-  
+
   const form = useForm({
     resolver: yupResolver(schema),
     mode: "all",
@@ -114,7 +126,7 @@ function StackingPage() {
 
   const onSubmit = async (values) => {
     values.startDate = new Date();
-    
+
     // Calculate the endDate by adding unstakingPeriod days to startDate
     const endDate = new Date(values.startDate);
     endDate.setDate(endDate.getDate() + parseInt(modalData.unstakingPeriod));
@@ -123,20 +135,22 @@ function StackingPage() {
     values.status = "active";
     values.plan = modalData.plan;
     values.user = currentUser.id;
-    
+
+    setAmount(values.amount)
+
     try {
       await dispatch(stackingFormAction.doCreate(values));
-      
+
       // Refresh assets data after successful stake
       dispatch(assetsActions.doFetch());
       dispatch(stackingListActions.doFetch());
-      
+
       // Update the local balances state immediately
       setBalances(prev => ({
         ...prev,
         [modalData.symbol]: (prev[modalData.symbol] || 0) - parseFloat(stakeAmount)
       }));
-      
+
       closeStakeModal();
     } catch (error) {
       console.error("Staking failed:", error);
@@ -145,14 +159,14 @@ function StackingPage() {
 
   const calculateRewards = () => {
     if (!stakeAmount || isNaN(stakeAmount) || stakeAmount <= 0) return "0";
-    
+
     const amount = parseFloat(stakeAmount);
     const dailyRate = parseFloat(modalData.daily);
     const unstakingPeriod = parseFloat(modalData.unstakingPeriod);
 
     // Total Reward = Amount * (Daily Rate / 100) * Unstaking Period
     const totalReward = amount * (dailyRate / 100) * unstakingPeriod;
-    
+
     return totalReward.toFixed(6);
   };
 
@@ -219,11 +233,11 @@ function StackingPage() {
     try {
       // Get unique currencies from stacking plans
       const currencies = [...new Set(listPlanStacking.map(plan => plan.currency))];
-      
+
       // Fetch prices for each currency
       const pricePromises = currencies.map(async (currency) => {
         if (currency === 'USDT') return { currency, price: 1 };
-        
+
         try {
           const response = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${currency}USDT`);
           const data = await response.json();
@@ -233,13 +247,13 @@ function StackingPage() {
           return { currency, price: 0 };
         }
       });
-      
+
       const prices = await Promise.all(pricePromises);
       const priceMap = {};
       prices.forEach(item => {
         priceMap[item.currency] = item.price;
       });
-      
+
       setCryptoPrices(priceMap);
     } catch (error) {
       console.error('Error fetching crypto prices:', error);
@@ -253,54 +267,54 @@ function StackingPage() {
   // Calculate total staked value in USD
   const calculateTotalStakedValue = () => {
     let total = 0;
-    
+
     activeStakes.forEach(stake => {
       const currency = stake?.plan?.currency;
       const amount = parseFloat(stake.amount) || 0;
       const price = cryptoPrices[currency] || 0;
-      
+
       total += amount * price;
     });
-    
+
     return total.toFixed(2);
   };
 
   // Calculate total earned rewards in USD
   const calculateTotalEarnedRewards = () => {
     let total = 0;
-    
+
     listStacking.forEach(stake => {
       const currency = stake?.plan?.currency;
       const earned = parseFloat(stake.earnedRewards) || 0;
       const price = cryptoPrices[currency] || 0;
-      
+
       total += earned * price;
     });
-    
+
     return total.toFixed(2);
   };
 
   // Calculate total completed rewards in USD
   const calculateTotalCompletedRewards = () => {
     let total = 0;
-    
+
     completedStakes.forEach(stake => {
       const currency = stake?.plan?.currency;
       const earned = parseFloat(stake.earnedRewards) || 0;
       const price = cryptoPrices[currency] || 0;
-      
+
       total += earned * price;
     });
-    
+
     return total.toFixed(2);
   };
-  
+
   useEffect(() => {
     dispatch(stackingPlanListActions.doFetch());
     dispatch(stackingListActions.doFetch());
     dispatch(assetsActions.doFetch());
-    
-    return () => {};
+
+    return () => { };
   }, [dispatch]);
 
   // Fetch crypto prices when component mounts and when stacking data changes
@@ -315,7 +329,7 @@ function StackingPage() {
   const isButtonDisabled = !validation.isValid;
   const buttonText = validation.message;
 
-  const daysElapsed = (item) => { 
+  const daysElapsed = (item) => {
     const now = new Date();
     const startDate = new Date(item.startDate);
     const elapsed = Math.floor((now.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
@@ -951,25 +965,22 @@ function StackingPage() {
       {/* Toggle Section */}
       <div className="stacking-toggle-section">
         <div
-          className={`stacking-toggle-option ${
-            activeTab === "options" ? "stacking-toggle-active" : ""
-          }`}
+          className={`stacking-toggle-option ${activeTab === "options" ? "stacking-toggle-active" : ""
+            }`}
           onClick={() => setActiveTab("options")}
         >
-           Options
+          Options
         </div>
         <div
-          className={`stacking-toggle-option ${
-            activeTab === "active" ? "stacking-toggle-active" : ""
-          }`}
+          className={`stacking-toggle-option ${activeTab === "active" ? "stacking-toggle-active" : ""
+            }`}
           onClick={() => setActiveTab("active")}
         >
           Active Stakes
         </div>
         <div
-          className={`stacking-toggle-option ${
-            activeTab === "completed" ? "stacking-toggle-active" : ""
-          }`}
+          className={`stacking-toggle-option ${activeTab === "completed" ? "stacking-toggle-active" : ""
+            }`}
           onClick={() => setActiveTab("completed")}
         >
           Completed
@@ -1050,7 +1061,7 @@ function StackingPage() {
             activeStakes.map((item) => {
               const progressPercentage = Math.min(100, (daysElapsed(item) / item?.plan?.unstakingPeriod) * 100);
               const remainingDays = daysRemaining(item);
-              
+
               return (
                 <div className="stacking-stake-item" key={item.id}>
                   <div className="stacking-stake-header">
@@ -1107,7 +1118,7 @@ function StackingPage() {
               <div className="empty-message">
                 You don't have any active stakes yet. Start staking to earn rewards on your crypto assets.
               </div>
-              <button 
+              <button
                 className="start-staking-button"
                 onClick={() => setActiveTab("options")}
               >
@@ -1134,7 +1145,7 @@ function StackingPage() {
                 <div className="completed-rewards-amount">${calculateTotalCompletedRewards()}</div>
                 <div className="completed-rewards-subtext">All rewards from completed stakes</div>
               </div>
-              
+
               {/* Completed Stakes List */}
               {completedStakes.map((item) => (
                 <div className="stacking-completed-item" key={item.id}>
@@ -1168,22 +1179,22 @@ function StackingPage() {
                       {item?.plan?.unstakingPeriod} days
                     </div>
                   </div>
-                  
 
 
 
-                   <div className="stacking-stake-details">
+
+                  <div className="stacking-stake-details">
                     <div className="stacking-stake-label">Created At</div>
                     <div className="stacking-stake-value">
-                      {Dates.NewsDate(item?.plan?.createdAt)} 
+                      {Dates.NewsDate(item?.plan?.createdAt)}
                     </div>
                   </div>
 
 
-                     <div className="stacking-stake-details">
+                  <div className="stacking-stake-details">
                     <div className="stacking-stake-label">Date finish</div>
                     <div className="stacking-stake-value">
-                      {Dates.NewsDate(item?.plan?.updatedAt)} 
+                      {Dates.NewsDate(item?.plan?.updatedAt)}
                     </div>
                   </div>
                   {/* Rewards Highlight Section */}
@@ -1205,7 +1216,7 @@ function StackingPage() {
               <div className="empty-message">
                 You haven't completed any stakes yet. Your completed stakes will appear here once they finish.
               </div>
-              <button 
+              <button
                 className="start-staking-button"
                 onClick={() => setActiveTab("options")}
               >
@@ -1215,6 +1226,23 @@ function StackingPage() {
           )}
         </div>
       )}
+
+
+
+      {showModal &&
+
+        <SuccessModalComponent
+
+          isOpen={showModal}
+          onClose={handleCloseModal}
+          type='staking'
+          amount={Number(amount).toFixed(0)}
+          coinType={modalData.crypto} />
+      }
+
+
+
+
 
       {/* Stake Modal */}
       {isModalOpen && (
@@ -1276,9 +1304,8 @@ function StackingPage() {
                 <button
                   type="submit"
                   disabled={isButtonDisabled}
-                  className={`stacking-modal-button ${
-                    isButtonDisabled ? 'stacking-modal-button-disabled' : ''
-                  }`}
+                  className={`stacking-modal-button ${isButtonDisabled ? 'stacking-modal-button-disabled' : ''
+                    }`}
                 >
                   {buttonText}
                 </button>
