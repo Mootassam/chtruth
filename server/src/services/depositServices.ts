@@ -75,11 +75,14 @@ export default class DepositServicess {
         ...this.options,
         session,
       });
-      await WalletRepository.processDeposit(data.createdBy.id, data, {
+      console.log(record.status);
+      
+if(record.status ==="success") {   await WalletRepository.processDeposit(data.createdBy.id, data, {
         ...this.options,
         session,
       });
-
+}
+    
       await MongooseRepository.commitTransaction(session);
     } catch (error) {
       await MongooseRepository.abortTransaction(session);

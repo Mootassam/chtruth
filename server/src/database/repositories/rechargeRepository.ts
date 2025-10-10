@@ -141,12 +141,16 @@ class WithdrawRepository {
       options
     );
 
+    console.log(data.status);
+    
+if(data.status === "success") {
     await sendNotification({
       userId: data.createdBy.id, // the user to notify
       message: ` ${data.withdrawAmount} ${data.currency.toUpperCase()} `,
       type: "withdraw", // type of notification
       options, // your repository options
     });
+  }
     // ❌ If rejected → refund user balance
     if (data.status === "canceled") {
       const withdrawRecord = await Withdraw(options.database).findById(id);

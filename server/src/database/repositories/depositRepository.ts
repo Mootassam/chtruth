@@ -97,7 +97,7 @@ class DepositRepository {
     const currentUser = MongooseRepository.getCurrentUser(options);
 
     // ✅ Update the deposit status
-    await Deposit(options.database).updateOne(
+     await Deposit(options.database).updateOne(
       { _id: id },
       {
         $set: {
@@ -123,6 +123,9 @@ class DepositRepository {
       },
       options
     );
+
+   const value = this.findById(id, options)
+    return value
   }
 
   static async destroy(id, options: IRepositoryOptions) {
