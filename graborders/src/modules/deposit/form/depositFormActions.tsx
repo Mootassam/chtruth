@@ -5,7 +5,7 @@ import { getHistory } from 'src/modules/store';
 import { i18n } from '../../../i18n';
 
 
-const prefix = 'COUPONS_FORM';
+const prefix = 'DEPOSIT_FORM';
 
 const vipFormActions = {
   INIT_STARTED: `${prefix}_INIT_STARTED`,
@@ -15,6 +15,10 @@ const vipFormActions = {
   CREATE_STARTED: `${prefix}_CREATE_STARTED`,
   CREATE_SUCCESS: `${prefix}_CREATE_SUCCESS`,
   CREATE_ERROR: `${prefix}_CREATE_ERROR`,
+
+ CLEAR_SUCCESS: `${prefix}_CLEAR_SUCCESS`,
+
+  
 
   UPDATE_STARTED: `${prefix}_UPDATE_STARTED`,
   UPDATE_SUCCESS: `${prefix}_UPDATE_SUCCESS`,
@@ -54,27 +58,33 @@ const vipFormActions = {
       dispatch({
         type: vipFormActions.CREATE_STARTED,
       });
-
       await vipService.create(values);
-
       dispatch({
         type: vipFormActions.CREATE_SUCCESS,
       });
-
-      Message.success(
-        i18n('entities.deposit.create.success'),
-      );
-
-  
       getHistory().push('/deposit');
     } catch (error) {
       Errors.handle(error);
-
       dispatch({
         type: vipFormActions.CREATE_ERROR,
       });
     }
   },
+
+
+  doClose: () => async (dispatch) => {
+    try {
+
+      dispatch({
+        type: vipFormActions.CLEAR_SUCCESS,
+      });
+
+    } catch (error) {
+      Errors.handle(error);
+    }
+  },
+
+
 
   doUpdate: (id, values) => async (dispatch, getState) => {
     try {
@@ -88,9 +98,6 @@ const vipFormActions = {
         type: vipFormActions.UPDATE_SUCCESS,
       });
 
-      Message.success(
-        i18n('entities.deposit.update.success'),
-      );
 
       getHistory().push('/deposit');
     } catch (error) {

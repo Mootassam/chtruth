@@ -13,6 +13,8 @@ import { useDispatch, useSelector } from "react-redux";
 import assetsFormAction from "src/modules/assets/form/assetsFormActions";
 import authSelectors from "src/modules/auth/authSelectors";
 import assetsActions from "src/modules/assets/list/assetsListActions";
+import selector from "src/modules/assets/form/assetsFormSelectors";
+import SuccessModalComponent from "src/view/shared/modals/sucessModal";
 
 // Interface for Binance ticker data
 interface BinanceTicker {
@@ -52,6 +54,7 @@ function Conversion() {
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const selectModal = useSelector(selector.selectModal)
   const [cryptoData, setCryptoData] = useState<{ [key: string]: CryptoData }>(
     {}
   );
@@ -73,18 +76,28 @@ function Conversion() {
   // Mock user balances for each currency
   const [balances, setBalances] = useState<{ [key: string]: number }>({});
 
+  // Fixed: Properly initialize and persist balances
   useEffect(() => {
-    if (assetsBalance?.length) {
-      const formatted = assetsBalance.reduce(
-        (acc: { [key: string]: number }, item) => {
-          acc[item.symbol] = item.amount;
-          return acc;
-        },
-        {}
-      );
-      setBalances(formatted);
-    }
+    const initializeBalances = () => {
+      if (assetsBalance?.length) {
+        const formatted = assetsBalance.reduce(
+          (acc: { [key: string]: number }, item) => {
+            acc[item.symbol] = item.amount;
+            return acc;
+          },
+          {}
+        );
+        setBalances(formatted);
+      }
+    };
+
+    initializeBalances();
   }, [assetsBalance]);
+
+  // Fixed: Add effect to refetch assets when component mounts
+  useEffect(() => {
+    dispatch(assetsActions.doFetch());
+  }, [dispatch]);
 
   // Check if user has sufficient balance
   const hasSufficientBalance = useMemo(() => {
@@ -370,7 +383,21 @@ function Conversion() {
     setShowConfirmationModal(true);
   };
 
-  // Perform conversion - lock rates during transaction
+  // Fixed: Enhanced handleCloseModal to reset form and refetch balances
+  const handleCloseModal = () => {
+    dispatch(assetsFormAction.doClose());
+    
+    // Reset form values after successful conversion
+    setFromAmount(1);
+    setToAmount(0);
+    setFinalAmount(0);
+    setConversionFee(0);
+    
+    // Refetch latest balances
+    dispatch(assetsActions.doFetch());
+  };
+
+  // Fixed: Enhanced conversion function with proper state management
   const performConversion = () => {
     if (!hasSufficientBalance) return;
     setIsConverting(true);
@@ -387,15 +414,24 @@ function Conversion() {
         toAmount: finalAmount.toFixed(8),
         status: "available",
       };
+      
       dispatch(assetsFormAction.doCreate(values));
-      dispatch(assetsActions.doFetch())
+      
+      // Update local balances immediately for better UX
+      setBalances(prev => ({
+        ...prev,
+        [fromCurrency]: (prev[fromCurrency] || 0) - fromAmount,
+        [toCurrency]: (prev[toCurrency] || 0) + finalAmount
+      }));
+      
       conversionLock.current = false;
       setIsConverting(false);
       setShowConfirmationModal(false);
 
-      // Show success message
-
-      // In a real app, this would update balances and transaction history
+      // Refetch assets to ensure data consistency
+      setTimeout(() => {
+        dispatch(assetsActions.doFetch());
+      }, 500);
     }, 2000);
   };
 
@@ -631,8 +667,8 @@ function Conversion() {
             {fromCurrency === toCurrency
               ? "Select different currencies"
               : !hasSufficientBalance
-              ? "Insufficient balance"
-              : "Convert Now"}
+                ? "Insufficient balance"
+                : "Convert Now"}
           </button>
 
           {/* Last updated time */}
@@ -668,54 +704,62 @@ function Conversion() {
               {isLoading
                 ? renderCurrencyPlaceholders()
                 : filteredCurrencies.map((currency) => (
-                    <li
-                      key={currency.code}
-                      className="currency-item"
-                      onClick={() => selectCurrency(currency.code)}
+                  <li
+                    key={currency.code}
+                    className="currency-item"
+                    onClick={() => selectCurrency(currency.code)}
+                  >
+                    <div
+                      className="currency-item-icon"
+                      style={{ backgroundColor: currency.color }}
                     >
-                      <div
-                        className="currency-item-icon"
-                        style={{ backgroundColor: currency.color }}
-                      >
-                        {imageErrors[currency.code] ? (
-                          <div className="currency-icon-fallback">
-                            {currency.code.charAt(0)}
-                          </div>
-                        ) : (
-                          <img
-                            src={`https://images.weserv.nl/?url=https://bin.bnbstatic.com/static/assets/logos/${currency.code}.png`}
-                            style={{ width: 40, height: 40 }}
-                            alt={currency.code}
-                            onError={() => handleImageError(currency.code)}
-                          />
-                        )}
+                      {imageErrors[currency.code] ? (
+                        <div className="currency-icon-fallback">
+                          {currency.code.charAt(0)}
+                        </div>
+                      ) : (
+                        <img
+                          src={`https://images.weserv.nl/?url=https://bin.bnbstatic.com/static/assets/logos/${currency.code}.png`}
+                          style={{ width: 40, height: 40 }}
+                          alt={currency.code}
+                          onError={() => handleImageError(currency.code)}
+                        />
+                      )}
+                    </div>
+                    <div className="currency-item-info">
+                      <div className="currency-item-name">
+                        {currency.code}
                       </div>
-                      <div className="currency-item-info">
-                        <div className="currency-item-name">
-                          {currency.code}
-                        </div>
-                        <div className="currency-item-full">
-                          {currency.name}
-                        </div>
+                      <div className="currency-item-full">
+                        {currency.name}
                       </div>
-                      <div className="currency-item-details">
-                        <div className="currency-item-price">
-                          $
-                          {currency.price.toLocaleString("en-US", {
-                            maximumFractionDigits: 2,
-                          })}
-                        </div>
-                        <div className="currency-item-balance">
-                          Balance: {balances[currency.code] || 0}{" "}
-                          {currency.code}
-                        </div>
+                    </div>
+                    <div className="currency-item-details">
+                      <div className="currency-item-price">
+                        $
+                        {currency.price.toLocaleString("en-US", {
+                          maximumFractionDigits: 2,
+                        })}
                       </div>
-                    </li>
-                  ))}
+                      <div className="currency-item-balance">
+                        Balance: {balances[currency.code] || 0}{" "}
+                        {currency.code}
+                      </div>
+                    </div>
+                  </li>
+                ))}
             </ul>
           </div>
         </div>
       )}
+
+      {selectModal && 
+      <SuccessModalComponent
+        isOpen={selectModal}
+        onClose={handleCloseModal}
+        type='convert'
+        amount={Number(finalAmount).toFixed(8)}
+        coinType={toCurrency} />}
 
       {/* Enhanced Confirmation Modal */}
       {showConfirmationModal && (
@@ -836,6 +880,7 @@ function Conversion() {
           </div>
         </div>
       )}
+
 
       <style>{`
         /* Enhanced Confirmation Modal Styles */

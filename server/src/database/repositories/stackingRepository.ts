@@ -346,66 +346,10 @@ class StackingRepository {
 
     // ✅ If completed
     if (now >= endDate) {
-      await Stacking(options.database).updateOne(
-        { _id: record._id },
-        {
-          status: 'completed',
-          earnedRewards,
-          updatedBy: MongooseRepository.getCurrentUser(options).id,
-        },
-        options
-      );
 
-      record.status = 'completed';
-      record.earnedRewards = earnedRewards;
+      console.log("completed");
 
-      // 🔥 Update or create wallet
-      const wallets = await wallet(options.database).findOneAndUpdate(
-        {
-          user: record.user,
-          symbol: record.plan.currency,
-          tenant: record.tenant,
-        },
-        {
-          $inc: { amount: earnedRewards }, // add rewards
-          updatedBy: MongooseRepository.getCurrentUser(options).id,
-        },
-        {
-          new: true,
-          upsert: true, // create if not exists
-        }
-      );
-      if (!wallets) {
-        throw new Error("Wallet not found for user.");
-      }
 
-      await transaction(options.database).create(
-        [
-          {
-            type: "stacking",
-            referenceId: record._id, // link stacking record
-            wallet: wallets._id,
-            asset: record.symbol, // "BTC"
-            amount: earnedRewards,
-            direction: "in",
-            status: "completed", // stacking rewards are instantly settled
-            user: record.user,
-            tenant: record.tenant,
-            createdBy: MongooseRepository.getCurrentUser(options).id,
-            updatedBy: MongooseRepository.getCurrentUser(options).id,
-          },
-        ],
-        options
-      );
-
-      await this._createAuditLog(
-        AuditLogRepository.UPDATE,
-        record._id,
-        { status: 'completed', earnedRewards, walletBalance: wallets.amount },
-        options
-      );
-
-      return record;
     }
 
     // ✅ If still active (update daily rewards but not wallet yet)

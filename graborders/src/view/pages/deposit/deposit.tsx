@@ -12,6 +12,9 @@ import { QRCodeCanvas } from "qrcode.react";
 import FieldFormItem from "src/shared/form/FieldFormItem";
 import actions from "src/modules/deposit/form/depositFormActions";
 import selectos from 'src/modules/depositMethod/list/depositMethodSelectors'
+import selectosDeposit from 'src/modules/deposit/form/depositFormSelectors'
+
+import SuccessModalComponent from "src/view/shared/modals/sucessModal";
 // Minimum deposit amounts for each network
 const MIN_DEPOSIT_AMOUNTS = {
   USDT: 30,
@@ -51,12 +54,13 @@ const createSchema = (selectedNetwork) => {
 
 function Deposit() {
   const dispatch = useDispatch();
-  const currentUser = useSelector(authSelectors.selectCurrentUser);
   const [selectedNetwork, setSelectedNetwork] = useState("BTC");
+  const [amount , setAmount ] = useState('')
   const [showToast, setShowToast] = useState(false);
   const listMethod = useSelector(selectos.selectRows)
   const [currentAddress, setCurrentAddress] = useState(listMethod[0]?.address);
-
+  const selectDepositModal = useSelector(selectosDeposit.selectDepositModal);
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(!selectDepositModal);
 
 
   // Update schema when network changes
@@ -117,7 +121,7 @@ function Deposit() {
     values.rechargetime = now.toISOString();
 
     values.rechargechannel = selectedNetwork;
-
+setAmount(values.amount)
     dispatch(actions.doCreate(values));
 
     // Reset form fields after submission
@@ -136,6 +140,12 @@ function Deposit() {
     [selectedNetwork]
   );
 
+
+
+  const handleCloseModal = () => {
+dispatch(actions.doClose())
+  setAmount(''); // Clear amount
+};
 
 
 
@@ -296,6 +306,16 @@ function Deposit() {
       <div className={`toastMsg ${showToast ? 'visible' : ''}`} id="toast">
         Address copied to clipboard!
       </div>
+      {selectDepositModal &&
+      
+      <SuccessModalComponent 
+      
+      isOpen={selectDepositModal}
+        onClose={handleCloseModal}
+        type='deposit'
+        amount={amount}
+        coinType={selectedNetwork} />
+      }
 
       <style>{`
   .depositContainer {

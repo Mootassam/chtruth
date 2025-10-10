@@ -44,9 +44,9 @@ function Home() {
   // State for image slider
   const [currentSlide, setCurrentSlide] = useState(0);
   const sliderImages = [
-    "https://mtecx.cc/uploads/20231209/93dc8d50425310d792c509fc88778de6.png",
-    "https://mtecx.cc/uploads/20231209/0a9caa10080a6a09609699c580b4cc5b.png",
-    "https://mtecx.cc/uploads/20231209/8be0db045a7d2cdf72f0897311706c67.png",
+    "/images/1.png",
+    "/images/2.png",
+    "/images/3.png",
   ];
 
   // Notification state
@@ -189,7 +189,7 @@ function Home() {
     {
       path: "/security-tips",
       icon: "fas fa-shield-alt",
-      name: "Security Tips",
+      name: "Security ",
     },
     {
       path: "/faq-center",

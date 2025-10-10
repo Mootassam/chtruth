@@ -350,9 +350,13 @@ function Wallet() {
           <div>
             <img src="/icons/asset.png" style={{ height: 33 }} />{" "}
           </div>
+                                <Link to="/notification" className="remove_blue" >
           <div className="notification-profile">
+
             <i className="fas fa-bell header-notification-icon profile-icon" />
+          
           </div>
+        </Link>
         </div>
         <div className="wallet-total-balance">
           <div className="wallet-balance-label">Total Portfolio Value</div>

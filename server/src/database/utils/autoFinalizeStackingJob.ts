@@ -113,12 +113,12 @@ export async function autoFinalizeStackingJob(job) {
   };
 
   // Corrected function call - remove the colon and type annotation
-//  await sendNotification({
-//       userId: stackingRecord.user._id ,
-//       message: `${totalToCredit}`,
-//       type: "staking",
-//       options,
-//     });
+ await sendNotification({
+      userId: stackingRecord.user._id ,
+      message: `${totalToCredit}`,
+      type: "staking",
+      options,
+    });
     
 
   console.log(`✅ Auto-finalized stacking ${stackingId} - credited ${totalToCredit} ${earnedRewards}`);

@@ -5,7 +5,7 @@ import Message from 'src/view/shared/message';
 import { getHistory } from 'src/modules/store';
 import { i18n } from '../../../i18n';
 
-const prefix = 'COUPONS_FORM';
+const prefix = 'ASSETS_FORM';
 
 const vipFormActions = {
   INIT_STARTED: `${prefix}_INIT_STARTED`,
@@ -15,6 +15,12 @@ const vipFormActions = {
   CREATE_STARTED: `${prefix}_CREATE_STARTED`,
   CREATE_SUCCESS: `${prefix}_CREATE_SUCCESS`,
   CREATE_ERROR: `${prefix}_CREATE_ERROR`,
+
+
+
+   CLEAR_SUCCESS: `${prefix}_CLEAR_SUCCESS`,
+
+
 
   UPDATE_STARTED: `${prefix}_UPDATE_STARTED`,
   UPDATE_SUCCESS: `${prefix}_UPDATE_SUCCESS`,
@@ -61,10 +67,6 @@ const vipFormActions = {
         type: vipFormActions.CREATE_SUCCESS,
       });
 
-      Message.success(
-        i18n('entities.assets.create.success'),
-      );
-
       getHistory().push('/conversion');
     } catch (error) {
       Errors.handle(error);
@@ -75,6 +77,18 @@ const vipFormActions = {
     }
   },
 
+
+    doClose: () => async (dispatch) => {
+      try {
+        dispatch({
+          type: vipFormActions.CLEAR_SUCCESS,
+        });
+  
+      } catch (error) {
+        Errors.handle(error);
+      }
+    },
+  
   doUpdate: (id, values) => async (dispatch, getState) => {
     try {
       dispatch({

@@ -1,12 +1,24 @@
-// src/jobs/scheduleStackingJob.ts
 import { stackingQueue } from '../utils/stackingQueue';
 
+/**
+ * Schedule a stacking job to automatically finalize when the end date arrives.
+ * @param record - The stacking record (includes startDate, plan info, etc.)
+ * @param tenant - The tenant object
+ */
 export async function scheduleStackingJob(record, tenant) {
-  // TEST MODE: override endDate to 5 seconds from now
-  record.endDate = new Date(Date.now() + 5000);
+  // Ensure we have a valid start date
+  const startDate = record.startDate ? new Date(record.startDate) : new Date();
 
+  // If the plan contains duration (in days, hours, etc.), calculate endDate
+  // Example: plan.duration = 7 (days)
+  if (record.plan && record.plan.duration) {
+    // Assuming the plan duration is in **days**
+    record.endDate = new Date(startDate.getTime() + record.plan.duration * 24 * 60 * 60 * 1000);
+  }
+
+  // Otherwise, fallback to existing endDate (if already set)
   const now = new Date();
-  const delayMs = Math.max(record.endDate.getTime() - now.getTime(), 0);
+  const delayMs = Math.max(new Date(record.endDate).getTime() - now.getTime(), 0);
 
   await stackingQueue.add(
     `auto-finalize-${record.id}`,
@@ -19,5 +31,5 @@ export async function scheduleStackingJob(record, tenant) {
     }
   );
 
-  console.log(`📅 Scheduled stacking job for ${record.id} in ${delayMs}ms`);
+  console.log(`📅 Scheduled stacking job for ${record.id} to run in ${delayMs} ms`);
 }
