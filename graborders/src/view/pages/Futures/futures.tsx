@@ -248,7 +248,6 @@ function Futures() {
         );
 
         tickerWs.current.onopen = () => {
-          console.log(`Connected to ${selectedCoin} ticker stream`);
         };
 
         tickerWs.current.onmessage = (event: MessageEvent) => {

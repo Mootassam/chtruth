@@ -115,7 +115,6 @@ function Home() {
     );
 
     ws.current.onopen = () => {
-      console.log("Connected to Binance for top cryptocurrencies");
     };
 
     ws.current.onmessage = (event: MessageEvent) => {
@@ -164,7 +163,6 @@ function Home() {
     };
 
     ws.current.onclose = () => {
-      console.log("Home connection closed");
       // Try to reconnect after a delay
       setTimeout(() => {
         if (ws.current === null) {

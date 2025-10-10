@@ -10,6 +10,8 @@ const models = [
   require('./product').default,
   require('./records').default,
   require("./company").default,
+  require("./stakeProgram").default, // Load this BEFORE stacking
+  require("./stacking").default,     // stacking depends on stakeProgram
 ];
 
 export default function init(database) {

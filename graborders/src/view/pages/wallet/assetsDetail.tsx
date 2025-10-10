@@ -104,13 +104,23 @@ switch (type) {
         config.amountColor = '#FF6838';
         break;
 
-    case 'stacking':
-        config.icon = 'fa-lock';
-        config.typeText = 'Stacking Reward';
-        config.iconClass = 'stacking';
-        config.color = '#4CAF50';
-        config.amountColor = '#2ff378';
-        break;
+ case 'stacking':
+  config.icon = 'fa-coins'; // More relevant than lock
+  config.typeText = 'Staked Amount';
+  config.iconClass = 'stacking';
+  config.color = '#FF9800'; // Orange for investment/action
+  config.amountColor = '#FFB74D';
+  break;
+
+
+        case 'staking_reward':
+  config.icon = 'fa-gift'; // Or fa-trophy for achievement
+  config.typeText = 'Staking Rewards';
+  config.iconClass = 'staking_reward';
+  config.color = '#4CAF50'; // Green for earnings/growth
+  config.amountColor = '#81C784';
+  break;
+
 
     // Futures Trading Transactions
     case 'futures_reserved':

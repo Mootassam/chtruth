@@ -26,9 +26,9 @@ const NewsPlaceholder = () => (
       <div key={index} className="news-item-placeholder">
         <div className="placeholder-image shimmer"></div>
         <div className="placeholder-content">
-          <div className="placeholder-line shimmer" style={{width: '80%', height: '16px', marginBottom: '8px'}}></div>
-          <div className="placeholder-line shimmer" style={{width: '60%', height: '14px', marginBottom: '12px'}}></div>
-          <div className="placeholder-line shimmer" style={{width: '40%', height: '12px'}}></div>
+          <div className="placeholder-line shimmer" style={{ width: '80%', height: '16px', marginBottom: '8px' }}></div>
+          <div className="placeholder-line shimmer" style={{ width: '60%', height: '14px', marginBottom: '12px' }}></div>
+          <div className="placeholder-line shimmer" style={{ width: '40%', height: '12px' }}></div>
         </div>
       </div>
     ))}
@@ -38,22 +38,22 @@ const NewsPlaceholder = () => (
 function News() {
   const dispatch = useDispatch();
   const [newselected, setNewSelected] = useState("news");
-  
+
   // Select data from Redux store
   const selectNews = useSelector(productListSelectors.selectNews);
   const selectloadingNews = useSelector(productListSelectors.selectloadingNews);
   const record = useSelector(selector.selectRows);
-  
+
   // Memoized filter option to prevent unnecessary recalculations
   const filterOptions = useMemo(() => FILTER_OPTIONS, []);
 
   // Memoized event handler to prevent unnecessary re-renders of filter buttons
   const handleFilterClick = useCallback((item, coin) => {
     setNewSelected(item);
-        const data ={ 
-      id : coin, 
-      page : 1 , 
-      size:30
+    const data = {
+      id: coin,
+      page: 1,
+      size: 30
     }
     dispatch(productListActions.doFindNews(data));
   }, [dispatch]);
@@ -61,10 +61,10 @@ function News() {
   // Memoized fetch function with useCallback
   const fetchCoins = useCallback(() => {
     dispatch(productListActions.doFetch());
-        const data ={ 
-      id : 1, 
-      page : 1 , 
-      size:60
+    const data = {
+      id: 1,
+      page: 1,
+      size: 60
     }
     dispatch(productListActions.doFindNews(data));
   }, [dispatch]);
@@ -78,7 +78,7 @@ function News() {
     <div className="container">
       {/* Header Section */}
       <SubHeader title="Crypto News" />
-      
+
       {/* News Filters */}
       <div className="news-filters">
         {filterOptions.map((filter) => (
@@ -91,11 +91,11 @@ function News() {
           </button>
         ))}
       </div>
-      
+
       {/* News List */}
       <div className="news-list">
         <div className="news-section-title">Latest News</div>
-        
+
         {/* Show loading placeholders while data is loading */}
         {selectloadingNews ? (
           <NewsPlaceholder />
@@ -103,7 +103,7 @@ function News() {
           <SingleItem topic={selectNews} loading={selectloadingNews} />
         )}
       </div>
-      
+
       <style>{`
         /* Shimmer animation for loading placeholders */
         @keyframes shimmer {

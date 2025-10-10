@@ -112,7 +112,6 @@ function MarketDetail() {
       );
 
       tickerWs.current.onopen = () => {
-        console.log(`Connected to ${selectedCoin} ticker stream`);
       };
 
       tickerWs.current.onmessage = (event: MessageEvent) => {
@@ -131,12 +130,10 @@ function MarketDetail() {
       };
 
       tickerWs.current.onclose = (event: CloseEvent) => {
-        console.log("Ticker WebSocket closed, attempting to reconnect...");
 
         // Auto-reconnect after a short delay
         setTimeout(() => {
           if (selectedCoin) {
-            console.log("Attempting to reconnect ticker WebSocket...");
             connectTickerWebSocket();
           }
         }, 2000);
@@ -168,7 +165,6 @@ function MarketDetail() {
       );
 
       tradeWs.current.onopen = () => {
-        console.log(`Connected to ${selectedCoin} trade stream`);
       };
 
       tradeWs.current.onmessage = (event: MessageEvent) => {
@@ -186,12 +182,10 @@ function MarketDetail() {
       };
 
       tradeWs.current.onclose = (event: CloseEvent) => {
-        console.log("Trade WebSocket closed, attempting to reconnect...");
 
         // Auto-reconnect after a short delay
         setTimeout(() => {
           if (selectedCoin) {
-            console.log("Attempting to reconnect trade WebSocket...");
             connectTradeWebSocket();
           }
         }, 2000);

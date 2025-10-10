@@ -58,14 +58,26 @@ function Signin() {
   };
 
   return (
-    <div className="container">
-      {/* Header Section */}
-      <div className="header" style={{ display: "flex" }}>
+    <div className="container" style={{ marginTop: 30 }}>
+         <div className="header" style={{ display: "flex", marginBottom: 20 }}>
         <div className="back-button" onClick={goBack}>
           <i className="fas fa-arrow-left" />
         </div>
-        <div className="page-title">LOGIN</div>
       </div>
+      {/* Logo and Title Section - Moved to top center */}
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        margin: '20px 0 30px 0'
+      }}>
+        <img src="/icons/nexus.png" alt="" style={{ height: 70 }} />
+       
+      </div>
+
+      {/* Header with Back Button - Moved below logo/title */}
+   
 
       <FormProvider {...form}>
         <div className="form-section">
@@ -95,7 +107,7 @@ function Signin() {
                   label={"Email/Phone Number"}
                   placeholder={i18n("user.fields.username")}
                   className="text-input"
-                  // Removed externalErrorMessage from here since we display it above
+                // Removed externalErrorMessage from here since we display it above
                 />
               </div>
 
@@ -148,69 +160,6 @@ function Signin() {
           SIGN UP
         </Link>
       </div>
-
-      {/* Divider */}
-      {/* <div className="divider">
-        <div className="divider-line" />
-        <div className="divider-text">or continue with</div>
-        <div className="divider-line" />
-      </div> */}
-
-      {/* Social Login - Add your social login buttons here */}
-      {/* <div
-        className="social-login"
-        style={{ textAlign: "center", margin: "1rem 0" }}
-      >
-      </div> */}
-
-      {/* App Promotion */}
-      {/* <div className="app-promotion">
-        console.log(`🚀 ~   <div className="app-promotion">
-        <div className="promo-title">Trade Anywhere</div>
-        <div className="promo-text">
-          Download our app for the best mobile experience
-        </div>
-        <div className="app-badges">
-          <div className="app-badge">
-            <i className="fab fa-apple" />
-            <span>App Store</span>
-          </div>
-          <div className="app-badge">
-            <i className="fab fa-google-play" />
-            <span>Play Store</span>
-          </div>
-        </div>
-      </div>:`,   <div className="app-promotion">
-        <div className="promo-title">Trade Anywhere</div>
-        <div className="promo-text">
-          Download our app for the best mobile experience
-        </div>
-        <div className="app-badges">
-          <div className="app-badge">
-            <i className="fab fa-apple" />
-            <span>App Store</span>
-          </div>
-          <div className="app-badge">
-            <i className="fab fa-google-play" />
-            <span>Play Store</span>
-          </div>
-        </div>
-      </div>)
-        <div className="promo-title">Trade Anywhere</div>
-        <div className="promo-text">
-          Download our app for the best mobile experience
-        </div>
-        <div className="app-badges">
-          <div className="app-badge">
-            <i className="fab fa-apple" />
-            <span>App Store</span>
-          </div>
-          <div className="app-badge">
-            <i className="fab fa-google-play" />
-            <span>Play Store</span>
-          </div>
-        </div>
-      </div> */}
     </div>
   );
 }

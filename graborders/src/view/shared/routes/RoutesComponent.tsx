@@ -10,6 +10,8 @@ import ProgressBar from "src/view/shared/ProgressBar";
 import { Route, Switch } from "react-router-dom";
 import EmptyPermissionsRoute from "src/view/shared/routes/EmptyPermissionsRoute";
 import NavRoute from "./NavRoute";
+import UserService from "src/modules/user/userService";
+import AuthCurrentTenant from "src/modules/auth/authCurrentTenant";
 
 function RoutesComponent() {
   const isInitialMount = useRef(true);
@@ -19,9 +21,12 @@ function RoutesComponent() {
 
   const currentUser = useSelector(authSelectors.selectCurrentUser);
   const currentTenant = useSelector(authSelectors.selectCurrentTenant);
+
   useEffect(() => {
     if (isInitialMount.current) {
       isInitialMount.current = false;
+
+
       // ProgressBar.start();
       return;
     }
@@ -30,6 +35,10 @@ function RoutesComponent() {
       // ProgressBar.done();
     }
   }, [loading]);
+
+
+
+
 
   if (loading) {
     return <div />;

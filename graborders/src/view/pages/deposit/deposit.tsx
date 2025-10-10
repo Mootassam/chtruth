@@ -275,7 +275,7 @@ function Deposit() {
         <div className="detailRow">
           <div className="detailLabel">Network</div>
           <div className="detailValue" id="detailNetwork">
-            {selectedNetworkData.name} ({selectedNetwork.toUpperCase()})
+            {selectedNetworkData?.name} ({selectedNetwork.toUpperCase()})
           </div>
         </div>
         <div className="detailRow">

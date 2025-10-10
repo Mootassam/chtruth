@@ -1,6 +1,7 @@
 
 import authAxios from 'src/modules/shared/axios/authAxios';
 import AuthCurrentTenant from 'src/modules/auth/authCurrentTenant';
+import UserService from '../user/userService';
 
 export default class ProductService {
   static async update(id, data) {
@@ -79,9 +80,9 @@ export default class ProductService {
 
   static async findNews(data) {
     const tenantId = AuthCurrentTenant.get();
-    
+
     const response = await authAxios.post(
-      `/tenant/${tenantId}/findNews/`,{data}
+      `/tenant/${tenantId}/findNews/`, { data }
     );
 
     return response.data.data;
@@ -91,7 +92,7 @@ export default class ProductService {
 
 
   static async list() {
-   
+
     const tenantId = AuthCurrentTenant.get();
     const response = await authAxios.get(
       `/tenant/${tenantId}/product`,

@@ -17,7 +17,7 @@ const StackingSchema = new Schema(
 
       plan: {
         type: Schema.Types.ObjectId,
-        ref: "stackingPlan",
+        ref: "stakeProgram",
         required: true, // reference to the staking plan chosen
       },
 

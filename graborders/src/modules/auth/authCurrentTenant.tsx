@@ -29,7 +29,7 @@ export default class AuthCurrentTenant {
 
     tenant = tenant || activeTenants[0].tenant;
 
-   
+
 
     this.set(tenant);
     return tenant;
@@ -41,6 +41,17 @@ export default class AuthCurrentTenant {
 
     if (tenantASString) {
       return JSON.parse(tenantASString).id;
+    }
+
+    return null;
+  }
+
+  static getTN() {
+    const tenantASString =
+      localStorage.getItem('tenant') || null;
+
+    if (tenantASString) {
+      return JSON.parse(tenantASString);
     }
 
     return null;

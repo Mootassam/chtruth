@@ -4,6 +4,7 @@ import Errors from 'src/modules/shared/error/errors';
 import Message from 'src/view/shared/message';
 import { getHistory } from 'src/modules/store';
 import { i18n } from 'src/i18n';
+import depositMethodListActions from 'src/modules/depositMethod/list/depositMethodListActions';
 
 const prefix = 'DEPOSITMETHOD_FORM';
 
@@ -60,6 +61,8 @@ const DepopsitFormActions = {
       dispatch({
         type: DepopsitFormActions.CREATE_SUCCESS,
       });
+
+      dispatch(depositMethodListActions.doFetch())
 
       Message.success(
         i18n('entities.depositMethod.create.success'),

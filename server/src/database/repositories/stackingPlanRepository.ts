@@ -4,7 +4,7 @@ import AuditLogRepository from "./auditLogRepository";
 import Error404 from "../../errors/Error404";
 import { IRepositoryOptions } from "./IRepositoryOptions";
 import FileRepository from "./fileRepository";
-import StackingPlan from "../models/stackingPlan";
+import StackingPlan from "../models/stakeProgram";
 
 class StackingRepository {
   static async create(data, options: IRepositoryOptions) {

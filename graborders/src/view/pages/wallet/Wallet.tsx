@@ -148,7 +148,6 @@ function Wallet() {
 
     ws.current.onopen = () => {
       if (!isMounted) return;
-      console.log("WebSocket connected");
     };
 
     return () => {

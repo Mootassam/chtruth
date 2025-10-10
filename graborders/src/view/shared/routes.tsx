@@ -10,6 +10,14 @@ const privateRoutes = [
     exact: true,
   },
 
+
+  {
+    path: "/news",
+    loader: () => import("src/view/pages/News/News"),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+
   {
     path: "/market",
     loader: () => import("src/view/pages/Market/Market"),
@@ -246,7 +254,7 @@ const publicRoutes = [
   },
 
 
-  
+
   {
     path: "/auth/signup",
     loader: () => import("src/view/pages/Auth/Signup"),
@@ -300,10 +308,7 @@ const navRoutes = [
     loader: () => import("src/view/pages/Support/Support"),
   },
 
-  {
-    path: "/news",
-    loader: () => import("src/view/pages/News/News"),
-  },
+
 ].filter(Boolean);
 export default {
   privateRoutes,

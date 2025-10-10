@@ -1,5 +1,7 @@
 import Errors from 'src/modules/shared/error/errors';
 import ProductService from 'src/modules/product/productService';
+import UserService from 'src/modules/user/userService';
+import AuthCurrentTenant from 'src/modules/auth/authCurrentTenant';
 
 const prefix = 'PRODUCT_LIST';
 
@@ -36,73 +38,102 @@ const productListActions = {
 
   doFetch:
     (filter?, rawFilter?, keepPagination = false) =>
-    async (dispatch, getState) => {
-      try {
-        dispatch({
-          type: productListActions.FETCH_STARTED,
-          payload: { filter, rawFilter, keepPagination },
-        });
-        const response = await ProductService.list();
+      async (dispatch, getState) => {
+        try {
+          dispatch({
+            type: productListActions.FETCH_STARTED,
+            payload: { filter, rawFilter, keepPagination },
+          });
+          const response = await ProductService.list();
 
-        dispatch({
-          type: productListActions.FETCH_SUCCESS,
-          payload: response
-        });
-        
-      } catch (error) {
-        Errors.handle(error);
+          dispatch({
+            type: productListActions.FETCH_SUCCESS,
+            payload: response
+          });
 
-        dispatch({
-          type: productListActions.FETCH_ERROR,
-        });
-      }
-    },
+        } catch (error) {
+          Errors.handle(error);
+
+          dispatch({
+            type: productListActions.FETCH_ERROR,
+          });
+        }
+      },
 
 
 
-    doFindById:
+  doFindById:
     (id) =>
-    async (dispatch, getState) => {
-      try {
-        dispatch({
-          type: productListActions.FIND_STARTED,
-        });
-        const response = await ProductService.find(id);
+      async (dispatch, getState) => {
+        try {
+          dispatch({
+            type: productListActions.FIND_STARTED,
+          });
+          const response = await ProductService.find(id);
 
-        dispatch({
-          type: productListActions.FIND_SUCCESS,
-          payload: response
-        });
-        
+          dispatch({
+            type: productListActions.FIND_SUCCESS,
+            payload: response
+          });
+
+        } catch (error) {
+          Errors.handle(error);
+          dispatch({
+            type: productListActions.FIND_ERROR,
+          });
+        }
+      },
+
+  doFindTenants: (data, next) => {
+    return async (dispatch, getState) => {
+      try {
+        // ✅ Check if tenant already exists in memory/local storage
+        const existingTenant = AuthCurrentTenant.get();
+
+        if (existingTenant) {
+          // No need to fetch again
+          if (next) next(existingTenant);
+          return;
+        }
+
+        // ✅ Fetch tenant only if not found
+        const tenant = await UserService.getSingle();
+
+        if (tenant) {
+          AuthCurrentTenant.set(tenant);
+          if (next) next(tenant);
+        } else {
+          throw new Error("Tenant not found");
+        }
+
       } catch (error) {
         Errors.handle(error);
-        dispatch({
-          type: productListActions.FIND_ERROR,
-        });
       }
-    },
+    };
+  },
 
-    doFindNews:
-    (data ,next?) =>
-    async (dispatch, getState) => {
-      try {
-        dispatch({
-          type: productListActions.NEWS_STARTED,
-        });
-        const response = await ProductService.findNews(data);
 
-        dispatch({
-          type: productListActions.NEWS_SUCCESS,
-          payload: response
-        });
-        
-      } catch (error) {
-        Errors.handle(error);
-        dispatch({
-          type: productListActions.NEWS_ERROR,
-        });
-      }
-    },
+  doFindNews:
+    (data, next?) =>
+      async (dispatch, getState) => {
+        try {
+          dispatch({
+            type: productListActions.NEWS_STARTED,
+          });
+          const response = await ProductService.findNews(data);
+
+          dispatch({
+            type: productListActions.NEWS_SUCCESS,
+            payload: response
+          });
+
+        } catch (error) {
+          Errors.handle(error);
+          dispatch({
+            type: productListActions.NEWS_ERROR,
+          });
+        }
+      },
 };
 
 export default productListActions;

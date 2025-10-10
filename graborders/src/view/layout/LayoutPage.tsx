@@ -1,5 +1,4 @@
 import React from "react";
-import Header from "./Header";
 import TabBottomNavigator from "./TabBottomNavigator";
 import "./styles/style.css";
 function LayoutPage(props) {

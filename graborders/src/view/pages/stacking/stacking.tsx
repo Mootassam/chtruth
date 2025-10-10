@@ -47,6 +47,8 @@ function StackingPage() {
   const dispatch = useDispatch();
   const listPlanStacking = useSelector(stackingPlanListSelectros.selectRows);
   const currentUser = useSelector(authSelectors.selectCurrentUser);
+
+  
   const stackingActive = useSelector(stackingListSelectors.selectRows);
   const listStacking = useSelector(stckingListSelectors.selectRows);
   const assets = useSelector(assetsListSelector.selectRows);
@@ -62,6 +64,8 @@ function StackingPage() {
     plan: "",
     unstakingPeriod: "",
   });
+
+
   const [stakeAmount, setStakeAmount] = useState("");
   const [initialValues] = useState(() => {
     return {
@@ -133,7 +137,7 @@ function StackingPage() {
     // Total Reward = Amount * (Daily Rate / 100) * Unstaking Period
     const totalReward = amount * (dailyRate / 100) * unstakingPeriod;
     
-    return totalReward.toFixed(6);
+    return totalReward;
   };
 
   const validateStake = () => {
@@ -496,7 +500,8 @@ return remaininig
                     // No onChange needed - handled by useWatch
                   />
                   <div className="stacking-balance-info">
-                    Balance: <span>{balances[modalData.symbol] || 0}</span>{" "}
+              
+                    Balance: <span>{balances[modalData?.symbol] || 0}</span>{" "}
                     <span>{modalData.symbol}</span>
                   </div>
                 </div>

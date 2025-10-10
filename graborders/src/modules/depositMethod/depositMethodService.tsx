@@ -9,6 +9,11 @@ export default class stackingService {
     };
 
     const tenantId = AuthCurrentTenant.get();
+
+    console.log(
+      tenantId, "I am here "
+    );
+
     const response = await authAxios.put(
       `/tenant/${tenantId}/method/${id}`,
       body,

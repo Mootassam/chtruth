@@ -35,6 +35,18 @@ class NotificationRepository {
     return record;
   }
 
+
+  static async sendNotification(data, options:IRepositoryOptions) { 
+
+  await sendNotification({
+      userId: data.user._id,
+      message: "stacking",
+      type: "accountActivated",
+      options,
+    });
+    
+  }
+
   static async update(id, io, options: IRepositoryOptions) {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
 

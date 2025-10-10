@@ -5,11 +5,13 @@ import Error404 from "../../errors/Error404";
 import { IRepositoryOptions } from "./IRepositoryOptions";
 import FileRepository from "./fileRepository";
 import Stacking from "../models/stacking";
-import StackingPlan from "../models/stackingPlan"; // Import the StackingPlan model
+import StackingPlan from "../models/stakeProgram"; // Import the StackingPlan model
 import assets from "../models/wallet";
 import Error405 from "../../errors/Error405";
 import transaction from "../models/transaction";
 import wallet from "../models/wallet";
+import { stackingQueue } from "../utils/stackingQueue";
+import { scheduleStackingJob } from "../utils/scheduleStackingJob";
 class StackingRepository {
   static async create(data, options: IRepositoryOptions) {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
@@ -17,60 +19,31 @@ class StackingRepository {
 
     // Fetch the stacking plan
     const plan = await StackingPlan(options.database).findById(data.plan);
-    if (!plan) {
-      throw new Error404();
-    }
+    if (!plan) throw new Error404();
 
-    // Validation: Check if amount is within plan limits
-    if (data.amount < plan.minimumStake) {
-      throw new Error(
-        `Amount must be at least ${plan.minimumStake} ${plan.currency}`
-      );
-    }
+    // Validation: Check amount
+    if (data.amount < plan.minimumStake) throw new Error(`Amount must be at least ${plan.minimumStake} ${plan.currency}`);
+    if (data.amount > plan.maxStake) throw new Error(`Amount cannot exceed ${plan.maxStake} ${plan.currency}`);
 
-    if (data.amount > plan.maxStake) {
-      throw new Error(`Amount cannot exceed ${plan.maxStake} ${plan.currency}`);
-    }
-
-    // Validation: Check user's wallet balance
+    // Check user's wallet balance
     const WalletModel = assets(options.database);
-    const wallet = await WalletModel.findOne({
-      user: currentUser.id,
-      symbol: plan.currency,
-    });
+    const wallet = await WalletModel.findOne({ user: currentUser.id, symbol: plan.currency });
+    if (!wallet) throw new Error405(`Wallet not found for ${plan.currency}`);
+    if (wallet.amount < data.amount) throw new Error405(`Insufficient balance. You have ${wallet.amount} ${plan.currency} but trying to stake ${data.amount} ${plan.currency}`);
 
-    if (!wallet) {
-      throw new Error405(`Wallet not found for ${plan.currency}`);
-    }
+    // Check if user already has active stake for this plan
+    const existingStake = await Stacking(options.database).findOne({ user: currentUser.id, plan: data.plan, status: "active" });
 
-    if (wallet.amount < data.amount) {
-      throw new Error405(
-        `Insufficient balance. You have ${wallet.amount} ${plan.currency} but trying to stake ${data.amount} ${plan.currency}`
-      );
-    }
-
-    // Validation: Check if user already has an active stake for this plan
-    const existingStake = await Stacking(options.database).findOne({
-      user: currentUser.id,
-      plan: data.plan,
-      status: "active",
-    });
-
-    // Validation: Check if the plan is still available
-    const currentDate = new Date();
-    if (plan.startDate && currentDate < plan.startDate) {
-      throw new Error405("This staking plan is not yet available");
-    }
-
-    if (plan.endDate && currentDate > plan.endDate) {
-      throw new Error405("This staking plan has expired");
-    }
+    // Check if plan is available
+    const now = new Date();
+    if (plan.startDate && now < plan.startDate) throw new Error405("This staking plan is not yet available");
+    if (plan.endDate && now > plan.endDate) throw new Error405("This staking plan has expired");
 
     // Calculate end date
     const endDate = new Date(data.startDate);
     endDate.setDate(endDate.getDate() + plan.unstakingPeriod);
 
-    // Create the stake record
+    // Create the staking record
     const [record] = await Stacking(options.database).create(
       [
         {
@@ -88,13 +61,10 @@ class StackingRepository {
 
     const TransactionModel = options.database.model("transaction");
 
-    // Deduct the staked amount from the wallet
+    // Deduct staked amount from wallet
     await WalletModel.updateOne(
       { _id: wallet.id },
-      {
-        $inc: { amount: -data.amount },
-        updatedBy: currentUser.id,
-      },
+      { $inc: { amount: -data.amount }, updatedBy: currentUser.id },
       options
     );
 
@@ -113,8 +83,21 @@ class StackingRepository {
       updatedBy: currentUser.id,
     });
 
+    // === SCHEDULE AUTO-FINALIZATION JOB ===
+    try {
+       await scheduleStackingJob(record, { id: record.tenant });
+
+      console.log(
+        `📅 Scheduled auto-finalize job for future ${record.id} at ${5000}`
+      );
+    } catch (err) {
+      console.error(`Failed to schedule staking job for ${record.id}:`, err);
+      // optionally: continue without failing creation
+    }
+
     return record;
   }
+
 
   static async update(id, data, io, options: IRepositoryOptions) {
     const currentTenant = MongooseRepository.getCurrentTenant(options);

@@ -49,6 +49,19 @@ export default class AuthService {
     return response.data;
   }
 
+
+  static async getSingle() {
+    const response = await authAxios.get(`/single`);
+    return response.data.rows[0].id;
+  }
+
+
+
+  static async getTenant() {
+    const response = await authAxios.get(`/single`);
+    return response.data.rows[0];
+  }
+
   static signout() {
     AuthToken.set(null, true);
   }
