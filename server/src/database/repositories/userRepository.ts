@@ -118,61 +118,61 @@ export default class UserRepository {
   }
 
 
-static async StatsDeposit(options: IRepositoryOptions) {
-  // Map of CoinGecko IDs to our symbol keys
-  const coinMap: Record<string, string> = {
-    bitcoin: "btc",
-    ethereum: "eth",
-    solana: "sol",
-    ripple: "xrp",
-    tether: "usdt",
-  };
+  static async StatsDeposit(options: IRepositoryOptions) {
+    // Map of CoinGecko IDs to our symbol keys
+    const coinMap: Record<string, string> = {
+      bitcoin: "btc",
+      ethereum: "eth",
+      solana: "sol",
+      ripple: "xrp",
+      tether: "usdt",
+    };
 
-  // Fetch all prices in one request from CoinGecko
-  const res = await axios.get(
-    "https://api.coingecko.com/api/v3/simple/price",
-    {
-      params: {
-        ids: Object.keys(coinMap).join(","), // "bitcoin,ethereum,solana,ripple,tether"
-        vs_currencies: "usd",
-      },
+    // Fetch all prices in one request from CoinGecko
+    const res = await axios.get(
+      "https://api.coingecko.com/api/v3/simple/price",
+      {
+        params: {
+          ids: Object.keys(coinMap).join(","), // "bitcoin,ethereum,solana,ripple,tether"
+          vs_currencies: "usd",
+        },
+      }
+    );
+
+    // Normalize prices like before (btc, eth, sol, xrp, usdt)
+    const prices: Record<string, number> = {};
+    for (const [id, symbol] of Object.entries(coinMap)) {
+      prices[symbol] = res.data[id]?.usd || 0;
     }
-  );
 
-  // Normalize prices like before (btc, eth, sol, xrp, usdt)
-  const prices: Record<string, number> = {};
-  for (const [id, symbol] of Object.entries(coinMap)) {
-    prices[symbol] = res.data[id]?.usd || 0;
+    // Fetch successful deposits
+    const deposits = await deposit(options.database).find({
+      status: "success",
+    });
+
+    let totalInUSDT = 0;
+
+    for (const d of deposits) {
+      // normalize channel: "usd" in DB should be treated as "usdt"
+      const channelRaw = d.rechargechannel?.toLowerCase();
+      const channel = channelRaw === "usd" ? "usdt" : channelRaw;
+
+      const amount = parseFloat(d.amount);
+
+      if (!amount || !channel || !prices[channel]) continue;
+
+      // Convert deposit to USDT (CoinGecko gives in USD)
+      totalInUSDT += amount * prices[channel];
+    }
+
+    return {
+      totalDepositUSDT: totalInUSDT || 0,
+      totalCount: deposits.length || 0,
+    };
   }
 
-  // Fetch successful deposits
-  const deposits = await deposit(options.database).find({
-    status: "success",
-  });
 
-  let totalInUSDT = 0;
-
-  for (const d of deposits) {
-    // normalize channel: "usd" in DB should be treated as "usdt"
-    const channelRaw = d.rechargechannel?.toLowerCase();
-    const channel = channelRaw === "usd" ? "usdt" : channelRaw;
-
-    const amount = parseFloat(d.amount);
-
-    if (!amount || !channel || !prices[channel]) continue;
-
-    // Convert deposit to USDT (CoinGecko gives in USD)
-    totalInUSDT += amount * prices[channel];
-  }
-
-  return {
-    totalDepositUSDT: totalInUSDT || 0,
-    totalCount: deposits.length || 0,
-  };
-}
-
-
-static async countAll(options: IRepositoryOptions) {
+  static async countAll(options: IRepositoryOptions) {
     let rows = await User(options.database).countDocuments({
       "tenants.roles": "member",
       "tenants.status": "active",
@@ -182,90 +182,97 @@ static async countAll(options: IRepositoryOptions) {
   }
 
 
-static async StatsWithdraw(options: IRepositoryOptions) {
-  // Map of CoinGecko IDs to our symbol keys
-  const coinMap: Record<string, string> = {
-    bitcoin: "btc",
-    ethereum: "eth",
-    solana: "sol",
-    ripple: "xrp",
-    tether: "usdt",
-  };
+  static async StatsWithdraw(options: IRepositoryOptions) {
+    // Map of CoinGecko IDs to our symbol keys
+    const coinMap: Record<string, string> = {
+      bitcoin: "btc",
+      ethereum: "eth",
+      solana: "sol",
+      ripple: "xrp",
+      tether: "usdt",
+    };
 
-  // Fetch all prices in one request from CoinGecko
-  const res = await axios.get(
-    "https://api.coingecko.com/api/v3/simple/price",
-    {
-      params: {
-        ids: Object.keys(coinMap).join(","), // "bitcoin,ethereum,solana,ripple,tether"
-        vs_currencies: "usd",
-      },
+    // Fetch all prices in one request from CoinGecko
+    const res = await axios.get(
+      "https://api.coingecko.com/api/v3/simple/price",
+      {
+        params: {
+          ids: Object.keys(coinMap).join(","), // "bitcoin,ethereum,solana,ripple,tether"
+          vs_currencies: "usd",
+        },
+      }
+    );
+
+    // Normalize prices like before (btc, eth, sol, xrp, usdt)
+    const prices: Record<string, number> = {};
+    for (const [id, symbol] of Object.entries(coinMap)) {
+      prices[symbol] = res.data[id]?.usd || 0;
     }
-  );
 
-  // Normalize prices like before (btc, eth, sol, xrp, usdt)
-  const prices: Record<string, number> = {};
-  for (const [id, symbol] of Object.entries(coinMap)) {
-    prices[symbol] = res.data[id]?.usd || 0;
-  }
-
-  // Fetch successful withdrawals
-  const withdrawals = await withdraw(options.database).find({
-    status: "success",
-  });
-
-  let totalInUSDT = 0;
-
-  for (const w of withdrawals) {
-    // normalize: "usd" → "usdt"
-    const channelRaw = w.currency?.toLowerCase();
-    const channel = channelRaw === "usd" ? "usdt" : channelRaw;
-
-    const amount = parseFloat(w.withdrawAmount);
-
-    if (!amount || !channel || !prices[channel]) continue;
-
-    // Convert withdrawal to USDT (CoinGecko gives in USD)
-    totalInUSDT += amount * prices[channel];
-  }
-
-  return {
-    totalWithdrawUSDT: totalInUSDT || 0,
-    totalCount: withdrawals.length || 0,
-  };
-}
-
-
-static async UpdateKyc(value, options: IRepositoryOptions) {
-  // Find the KYC record for this user
-  const item = await kyc(options.database).findOne({ user: value.user });
-
-  if (!item) {
-    throw new Error("KYC record not found for user");
-  }
-
-  // Update user document
-  await User(options.database).updateOne(
-    { _id: value.user },
-    {
-      $set: {
-        kyc: value.kyc,
-        fullName: item.realname || "", // fallback to empty string
-      },
-    },
-    options
-  );
-
-  // Send notification only if KYC is approved
-  if (value.kyc === true) {
-    await sendNotification({
-      userId: value.user,
-      message: "accountActivated",
-      type: "accountActivated",
-      options,
+    // Fetch successful withdrawals
+    const withdrawals = await withdraw(options.database).find({
+      status: "success",
     });
+
+    let totalInUSDT = 0;
+
+    for (const w of withdrawals) {
+      // normalize: "usd" → "usdt"
+      const channelRaw = w.currency?.toLowerCase();
+      const channel = channelRaw === "usd" ? "usdt" : channelRaw;
+
+      const amount = parseFloat(w.withdrawAmount);
+
+      if (!amount || !channel || !prices[channel]) continue;
+
+      // Convert withdrawal to USDT (CoinGecko gives in USD)
+      totalInUSDT += amount * prices[channel];
+    }
+
+    return {
+      totalWithdrawUSDT: totalInUSDT || 0,
+      totalCount: withdrawals.length || 0,
+    };
   }
-}
+
+
+  static async UpdateKyc(value, options: IRepositoryOptions) {
+    // Find the KYC record for this user
+    const item = await kyc(options.database).findOne({ user: value.user });
+
+    if (!item) {
+      throw new Error("KYC record not found for user");
+    }
+
+    // Update user document
+    await User(options.database).updateOne(
+      { _id: value.user },
+      {
+        $set: {
+          kyc: value.kyc,
+          fullName: item.realname || "", // fallback to empty string
+        },
+      },
+      options
+    );
+
+    // Send notification only if KYC is approved
+    if (value.kyc === true) {
+      await sendNotification({
+        userId: value.user,
+        message: "accountActivated",
+        type: "accountActivated",
+        options,
+      });
+    } else {
+      await sendNotification({
+        userId: value.user,
+        message: "accountActivated",
+        type: "cancel_activated",
+        options,
+      });
+    }
+  }
 
 
   static async UpdateWithdrawPassword(value, options: IRepositoryOptions) {
