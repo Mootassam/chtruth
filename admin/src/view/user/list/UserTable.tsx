@@ -248,7 +248,7 @@ function UserTable() {
                             className="btn btn-link"
                             to={`/password-reset/${row.id}`}
                           >
-                            <i className="fas fa-edit"></i>
+                            <i className="fas fa-key"></i>
                           </Link>
                         )}
                         {hasPermissionToEdit && (
