@@ -7,8 +7,6 @@ import moment from 'moment';
 
 const authAxios = Axios.create({
   //  baseURL: "http://159.198.77.158:8084/api",
-  
-
    baseURL: "http://159.198.77.158:8084/api",
 
   paramsSerializer: function (params) {

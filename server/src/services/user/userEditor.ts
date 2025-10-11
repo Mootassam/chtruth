@@ -67,25 +67,10 @@ export default class UserEditor {
     await UserRepository.updateUser(
       this.options.currentTenant.id,
       this.data.id,
-      this.data.fullName,
-      this.data.phoneNumber,
-      this.data.passportNumber,
-      this.data.nationality,
-      this.data.country,
-      this.data.passportPhoto,
-      this.data.balance,
-      this.data.vip.id,
       this.options,
       this.data.status,
-      this.data.product,
-      this.data.itemNumber,
       this.data.withdrawPassword,
       this.data.score,
-      this.data.grab,
-      this.data.withdraw,
-      this.data.freezeblance,
-      this.data.tasksDone,
-      this.data.kyc,
     );
   }
   /**

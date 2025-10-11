@@ -35,14 +35,7 @@ const createSchema = (selectedNetwork) => {
     amount: yupFormSchemas.decimal(i18n("entities.deposit.fields.amount"), {
       required: true,
       min: minAmount
-    }).test(
-      'min-deposit',
-      `Minimum deposit for ${selectedNetwork.toUpperCase()} is ${minAmount}`,
-      function (value) {
-        if (!value) return false;
-        return parseFloat(value) >= minAmount;
-      }
-    ),
+    }),
     txid: yupFormSchemas.string(i18n("entities.deposit.fields.txid"), {
       required: true,
     }),
@@ -55,7 +48,7 @@ const createSchema = (selectedNetwork) => {
 function Deposit() {
   const dispatch = useDispatch();
   const [selectedNetwork, setSelectedNetwork] = useState("BTC");
-  const [amount , setAmount ] = useState('')
+  const [amount, setAmount] = useState('')
   const [showToast, setShowToast] = useState(false);
   const listMethod = useSelector(selectos.selectRows)
   const [currentAddress, setCurrentAddress] = useState(listMethod[0]?.address);
@@ -121,7 +114,7 @@ function Deposit() {
     values.rechargetime = now.toISOString();
 
     values.rechargechannel = selectedNetwork;
-setAmount(values.amount)
+    setAmount(values.amount)
     dispatch(actions.doCreate(values));
 
     // Reset form fields after submission
@@ -143,14 +136,15 @@ setAmount(values.amount)
 
 
   const handleCloseModal = () => {
-dispatch(actions.doClose())
-  setAmount(''); // Clear amount
-};
+    dispatch(actions.doClose())
+    setAmount(''); // Clear amount
+  };
 
 
 
   // Handle network selection
   const handleNetworkSelect = (event) => {
+
     setSelectedNetwork(event.target.value);
     // Clear amount field when network changes to avoid validation issues
     form.setValue("amount", "");
@@ -228,7 +222,6 @@ dispatch(actions.doClose())
           <div className="amountSection">
             <FieldFormItem
               name="amount"
-              type="Number"
               label={`Deposit amount (${selectedNetwork.toUpperCase()})`}
               className="textField"
               className1="inputField"
@@ -307,14 +300,14 @@ dispatch(actions.doClose())
         Address copied to clipboard!
       </div>
       {selectDepositModal &&
-      
-      <SuccessModalComponent 
-      
-      isOpen={selectDepositModal}
-        onClose={handleCloseModal}
-        type='deposit'
-        amount={amount}
-        coinType={selectedNetwork} />
+
+        <SuccessModalComponent
+
+          isOpen={selectDepositModal}
+          onClose={handleCloseModal}
+          type='deposit'
+          amount={amount}
+          coinType={selectedNetwork} />
       }
 
       <style>{`

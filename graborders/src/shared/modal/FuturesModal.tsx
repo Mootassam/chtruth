@@ -30,6 +30,7 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
   setOpeningOrders
 }) => {
   const [selectedDuration, setSelectedDuration] = useState<string>("120");
+  const [selectvalue, setSelectedValue] = useState("")
   const [selectedLeverage, setSelectedLeverage] = useState<string>("2");
   const [futuresAmount, setFuturesAmount] = useState<number>(1);
   const [tradeStatus, setTradeStatus] = useState<
@@ -42,6 +43,11 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
   const [pnlDisplay, setPnlDisplay] = useState<string>("");
   const [isCreating, setIsCreating] = useState<boolean>(false);
   const [tradeDetails, setTradeDetails] = useState<any>(null);
+
+  const changeValues = (duration, value) => {
+    setSelectedDuration(duration);
+    setSelectedValue(value)
+  }
 
   // prevent background scroll when modal open
   useEffect(() => {
@@ -58,6 +64,7 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
   // refresh list on mount (and when dispatch changes)
   useEffect(() => {
     dispatch(futuresListAction.doFetch());
+
   }, [dispatch]);
 
   // validate amount
@@ -156,7 +163,7 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
       const calculatedIsWin = false; // fallback: treat as loss
       setTradeResult(calculatedIsWin ? "win" : "loss");
       if (calculatedIsWin) {
-        setPnlDisplay(`+${calculateProfit(futuresAmount, selectedLeverage, selectedDuration).toFixed(2)} USDT`);
+        setPnlDisplay(`+${calculateProfit(futuresAmount, selectedLeverage, selectvalue).toFixed(2)} USDT`);
       } else {
         setPnlDisplay(`-${futuresAmount.toFixed(2)} USDT`);
       }
@@ -188,7 +195,7 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
       // Backend should set trade.control (profit | loss), profitAndLossAmount, futuresAmount
       if (trade.control === "profit") {
         setTradeResult("win");
-        const pnl = Number(trade.profitAndLossAmount ?? calculateProfit(futuresAmount, selectedLeverage, selectedDuration));
+        const pnl = Number(trade.profitAndLossAmount ?? calculateProfit(futuresAmount, selectedLeverage, selectvalue));
         setPnlDisplay(`+${Number.isFinite(pnl) ? pnl.toFixed(2) : "0.00"} USDT`);
       } else {
         setTradeResult("loss");
@@ -266,10 +273,10 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
   const calculateProfit = (
     amount: number,
     leverage: string,
-    duration: string
+    value: string
   ): number => {
 
-    return (amount * parseInt(leverage, 10) * parseInt(duration, 10)) /100 ;
+    return (amount * parseInt(leverage, 10) * parseInt(value, 10)) / 100;
   };
 
   const calculateProgress = (): number => {
@@ -412,8 +419,8 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
                     (option) => (
                       <button
                         key={option.duration}
-                        className={`option-btn ${selectedDuration === option.payout ? "selected" : ""}`}
-                        onClick={() => setSelectedDuration(option.payout)}
+                        className={`option-btn ${selectedDuration === option.duration ? "selected" : ""}`}
+                        onClick={() => changeValues(option.duration, option.payout)}
                       >
                         {option.duration}s ({option.payout}%)
                       </button>
@@ -473,7 +480,9 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
 
               {/* Projected Profit */}
               <div className="profit-info">
-                Projected Profit: {calculateProfit(futuresAmount, selectedLeverage, selectedDuration).toFixed(2)} USDT
+                Projected Profit: {calculateProfit(futuresAmount, selectedLeverage, selectvalue
+
+                ).toFixed(2)} USDT
               </div>
 
               {/* Confirm Button */}

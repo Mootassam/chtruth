@@ -253,20 +253,18 @@ const publicRoutes = [
     loader: () => import("src/view/pages/Auth/Signin"),
   },
   {
-    path: "/terms-of-use",
+    path: "/terms-of-uses",
     loader: () => import("src/view/pages/Terms/TermsofServicePage"),
   },
-
-
   {
     path: "/auth/signup",
     loader: () => import("src/view/pages/Auth/Signup"),
   },
-
   {
     path: "/impersonate",
     loader: () => import("src/view/pages/Auth/ImpersonatePage"),
   },
+
 ];
 const simpleRoutes = [
   {
@@ -301,6 +299,10 @@ const navRoutes = [
     loader: () => import("src/view/pages/Market/Market"),
   },
 
+    {
+    path: "/liveChat",
+    loader: () => import("src/view/pages/LiveChat/LiveChat"),
+  },
   {
     path: "/faq-center",
     loader: () => import("src/view/pages/Home/Faq"),

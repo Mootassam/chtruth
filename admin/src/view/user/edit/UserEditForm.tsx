@@ -99,8 +99,8 @@ function UserEditForm(props) {
       itemNumber: record.itemNumber,
       grab: record.grab,
       withdraw: record.withdraw,
-      freezeblance : record.freezeblance,
-      tasksDone:record.tasksDone,       
+      freezeblance: record.freezeblance,
+      tasksDone: record.tasksDone,
     };
   });
 
@@ -207,7 +207,17 @@ function UserEditForm(props) {
             </Col>
           </Row>
 
+          
           <Row>
+            <Col sm={4}>
+              <InputNumberFormItem
+                name="score"
+                label={i18n('user.fields.score')}
+              />
+            </Col>
+          </Row>
+
+          {/* <Row>
             <Col sm={4}>
               <SwitchFormItem
                 name="grab"
@@ -244,7 +254,7 @@ function UserEditForm(props) {
               />
             </Col>
           </Row>
-          
+
           <Row>
             <Col sm={4}>
               <InputNumberFormItem
@@ -255,7 +265,7 @@ function UserEditForm(props) {
           </Row>
 
 
-          
+
           <Row>
             <Col sm={4}>
               <VipAutocompleteFormItem
@@ -275,7 +285,7 @@ function UserEditForm(props) {
                 max={2}
               />
             </Col>
-          </Row>
+          </Row> */}
 
           {/* <Row>
             <FilesFormItem
@@ -285,7 +295,7 @@ function UserEditForm(props) {
               max={1}
             />
           </Row> */}
-          <Row>
+          {/* <Row>
             <Col sm={4}>
               <InputFormItem
                 name="fullName"
@@ -315,14 +325,6 @@ function UserEditForm(props) {
             </Col>
           </Row>
 
-          <Row>
-            <Col sm={4}>
-              <InputNumberFormItem
-                name="score"
-                label={i18n('user.fields.score')}
-              />
-            </Col>
-          </Row>
 
           <Row>
             <Col sm={4}>
@@ -341,7 +343,7 @@ function UserEditForm(props) {
                 required={true}
               />
             </Col>
-          </Row>
+          </Row> */}
 
           <div className="form-buttons">
             <button

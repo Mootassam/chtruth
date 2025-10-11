@@ -6,7 +6,8 @@
     "test": "nodemon --exec \"cross-env NODE_ENV=test mocha -r ts-node/register ./src/**/*.test.ts --exit || exit 1\"",
     "build:documentation": "copyfiles --flat ./src/documentation/openapi.json ./dist/documentation/",
     "build": "tsc && npm run build:documentation",
-    "db:create": "npm run build && node ./dist/database/migrations/create"
+    "db:create": "npm run build && node ./dist/database/migrations/create",
+    "back": "npx ts-node src/database/utils/stackingQueue.ts"
   },
   "dependencies": {
     "@google-cloud/storage": "5.3.0",

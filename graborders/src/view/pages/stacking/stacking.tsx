@@ -1268,7 +1268,6 @@ function StackingPage() {
                 <div className="stacking-input-group">
                   <FieldFormItem
                     name="amount"
-                    type="number"
                     label="Amount to Stake"
                     className="textField"
                     className1="inputField"

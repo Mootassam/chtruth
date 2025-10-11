@@ -44,8 +44,8 @@ const typeConfig = {
   },
   accountActivated: {
     icon: "fas fa-user-check",
-    title: "Account Activated",
-    getMessage: () => "Your account has been activated.",
+    title: "kyc Verification",
+    getMessage: (item) => `Hello ${item.message} your KYC documents have been verified you can now enjoy unlimited features on Nexus Exchange`,
   },
   custom: {
     icon: "fas fa-bell",
@@ -60,14 +60,14 @@ const typeConfig = {
   },
   cancel_withdraw: {
     icon: "fas fa-ban",
-    title: "Withdrawal Cancelled", 
+    title: "Withdrawal Cancelled",
     getMessage: (item) =>
       `Your withdrawal of ${item.message} has been cancelled.`,
   },
   cancel_activated: {
     icon: "fas fa-user-slash",
     title: "Activation Cancelled",
-    getMessage: () => "Your account activation has been cancelled.",
+    getMessage: () => "Your KYC was declined  by system please try again or contact Customer Support for help",
   },
 };
 
@@ -142,9 +142,8 @@ function Notification() {
               return (
                 <div
                   key={item.id}
-                  className={`notification-item ${
-                    item.status === "unread" ? "unread" : ""
-                  }`}
+                  className={`notification-item ${item.status === "unread" ? "unread" : ""
+                    }`}
                   onClick={() => handleNotificationClick(item)}
                 >
                   <div className="notification-icon">

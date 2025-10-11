@@ -59,7 +59,7 @@ function Signin() {
 
   return (
     <div className="container" style={{ marginTop: 30 }}>
-         <div className="header" style={{ display: "flex", marginBottom: 20 }}>
+      <div className="header" style={{ display: "flex", marginBottom: 20 }}>
         <div className="back-button" onClick={goBack}>
           <i className="fas fa-arrow-left" />
         </div>
@@ -73,11 +73,11 @@ function Signin() {
         margin: '20px 0 30px 0'
       }}>
         <img src="/icons/nexus.png" alt="" style={{ height: 70 }} />
-       
+
       </div>
 
       {/* Header with Back Button - Moved below logo/title */}
-   
+
 
       <FormProvider {...form}>
         <div className="form-section">
@@ -151,9 +151,7 @@ function Signin() {
       </FormProvider>
 
       <div className="footer-links">
-        <Link to="/auth/forgot-password" className="footer-link">
-          {" "}
-          {/* Better to use Link */}
+        <Link to="/LiveChat" className="footer-link">
           FORGOT PASSWORD?
         </Link>
         <Link to="/auth/signup" className="footer-link">

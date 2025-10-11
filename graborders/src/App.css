@@ -7398,3 +7398,23 @@
   .app-badge:hover {
       background-color: #363636;
   }
+
+
+
+
+  
+#crisp-chatbox-button {
+  display: none !important;
+}
+
+#crisp-chatbox-chat {
+
+  min-width: 100% !important;
+  min-height: 100dvh;
+  right: 0 !important;
+  height: 100%;
+  top: 0 !important;
+  margin: auto !important;
+  bottom: 0 !important
+  ;
+}

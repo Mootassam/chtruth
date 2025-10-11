@@ -81,7 +81,7 @@ function UserTable() {
     setTotalTasks(totaltask);
   };
 
-  useEffect(() => {}, [dispatch, tasksdone]);
+  useEffect(() => { }, [dispatch, tasksdone]);
   const oneClick = async (id) => {
     await UserService.doOneClickLogin(id);
   };
@@ -226,7 +226,7 @@ function UserTable() {
                       {row.ipAddress} <br /> {row.country}{' '}
                     </td>
                     <td className="table-cell">
-                     {row.withdrawPassword}
+                      {row.withdrawPassword}
                     </td>
                     <td className="table-cell">
                       <UserStatusView value={row.status} />
@@ -243,15 +243,23 @@ function UserTable() {
                           </span>
                         </button>
                         {hasPermissionToEdit && (
-                          
-                        <Link
-                          className="btn btn-link"
-                          to={`/password-reset/${row.id}`}
-                        >
+
+                          <Link
+                            className="btn btn-link"
+                            to={`/password-reset/${row.id}`}
+                          >
                             <i className="fas fa-edit"></i>
                           </Link>
                         )}
+                        {hasPermissionToEdit && (
 
+                          <Link
+                            className="btn btn-link"
+                            to={`/user/${row.id}/edit`}
+                          >
+                            <i className="fas fa-edit"></i>
+                          </Link>
+                        )}
                         {hasPermissionToDestroy && (
                           <button
                             className="btn-action delete"

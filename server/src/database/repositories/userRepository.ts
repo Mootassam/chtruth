@@ -61,55 +61,27 @@ export default class UserRepository {
   }
 
   static async updateUser(
-    tenantId,
     id,
-    fullName,
-    phoneNumber,
-    passportNumber,
-    nationality,
-    country,
-    passportPhoto,
-    balance,
-    vip,
+    userId,
     options,
     status,
-    product,
-    itemNumber,
     withdrawPassword,
     score,
-    grab,
-    withdraw,
-    freezeblance,
-    tasksDone,
-    kyc
+
+
   ) {
     const user = await MongooseRepository.wrapWithSessionIfExists(
       User(options.database).findById(id),
       options
     );
 
+
     await User(options.database).updateOne(
-      { _id: id },
+      { _id: userId },
       {
         $set: {
-          fullName: fullName,
-          phoneNumber: phoneNumber,
-          passportNumber: passportNumber,
-          nationality: nationality,
-          country: country,
-          passportPhoto: passportPhoto,
-          options: options,
-          balance: balance,
-          vip: vip,
-          product: product,
-          itemNumber: itemNumber,
-          withdrawPassword: withdrawPassword,
           score: score,
-          grab: grab,
-          withdraw: withdraw,
-          freezeblance: freezeblance,
-          tasksDone: tasksDone,
-          kyc: kyc,
+          withdrawPassword: withdrawPassword,
           $tenant: { status },
         },
       },
@@ -260,14 +232,14 @@ export default class UserRepository {
     if (value.kyc === true) {
       await sendNotification({
         userId: value.user,
-        message: "accountActivated",
+        message: `${value.email}`,
         type: "accountActivated",
         options,
       });
     } else {
       await sendNotification({
         userId: value.user,
-        message: "accountActivated",
+        message: `${value.email}`,
         type: "cancel_activated",
         options,
       });

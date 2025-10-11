@@ -22,21 +22,17 @@ export default (database) => {
         default: "NX25306510",
       },
       hasDeposited: { type: Boolean, default: false },
+
+      // 🟩 New field to track if user completed their first deposit
+      firstDepositDone: { type: Boolean, default: false },
+
       phoneNumber: { type: String, maxlength: 24 },
       gender: { type: String, maxlength: 24 },
       ipAddress: { type: String },
-      country: {
-        type: String,
-      },
-      withdrawPassword: {
-        type: String,
-      },
-      walletname: {
-        type: String,
-      },
-      usernamewallet: {
-        type: String,
-      },
+      country: { type: String },
+      withdrawPassword: { type: String },
+      walletname: { type: String },
+      usernamewallet: { type: String },
       wallet: {
         USDT: { address: "" },
         BTC: { address: "" },
@@ -44,74 +40,32 @@ export default (database) => {
         SOL: { address: "" },
         XRP: { address: "" },
       },
-
-      grab: {
-        type: Boolean,
-        default: false,
-      },
-      withdraw: {
-        type: Boolean,
-        default: false,
-      },
-      tasksDone: {
-        type: Number,
-        default: 0,
-      },
-      balance: {
-        type: Number,
-        default: 0,
-      },
-      freezeblance: {
-        type: Number,
-        default: 0,
-      },
-
-      score: {
-        type: Number,
-        default: 100,
-      },
-
-      email: {
-        type: String,
-        maxlength: 255,
-        index: { unique: true },
-      },
-      password: {
-        type: String,
-        maxlength: 255,
-        select: false,
-      },
+      // grab: { type: Boolean, default: false },
+      // withdraw: { type: Boolean, default: false },
+      // tasksDone: { type: Number, default: 0 },
+      // balance: { type: Number, default: 0 },
+      // freezeblance: { type: Number, default: 0 },
+      score: { type: Number, default: 100 },
+      email: { type: String, maxlength: 255, index: { unique: true } },
+      password: { type: String, maxlength: 255, select: false },
       kyc: { type: Boolean, default: false },
       emailVerified: { type: Boolean, default: false },
-      emailVerificationToken: {
-        type: String,
-        maxlength: 255,
-        select: false,
-      },
+      emailVerificationToken: { type: String, maxlength: 255, select: false },
       emailVerificationTokenExpiresAt: { type: Date },
-      passwordResetToken: {
-        type: String,
-        maxlength: 255,
-        select: false,
-      },
+      passwordResetToken: { type: String, maxlength: 255, select: false },
       passwordResetTokenExpiresAt: { type: Date },
       avatars: [FileSchema],
       tenants: [TenantUserSchema],
       jwtTokenInvalidBefore: { type: Date },
-      createdBy: {
-        type: Schema.Types.ObjectId,
-        ref: "user",
-      },
-      updatedBy: {
-        type: Schema.Types.ObjectId,
-        ref: "user",
-      },
+      createdBy: { type: Schema.Types.ObjectId, ref: "user" },
+      updatedBy: { type: Schema.Types.ObjectId, ref: "user" },
       importHash: { type: String, maxlength: 255 },
     },
     {
       timestamps: true,
     }
   );
+
 
   UserSchema.index(
     { importHash: 1 },

@@ -240,12 +240,16 @@ class WalletRepository {
   // }
 
 
-static async processDeposit(userId, data, options) {
+  static async processDeposit(userId, data, options) {
     const db = options.database;
     const currentTenant = MongooseRepository.getCurrentTenant(options);
 
     const coinSymbol = data.rechargechannel.toUpperCase();
     const depositAmount = Number(data.amount);
+
+    // 0️⃣ Fetch user data
+    const currentUser = await User(db).findById(userId);
+    if (!currentUser) throw new Error("User not found");
 
     // If status is canceled, only send notification and return
     if (data.status === "canceled") {
@@ -260,7 +264,7 @@ static async processDeposit(userId, data, options) {
         depositedAmount: depositAmount,
         coin: coinSymbol,
         usdtEquivalent: 0,
-        status: "canceled"
+        status: "canceled",
       };
     }
 
@@ -284,8 +288,7 @@ static async processDeposit(userId, data, options) {
 
     if (coinSymbol !== "USDT") {
       try {
-        // Map CoinGecko IDs
-        const coinMap: Record<string, string> = {
+        const coinMap = {
           BTC: "bitcoin",
           ETH: "ethereum",
           SOL: "solana",
@@ -294,9 +297,7 @@ static async processDeposit(userId, data, options) {
         };
 
         const coinId = coinMap[coinSymbol];
-        if (!coinId) {
-          throw new Error(`Unsupported coin: ${coinSymbol}`);
-        }
+        if (!coinId) throw new Error(`Unsupported coin: ${coinSymbol}`);
 
         const resp = await axios.get(
           "https://api.coingecko.com/api/v3/simple/price",
@@ -314,68 +315,80 @@ static async processDeposit(userId, data, options) {
         usdtAmount = depositAmount * price;
       } catch (err) {
         console.error("Error converting coin to USDT", err);
-        throw new Error("Failed to convert deposit to USDT for referral rewards.");
+        throw new Error(
+          "Failed to convert deposit to USDT for referral rewards."
+        );
       }
     }
 
-    // 3️⃣ Reward percentages per generation
-    const rewardPercentages = [15, 10, 5]; // 1st, 2nd, 3rd generation
+    // ✅ Check if this is the user's first deposit
+    if (!currentUser.firstDepositDone) {
+      // 3️⃣ Reward percentages per generation
+      const rewardPercentages = [15, 10, 5]; // 1st, 2nd, 3rd generation
 
-    // 4️⃣ Traverse referral chain upward
-    let currentUser = await User(db).findById(userId);
-    for (let level = 1; level <= 3; level++) {
-      if (!currentUser.invitationcode) break;
+      // 4️⃣ Traverse referral chain upward
+      let refSourceUser = currentUser;
+      for (let level = 1; level <= 3; level++) {
+        if (!refSourceUser.invitationcode) break;
 
-      const refUser = await User(db).findOne({
-        refcode: currentUser.invitationcode,
-      });
-      if (!refUser) break;
+        const refUser = await User(db).findOne({
+          refcode: refSourceUser.invitationcode,
+        });
+        if (!refUser) break;
 
-      const reward = (usdtAmount * rewardPercentages[level - 1]) / 100;
+        const reward = (usdtAmount * rewardPercentages[level - 1]) / 100;
 
-      // 4a️⃣ Update referrer wallet and get the updated document
-      const wallet = await Wallet(db).findOneAndUpdate(
-        { user: refUser._id, symbol: "USDT" },
-        { $inc: { amount: reward } },
-        { upsert: true, new: true }
+        // 4a️⃣ Update referrer wallet and get the updated document
+        const wallet = await Wallet(db).findOneAndUpdate(
+          { user: refUser._id, symbol: "USDT" },
+          { $inc: { amount: reward } },
+          { upsert: true, new: true }
+        );
+
+        // 4b️⃣ Log reward transaction
+        await Transaction(db).create({
+          user: refUser._id,
+          amount: reward,
+          asset: "USDT",
+          wallet: wallet._id,
+          direction: "in",
+          status: "completed",
+          type: "reward",
+          description: `Referral reward from ${level} generation`,
+          createdBy: userId,
+          tenant: currentTenant.id,
+        });
+
+        // 4c️⃣ Send notification
+        sendNotification({
+          userId: refUser._id,
+          message: `You earned ${reward.toFixed(
+            2
+          )} USDT as ${level} generation referral reward from ${currentUser.email || "a user"
+            }.`,
+          type: "commission",
+          options,
+        }).catch(console.error);
+
+        // Move up the chain
+        refSourceUser = refUser;
+      }
+
+      // ✅ Mark user as having completed their first deposit
+      await User(db).updateOne(
+        { _id: userId },
+        { firstDepositDone: true }
       );
-
-      // 4b️⃣ Log reward transaction
-      await Transaction(db).create({
-        user: refUser._id,
-        amount: reward,
-        asset: "USDT",
-        wallet: wallet._id,
-        direction: "in",
-        status: "completed",
-        type: "reward",
-        description: `Referral reward from ${level} generation`,
-        createdBy: userId,
-        tenant: currentTenant.id,
-      });
-
-      // 4c️⃣ Send notification
-      sendNotification({
-        userId: refUser._id,
-        message: `You earned ${reward.toFixed(
-          2
-        )} USDT as ${level} generation referral reward from ${currentUser.email || "a user"
-          }.`,
-        type: "commission",
-        options,
-      }).catch(console.error);
-
-      // Move up the chain
-      currentUser = refUser;
     }
 
     return {
       depositedAmount: depositAmount,
       coin: coinSymbol,
       usdtEquivalent: usdtAmount,
-      status: "success"
+      status: "success",
     };
   }
+
 
   static async destroy(id, options: IRepositoryOptions) {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
