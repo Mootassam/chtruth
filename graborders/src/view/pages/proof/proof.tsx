@@ -1,44 +1,37 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useMemo } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { i18n } from "../../../i18n";
 import yupFormSchemas from "src/modules/shared/yup/yupFormSchemas";
 import InputFormItem from "src/shared/form/InputFormItem";
-import ImagesUploader from "src/view/shared/uploaders/ImagesUploader";
+import ImagesFormItem from "src/shared/form/ImagesFormItems";
 import * as yup from "yup";
-import selectors from "src/modules/kyc/kycSelectors";
 import actions from "src/modules/kyc/form/kycFormActions";
 import { yupResolver } from "@hookform/resolvers/yup";
 import authSelectors from "src/modules/auth/authSelectors";
 import transactionEnumerators from "src/modules/transaction/transactionEnumerators";
-import ImagesFormItem from "src/shared/form/ImagesFormItems";
 import Storage from "src/security/storage";
 
-// Create a dynamic schema that changes based on document type
-const createSchema = (documentType) => {
-  return yup.object().shape({
-    user: yupFormSchemas.relationToOne(i18n("entities.vip.fields.title"), {
-
-    }),
+// Dynamic schema function
+const createSchema = (documentType) =>
+  yup.object().shape({
+    user: yupFormSchemas.relationToOne(i18n("entities.vip.fields.title"), {}),
     Documenttype: yupFormSchemas.string(i18n("Document Type")),
     realname: yupFormSchemas.string(i18n("Full Name"), { required: true }),
     idnumer: yupFormSchemas.string(i18n("Document Number"), { required: true }),
     address: yupFormSchemas.string(i18n("Address"), { required: true }),
     front: yupFormSchemas.images(i18n("Front Side"), { required: true }),
-    // Make back required only if document type is NOT passport
-    back: documentType === "passport"
-      ? yupFormSchemas.images(i18n("Back Side")) // Not required
-      : yupFormSchemas.images(i18n("Back Side"), { required: true }),
+    back:
+      documentType === "passport"
+        ? yupFormSchemas.images(i18n("Back Side"))
+        : yupFormSchemas.images(i18n("Back Side"), { required: true }),
     selfie: yupFormSchemas.images(i18n("Selfie"), { required: true }),
     status: yupFormSchemas.enumerator(
-      i18n('entities.transaction.fields.status'),
-      {
-        options: transactionEnumerators.status,
-      },
+      i18n("entities.transaction.fields.status"),
+      { options: transactionEnumerators.status }
     ),
   });
-};
 
 function Proof() {
   const history = useHistory();
@@ -46,11 +39,13 @@ function Proof() {
   const currentUser = useSelector(authSelectors.selectCurrentUser);
   const dispatch = useDispatch();
 
-  // Create schema based on current document type
-  const [currentSchema, setCurrentSchema] = useState(() => createSchema(document));
+  // Use useMemo to recompute schema only when document changes
+  const schema = useMemo(() => createSchema(document), [document]);
 
-  const [initialValues] = useState(() => {
-    return {
+  const form = useForm({
+    resolver: yupResolver(schema),
+    mode: "all",
+    defaultValues: {
       user: currentUser || [],
       Documenttype: document,
       realname: "",
@@ -60,73 +55,31 @@ function Proof() {
       back: [],
       selfie: [],
       status: "pending",
-    };
+    },
   });
-
-  const form = useForm({
-    resolver: yupResolver(currentSchema),
-    mode: "all",
-    defaultValues: initialValues,
-  });
-
-  // Update schema when document type changes
-  useEffect(() => {
-    const newSchema = createSchema(document);
-    setCurrentSchema(newSchema);
-
-    // Update form validation schema
-    form.clearErrors(); // Clear existing errors
-  }, [document, form]);
 
   const onSubmit = (values) => {
-    const data = {
-      user: currentUser,
-      Documenttype: document,
-      ...values
-    };
-
-    // If passport, remove back field from data or set to empty
-    if (document === "passport") {
-      data.back = []; // or you can delete data.back if your backend expects it to be absent
-    }
-
+    const data = { ...values, user: currentUser, Documenttype: document };
+    if (document === "passport") data.back = [];
     dispatch(actions.doCreate(data));
   };
 
-  const goBack = () => {
-    history.goBack();
+  const handleDocumentChange = (type) => {
+    setDocument(type);
+    if (type === "passport") form.setValue("back", []);
   };
 
-  const handleDocumentChange = (newDocumentType) => {
-    setDocument(newDocumentType);
-
-    // Reset back field when switching to passport
-    if (newDocumentType === "passport") {
-      form.setValue("back", []);
-    }
-  };
+  const goBack = () => history.goBack();
 
   const documentTypeOptions = [
-    {
-      value: "passport",
-      label: "Passport",
-      icon: "fas fa-passport",
-    },
-    {
-      value: "idCard",
-      label: "ID Card",
-      icon: "fas fa-id-card",
-    },
-    {
-      value: "driversLicense",
-      label: "Driver's License",
-      icon: "fas fa-id-card-alt",
-    },
+    { value: "passport", label: "Passport", icon: "fas fa-passport" },
+    { value: "idCard", label: "ID Card", icon: "fas fa-id-card" },
+    { value: "driversLicense", label: "Driver's License", icon: "fas fa-id-card-alt" },
   ];
 
   return (
     <div className="container">
-      {/* Header Section */}
+      {/* Header */}
       <div className="header">
         <div className="header-content">
           <div className="back-button" onClick={goBack}>
@@ -137,18 +90,16 @@ function Proof() {
         </div>
       </div>
 
-      {/* Instructions */}
       <div className="instructions">
         Verify your identity to access all features of your crypto wallet
       </div>
 
-      {/* Form Section */}
       <FormProvider {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
+          {/* Document Info */}
           <div className="form-section">
             <div className="proof-section-title">Document Information</div>
 
-            {/* Document Type */}
             <div className="input-group">
               <label className="input-label">
                 Document Type <span className="required">*</span>
@@ -157,8 +108,7 @@ function Proof() {
                 {documentTypeOptions.map((item) => (
                   <div
                     key={item.value}
-                    className={`radio-option ${item.value === document ? "selected" : ""
-                      }`}
+                    className={`radio-option ${item.value === document ? "selected" : ""}`}
                     onClick={() => handleDocumentChange(item.value)}
                   >
                     <i className={`${item.icon} radio-icon`} />
@@ -168,59 +118,35 @@ function Proof() {
               </div>
             </div>
 
-            {/* Personal Information */}
-            <InputFormItem
-              type="text"
-              name="realname"
-              className="text-input"
-              placeholder="Enter your full name"
-              label="Full Name"
-            />
-
-            <InputFormItem
-              type="text"
-              name="idnumer"
-              className="text-input"
-              placeholder="Enter your document number"
-              label="Document Number"
-            />
-
-            {/* New Address Field */}
-            <InputFormItem
-              type="text"
-              name="address"
-              className="text-input"
-              placeholder="Enter your complete address"
-              label="Address"
-            />
+            <InputFormItem  className="text-input" name="realname" label="Full Name" placeholder="Enter your full name" />
+            <InputFormItem  className="text-input" name="idnumer" label="Document Number" placeholder="Enter your document number" />
+            <InputFormItem    className="text-input"
+              name="address" label="Address" placeholder="Enter your complete address" />
           </div>
 
-          {/* Document Upload Section */}
+          {/* Upload Section */}
           <div className="form-section">
             <div className="proof-section-title">Document Upload</div>
 
-            {/* Front of Document */}
             <ImagesFormItem
               name="front"
-              label={i18n('Front of Document')}
+              label={i18n("Front of Document")}
               storage={Storage.values.categoryPhoto}
               text="Upload front side of your document"
             />
 
-            {/* Back of Document - Only show if NOT passport */}
             {document !== "passport" && (
               <ImagesFormItem
                 name="back"
-                label={i18n('Back of Document')}
+                label={i18n("Back of Document")}
                 storage={Storage.values.categoryPhoto}
                 text="Upload back side of your document"
               />
             )}
 
-            {/* Selfie with Document */}
             <ImagesFormItem
               name="selfie"
-              label={i18n('Selfie with Document')}
+              label={i18n("Selfie with Document")}
               storage={Storage.values.categoryPhoto}
               text="Upload a selfie holding your document"
             />
@@ -229,30 +155,22 @@ function Proof() {
           {/* Security Note */}
           <div className="security-note">
             <div className="security-title">
-              <i className="fas fa-shield-alt" />
-              Security Notice
+              <i className="fas fa-shield-alt" /> Security Notice
             </div>
             <div className="security-text">
               Your information is encrypted and secure. We use bank-level
-              security measures to protect your data. All documents are verified
-              manually by our security team to ensure your account's safety.
+              protection and manually verify each document for your safety.
             </div>
           </div>
 
-          {/* Submit Button */}
-          <button
-            type="submit"
-            className="submit-button"
-          >
+          <button type="submit" className="submit-button">
             VALIDATE DOCUMENTS
           </button>
         </form>
       </FormProvider>
 
-      {/* Footer */}
       <div className="footer">
-        © 2025 CryptoWallet. All rights reserved. |
-        <a href="#">Privacy Policy</a>
+        © 2025 CryptoWallet. All rights reserved. | <a href="#">Privacy Policy</a>
       </div>
     </div>
   );

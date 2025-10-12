@@ -1,125 +1,195 @@
-// src/jobs/autoFinalizeStackingJob.ts
 import { databaseInit } from "../databaseConnection";
 import Stacking from "../models/stacking";
 import StackingPlan from "../models/stakeProgram";
-import wallet from "../models/wallet";
-import transaction from "../models/transaction";
-import { sendNotification } from "../../services/notificationServices";
-import { IRepositoryOptions } from "../repositories/IRepositoryOptions";
-import NotificationRepository from "../repositories/notificationtRepository";
-import notification from "../models/notification";
+import Wallet from "../models/wallet";
+import Transaction from "../models/transaction";
+import Notification from "../models/notification";
+import User from "../models/user";
 
 export async function autoFinalizeStackingJob(job) {
-  if (!job?.data) return;
-
-  const mongoose = await databaseInit();
-  const { stackingId, tenantId } = job.data;
-
-  if (!stackingId) {
-    console.error("autoFinalizeStackingJob: missing stackingId");
+  if (!job?.data) {
+    console.error("autoFinalizeStackingJob: No job data provided");
     return;
   }
 
-  const stackingModel = Stacking(mongoose);
-  let stackingRecord = await stackingModel
-    .findOne({ _id: stackingId, tenant: tenantId })
-    .populate("plan")
-    .populate("user")
-    .lean();
+  let mongoose;
+  try {
+    mongoose = await databaseInit();
+    const { stackingId, tenantId } = job.data;
 
-  if (!stackingRecord) {
-    console.warn(`Stacking record ${stackingId} not found`);
-    return;
-  }
-
-  if (stackingRecord.status !== "active") {
-    console.log(`Stacking ${stackingId} already processed`);
-    return;
-  }
-
-  // ensure plan data
-  let plan = stackingRecord.plan;
-  if (!plan || !plan.dailyRate || !plan.unstakingPeriod) {
-    const stackingPlanModel = StackingPlan(mongoose);
-    plan = await stackingPlanModel.findById(stackingRecord.plan).lean();
-    if (!plan) return;
-  }
-
-  // days elapsed: for testing force at least 1 day
-  const startDate = new Date(stackingRecord.startDate);
-  const endDate = new Date(stackingRecord.endDate);
-  let daysElapsed = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
-  daysElapsed = Math.max(daysElapsed, 1); // force 1 day for short tests
-
-  const amount = Number(stackingRecord.amount);
-  const dailyRatePercent = Number(plan.dailyRate || 0);
-  const earnedRewards = Number((amount * (dailyRatePercent / 100) * plan.unstakingPeriod));
-
-  
-  // update stacking record
-  await stackingModel.updateOne(
-    { _id: stackingId, tenant: tenantId },
-    {
-      $set: {
-        status: "completed",
-        earnedRewards,
-        completedAt: new Date(),
-        updatedBy: null,
-      },
+    if (!stackingId || !tenantId) {
+      console.error("autoFinalizeStackingJob: missing stackingId or tenantId");
+      return;
     }
-  );
 
-  // update user's wallet (principal + rewards)
-  const walletModel = wallet(mongoose);
-  const transactionModel = transaction(mongoose);
-  const currency = plan.currency || "USDT";
-  const totalToCredit = Number((amount + earnedRewards).toFixed(8));
+    const stackingModel = Stacking(mongoose);
+    const stackingRecord = await stackingModel
+      .findOne({ _id: stackingId, tenant: tenantId })
+      .populate("plan")
+      .populate("user")
+      .lean();
 
-  const updatedWallet = await walletModel.findOneAndUpdate(
-    { user: stackingRecord.user._id || stackingRecord.user, symbol: currency, tenant: tenantId },
-    { $inc: { amount: totalToCredit }, $set: { updatedBy: null } },
-    { new: true, upsert: true }
-  );
+    if (!stackingRecord) {
+      console.warn(`Stacking record ${stackingId} not found for tenant ${tenantId}`);
+      return;
+    }
 
-  if (!updatedWallet) {
-    console.error(`Failed to update wallet for stacking ${stackingId}`);
-    return;
-  }
+    if (stackingRecord.status !== "active") {
+      console.log(`Stacking ${stackingId} already processed with status: ${stackingRecord.status}`);
+      return;
+    }
 
-  // create transaction log
-  await transactionModel.create({
-    type: "staking_reward",
-    referenceId: stackingId,
-    wallet: updatedWallet._id,
-    asset: currency,
-    amount: totalToCredit,
-    status: "completed",
-    direction: "in",
-    user: stackingRecord.user._id || stackingRecord.user,
-    tenant: tenantId,
-    dateTransaction: new Date(),
-    createdBy: null,
-    updatedBy: null,
-  });
+    // Ensure plan data
+    let plan = stackingRecord.plan;
+    if (!plan || !plan.dailyRate || plan.unstakingPeriod === undefined) {
+      const stackingPlanModel = StackingPlan(mongoose);
+      plan = await stackingPlanModel.findById(stackingRecord.plan).lean();
+      if (!plan) {
+        console.error(`Plan ${stackingRecord.plan} not found for stacking ${stackingId}`);
+        return;
+      }
+    }
 
-
-  // Create proper IRepositoryOptions object
-  const options: IRepositoryOptions = {
-    database: mongoose,
-    currentUser: null, // or you can pass the system user
-    currentTenant: { id: tenantId },
-    session: null, // optional: if you're using transactions
-    language: 'en', // optional: default language
-  };
-
-  // Corrected function call - remove the colon and type annotation
- await sendNotification({
-      userId: stackingRecord.user._id ,
-      message: `${totalToCredit}`,
-      type: "staking",
-      options,
-    });
+    // Calculate rewards - FIXED CALCULATION
+    const amount = Number(stackingRecord.amount);
+    const dailyRatePercent = Number(plan.dailyRate || 0);
+    const unstakingPeriod = Number(plan.unstakingPeriod || 0);
     
+    // Calculate total rewards for the entire stacking period
+    const earnedRewards = Number((amount * (dailyRatePercent / 100) * unstakingPeriod).toFixed(8));
+    const totalToCredit = Number((amount + earnedRewards).toFixed(8));
+    const currency = plan.currency || "USDT";
 
-  console.log(`✅ Auto-finalized stacking ${stackingId} - credited ${totalToCredit} ${earnedRewards}`);
+    const walletModel = Wallet(mongoose);
+    const txModel = Transaction(mongoose);
+    const notifModel = Notification(mongoose);
+    const userModel = User(mongoose);
+
+    // ✅ Update stacking record
+    await stackingModel.updateOne(
+      { _id: stackingId, tenant: tenantId },
+      {
+        $set: {
+          status: "completed",
+          earnedRewards,
+          completedAt: new Date(),
+          updatedBy: null,
+        },
+      }
+    );
+
+    // ✅ Update user's wallet (principal + reward)
+    const updatedWallet = await walletModel.findOneAndUpdate(
+      { user: stackingRecord.user._id, symbol: currency, tenant: tenantId },
+      { 
+        $inc: { amount: totalToCredit },
+        $set: { updatedBy: null, updatedAt: new Date() }
+      },
+      { new: true, upsert: true, runValidators: true }
+    );
+
+    // ✅ Create staking reward transaction
+    await txModel.create({
+      type: "staking_reward",
+      referenceId: stackingRecord._id,
+      wallet: updatedWallet._id,
+      asset: currency,
+      amount: totalToCredit,
+      status: "completed",
+      direction: "in",
+      user: stackingRecord.user._id,
+      tenant: tenantId,
+      dateTransaction: new Date(),
+      createdBy: null,
+      updatedBy: null,
+    });
+
+    // ✅ Create staking reward notification
+    await notifModel.create({
+      userId: stackingRecord.user._id,
+      type: "staking",
+      message: `Your stacking of ${amount} ${currency} has been completed. You earned ${earnedRewards} ${currency}.`,
+      tenant: tenantId,
+      forAdmin: false,
+      status: "unread", // Added missing status field
+      createdBy: null, // Added missing createdBy field
+      updatedBy: null, // Added missing updatedBy field
+    });
+
+    // ✅ FIRST STACKING REFERRAL BONUS
+    const currentUser = await userModel.findById(stackingRecord.user._id);
+    if (!currentUser) {
+      console.warn(`User ${stackingRecord.user._id} not found for referral bonus`);
+      return;
+    }
+
+    if (!currentUser.firstStackingDone) {
+      const bonusLevels = [10, 7, 4]; // 3 levels
+      let refSourceUser = currentUser;
+
+      for (let level = 1; level <= 3; level++) {
+        if (!refSourceUser.invitationcode) break;
+
+        const refUser = await userModel.findOne({
+          refcode: refSourceUser.invitationcode,
+        });
+
+        if (!refUser) break;
+
+        const reward = Number((earnedRewards * bonusLevels[level - 1]) / 100);
+
+        // Update referrer wallet
+        const refWallet = await walletModel.findOneAndUpdate(
+          { user: refUser._id, symbol: "USDT", tenant: tenantId },
+          { $inc: { amount: reward } },
+          { new: true, upsert: true, runValidators: true }
+        );
+
+        // Create bonus transaction
+        await txModel.create({
+          type: "referral_commission",
+          referenceId: stackingRecord._id,
+          wallet: refWallet._id,
+          asset: "USDT",
+          amount: reward,
+          status: "completed",
+          direction: "in",
+          user: refUser._id,
+          tenant: tenantId,
+          dateTransaction: new Date(),
+          createdBy: stackingRecord.user._id,
+          updatedBy: null,
+        });
+
+        // Create notification for referrer
+        await notifModel.create({
+          userId: refUser._id,
+          type: "commission",
+          message: `You earned ${reward.toFixed(2)} USDT as level ${level} referral bonus from ${currentUser.email || "a user"}'s first stacking.`,
+          tenant: tenantId,
+          forAdmin: false,
+          status: "unread",
+          createdBy: stackingRecord.user._id,
+          updatedBy: null,
+        });
+
+        refSourceUser = refUser;
+      }
+
+      // ✅ Mark user's first stacking as done
+      await userModel.updateOne(
+        { _id: currentUser._id },
+        { 
+          firstStackingDone: true,
+          updatedBy: null 
+        }
+      );
+    }
+
+    console.log(`✅ Auto-finalized stacking ${stackingId}: Credited ${totalToCredit} ${currency}`);
+    
+  } catch (error) {
+    console.error("Error in autoFinalizeStackingJob:", error);
+    throw error; // Re-throw to let the job queue handle retries
+  }
 }

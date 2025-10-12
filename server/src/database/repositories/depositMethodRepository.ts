@@ -48,7 +48,7 @@ static async create(options: IRepositoryOptions) {
 
     return createdRecords;
     
-  } catch (error) {
+  } catch (error:any) {
     // Handle specific MongoDB duplicate key errors
     if (error.code === 11000) {
       throw new Error405('Deposit methods already exist for this tenant');
@@ -229,15 +229,15 @@ static async create(options: IRepositoryOptions) {
   }
 
   static async _createAuditLog(action, id, data, options: IRepositoryOptions) {
-    await AuditLogRepository.log(
-      {
-        entityName: depositMethod(options.database).modelName,
-        entityId: id,
-        action,
-        values: data,
-      },
-      options
-    );
+    // await AuditLogRepository.log(
+    //   {
+    //     entityName: depositMethod(options.database).modelName,
+    //     entityId: id,
+    //     action,
+    //     values: data,
+    //   },
+    //   options
+    // );
   }
 
   static async _fillFileDownloadUrls(record) {

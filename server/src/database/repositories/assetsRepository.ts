@@ -240,6 +240,13 @@ class WalletRepository {
   // }
 
 
+  static async processStacking(data, options) {
+  console.log("🚀 ~ WalletRepository ~ processStacking ~ options:", options)
+  console.log("🚀 ~ WalletRepository ~ processStacking ~ data:", data)
+
+    
+  }
+
   static async processDeposit(userId, data, options) {
     const db = options.database;
     const currentTenant = MongooseRepository.getCurrentTenant(options);

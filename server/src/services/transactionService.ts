@@ -18,8 +18,7 @@ export default class TransactionService {
     );
 
     try {
-      // // await this.checkpermission(this.options)
-      // await this.checkSolde(data, { ...this.options });
+
 
       const record = await TransactionRepository.create(data, {
         ...this.options,

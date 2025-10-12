@@ -307,19 +307,19 @@ export default class TenantUserRepository {
       options
     );
 
-    await AuditLogRepository.log(
-      {
-        entityName: "user",
-        entityId: currentUser.id,
-        action: AuditLogRepository.UPDATE,
-        values: {
-          email: currentUser.email,
-          roles: tenantUser.roles,
-          status: selectStatus("active", tenantUser.roles),
-        },
-      },
-      options
-    );
+    // await AuditLogRepository.log(
+    //   {
+    //     entityName: "user",
+    //     entityId: currentUser.id,
+    //     action: AuditLogRepository.UPDATE,
+    //     values: {
+    //       email: currentUser.email,
+    //       roles: tenantUser.roles,
+    //       status: selectStatus("active", tenantUser.roles),
+    //     },
+    //   },
+    //   options
+    // );
   }
 }
 

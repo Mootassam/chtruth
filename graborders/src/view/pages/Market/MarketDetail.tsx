@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
-import { useHistory, useParams } from "react-router-dom";
+import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import { useHistory, useParams, Link } from "react-router-dom";
 import axios from "axios";
 import FuturesChart from "../Futures/FuturesChart";
 
@@ -46,15 +46,15 @@ function MarketDetail() {
   const tickerWs = useRef<WebSocket | null>(null);
 
   // Format number with commas and fixed decimals
-  const formatNumber = (num: string, decimals: number = 2) => {
+  const formatNumber = useCallback((num: string, decimals: number = 2) => {
     return Number(num).toLocaleString(undefined, {
       minimumFractionDigits: decimals,
       maximumFractionDigits: decimals,
     });
-  };
+  }, []);
 
   // Format volume in billions
-  const formatVolume = (vol: string) => {
+  const formatVolume = useCallback((vol: string) => {
     const volumeNum = Number(vol);
     if (volumeNum >= 1000000000) {
       return (volumeNum / 1000000000).toFixed(2) + "B";
@@ -63,7 +63,7 @@ function MarketDetail() {
     } else {
       return formatNumber(vol, 0);
     }
-  };
+  }, [formatNumber]);
 
   // Fetch initial data via REST API before WebSocket connects
   useEffect(() => {
@@ -96,28 +96,21 @@ function MarketDetail() {
     fetchInitialData();
   }, [selectedCoin]);
 
-  // WebSocket connection for ticker data (price, 24h stats)
+  // WebSocket connection management
   useEffect(() => {
     if (!selectedCoin) return;
 
     const connectTickerWebSocket = () => {
-      // Close previous connection if it exists
-      if (tickerWs.current) {
+      if (tickerWs.current?.readyState === WebSocket.OPEN) {
         tickerWs.current.close();
       }
 
-      // Connect to ticker stream
       tickerWs.current = new WebSocket(
         `wss://stream.binance.com:9443/ws/${selectedCoin.toLowerCase()}@ticker`
       );
 
-      tickerWs.current.onopen = () => {
-      };
-
       tickerWs.current.onmessage = (event: MessageEvent) => {
         const tickerData: BinanceTicker = JSON.parse(event.data);
-
-        // Update market data
         setMarketPrice(tickerData.c);
         setPriceChangePercent(tickerData.P);
         setHighPrice(tickerData.h);
@@ -125,13 +118,7 @@ function MarketDetail() {
         setVolume(tickerData.v);
       };
 
-      tickerWs.current.onerror = (error: Event) => {
-        console.error("Ticker WebSocket error:", error);
-      };
-
-      tickerWs.current.onclose = (event: CloseEvent) => {
-
-        // Auto-reconnect after a short delay
+      tickerWs.current.onclose = () => {
         setTimeout(() => {
           if (selectedCoin) {
             connectTickerWebSocket();
@@ -140,50 +127,24 @@ function MarketDetail() {
       };
     };
 
-    connectTickerWebSocket();
-
-    return () => {
-      if (tickerWs.current && tickerWs.current.readyState === WebSocket.OPEN) {
-        tickerWs.current.close();
-      }
-    };
-  }, [selectedCoin]);
-
-  // WebSocket connection for trade data (recent trades)
-  useEffect(() => {
-    if (!selectedCoin) return;
-
     const connectTradeWebSocket = () => {
-      // Close previous connection if it exists
-      if (tradeWs.current) {
+      if (tradeWs.current?.readyState === WebSocket.OPEN) {
         tradeWs.current.close();
       }
 
-      // Connect to trade stream
       tradeWs.current = new WebSocket(
         `wss://stream.binance.com:9443/ws/${selectedCoin.toLowerCase()}@trade`
       );
 
-      tradeWs.current.onopen = () => {
-      };
-
       tradeWs.current.onmessage = (event: MessageEvent) => {
         const tradeData: BinanceTrade = JSON.parse(event.data);
-
-        // Add new trade to recent trades (limit to last 20 trades)
         setRecentTrades((prevTrades) => {
           const newTrades = [tradeData, ...prevTrades.slice(0, 19)];
           return newTrades;
         });
       };
 
-      tradeWs.current.onerror = (error: Event) => {
-        console.error("Trade WebSocket error:", error);
-      };
-
-      tradeWs.current.onclose = (event: CloseEvent) => {
-
-        // Auto-reconnect after a short delay
+      tradeWs.current.onclose = () => {
         setTimeout(() => {
           if (selectedCoin) {
             connectTradeWebSocket();
@@ -192,74 +153,143 @@ function MarketDetail() {
       };
     };
 
+    connectTickerWebSocket();
     connectTradeWebSocket();
 
     return () => {
-      if (tradeWs.current && tradeWs.current.readyState === WebSocket.OPEN) {
+      if (tickerWs.current?.readyState === WebSocket.OPEN) {
+        tickerWs.current.close();
+      }
+      if (tradeWs.current?.readyState === WebSocket.OPEN) {
         tradeWs.current.close();
       }
     };
   }, [selectedCoin]);
 
   useEffect(() => {
-    if (id) {
+    if (id && id !== selectedCoin) {
       setSelectedCoin(id);
     }
+  }, [id, selectedCoin]);
 
-    return () => {
-      // Clean up WebSocket connections
-      if (tradeWs.current) tradeWs.current.close();
-      if (tickerWs.current) tickerWs.current.close();
-    };
-  }, [id]);
-
-  const goBack = () => {
+  const goBack = useCallback(() => {
     history.goBack();
-  };
+  }, [history]);
 
   // Loading placeholder component
-  const LoadingPlaceholder = ({ width = "100%", height = "1em" }: { width?: string, height?: string }) => (
+  const LoadingPlaceholder = useCallback(({ width = "100%", height = "1em" }: { width?: string, height?: string }) => (
     <div 
       className="loading-placeholder" 
       style={{ width, height }}
     />
-  );
+  ), []);
+
+  // Memoized market info section
+  const marketInfoSection = useMemo(() => (
+    <div className="market-info">
+      <div className="market-icon">
+        <img
+          src={`https://images.weserv.nl/?url=https://bin.bnbstatic.com/static/assets/logos/${
+            selectedCoin.split("USDT")[0]
+          }.png`}
+          style={{ width: 30, height: 30 }}
+          alt={selectedCoin}
+          loading="lazy"
+          onError={(e) => {
+            // Fallback if image fails to load
+            (e.target as HTMLImageElement).style.display = 'none';
+          }}
+        />
+      </div>
+      <div className="market-name">{selectedCoin}</div>
+      <div
+        className="market-change"
+        style={{
+          color: priceChangePercent && priceChangePercent.startsWith("-")
+            ? "#FF6838"
+            : "#00C076",
+        }}
+      >
+        {priceChangePercent !== null ? (
+          `${priceChangePercent}%`
+        ) : (
+          <LoadingPlaceholder width="50px" height="16px" />
+        )}
+      </div>
+    </div>
+  ), [selectedCoin, priceChangePercent, LoadingPlaceholder]);
+
+  // Memoized market stats
+  const marketStatsSection = useMemo(() => (
+    <div className="market-stats">
+      <span>
+        24h High:{" "}
+        {highPrice !== null ? (
+          `$${formatNumber(highPrice)}`
+        ) : (
+          <LoadingPlaceholder width="80px" height="12px" />
+        )}
+      </span>
+      <span>
+        24h Vol:{" "}
+        {volume !== null ? (
+          `${formatVolume(volume)} ${selectedCoin.replace("USDT", "")}`
+        ) : (
+          <LoadingPlaceholder width="80px" height="12px" />
+        )}
+      </span>
+      <span>
+        24h Low:{" "}
+        {lowPrice !== null ? (
+          `$${formatNumber(lowPrice)}`
+        ) : (
+          <LoadingPlaceholder width="80px" height="12px" />
+        )}
+      </span>
+    </div>
+  ), [highPrice, volume, lowPrice, selectedCoin, formatNumber, formatVolume, LoadingPlaceholder]);
+
+  // Memoized recent trades
+  const recentTradesSection = useMemo(() => {
+    if (recentTrades.length > 0) {
+      return recentTrades.map((trade, index) => (
+        <div
+          key={`${trade.t}-${trade.T}-${index}`}
+          className={`trade-row ${trade.m ? "sell-trade" : "buy-trade"}`}
+        >
+          <div className="trade-price">{formatNumber(trade.p)}</div>
+          <div className="trade-amount">{Number(trade.q).toFixed(4)}</div>
+          <div className="trade-time">
+            {new Date(trade.T).toLocaleTimeString()}
+          </div>
+        </div>
+      ));
+    }
+    
+    return Array.from({ length: 5 }).map((_, index) => (
+      <div key={index} className="trade-row">
+        <div className="trade-price">
+          <LoadingPlaceholder width="60px" height="14px" />
+        </div>
+        <div className="trade-amount">
+          <LoadingPlaceholder width="50px" height="14px" />
+        </div>
+        <div className="trade-time">
+          <LoadingPlaceholder width="40px" height="14px" />
+        </div>
+      </div>
+    ));
+  }, [recentTrades, formatNumber, LoadingPlaceholder]);
 
   return (
     <div className="container">
       {/* Header Section */}
       <div className="header">
         <div className="header-top">
-          <div className="back-button" onClick={() => goBack()}>
+          <div className="back-button" onClick={goBack}>
             <i className="fas fa-arrow-left" />
           </div>
-          <div className="market-info">
-            <div className="market-icon">
-              <img
-                src={`https://images.weserv.nl/?url=https://bin.bnbstatic.com/static/assets/logos/${
-                  selectedCoin.split("USDT")[0]
-                }.png`}
-                style={{ width: 30, height: 30 }}
-                alt={selectedCoin}
-                loading="lazy"
-              />
-            </div>
-            <div className="market-name">{selectedCoin}</div>
-            <div
-              className="market-change"
-              style={{
-                color: priceChangePercent && priceChangePercent.startsWith("-")
-                  ? "#FF6838"
-                  : "#00C076",
-              }}
-            >
-              {priceChangePercent !== null ? (
-                `${priceChangePercent}%`
-              ) : (
-                <LoadingPlaceholder width="50px" height="16px" />
-              )}
-            </div>
-          </div>
+          {marketInfoSection}
           <div style={{ width: 20 }} />
         </div>
         <div className="market-price">
@@ -269,41 +299,20 @@ function MarketDetail() {
             <LoadingPlaceholder width="120px" height="28px" />
           )}
         </div>
-        <div className="market-stats">
-          <span>
-            24h High:{" "}
-            {highPrice !== null ? (
-              `$${formatNumber(highPrice)}`
-            ) : (
-              <LoadingPlaceholder width="80px" height="12px" />
-            )}
-          </span>
-          <span>
-            24h Vol:{" "}
-            {volume !== null ? (
-              `${formatVolume(volume)} ${selectedCoin.replace("USDT", "")}`
-            ) : (
-              <LoadingPlaceholder width="80px" height="12px" />
-            )}
-          </span>
-          <span>
-            24h Low:{" "}
-            {lowPrice !== null ? (
-              `$${formatNumber(lowPrice)}`
-            ) : (
-              <LoadingPlaceholder width="80px" height="12px" />
-            )}
-          </span>
-        </div>
+        {marketStatsSection}
       </div>
 
       {/* Trading View Chart */}
-      <FuturesChart  symbol={selectedCoin || undefined} />
+      <FuturesChart symbol={selectedCoin} />
 
       {/* Action Buttons */}
       <div className="action-buttons">
-        <button className="action-button buy-button">BUY</button>
-        <button className="action-button sell-button">SELL</button>
+        <Link to="/trade" className="remove_blue action-button buy-button">
+          BUY
+        </Link>
+        <Link to="/trade" className="remove_blue action-button sell-button">
+          SELL
+        </Link>
       </div>
 
       {/* Recent Trades */}
@@ -314,35 +323,7 @@ function MarketDetail() {
           <span>Amount</span>
           <span>Time</span>
         </div>
-        {recentTrades.length > 0 ? (
-          recentTrades.map((trade, index) => (
-            <div
-              key={`${trade.t}-${index}`}
-              className={`trade-row ${trade.m ? "sell-trade" : "buy-trade"}`}
-            >
-              <div className="trade-price">{formatNumber(trade.p)}</div>
-              <div className="trade-amount">{Number(trade.q).toFixed(4)}</div>
-              <div className="trade-time">
-                {new Date(trade.T).toLocaleTimeString()}
-              </div>
-            </div>
-          ))
-        ) : (
-          // Show loading placeholders for trades
-          Array.from({ length: 5 }).map((_, index) => (
-            <div key={index} className="trade-row">
-              <div className="trade-price">
-                <LoadingPlaceholder width="60px" height="14px" />
-              </div>
-              <div className="trade-amount">
-                <LoadingPlaceholder width="50px" height="14px" />
-              </div>
-              <div className="trade-time">
-                <LoadingPlaceholder width="40px" height="14px" />
-              </div>
-            </div>
-          ))
-        )}
+        {recentTradesSection}
       </div>
 
       <style>{`
@@ -382,6 +363,7 @@ function MarketDetail() {
           color: #AAAAAA;
           font-size: 20px;
           cursor: pointer;
+          padding: 5px;
         }
         
         .market-info {
@@ -393,15 +375,12 @@ function MarketDetail() {
           width: 30px;
           height: 30px;
           border-radius: 50%;
-          background-color: #F3BA2F;
+          background-color: #1E1E1E;
           margin-right: 10px;
           display: flex;
           justify-content: center;
           align-items: center;
-        }
-        
-        .market-icon i {
-          color: #000;
+          overflow: hidden;
         }
         
         .market-name {
@@ -443,6 +422,18 @@ function MarketDetail() {
           min-height: 16px;
         }
         
+        /* Remove blue link styles */
+        .remove_blue {
+          text-decoration: none;
+          color: inherit;
+          display: block;
+        }
+        
+        .remove_blue:hover, .remove_blue:focus, .remove_blue:active {
+          text-decoration: none;
+          color: inherit;
+        }
+        
         /* Loading placeholder animation */
         .loading-placeholder {
           background: linear-gradient(90deg, #2A2A2A 25%, #333 50%, #2A2A2A 75%);
@@ -462,11 +453,7 @@ function MarketDetail() {
         }
         
         /* Action Buttons */
-        .action-buttons {
-          display: flex;
-          gap: 15px;
-          margin: auto;
-        }
+        
         
         .action-button {
           flex: 1;
@@ -476,6 +463,11 @@ function MarketDetail() {
           font-size: 16px;
           font-weight: bold;
           cursor: pointer;
+          text-align: center;
+          text-decoration: none;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
         
         .buy-button {
@@ -555,4 +547,4 @@ function MarketDetail() {
   );
 }
 
-export default MarketDetail;
+export default React.memo(MarketDetail);

@@ -124,7 +124,7 @@ const en = {
         title: 'Detail Vip',
       },
       create: {
-        success: 'Vip successfully saved',
+        success: 'Your KYC has been submitted successfully',
       },
       update: {
         success: 'Vip successfully saved',

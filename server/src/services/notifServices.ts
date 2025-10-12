@@ -17,7 +17,7 @@ export default class NotifServicess {
     );
 
     try {
-      const record = await NotificationRepository.create(data, {
+      const record = await NotificationRepository.createNotification(data, {
         ...this.options,
         session,
       });

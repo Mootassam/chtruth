@@ -1,3 +1,4 @@
+
 import MongooseRepository from "./mongooseRepository";
 import MongooseQueryUtils from "../utils/mongooseQueryUtils";
 import AuditLogRepository from "./auditLogRepository";
@@ -30,10 +31,21 @@ class NotificationRepository {
       ],
       options
     );
-
-    // 4️⃣ Return the updated wallet
     return record;
   }
+
+  static async createNotification(data, options: IRepositoryOptions) {
+    console.log("🚀 ~ NotificationRepository ~ createNotification ~ data:", data)
+    await sendNotification({
+      userId: data.userId,
+      message: `${data.message}`,
+      type: data.type,
+      options,
+    });
+
+
+  }
+
 
 
 
@@ -210,7 +222,7 @@ class NotificationRepository {
     criteriaAnd.push({
       tenant: currentTenant.id,
     });
- 
+
 
     if (filter) {
       criteriaAnd.push({
@@ -268,7 +280,7 @@ class NotificationRepository {
 
 
 
-    static async findAndCountAllMobile(
+  static async findAndCountAllMobile(
     { filter, limit = 0, offset = 0, orderBy = "" },
     options: IRepositoryOptions
   ) {

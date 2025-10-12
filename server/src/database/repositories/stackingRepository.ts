@@ -8,9 +8,6 @@ import Stacking from "../models/stacking";
 import StackingPlan from "../models/stakeProgram"; // Import the StackingPlan model
 import assets from "../models/wallet";
 import Error405 from "../../errors/Error405";
-import transaction from "../models/transaction";
-import wallet from "../models/wallet";
-import { stackingQueue } from "../utils/stackingQueue";
 import { scheduleStackingJob } from "../utils/scheduleStackingJob";
 class StackingRepository {
   static async create(data, options: IRepositoryOptions) {
@@ -85,10 +82,10 @@ class StackingRepository {
 
     // === SCHEDULE AUTO-FINALIZATION JOB ===
     try {
-       await scheduleStackingJob(record, { id: record.tenant });
+      await scheduleStackingJob(record, { id: record.tenant });
 
       console.log(
-        `📅 Scheduled auto-finalize job for future ${record.id} at ${5000}`
+        `📅 Scheduled auto-finalize job for stacking ${record.id}`
       );
     } catch (err) {
       console.error(`Failed to schedule staking job for ${record.id}:`, err);
@@ -419,15 +416,15 @@ class StackingRepository {
   }
 
   static async _createAuditLog(action, id, data, options: IRepositoryOptions) {
-    await AuditLogRepository.log(
-      {
-        entityName: Stacking(options.database).modelName,
-        entityId: id,
-        action,
-        values: data,
-      },
-      options
-    );
+    // await AuditLogRepository.log(
+    //   {
+    //     entityName: Stacking(options.database).modelName,
+    //     entityId: id,
+    //     action,
+    //     values: data,
+    //   },
+    //   options
+    // );
   }
 
   static async _fillFileDownloadUrls(record) {

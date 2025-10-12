@@ -1032,9 +1032,7 @@ export default class UserRepository {
     let record = await MongooseRepository.wrapWithSessionIfExists(
       User(options.database)
         .findById(id)
-        .populate("tenants.tenant")
-        .populate("vip")
-        .populate("product"),
+        .populate("tenants.tenant"),
       options
     );
 

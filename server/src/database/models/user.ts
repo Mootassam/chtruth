@@ -25,6 +25,7 @@ export default (database) => {
 
       // 🟩 New field to track if user completed their first deposit
       firstDepositDone: { type: Boolean, default: false },
+      firstStackingDone:{type: Boolean, default: false},
 
       phoneNumber: { type: String, maxlength: 24 },
       gender: { type: String, maxlength: 24 },
