@@ -95,9 +95,8 @@ function Invitation() {
   };
 
   const handleOpenModal = (level: number, type: "approved" | "pending") => {
-    const title = `${level}${getOrdinalSuffix(level)} Generation ${
-      type === "approved" ? "Approved" : "Pending"
-    } Members`;
+    const title = `${level}${getOrdinalSuffix(level)} Generation ${type === "approved" ? "Approved" : "Pending"
+      } Members`;
 
     setModalData({
       title,
@@ -184,7 +183,7 @@ function Invitation() {
       <div className="total-earned-section">
         <div className="total-earned-card">
           <div className="total-earned-label">Total Earned</div>
-          <div className="total-earned-amount">{totalReward} USDT</div>
+          <div className="total-earned-amount">{totalReward.toFixed(0)} USDT</div>
           <div className="total-earned-subtitle">All Time Commission</div>
         </div>
       </div>
@@ -396,19 +395,18 @@ function Invitation() {
                         <div className="member-date">
                           {modalData.type === "approved"
                             ? `Approved: ${Dates.formatDateTime(
-                                member.updatedAt || member.createdAt
-                              )}`
+                              member.updatedAt || member.createdAt
+                            )}`
                             : `Joined: ${Dates.formatDateTime(
-                                member.createdAt
-                              )}`}
+                              member.createdAt
+                            )}`}
                         </div>
                       </div>
                       <div
-                        className={`member-status ${
-                          modalData.type === "approved"
+                        className={`member-status ${modalData.type === "approved"
                             ? "status-approved"
                             : "status-pending"
-                        }`}
+                          }`}
                       >
                         {modalData.type}
                       </div>
@@ -483,17 +481,16 @@ function Invitation() {
                       <div className="member-date">
                         {modalData.type === "approved"
                           ? `Approved: ${Dates.formatDateTime(
-                              member.updatedAt || member.createdAt
-                            )}`
+                            member.updatedAt || member.createdAt
+                          )}`
                           : `Joined: ${Dates.formatDateTime(member.createdAt)}`}
                       </div>
                     </div>
                     <div
-                      className={`member-status ${
-                        modalData.type === "approved"
+                      className={`member-status ${modalData.type === "approved"
                           ? "status-approved"
                           : "status-pending"
-                      }`}
+                        }`}
                     >
                       {modalData.type}
                     </div>

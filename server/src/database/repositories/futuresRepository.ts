@@ -165,38 +165,38 @@ class FuturesRepository {
     };
 
     // NEW: Calculate closing price based on your data pattern
-// UPDATED: Calculate closing price based on your new requirements
-const calculateClosingPrice = (
+    // UPDATED: Calculate closing price based on your new requirements
+   const calculateClosingPrice = (
   openPrice: number,
-  direction: string, // "long" or "short" 
+  direction: string, // "long" or "short"
   control: string,   // "profit" or "loss"
   assetType: string  // "BTC/USDT", "ETH/USDT", etc.
 ): number => {
   const basePrice = openPrice;
-  
-  // Generate random value between 5 and 90
-  const randomValue = 5 + (Math.random() * 85); // 5 to 90
+
+  // Generate random percentage between 0.002% and 0.005%
+  const randomPercentage = 0.002 + Math.random() * (0.005 - 0.002); // 0.002% to 0.005%
+  const change = basePrice * (randomPercentage / 100); // convert percent to decimal
 
   if (control === "profit") {
-    // For winning trades: open price + random value (5 to 90)
     if (direction === "long") {
-      // BUY UP win: price increases by random value
-      return basePrice + randomValue;
+      // Long + profit → price increases
+      return basePrice + change;
     } else {
-      // BUY FALL win: price decreases by random value  
-      return basePrice - randomValue;
+      // Short + profit → price decreases
+      return basePrice - change;
     }
   } else {
-    // For losing trades: open price - random value (5 to 90)
     if (direction === "long") {
-      // BUY UP loss: price decreases by random value
-      return basePrice - randomValue;
+      // Long + loss → price decreases
+      return basePrice - change;
     } else {
-      // BUY FALL loss: price increases by random value
-      return basePrice + randomValue;
+      // Short + loss → price increases
+      return basePrice + change;
     }
   }
 };
+
 
     try {
       if (isControlUpdate) {
