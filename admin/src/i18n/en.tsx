@@ -3393,8 +3393,8 @@ const en = {
   },
 
   auditLog: {
-    menu: 'Audit Logs',
-    title: 'Audit Logs',
+    menu: 'Login Activity',
+    title: 'Login Activity',
     exporterFileName: 'audit_log_export',
     entityNamesHint:
       'Separate multiple entities using the comma character.',

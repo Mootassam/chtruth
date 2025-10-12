@@ -8,6 +8,7 @@ import TableWrapper from 'src/view/shared/styles/TableWrapper';
 import Pagination from 'src/view/shared/table/Pagination';
 import TableColumnHeader from 'src/view/shared/table/TableColumnHeader';
 import moment from 'moment';
+import UserListItem from 'src/view/user/list/UserListItem';
 
 function AuditLogTable(props) {
   const dispatch = useDispatch();
@@ -68,31 +69,24 @@ function AuditLogTable(props) {
                 hasRows={hasRows}
                 sorter={sorter}
                 name={'createdByEmail'}
-                label={i18n(
-                  'auditLog.fields.createdByEmail',
-                )}
+                label={'User'}
               />
               <TableColumnHeader
                 onSort={doChangeSort}
                 hasRows={hasRows}
                 sorter={sorter}
                 name={'entityName'}
-                label={i18n('auditLog.fields.entityName')}
+                label={i18n('IP')}
               />
-              <TableColumnHeader
-                onSort={doChangeSort}
-                hasRows={hasRows}
-                sorter={sorter}
-                name={'action'}
-                label={i18n('auditLog.fields.action')}
-              />
+
               <TableColumnHeader
                 onSort={doChangeSort}
                 hasRows={hasRows}
                 sorter={sorter}
                 name={'entityId'}
-                label={i18n('auditLog.fields.entityId')}
+                label={i18n('Country')}
               />
+       
               <TableColumnHeader className="th-actions-sm" />
             </tr>
           </thead>
@@ -121,10 +115,10 @@ function AuditLogTable(props) {
                       'YYYY-MM-DD HH:mm',
                     )}
                   </td>
-                  <td>{row.createdByEmail}</td>
-                  <td>{row.entityName}</td>
-                  <td>{row.action}</td>
-                  <td>{row.entityId}</td>
+                  <td>     <UserListItem value={row.user} /></td>
+                  <td>{row.clientIP}</td>
+                  <td>{row.country}</td>
+
                   <td>
                     <button
                       className="btn btn-link"

@@ -16,53 +16,25 @@ import queryString from 'query-string';
 import { yupResolver } from '@hookform/resolvers/yup';
 import FilterPreview from 'src/view/shared/filter/FilterPreview';
 import filterRenders from 'src/modules/shared/filter/filterRenders';
+import UserAutocompleteFormItem from 'src/view/user/autocomplete/UserAutocompleteFormItem';
 
 const schema = yup.object().shape({
-  timestampRange: yupFilterSchemas.datetimeRange(
-    i18n('auditLog.fields.timestampRange'),
-  ),
-  entityNames: yupFilterSchemas.stringArray(
-    i18n('auditLog.fields.entityNames'),
-  ),
-  entityId: yupFilterSchemas.string(
-    i18n('auditLog.fields.entityId'),
-  ),
-  action: yupFilterSchemas.string(
-    i18n('auditLog.fields.action'),
-  ),
-  createdByEmail: yupFilterSchemas.email(
-    i18n('auditLog.fields.createdByEmail'),
+  
+  user: yupFilterSchemas.relationToOne(
+    i18n('auditLog.fields.user'),
   ),
 });
 
 const emptyValues = {
-  timestampRange: [],
-  entityNames: [],
-  entityId: null,
-  action: null,
-  createdByEmail: null,
+
+  user: null,
 };
 
 const previewRenders = {
-  timestampRange: {
-    label: i18n('auditLog.fields.timestampRange'),
-    render: filterRenders.datetimeRange(),
-  },
-  entityNames: {
-    label: i18n('auditLog.fields.entityNames'),
-    render: filterRenders.stringArray(),
-  },
-  entityId: {
-    label: i18n('auditLog.fields.entityId'),
-    render: filterRenders.generic(),
-  },
-  action: {
-    label: i18n('auditLog.fields.action'),
-    render: filterRenders.generic(),
-  },
-  createdByEmail: {
-    label: i18n('auditLog.fields.createdByEmail'),
-    render: filterRenders.generic(),
+ 
+  user: {
+    label: i18n('auditLog.fields.user'),
+    render: filterRenders.relationToOne(),
   },
 };
 
@@ -80,6 +52,7 @@ function AuditLogFilter(props) {
 
     const queryFilters = queryString.parse(location.search);
 
+    // Handle entityNames from URL query params
     initialValues.entityNames =
       queryFilters.entityNames || initialValues.entityNames;
     if (
@@ -91,12 +64,25 @@ function AuditLogFilter(props) {
       ];
     }
 
+    // Handle entityId from URL query params
     initialValues.entityId =
       queryFilters.entityId || initialValues.entityId;
 
-    initialValues.createdByEmail =
-      queryFilters.createdByEmail ||
-      initialValues.createdByEmail;
+    // Handle action from URL query params
+    initialValues.action =
+      queryFilters.action || initialValues.action;
+
+    // Handle user from URL query params
+    initialValues.user =
+      queryFilters.user || initialValues.user;
+
+    // Handle timestampRange from URL query params
+    if (queryFilters.timestampFrom || queryFilters.timestampTo) {
+      initialValues.timestampRange = [
+        queryFilters.timestampFrom || null,
+        queryFilters.timestampTo || null,
+      ];
+    }
 
     return initialValues;
   });
@@ -104,7 +90,7 @@ function AuditLogFilter(props) {
   const form = useForm({
     resolver: yupResolver(schema),
     defaultValues: initialValues,
-    mode: 'all',
+    mode: 'onSubmit',
   });
 
   useEffect(() => {
@@ -114,7 +100,7 @@ function AuditLogFilter(props) {
         rawFilter,
       ),
     );
-    // eslint-disable-next-line
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch]);
 
   const onSubmit = (values) => {
@@ -156,52 +142,24 @@ function AuditLogFilter(props) {
           <FormProvider {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
               <div className="row">
+               
                 <div className="col-lg-6 col-12">
-                  <DatePickerRangeFormItem
-                    name="timestampRange"
-                    label={i18n(
-                      'auditLog.fields.timestampRange',
-                    )}
-                    showTimeInput
-                  />
-                </div>
-                <div className="col-lg-6 col-12">
-                  <InputFormItem
-                    name="createdByEmail"
+                  <UserAutocompleteFormItem
+                    name="user"
                     label={i18n(
                       'auditLog.fields.createdByEmail',
                     )}
                   />
                 </div>
-                <div className="col-lg-6 col-12">
-                  <TagsFormItem
-                    name="entityNames"
-                    label={i18n(
-                      'auditLog.fields.entityNames',
-                    )}
-                    notFoundContent={i18n(
-                      'auditLog.entityNamesHint',
-                    )}
-                  />
-                </div>
-                <div className="col-lg-6 col-12">
-                  <InputFormItem
-                    name="entityId"
-                    label={i18n('auditLog.fields.entityId')}
-                  />
-                </div>
-                <div className="col-lg-6 col-12">
-                  <InputFormItem
-                    name="action"
-                    label={i18n('auditLog.fields.action')}
-                  />
-                </div>
               </div>
+             
+    
               <div className="row">
                 <div className="col-12 filter-buttons">
                   <button
                     className="btn btn-primary"
                     type="submit"
+                    disabled={loading}
                   >
                     <ButtonIcon
                       loading={loading}
@@ -213,6 +171,7 @@ function AuditLogFilter(props) {
                     className="btn btn-light"
                     type="button"
                     onClick={onReset}
+                    disabled={loading}
                   >
                     <ButtonIcon
                       loading={loading}

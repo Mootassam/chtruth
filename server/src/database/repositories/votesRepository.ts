@@ -333,7 +333,7 @@ class VotesRepository {
       });
     }
 
-    const sort = MongooseQueryUtils.sort("id_ASC");
+    const sort = MongooseQueryUtils.sort("id_ASC"); 
     const limitEscaped = Number(limit || 0) || undefined;
 
     const criteria = { $and: criteriaAnd };
@@ -350,15 +350,15 @@ class VotesRepository {
   }
 
   static async _createAuditLog(action, id, data, options: IRepositoryOptions) {
-    await AuditLogRepository.log(
-      {
-        entityName: Votes(options.database).modelName,
-        entityId: id,
-        action,
-        values: data,
-      },
-      options
-    );
+    // await AuditLogRepository.log(
+    //   {
+    //     entityName: Votes(options.database).modelName,
+    //     entityId: id,
+    //     action,
+    //     values: data,
+    //   },
+    //   options
+    // );
   }
 
   static async _fillFileDownloadUrls(record) {

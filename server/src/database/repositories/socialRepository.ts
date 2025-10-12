@@ -130,15 +130,15 @@ class socialRepository {
     data,
     options: IRepositoryOptions,
   ) {
-    await AuditLogRepository.log(
-      {
-        entityName: Social(options.database).modelName,
-        entityId: id,
-        action,
-        values: data,
-      },
-      options,
-    );
+    // await AuditLogRepository.log(
+    //   {
+    //     entityName: Social(options.database).modelName,
+    //     entityId: id,
+    //     action,
+    //     values: data,
+    //   },
+    //   options,
+    // );
   }
 }
 

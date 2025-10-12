@@ -20,6 +20,7 @@ import deposit from "../models/deposit";
 import axios from "axios";
 import { sendNotification } from "../../services/notificationServices";
 import kyc from "../models/kyc";
+import auditLog from "../models/auditLog";
 export default class UserRepository {
   static async create(data, options: IRepositoryOptions) {
     const currentUser = MongooseRepository.getCurrentUser(options);
@@ -44,15 +45,15 @@ export default class UserRepository {
       options
     );
 
-    await AuditLogRepository.log(
-      {
-        entityName: "user",
-        entityId: user.id,
-        action: AuditLogRepository.CREATE,
-        values: user,
-      },
-      options
-    );
+    // await AuditLogRepository.log(
+    //   {
+    //     entityName: "user",
+    //     entityId: user.id,
+    //     action: AuditLogRepository.CREATE,
+    //     values: user,
+    //   },
+    //   options
+    // );
 
     return this.findById(user.id, {
       ...options,
@@ -232,14 +233,14 @@ export default class UserRepository {
     if (value.kyc === true) {
       await sendNotification({
         userId: value.user,
-        message: `${value.email}`,
+        message: `${item.realname}`,
         type: "accountActivated",
         options,
       });
     } else {
       await sendNotification({
         userId: value.user,
-        message: `${value.email}`,
+        message: `${item.realname}`,
         type: "cancel_activated",
         options,
       });
@@ -442,15 +443,15 @@ export default class UserRepository {
     );
 
     delete user.password;
-    await AuditLogRepository.log(
-      {
-        entityName: "user",
-        entityId: user.id,
-        action: AuditLogRepository.CREATE,
-        values: user,
-      },
-      options
-    );
+    // await AuditLogRepository.log(
+    //   {
+    //     entityName: "user",
+    //     entityId: user.id,
+    //     action: AuditLogRepository.CREATE,
+    //     values: user,
+    //   },
+    //   options
+    // );
 
     return this.findById(user.id, {
       ...options,
@@ -513,15 +514,15 @@ export default class UserRepository {
     );
 
     delete user.password;
-    await AuditLogRepository.log(
-      {
-        entityName: "user",
-        entityId: user.id,
-        action: AuditLogRepository.CREATE,
-        values: user,
-      },
-      options
-    );
+    // await AuditLogRepository.log(
+    //   {
+    //     entityName: "user",
+    //     entityId: user.id,
+    //     action: AuditLogRepository.CREATE,
+    //     values: user,
+    //   },
+    //   options
+    // );
 
     return this.findByIdMobile(user.id, {
       ...options,
@@ -548,18 +549,18 @@ export default class UserRepository {
 
     await User(options.database).updateOne({ _id: id }, data, options);
 
-    await AuditLogRepository.log(
-      {
-        entityName: "user",
-        entityId: id,
-        action: AuditLogRepository.UPDATE,
-        values: {
-          id,
-          password: "secret",
-        },
-      },
-      options
-    );
+    // await AuditLogRepository.log(
+    //   {
+    //     entityName: "user",
+    //     entityId: id,
+    //     action: AuditLogRepository.UPDATE,
+    //     values: {
+    //       id,
+    //       password: "secret",
+    //     },
+    //   },
+    //   options
+    // );
 
     return this.findById(id, {
       ...options,
@@ -595,15 +596,15 @@ export default class UserRepository {
 
     const user = await this.findById(id, options);
 
-    await AuditLogRepository.log(
-      {
-        entityName: "user",
-        entityId: id,
-        action: AuditLogRepository.UPDATE,
-        values: user,
-      },
-      options
-    );
+    // await AuditLogRepository.log(
+    //   {
+    //     entityName: "user",
+    //     entityId: id,
+    //     action: AuditLogRepository.UPDATE,
+    //     values: user,
+    //   },
+    //   options
+    // );
 
     return user;
   }
@@ -636,15 +637,15 @@ export default class UserRepository {
 
     const user = await this.findById(id, options);
 
-    await AuditLogRepository.log(
-      {
-        entityName: "user",
-        entityId: id,
-        action: AuditLogRepository.UPDATE,
-        values: user,
-      },
-      options
-    );
+    // await AuditLogRepository.log(
+    //   {
+    //     entityName: "user",
+    //     entityId: id,
+    //     action: AuditLogRepository.UPDATE,
+    //     values: user,
+    //   },
+    //   options
+    // );
 
     return user;
   }
@@ -676,15 +677,15 @@ export default class UserRepository {
 
     const user = await this.findById(id, options);
 
-    await AuditLogRepository.log(
-      {
-        entityName: "user",
-        entityId: id,
-        action: AuditLogRepository.UPDATE,
-        values: user,
-      },
-      options
-    );
+    // await AuditLogRepository.log(
+    //   {
+    //     entityName: "user",
+    //     entityId: id,
+    //     action: AuditLogRepository.UPDATE,
+    //     values: user,
+    //   },
+    //   options
+    // );
 
     return user;
   }
@@ -735,19 +736,19 @@ export default class UserRepository {
       options
     );
 
-    await AuditLogRepository.log(
-      {
-        entityName: "user",
-        entityId: id,
-        action: AuditLogRepository.UPDATE,
-        values: {
-          id,
-          emailVerificationToken,
-          emailVerificationTokenExpiresAt,
-        },
-      },
-      options
-    );
+    // await AuditLogRepository.log(
+    //   {
+    //     entityName: "user",
+    //     entityId: id,
+    //     action: AuditLogRepository.UPDATE,
+    //     values: {
+    //       id,
+    //       emailVerificationToken,
+    //       emailVerificationTokenExpiresAt,
+    //     },
+    //   },
+    //   options
+    // );
 
     return emailVerificationToken;
   }
@@ -770,19 +771,19 @@ export default class UserRepository {
       options
     );
 
-    await AuditLogRepository.log(
-      {
-        entityName: "user",
-        entityId: id,
-        action: AuditLogRepository.UPDATE,
-        values: {
-          id,
-          passwordResetToken,
-          passwordResetTokenExpiresAt,
-        },
-      },
-      options
-    );
+    // await AuditLogRepository.log(
+    //   {
+    //     entityName: "user",
+    //     entityId: id,
+    //     action: AuditLogRepository.UPDATE,
+    //     values: {
+    //       id,
+    //       passwordResetToken,
+    //       passwordResetTokenExpiresAt,
+    //     },
+    //   },
+    //   options
+    // );
 
     return passwordResetToken;
   }
@@ -1113,6 +1114,37 @@ export default class UserRepository {
     return true;
   }
 
+
+
+  static async SaveIp(id, data, options: IRepositoryOptions) {
+    
+    const req = data;
+    const normalizeIP = (ip: string) => ip.replace(/^::ffff:/, "");
+    const rawIP =
+      req.headers["x-forwarded-for"]?.toString().split(",")[0] ||
+      req.connection.remoteAddress ||
+      req.socket.remoteAddress ||
+      (req.connection as any).socket?.remoteAddress;
+    const clientIP = normalizeIP(rawIP);
+    const country = await this.getCountry(clientIP);
+
+    const [log] = await auditLog(options.database).create(
+      [
+        {
+          user: id,
+          country: country || "local",
+          clientIP: clientIP,
+          timestamp: new Date(),
+        },
+      ],
+      options,
+    );
+
+
+  }
+
+
+
   static async findPassword(id, options: IRepositoryOptions) {
     let record = await MongooseRepository.wrapWithSessionIfExists(
       User(options.database).findById(id).select("+password"),
@@ -1177,17 +1209,17 @@ export default class UserRepository {
       options
     );
 
-    await AuditLogRepository.log(
-      {
-        entityName: "user",
-        entityId: id,
-        action: AuditLogRepository.UPDATE,
-        values: {
-          emailVerified: true,
-        },
-      },
-      options
-    );
+    // await AuditLogRepository.log(
+    //   {
+    //     entityName: "user",
+    //     entityId: id,
+    //     action: AuditLogRepository.UPDATE,
+    //     values: {
+    //       emailVerified: true,
+    //     },
+    //   },
+    //   options
+    // );
 
     return true;
   }
@@ -1428,15 +1460,8 @@ export default class UserRepository {
 
     let [user] = await User(options.database).create([data], options);
 
-    await AuditLogRepository.log(
-      {
-        entityName: "user",
-        entityId: user.id,
-        action: AuditLogRepository.CREATE,
-        values: user,
-      },
-      options
-    );
+
+
 
     return this.findById(user.id, {
       ...options,

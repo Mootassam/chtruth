@@ -63,7 +63,7 @@ const vipFormActions = {
       });
 
       Message.success(
-        i18n('entities.vip.create.success'),
+        i18n('entities.kyc.create.success'),
       );
 
       getHistory().push('/profile');

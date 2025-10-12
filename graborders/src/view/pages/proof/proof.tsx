@@ -19,7 +19,7 @@ import Storage from "src/security/storage";
 const createSchema = (documentType) => {
   return yup.object().shape({
     user: yupFormSchemas.relationToOne(i18n("entities.vip.fields.title"), {
-      
+
     }),
     Documenttype: yupFormSchemas.string(i18n("Document Type")),
     realname: yupFormSchemas.string(i18n("Full Name"), { required: true }),
@@ -27,7 +27,7 @@ const createSchema = (documentType) => {
     address: yupFormSchemas.string(i18n("Address"), { required: true }),
     front: yupFormSchemas.images(i18n("Front Side"), { required: true }),
     // Make back required only if document type is NOT passport
-    back: documentType === "passport" 
+    back: documentType === "passport"
       ? yupFormSchemas.images(i18n("Back Side")) // Not required
       : yupFormSchemas.images(i18n("Back Side"), { required: true }),
     selfie: yupFormSchemas.images(i18n("Selfie"), { required: true }),
@@ -73,7 +73,7 @@ function Proof() {
   useEffect(() => {
     const newSchema = createSchema(document);
     setCurrentSchema(newSchema);
-    
+
     // Update form validation schema
     form.clearErrors(); // Clear existing errors
   }, [document, form]);
@@ -99,7 +99,7 @@ function Proof() {
 
   const handleDocumentChange = (newDocumentType) => {
     setDocument(newDocumentType);
-    
+
     // Reset back field when switching to passport
     if (newDocumentType === "passport") {
       form.setValue("back", []);
@@ -136,18 +136,18 @@ function Proof() {
           <div className="placeholder" />
         </div>
       </div>
-      
+
       {/* Instructions */}
       <div className="instructions">
         Verify your identity to access all features of your crypto wallet
       </div>
-      
+
       {/* Form Section */}
       <FormProvider {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <div className="form-section">
             <div className="proof-section-title">Document Information</div>
-            
+
             {/* Document Type */}
             <div className="input-group">
               <label className="input-label">
@@ -157,9 +157,8 @@ function Proof() {
                 {documentTypeOptions.map((item) => (
                   <div
                     key={item.value}
-                    className={`radio-option ${
-                      item.value === document ? "selected" : ""
-                    }`}
+                    className={`radio-option ${item.value === document ? "selected" : ""
+                      }`}
                     onClick={() => handleDocumentChange(item.value)}
                   >
                     <i className={`${item.icon} radio-icon`} />
@@ -168,7 +167,7 @@ function Proof() {
                 ))}
               </div>
             </div>
-            
+
             {/* Personal Information */}
             <InputFormItem
               type="text"
@@ -195,7 +194,7 @@ function Proof() {
               label="Address"
             />
           </div>
-          
+
           {/* Document Upload Section */}
           <div className="form-section">
             <div className="proof-section-title">Document Upload</div>
@@ -239,7 +238,7 @@ function Proof() {
               manually by our security team to ensure your account's safety.
             </div>
           </div>
-          
+
           {/* Submit Button */}
           <button
             type="submit"
@@ -249,7 +248,7 @@ function Proof() {
           </button>
         </form>
       </FormProvider>
-      
+
       {/* Footer */}
       <div className="footer">
         © 2025 CryptoWallet. All rights reserved. |

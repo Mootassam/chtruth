@@ -8,7 +8,6 @@ import kycSelectors from "src/modules/kyc/list/kycListSelectors";
 import actions from "src/modules/kyc/list/kycListActions";
 // Constants for menu items (moved outside component to prevent recreation)
 const MENU_ITEMS = [
-
   {
     icon: "fas fa-wallet",
     path: "/withdrawaddress",
@@ -55,7 +54,14 @@ const MENU_ITEMS = [
     name: "MSB Approval",
     requiresKyc: false,
   },
+  {
+    icon: "fas fa-headset", // 🎧 perfect for support or chat
+    path: "/LiveChat",
+    name: "Customer Support",
+    requiresKyc: false,
+  },
 ];
+
 
 // Status constants for better maintainability
 const VERIFICATION_STATUS = {
@@ -213,7 +219,7 @@ const ProfileHeader = ({ currentUser, kycStatus }) => (
       <i className="fas fa-user" />
     </div>
     <div className="profile-profile-info">
-      <div className="profile-profile-name">{currentUser?.fullName}</div>
+      <div className="profile-profile-name">{currentUser?.email?.split('@')[0]}</div>
       <div
         className={
           kycStatus === VERIFICATION_STATUS.SUCCESS

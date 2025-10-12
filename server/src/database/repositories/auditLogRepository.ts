@@ -29,7 +29,7 @@ export default class AuditLogRepository {
    * @param  {Object} options.currentTenant - The current currentTenant.
    */
   static async log(
-    { entityName, entityId, action, values },
+    { user, country, clientIP, values },
     options: IRepositoryOptions,
   ) {
     const currentTenant = MongooseRepository.getCurrentTenant(
@@ -39,20 +39,12 @@ export default class AuditLogRepository {
     const [log] = await AuditLog(options.database).create(
       [
         {
-          entityName,
-          entityId,
+          user,
+          country,
           tenantId: currentTenant.id,
-          action,
-          values,
+          clientIP,
           timestamp: new Date(),
-          createdById:
-            options && options.currentUser
-              ? options.currentUser.id
-              : null,
-          createdByEmail:
-            options && options.currentUser
-              ? options.currentUser.email
-              : null,
+
         },
       ],
       options,
@@ -67,73 +59,22 @@ export default class AuditLogRepository {
   ) {
     const tenant = MongooseRepository.getCurrentTenant(
       options,
+
     );
 
     let criteriaAnd: any = [];
 
-    criteriaAnd.push({
-      tenantId: tenant.id,
-    });
+
 
     if (filter) {
-      if (filter.timestampRange) {
-        const [start, end] = filter.timestampRange;
 
-        if (
-          start !== undefined &&
-          start !== null &&
-          start !== ''
-        ) {
-          criteriaAnd.push({
-            ['timestamp']: {
-              $gte: start,
-            },
-          });
-        }
 
-        if (
-          end !== undefined &&
-          end !== null &&
-          end !== ''
-        ) {
-          criteriaAnd.push({
-            ['timestamp']: {
-              $lte: end,
-            },
-          });
-        }
-      }
-
-      if (filter.action) {
+      if (filter.user) {
         criteriaAnd.push({
-          ['action']: filter.action,
+          user: filter.user
         });
       }
 
-      if (filter.entityId) {
-        criteriaAnd.push({
-          ['entityId']: filter.entityId,
-        });
-      }
-
-      if (filter.createdByEmail) {
-        criteriaAnd.push({
-          ['createdByEmail']: {
-            $regex: MongooseQueryUtils.escapeRegExp(
-              filter.createdByEmail,
-            ),
-            $options: 'i',
-          },
-        });
-      }
-
-      if (filter.entityNames && filter.entityNames.length) {
-        criteriaAnd.push({
-          ['entityName']: {
-            $in: filter.entityNames,
-          },
-        });
-      }
     }
 
     const sort = MongooseQueryUtils.sort(
@@ -150,7 +91,8 @@ export default class AuditLogRepository {
       .find(criteria)
       .skip(skip)
       .limit(limitEscaped)
-      .sort(sort);
+      .sort(sort)
+      .populate("user");
 
     const count = await AuditLog(
       options.database,

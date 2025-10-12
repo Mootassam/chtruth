@@ -321,15 +321,15 @@ class MandatRepository {
   }
 
   static async _createAuditLog(action, id, data, options: IRepositoryOptions) {
-    await AuditLogRepository.log(
-      {
-        entityName: Mandat(options.database).modelName,
-        entityId: id,
-        action,
-        values: data,
-      },
-      options,
-    );
+    // await AuditLogRepository.log(
+    //   {
+    //     entityName: Mandat(options.database).modelName,
+    //     entityId: id,
+    //     action,
+    //     values: data,
+    //   },
+    //   options,
+    // );
   }
 
   static async _fillFileDownloadUrls(record) {

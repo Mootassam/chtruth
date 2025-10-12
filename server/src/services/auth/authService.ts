@@ -1,3 +1,4 @@
+
 import UserRepository from "../../database/repositories/userRepository";
 import Error400 from "../../errors/Error400";
 import bcrypt from "bcrypt";
@@ -401,7 +402,8 @@ class AuthService {
     password,
     invitationToken,
     tenantId,
-    options: any = {}
+    options: any = {},
+    req,
   ) {
     const session = await MongooseRepository.createSession(options.database);
 
@@ -440,7 +442,8 @@ class AuthService {
       const token = jwt.sign({ id: user.id }, getConfig().AUTH_JWT_SECRET, {
         expiresIn: getConfig().AUTH_JWT_EXPIRES_IN,
       });
-
+      await UserRepository
+        .SaveIp(user.id, req, options)
       await MongooseRepository.commitTransaction(session);
 
       return token;

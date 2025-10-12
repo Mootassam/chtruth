@@ -77,15 +77,15 @@ export default class SettingsRepository {
       options,
     );
 
-    await AuditLogRepository.log(
-      {
-        entityName: 'settings',
-        entityId: record.id,
-        action: AuditLogRepository.UPDATE,
-        values: data,
-      },
-      options,
-    );
+    // await AuditLogRepository.log(
+    //   {
+    //     entityName: 'settings',
+    //     entityId: record.id,
+    //     action: AuditLogRepository.UPDATE,
+    //     values: data,
+    //   },
+    //   options,
+    // );
 
     return this._fillFileDownloadUrls(
       await MongooseRepository.wrapWithSessionIfExists(

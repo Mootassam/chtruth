@@ -122,7 +122,7 @@ function formWithdrawAdress() {
               className1="form-group"
               className2="form-label"
               className3="password-input-container"
-              placeholder="Ener your current password"
+              placeholder="Enter your current password"
             />
             <button
               className="save-button"

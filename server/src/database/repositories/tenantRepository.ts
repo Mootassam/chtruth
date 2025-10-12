@@ -458,15 +458,15 @@ class TenantRepository {
   }
 
   static async _createAuditLog(action, id, data, options: IRepositoryOptions) {
-    await AuditLogRepository.log(
-      {
-        entityName: Tenant(options.database).modelName,
-        entityId: id,
-        action,
-        values: data,
-      },
-      options
-    );
+    // await AuditLogRepository.log(
+    //   {
+    //     entityName: Tenant(options.database).modelName,
+    //     entityId: id,
+    //     action,
+    //     values: data,
+    //   },
+    //   options
+    // );
   }
 
   static _isUserInTenant(user, tenantId) {
