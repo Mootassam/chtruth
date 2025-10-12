@@ -1240,7 +1240,7 @@ function StackingPage() {
           isOpen={showModal}
           onClose={handleCloseModal}
           type='staking'
-          amount={Number(amount).toFixed(0)}
+          amount={String(amount)}
           coinType={modalData.crypto} />
       }
 

@@ -5,6 +5,7 @@ import Wallet from "../models/wallet";
 import Transaction from "../models/transaction";
 import Notification from "../models/notification";
 import User from "../models/user";
+import axios from "axios"; // Add axios import for API calls
 
 export async function autoFinalizeStackingJob(job) {
   if (!job?.data) {
@@ -54,7 +55,7 @@ export async function autoFinalizeStackingJob(job) {
     const amount = Number(stackingRecord.amount);
     const dailyRatePercent = Number(plan.dailyRate || 0);
     const unstakingPeriod = Number(plan.unstakingPeriod || 0);
-    
+
     // Calculate total rewards for the entire stacking period
     const earnedRewards = Number((amount * (dailyRatePercent / 100) * unstakingPeriod).toFixed(8));
     const totalToCredit = Number((amount + earnedRewards).toFixed(8));
@@ -81,7 +82,7 @@ export async function autoFinalizeStackingJob(job) {
     // ✅ Update user's wallet (principal + reward)
     const updatedWallet = await walletModel.findOneAndUpdate(
       { user: stackingRecord.user._id, symbol: currency, tenant: tenantId },
-      { 
+      {
         $inc: { amount: totalToCredit },
         $set: { updatedBy: null, updatedAt: new Date() }
       },
@@ -111,83 +112,128 @@ export async function autoFinalizeStackingJob(job) {
       message: `Your stacking of ${amount} ${currency} has been completed. You earned ${earnedRewards} ${currency}.`,
       tenant: tenantId,
       forAdmin: false,
-      status: "unread", // Added missing status field
-      createdBy: null, // Added missing createdBy field
-      updatedBy: null, // Added missing updatedBy field
+      status: "unread",
+      createdBy: null,
+      updatedBy: null,
     });
 
-    // ✅ FIRST STACKING REFERRAL BONUS
+    // ✅ REFERRAL COMMISSION FOR EVERY STACKING (REMOVED FIRST STACKING CONDITION)
     const currentUser = await userModel.findById(stackingRecord.user._id);
     if (!currentUser) {
-      console.warn(`User ${stackingRecord.user._id} not found for referral bonus`);
+      console.warn(`User ${stackingRecord.user._id} not found for referral commission`);
       return;
     }
 
-    if (!currentUser.firstStackingDone) {
-      const bonusLevels = [10, 7, 4]; // 3 levels
-      let refSourceUser = currentUser;
+    // ✅ CURRENCY CONVERSION TO USDT FOR COMMISSION CALCULATION
+    let commissionBaseAmount = earnedRewards;
 
-      for (let level = 1; level <= 3; level++) {
-        if (!refSourceUser.invitationcode) break;
+    if (currency !== "USDT") {
+      try {
+        const coinMap = {
+          BTC: "bitcoin",
+          ETH: "ethereum",
+          SOL: "solana",
+          XRP: "ripple",
+          USDT: "tether",
+          BNB: "binancecoin",
+          ADA: "cardano",
+          DOGE: "dogecoin",
+          DOT: "polkadot",
+        };
 
-        const refUser = await userModel.findOne({
-          refcode: refSourceUser.invitationcode,
-        });
+        const coinId = coinMap[currency.toUpperCase()];
+        if (!coinId) {
+          console.warn(`Unsupported coin for conversion: ${currency}`);
+          // If unsupported coin, skip commission to avoid errors
+          return;
+        }
 
-        if (!refUser) break;
-
-        const reward = Number((earnedRewards * bonusLevels[level - 1]) / 100);
-
-        // Update referrer wallet
-        const refWallet = await walletModel.findOneAndUpdate(
-          { user: refUser._id, symbol: "USDT", tenant: tenantId },
-          { $inc: { amount: reward } },
-          { new: true, upsert: true, runValidators: true }
+        const resp = await axios.get(
+          "https://api.coingecko.com/api/v3/simple/price",
+          {
+            params: {
+              ids: coinId,
+              vs_currencies: "usd",
+            },
+            timeout: 10000, // 10 second timeout
+          }
         );
 
-        // Create bonus transaction
-        await txModel.create({
-          type: "referral_commission",
-          referenceId: stackingRecord._id,
-          wallet: refWallet._id,
-          asset: "USDT",
-          amount: reward,
-          status: "completed",
-          direction: "in",
-          user: refUser._id,
-          tenant: tenantId,
-          dateTransaction: new Date(),
-          createdBy: stackingRecord.user._id,
-          updatedBy: null,
-        });
-
-        // Create notification for referrer
-        await notifModel.create({
-          userId: refUser._id,
-          type: "commission",
-          message: `You earned ${reward.toFixed(2)} USDT as level ${level} referral bonus from ${currentUser.email || "a user"}'s first stacking.`,
-          tenant: tenantId,
-          forAdmin: false,
-          status: "unread",
-          createdBy: stackingRecord.user._id,
-          updatedBy: null,
-        });
-
-        refSourceUser = refUser;
-      }
-
-      // ✅ Mark user's first stacking as done
-      await userModel.updateOne(
-        { _id: currentUser._id },
-        { 
-          firstStackingDone: true,
-          updatedBy: null 
+        const price = Number(resp.data[coinId]?.usd || 0);
+        if (!price || price <= 0) {
+          console.warn(`Invalid price for ${currency}: ${price}`);
+          // Skip commission if price is invalid
+          return;
         }
+
+        commissionBaseAmount = earnedRewards * price;
+        console.log(`Converted ${earnedRewards} ${currency} to ${commissionBaseAmount} USDT at rate: ${price}`);
+
+      } catch (error: any) {
+        console.error(`Error converting ${currency} to USDT:`, error.message);
+        // Skip commission if conversion fails
+        return;
+      }
+    }
+
+    // ✅ COMMISSION FOR EVERY STACKING (NOT JUST FIRST)
+    const commissionLevels = [10, 7, 4]; // 3 levels: 10%, 7%, 4%
+    let refSourceUser = currentUser;
+
+    for (let level = 1; level <= 3; level++) {
+      if (!refSourceUser.invitationcode) break;
+
+      const refUser = await userModel.findOne({
+        refcode: refSourceUser.invitationcode,
+      });
+
+      if (!refUser) break;
+
+      const commission = Number((commissionBaseAmount * commissionLevels[level - 1]) / 100);
+
+      // Update referrer wallet in USDT
+      const refWallet = await walletModel.findOneAndUpdate(
+        { user: refUser._id, symbol: "USDT", tenant: tenantId },
+        { $inc: { amount: commission } },
+        { new: true, upsert: true, runValidators: true }
       );
+
+      // Create commission transaction
+      await txModel.create({
+        type: "referral_commission",
+        referenceId: stackingRecord._id,
+        wallet: refWallet._id,
+        asset: "USDT",
+        amount: commission,
+        status: "completed",
+        direction: "in",
+        user: refUser._id,
+        tenant: tenantId,
+        dateTransaction: new Date(),
+        createdBy: stackingRecord.user._id,
+        updatedBy: null,
+      });
+
+      // Create notification for referrer
+      await notifModel.create({
+        userId: refUser._id,
+        type: "commission",
+        message: `You earned ${commission.toFixed(2)} USDT as level ${level} stacking commission from ${currentUser.email || "a user"}.`,
+        tenant: tenantId,
+        forAdmin: false,
+        status: "unread",
+        createdBy: stackingRecord.user._id,
+        updatedBy: null,
+      });
+
+      console.log(`💰 Paid level ${level} commission: ${commission.toFixed(2)} USDT to ${refUser.email || refUser._id}`);
+
+      // Move up the chain
+      refSourceUser = refUser;
     }
 
     console.log(`✅ Auto-finalized stacking ${stackingId}: Credited ${totalToCredit} ${currency}`);
-    
+
   } catch (error) {
     console.error("Error in autoFinalizeStackingJob:", error);
     throw error; // Re-throw to let the job queue handle retries
