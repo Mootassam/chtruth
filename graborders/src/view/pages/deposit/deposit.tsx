@@ -9,11 +9,11 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { QRCodeCanvas } from "qrcode.react";
 import FieldFormItem from "src/shared/form/FieldFormItem";
 import actions from "src/modules/deposit/form/depositFormActions";
-import selectos from 'src/modules/depositMethod/list/depositMethodSelectors'
-import selectosDeposit from 'src/modules/deposit/form/depositFormSelectors'
+import selectors from 'src/modules/depositMethod/list/depositMethodSelectors'; // Fixed spelling
+import selectorsDeposit from 'src/modules/deposit/form/depositFormSelectors'; // Fixed spelling
 import method from 'src/modules/depositMethod/list/depositMethodListActions'
-
 import SuccessModalComponent from "src/view/shared/modals/sucessModal";
+
 // Minimum deposit amounts for each network
 const MIN_DEPOSIT_AMOUNTS = {
   USDT: 30,
@@ -23,12 +23,9 @@ const MIN_DEPOSIT_AMOUNTS = {
   XRP: 16.9
 };
 
-// Network data with addresses
-
-
 // Dynamic schema creation based on selected network
 const createSchema = (selectedNetwork) => {
-  const minAmount = MIN_DEPOSIT_AMOUNTS[selectedNetwork.toUpperCase()] || 0;
+  const minAmount = MIN_DEPOSIT_AMOUNTS[selectedNetwork?.toUpperCase()] || 0;
   return yup.object().shape({
     orderno: yupFormSchemas.string(i18n("entities.deposit.fields.orderno")),
     amount: yupFormSchemas.decimal(i18n("entities.deposit.fields.amount"), {
@@ -46,14 +43,20 @@ const createSchema = (selectedNetwork) => {
 
 function Deposit() {
   const dispatch = useDispatch();
-  const [selectedNetwork, setSelectedNetwork] = useState("BTC");
-  const [amount, setAmount] = useState('')
+  const [selectedNetwork, setSelectedNetwork] = useState("USDT");
+  const [amount, setAmount] = useState('');
   const [showToast, setShowToast] = useState(false);
-  const listMethod = useSelector(selectos.selectRows)
-  const [currentAddress, setCurrentAddress] = useState(listMethod[0]?.address);
-  const selectDepositModal = useSelector(selectosDeposit.selectDepositModal);
-  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(!selectDepositModal);
+  const listMethod = useSelector(selectors.selectRows);
+  const loading = useSelector(selectors.selectLoading);
+  const selectDepositModal = useSelector(selectorsDeposit.selectDepositModal);
 
+  // Initialize currentAddress safely
+  const [currentAddress, setCurrentAddress] = useState(
+    listMethod?.[0]?.address || ""
+  );
+
+  // Fix success modal logic
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
 
   // Update schema when network changes
   const schema = useMemo(() => createSchema(selectedNetwork), [selectedNetwork]);
@@ -75,32 +78,45 @@ function Deposit() {
     defaultValues: initialValues,
   });
 
-
   useEffect(() => {
-
     dispatch(method.doFetch());
+  }, [dispatch]); // Added dispatch to dependency array
 
-  }, [])
-
-
-  // Update address when network changes
+  // Update address when network changes or listMethod updates
   useEffect(() => {
-
-    const network = listMethod.find(n => n.symbol === selectedNetwork);
-    if (network) {
-      setCurrentAddress(network.address);
+    if (listMethod && listMethod.length > 0) {
+      const network = listMethod.find(n => n.symbol === selectedNetwork);
+      if (network) {
+        setCurrentAddress(network.address);
+      } else if (listMethod[0]) {
+        // Fallback to first network if selected not found
+        setSelectedNetwork(listMethod[0].symbol);
+        setCurrentAddress(listMethod[0].address);
+      }
     }
-  }, [selectedNetwork]);
+  }, [selectedNetwork, listMethod]);
 
-  // Copy address to clipboard
+  // Copy address to clipboard with error handling
   const copyAddressToClipboard = () => {
+    if (!currentAddress) {
+      console.error("No address to copy");
+      return;
+    }
+
     navigator.clipboard.writeText(currentAddress).then(() => {
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
+    }).catch(err => {
+      console.error("Failed to copy address: ", err);
     });
   };
 
   const onSubmit = (values) => {
+    if (!selectedNetwork) {
+      console.error("No network selected");
+      return;
+    }
+
     // Generate order number in format: RE + YYYYMMDD + 7 random digits
     const now = new Date();
 
@@ -122,7 +138,8 @@ function Deposit() {
     values.rechargetime = now.toISOString();
 
     values.rechargechannel = selectedNetwork;
-    setAmount(values.amount)
+    setAmount(values.amount);
+
     dispatch(actions.doCreate(values));
 
     // Reset form fields after submission
@@ -137,22 +154,17 @@ function Deposit() {
   };
 
   const selectedNetworkData = useMemo(
-    () => listMethod.find((network) => network.symbol === selectedNetwork),
-    [selectedNetwork]
+    () => listMethod?.find((network) => network.symbol === selectedNetwork) || null,
+    [selectedNetwork, listMethod]
   );
 
-
-
   const handleCloseModal = () => {
-    dispatch(actions.doClose())
+    dispatch(actions.doClose());
     setAmount(''); // Clear amount
   };
 
-
-
   // Handle network selection
   const handleNetworkSelect = (event) => {
-
     setSelectedNetwork(event.target.value);
     // Clear amount field when network changes to avoid validation issues
     form.setValue("amount", "");
@@ -161,7 +173,12 @@ function Deposit() {
 
   // Get minimum amount for current network
   const getMinAmount = () => {
-    return MIN_DEPOSIT_AMOUNTS[selectedNetwork.toUpperCase()] || 0;
+    return MIN_DEPOSIT_AMOUNTS[selectedNetwork?.toUpperCase()] || 0;
+  };
+
+  // Safe network display name
+  const getNetworkDisplayName = () => {
+    return selectedNetworkData?.name || selectedNetwork || "Unknown Network";
   };
 
   return (
@@ -170,153 +187,165 @@ function Deposit() {
       <SubHeader title="Deposit Crypto" />
 
       {/* Network Selection */}
-      <div className="networkSection">
-        <div className="sectionHeading">Select Network</div>
-        <div className="networkDropdownContainer">
-          <select
-            className="networkDropdown"
-            value={selectedNetwork}
-            onChange={handleNetworkSelect}
-          >
-            {listMethod.map((network) => (
-              <option key={network.symbol} value={network.symbol}>
-                {network.name}
-              </option>
-            ))}
-          </select>
-          <div
-            className="networkDropdownIcon"
-          >
-            <img
-              src={`https://images.weserv.nl/?url=https://bin.bnbstatic.com/static/assets/logos/${selectedNetwork}.png`}
-              style={{ width: 25, height: 25 }}
-              alt={selectedNetwork}
-            />
+      {loading && <p>Deposit method loading ...</p>}
 
-          </div>
-        </div>
-      </div>
-      {listMethod.symbol}
-
-      {/* QR Code Section */}
-      <div className="qrSection">
-        <QRCodeCanvas
-          value={currentAddress}
-          size={180}
-          bgColor="#ffffff"
-          fgColor="#000000"
-          level="H"
-          includeMargin={true}
-          className="qrBox"
-        />
-        <div className="addressSection">
-          <div className="addressLabel">Your deposit address</div>
-          <div className="addressText" id="walletAddress">
-            {currentAddress}
-          </div>
-          <button
-            type="button"
-            className="copyBtn"
-            onClick={copyAddressToClipboard}
-          >
-            <i className="fas fa-copy" /> Copy Address
-          </button>
-        </div>
-      </div>
-
-      {/* Form Section */}
-      <FormProvider {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
-          <div className="amountSection">
-            <FieldFormItem
-              name="amount"
-              label={`Deposit amount (${selectedNetwork.toUpperCase()})`}
-              className="textField"
-              className1="inputField"
-              className2="inputLabel"
-              className3="inputWrapper"
-              placeholder={`Minimum: ${getMinAmount()} ${selectedNetwork.toUpperCase()}`}
-
-            />
-
-            <FieldFormItem
-              name="txid"
-              type="text"
-              label="Transaction ID (TXID)"
-              className="textField"
-              className1="inputField"
-              className2="inputLabel"
-              className3="inputWrapper"
-              placeholder="Enter The TXID"
-            />
-          </div>
-
-          {/* Minimum Amount Warning */}
-          <div className="minAmountWarning">
-            <i className="fas fa-info-circle" />
-            Minimum deposit: <strong>{getMinAmount()} {selectedNetwork.toUpperCase()}</strong>
-          </div>
-
-          {/* Warning Section */}
-          <div className="warningBox">
-            <div className="warningHeader">
-              <i className="fas fa-exclamation-circle warningIcon" />
-              <div className="warningTitle">Important Notice</div>
-            </div>
-            <div className="warningContent">
-              Please ensure that you select the correct network for your
-              deposit. Sending funds through the wrong network may result in
-              permanent loss of your assets, which cannot be recovered.
+      {!loading && listMethod && listMethod.length > 0 && (
+        <>
+          <div className="networkSection">
+            <div className="sectionHeading">Select Network</div>
+            <div className="networkDropdownContainer">
+              <select
+                className="networkDropdown"
+                value={selectedNetwork}
+                onChange={handleNetworkSelect}
+                aria-label="Select Network"
+              >
+                {listMethod.map((network) => (
+                  <option key={network.symbol} value={network.symbol}>
+                    {network.name}
+                  </option>
+                ))}
+              </select>
+              <div className="networkDropdownIcon">
+                <img
+                  src={`https://images.weserv.nl/?url=https://bin.bnbstatic.com/static/assets/logos/${selectedNetwork}.png`}
+                  style={{ width: 25, height: 25 }}
+                  alt={selectedNetwork}
+                />
+              </div>
             </div>
           </div>
 
-          {/* Deposit Button */}
-          <button
-            type="submit"
-            className="depositBtn"
-            disabled={!form.formState.isValid}
-          >
-            Confirm Deposit
-          </button>
-        </form>
-      </FormProvider>
+          {/* QR Code Section - Only show if we have an address */}
+          {currentAddress && (
+            <div className="qrSection">
+              <QRCodeCanvas
+                value={currentAddress}
+                size={180}
+                bgColor="#ffffff"
+                fgColor="#000000"
+                level="H"
+                includeMargin={true}
+                className="qrBox"
+              />
+              <div className="addressSection">
+                <div className="addressLabel">Your deposit address</div>
+                <div className="addressText" id="walletAddress">
+                  {currentAddress}
+                </div>
+                <button
+                  type="button"
+                  className="copyBtn"
+                  onClick={copyAddressToClipboard}
+                  disabled={!currentAddress}
+                >
+                  <i className="fas fa-copy" /> Copy Address
+                </button>
+              </div>
+            </div>
+          )}
 
-      {/* Network Details */}
-      <div className="networkDetails">
-        <div className="detailRow">
-          <div className="detailLabel">Network</div>
-          <div className="detailValue" id="detailNetwork">
-            {selectedNetworkData?.name} ({selectedNetwork.toUpperCase()})
+          {/* Form Section */}
+          <FormProvider {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
+              <div className="amountSection">
+                <FieldFormItem
+                  name="amount"
+                  label={`Deposit amount (${selectedNetwork.toUpperCase()})`}
+                  className="textField"
+                  className1="inputField"
+                  className2="inputLabel"
+                  className3="inputWrapper"
+                  placeholder={`Minimum: ${getMinAmount()} ${selectedNetwork.toUpperCase()}`}
+                />
+
+                <FieldFormItem
+                  name="txid"
+                  type="text"
+                  label="Transaction ID (TXID)"
+                  className="textField"
+                  className1="inputField"
+                  className2="inputLabel"
+                  className3="inputWrapper"
+                  placeholder="Enter The TXID"
+                />
+              </div>
+
+              {/* Minimum Amount Warning */}
+              <div className="minAmountWarning">
+                <i className="fas fa-info-circle" />
+                Minimum deposit: <strong>{getMinAmount()} {selectedNetwork.toUpperCase()}</strong>
+              </div>
+
+              {/* Warning Section */}
+              <div className="warningBox">
+                <div className="warningHeader">
+                  <i className="fas fa-exclamation-circle warningIcon" />
+                  <div className="warningTitle">Important Notice</div>
+                </div>
+                <div className="warningContent">
+                  Please ensure that you select the correct network for your
+                  deposit. Sending funds through the wrong network may result in
+                  permanent loss of your assets, which cannot be recovered.
+                </div>
+              </div>
+
+              {/* Deposit Button */}
+              <button
+                type="submit"
+                className="depositBtn"
+                disabled={!form.formState.isValid || !currentAddress}
+              >
+                Confirm Deposit
+              </button>
+            </form>
+          </FormProvider>
+
+          {/* Network Details */}
+          <div className="networkDetails">
+            <div className="detailRow">
+              <div className="detailLabel">Network</div>
+              <div className="detailValue" id="detailNetwork">
+                {getNetworkDisplayName()} ({selectedNetwork.toUpperCase()})
+              </div>
+            </div>
+            <div className="detailRow">
+              <div className="detailLabel">Minimum deposit</div>
+              <div className="detailValue">{getMinAmount()} {selectedNetwork.toUpperCase()}</div>
+            </div>
+            <div className="detailRow">
+              <div className="detailLabel">Estimated arrival</div>
+              <div className="detailValue">3 network confirmations</div>
+            </div>
+            <div className="detailRow">
+              <div className="detailLabel">Processing time</div>
+              <div className="detailValue">10-30 minutes</div>
+            </div>
           </div>
+        </>
+      )}
+
+      {/* Show message if no deposit methods available */}
+      {!loading && (!listMethod || listMethod.length === 0) && (
+        <div className="no-methods-message">
+          No deposit methods available at the moment.
         </div>
-        <div className="detailRow">
-          <div className="detailLabel">Minimum deposit</div>
-          <div className="detailValue">{getMinAmount()} {selectedNetwork.toUpperCase()}</div>
-        </div>
-        <div className="detailRow">
-          <div className="detailLabel">Estimated arrival</div>
-          <div className="detailValue">3 network confirmations</div>
-        </div>
-        <div className="detailRow">
-          <div className="detailLabel">Processing time</div>
-          <div className="detailValue">10-30 minutes</div>
-        </div>
-      </div>
+      )}
 
       {/* Toast Notification */}
       <div className={`toastMsg ${showToast ? 'visible' : ''}`} id="toast">
         Address copied to clipboard!
       </div>
-      {selectDepositModal &&
 
+      {selectDepositModal && (
         <SuccessModalComponent
-
           isOpen={selectDepositModal}
           onClose={handleCloseModal}
           type='deposit'
           amount={amount}
-          coinType={selectedNetwork} />
-      }
+          coinType={selectedNetwork}
+        />
+      )}
 
       <style>{`
   .depositContainer {

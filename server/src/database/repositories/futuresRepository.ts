@@ -17,9 +17,9 @@ class FuturesRepository {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
     const currentUser = MongooseRepository.getCurrentUser(options);
 
-    // Validate futures amount
-    if (!data.futuresAmount || data.futuresAmount <= 0) {
-      throw new Error('Futures amount must be greater than 0');
+    // Validate futures amount - updated to 30
+    if (!data.futuresAmount || data.futuresAmount < 30) {
+      throw new Error('Futures amount must be at least 30 USDT');
     }
 
     // Get user's USDT wallet and check balance

@@ -14,6 +14,8 @@ interface ActionCard {
   title: string;
   description: string;
   icon: string;
+  link?: string;
+  isExternal?: boolean;
 }
 
 const Faq: React.FC = () => {
@@ -31,7 +33,7 @@ const Faq: React.FC = () => {
         <div className="step-list">
           <div className="step-items">
             <i className="fas fa-arrow-right step-arrow" />
-            Go to www.nexustradex.com
+            Go to https://nexus-exchange.com
           </div>
           <div className="step-items">
             <i className="fas fa-arrow-right step-arrow" />
@@ -233,27 +235,21 @@ const Faq: React.FC = () => {
       id: 'ac1',
       title: 'Contact Support',
       description: 'Get help from our team',
-      icon: 'fa-headset'
-    },
-    {
-      id: 'ac2',
-      title: 'Learning Center',
-      description: 'Expand your knowledge',
-      icon: 'fa-graduation-cap'
-    },
-    {
-      id: 'ac3',
-      title: 'Tutorials',
-      description: 'Step-by-step guides',
-      icon: 'fa-book'
+      icon: 'fa-headset',
+      link: '/liveChat', // Internal route
+      isExternal: false
     },
     {
       id: 'ac4',
       title: 'Community',
       description: 'Join discussions',
-      icon: 'fa-comments'
+      icon: 'fa-comments',
+      link: 'https://t.me/nexusexchange_official', // External URL
+      isExternal: true
     }
   ];
+
+
 
   // Filter FAQs based on search term
   const filteredFaqs = faqData.filter(item =>
@@ -272,13 +268,20 @@ const Faq: React.FC = () => {
   };
 
   // Handle action card click
-  const handleActionCardClick = (title: string) => {
-    setNotificationMessage(`Opening ${title}`);
-    setShowNotification(true);
-    
-    setTimeout(() => {
-      setShowNotification(false);
-    }, 3000);
+  const handleActionCardClick = (card: ActionCard) => {
+    if (card.link) {
+      if (card.isExternal) {
+        // Open external link in new tab
+        window.open(card.link, '_blank', 'noopener,noreferrer');
+      } else {
+        // Navigate to internal route
+        // Using React Router (if you're using it)
+        // navigate(card.link);
+
+        // Or using window.location for simple navigation
+        window.location.href = card.link;
+      }
+    }
   };
 
   // Group FAQs by category for display
@@ -415,27 +418,35 @@ const Faq: React.FC = () => {
       {/* Action Cards */}
       <div className="action-cards">
         {actionCards.map((card) => (
-          <div
+          <a
             key={card.id}
-            className="action-card"
-            onClick={() => handleActionCardClick(card.title)}
+            className="action-card remove_blue"
+            href={card.link || '#'}
+            target={card.isExternal ? '_blank' : '_self'}
+            rel={card.isExternal ? 'noopener noreferrer' : ''}
+            onClick={(e) => {
+              if (!card.link) {
+                e.preventDefault();
+              }
+              handleActionCardClick(card);
+            }}
           >
             <i className={`fas ${card.icon} action-icon`} />
             <div className="action-title">{card.title}</div>
             <div className="action-description">{card.description}</div>
-          </div>
+          </a>
         ))}
       </div>
 
       {/* Footer */}
       <div className="footer">
-        © 2025 Nexus Nexus Exchange. All rights reserved.
+        © 2025 Nexus Exchange. All rights reserved.
         <br />
         Need more help? Contact support@nexus-exchange.com
       </div>
 
       {/* Notification Element */}
-      <div 
+      <div
         ref={notificationRef}
         className={`notification ${showNotification ? 'show' : ''}`}
       >

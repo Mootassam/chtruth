@@ -1,4 +1,3 @@
-
 // src/components/FuturesModal.tsx
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
@@ -32,7 +31,7 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
   const [selectedDuration, setSelectedDuration] = useState<string>("120");
   const [selectvalue, setSelectedValue] = useState("")
   const [selectedLeverage, setSelectedLeverage] = useState<string>("2");
-  const [futuresAmount, setFuturesAmount] = useState<number>(1);
+  const [futuresAmount, setFuturesAmount] = useState<number>(30); // Changed default to 30
   const [tradeStatus, setTradeStatus] = useState<
     "configuring" | "in-progress" | "completed"
   >("configuring");
@@ -69,8 +68,8 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
 
   // validate amount
   useEffect(() => {
-    if (futuresAmount <= 0) {
-      setAmountError("Amount must be greater than 0");
+    if (futuresAmount < 30) { // Updated to 30
+      setAmountError("Amount must be at least 30 USDT");
     } else if (futuresAmount > availableBalance) {
       setAmountError("Insufficient balance");
     } else {
@@ -104,7 +103,7 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
 
   // Start the trade: create backend record then start timer
   const startTrade = async () => {
-    if (!direction || futuresAmount <= 0 || futuresAmount > availableBalance) {
+    if (!direction || futuresAmount < 30 || futuresAmount > availableBalance) { // Updated to 30
       return;
     }
 
@@ -268,6 +267,7 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
     setFutureId(null);
     setPnlDisplay("");
     setTradeDetails(null);
+    setFuturesAmount(30); // Reset to 30 when starting new trade
   };
 
   const calculateProfit = (
@@ -453,7 +453,10 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
                   <span>Futures Amount (USDT)</span>
                 </div>
                 <div className="amount-control">
-                  <button className="amount-btn" onClick={() => setFuturesAmount((prev) => Math.max(1, prev - 1))}>
+                  <button 
+                    className="amount-btn" 
+                    onClick={() => setFuturesAmount((prev) => Math.max(30, prev - 1))} // Updated to 30
+                  >
                     -
                   </button>
                   <input
@@ -462,9 +465,11 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
                     value={futuresAmount}
                     onChange={(e) => {
                       const value = parseInt(e.target.value, 10) || 0;
-                      setFuturesAmount(Math.max(0, value));
+                      setFuturesAmount(Math.max(30, value)); // Updated to 30
                     }}
-                    min="1"
+                    min="30" // Updated to 30
+                    placeholder=""
+                    title="Number"
                   />
                   <button className="amount-btn" onClick={() => setFuturesAmount((prev) => prev + 1)}>
                     +
@@ -489,10 +494,10 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
               <button
                 className="confirm-btn"
                 onClick={startTrade}
-                disabled={!direction || futuresAmount <= 0 || futuresAmount > availableBalance || isCreating}
+                disabled={!direction || futuresAmount < 30 || futuresAmount > availableBalance || isCreating} // Updated to 30
                 style={{
-                  opacity: !direction || futuresAmount <= 0 || futuresAmount > availableBalance ? 0.5 : 1,
-                  cursor: !direction || futuresAmount <= 0 || futuresAmount > availableBalance ? "not-allowed" : "pointer",
+                  opacity: !direction || futuresAmount < 30 || futuresAmount > availableBalance ? 0.5 : 1, // Updated to 30
+                  cursor: !direction || futuresAmount < 30 || futuresAmount > availableBalance ? "not-allowed" : "pointer", // Updated to 30
                 }}
               >
                 {isCreating ? "CREATING..." : futuresAmount > availableBalance ? "INSUFFICIENT BALANCE" : "CONFIRM ORDER"}

@@ -1,3 +1,4 @@
+
 import path from "path";
 import Permissions from "src/security/permissions";
 const permissions = Permissions.values;

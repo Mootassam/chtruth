@@ -1,5 +1,5 @@
 import React from 'react'
-
+import { Link } from 'react-router-dom'
 function Termeofuse() {
 
     const handleBackClick = () => {
@@ -312,30 +312,40 @@ function Termeofuse() {
                 </div>
                 {/* Action Cards */}
                 <div className="action-cards">
-                    <div className="action-card">
-                        <i className="fas fa-file-pdf action-icon" />
-                        <div className="action-title">Download PDF</div>
-                        <div className="action-description">Save a copy for your records</div>
-                    </div>
-                    <div className="action-card">
-                        <i className="fas fa-question-circle action-icon" />
-                        <div className="action-title">Help Center</div>
-                        <div className="action-description">Get answers to your questions</div>
-                    </div>
-                    <div className="action-card">
-                        <i className="fas fa-user-shield action-icon" />
-                        <div className="action-title">Privacy Policy</div>
-                        <div className="action-description">Review our privacy practices</div>
-                    </div>
-                    <div className="action-card">
-                        <i className="fas fa-gavel action-icon" />
-                        <div className="action-title">Legal</div>
-                        <div className="action-description">View all legal documents</div>
-                    </div>
+
+                    <Link to="/security-tips" className="remove_blue">
+                        <div className="action-card">
+                            <i className="fas fa-shield-alt action-icon" />
+                            <div className="action-title ">Security</div>
+                            <div className="action-description">Keep your account safe.</div>
+                        </div>
+                    </Link>
+                    <Link to="/faq-center" className="remove_blue">
+                        <div className="action-card">
+                            <i className="fas fa-question-circle action-icon" />
+                            <div className="action-title">Help Center</div>
+                            <div className="action-description">Get answers to your questions</div>
+                        </div>
+
+                    </Link>
+                    <Link to="/privacy-portal" className="remove_blue">
+                        <div className="action-card">
+                            <i className="fas fa-user-shield action-icon" />
+                            <div className="action-title">Privacy Policy</div>
+                            <div className="action-description">Review our privacy practices</div>
+                        </div>
+                    </Link>
+                    <Link to="/approval" className="remove_blue">
+                        <div className="action-card">
+                            <i className="fas fa-gavel action-icon" />
+                            <div className="action-title">Legal</div>
+                            <div className="action-description">View all legal documents</div>
+                        </div>
+                    </Link>
                 </div>
                 {/* Footer */}
                 <div className="footer">
-                    © 2025 Nexus Nexus Exchange. All rights reserved.
+                    © 2025 Nexus Exchange. All rights reserved.
                     <br />
                     Last updated: 6 May 2025
                 </div>
