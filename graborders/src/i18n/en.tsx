@@ -43,7 +43,7 @@ const en = {
   },
 
   app: {
-    title: "ChTruth",
+    title: "Nexus Exchange",
   },
 
   api: {
