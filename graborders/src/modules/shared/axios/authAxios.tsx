@@ -3,9 +3,9 @@ import authToken from "src/modules/auth/authToken";
 
 const authAxios = axios.create({
   // Local link
-  // baseURL: "https://nexus-exchange.com/api",
+  baseURL: "https://nexus-exchange.com/api",
 
-  baseURL: "http://localhost:8084/api",
+  // baseURL: "http://localhost:8084/api",
 
 });
 
