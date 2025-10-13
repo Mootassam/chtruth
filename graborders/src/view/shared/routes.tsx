@@ -140,8 +140,7 @@ const screenRoutes = [
 
   {
     path: "/market/detail/:id",
-    loader: () => import("src/view/pages/Market/MarketD
-    etail"),
+    loader: () => import("src/view/pages/Market/MarketDetail"),
   },
 
   {
