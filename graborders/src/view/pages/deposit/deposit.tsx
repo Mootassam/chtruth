@@ -1,11 +1,9 @@
 import React, { useMemo, useState, useEffect } from "react";
 import SubHeader from "src/view/shared/Header/SubHeader";
-import { useParams } from "react-router-dom";
 import yupFormSchemas from "src/modules/shared/yup/yupFormSchemas";
 import * as yup from "yup";
 import { i18n } from "../../../i18n";
 import { useDispatch, useSelector } from "react-redux";
-import authSelectors from "src/modules/auth/authSelectors";
 import { useForm, FormProvider } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { QRCodeCanvas } from "qrcode.react";
@@ -13,6 +11,7 @@ import FieldFormItem from "src/shared/form/FieldFormItem";
 import actions from "src/modules/deposit/form/depositFormActions";
 import selectos from 'src/modules/depositMethod/list/depositMethodSelectors'
 import selectosDeposit from 'src/modules/deposit/form/depositFormSelectors'
+import method from 'src/modules/depositMethod/list/depositMethodListActions'
 
 import SuccessModalComponent from "src/view/shared/modals/sucessModal";
 // Minimum deposit amounts for each network
@@ -76,8 +75,17 @@ function Deposit() {
     defaultValues: initialValues,
   });
 
+
+  useEffect(() => {
+
+    dispatch(method.doFetch());
+
+  }, [])
+
+
   // Update address when network changes
   useEffect(() => {
+
     const network = listMethod.find(n => n.symbol === selectedNetwork);
     if (network) {
       setCurrentAddress(network.address);

@@ -1,25 +1,4 @@
-
-import React from "react";
-import { useDispatch } from "react-redux";
-import { i18n } from "../../../i18n";
-import actions from "src/modules/auth/authActions";
-import { Link } from 'react-router-dom'
-
-function EmptyPermissionsPage() {
-  const dispatch = useDispatch();
-
-  const doSignout = () => {
-    dispatch(actions.doSignout());
-  };
-
-  const contactSupport = () => {
-    // In a real app, this would open support contact or redirect
-    alert("Redirecting to customer support...");
-  };
-
-  return (
-    <div className="empty__page">
-      <style>{`
+import{j as t,L as n,J as r,U as a}from"./index-aeb5d9a2.js";import{u as i}from"./useDispatch-bcf5a85f.js";function c(){const o=i(),e=()=>{o(a.doSignout())};return t.jsxs("div",{className:"empty__page",children:[t.jsx("style",{children:`
         .empty__page {
           background-color: #000000;
           color: #FFFFFF;
@@ -156,48 +135,4 @@ function EmptyPermissionsPage() {
             max-width: 280px;
           }
         }
-      `}</style>
-
-
-      <div className="empty__text">
-        <h3>ACCOUNT SUSPENDED</h3>
-        <p>
-          Your account has been temporarily suspended due to violation of our Terms of Service.
-          Please contact our customer support team to resolve this issue and restore your account access.
-        </p>
-        <p>
-          We've also sent detailed information to your registered email address.
-          Please check your inbox and spam folder for updates regarding your account status.
-        </p>
-
-        <div className="button-group">
-          <Link
-            className="support-button remove_blue"
-            to="/LiveChat"
-          >
-            CONTACT SUPPORT
-          </Link>
-          <button
-            className="logout-button"
-            type="button"
-            onClick={doSignout}
-          >
-            {i18n("auth.signout")}
-          </button>
-        </div>
-
-        <div className="contact-info">
-          <p>Need immediate assistance?</p>
-          <p>
-            Email us at:{" "}
-            <a href="mailto:support@nexus-exchange.com" className="email-link">
-              support@nexus-exchange.com
-            </a>
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export default EmptyPermissionsPage;
+      `}),t.jsxs("div",{className:"empty__text",children:[t.jsx("h3",{children:"ACCOUNT SUSPENDED"}),t.jsx("p",{children:"Your account has been temporarily suspended due to violation of our Terms of Service. Please contact our customer support team to resolve this issue and restore your account access."}),t.jsx("p",{children:"We've also sent detailed information to your registered email address. Please check your inbox and spam folder for updates regarding your account status."}),t.jsxs("div",{className:"button-group",children:[t.jsx(n,{className:"support-button remove_blue",to:"/LiveChat",children:"CONTACT SUPPORT"}),t.jsx("button",{className:"logout-button",type:"button",onClick:e,children:r("auth.signout")})]}),t.jsxs("div",{className:"contact-info",children:[t.jsx("p",{children:"Need immediate assistance?"}),t.jsxs("p",{children:["Email us at:"," ",t.jsx("a",{href:"mailto:support@nexussupport.com",className:"email-link",children:"support@nexussupport.com"})]})]})]})]})}export{c as default};

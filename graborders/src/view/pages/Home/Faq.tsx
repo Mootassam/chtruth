@@ -431,7 +431,7 @@ const Faq: React.FC = () => {
       <div className="footer">
         © 2025 Nexus Nexus Exchange. All rights reserved.
         <br />
-        Need more help? Contact support@nexustradex.com
+        Need more help? Contact support@nexus-exchange.com
       </div>
 
       {/* Notification Element */}

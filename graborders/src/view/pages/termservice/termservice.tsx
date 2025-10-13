@@ -156,9 +156,9 @@ function termservice() {
       <div className="section-content">
         <p>For questions about these Terms, please contact us at:</p>
         <p>
-          Email: legal@NUXES.com
+          Email: support@nexus-exchange.com
           <br />
-          Address: 123 Crypto Street, Wilmington, DE 19801
+          Address: 981 OAV Street, Wilmington, DE 19801
         </p>
       </div>
     </div>
