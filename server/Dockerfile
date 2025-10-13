@@ -15,7 +15,7 @@ RUN npm install --legacy-peer-deps
 COPY . .
 
 # Set environment variables
-ENV BACKEND_URL="http://159.198.70.147:8084/api"
+ENV BACKEND_URL="https://www.nexus-exchange.com/api"
 
 # Expose your app port
 EXPOSE 8084

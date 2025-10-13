@@ -14,10 +14,14 @@ export default function useNotifications(
 
   useEffect(() => {
     if (!userId) return;
-
+    
     if (!socket) {
-      socket = io("http://159.198.70.147:8084", {
-        transports: ["websocket"], // ensure stable connection
+      socket = io("https://nexus-exchange.com", {
+        transports: ["websocket"],
+        // Optional: Add reconnection options
+        reconnection: true,
+        reconnectionAttempts: 5,
+        reconnectionDelay: 1000,
       });
     }
 
@@ -26,6 +30,12 @@ export default function useNotifications(
 
     // Debug success message
     socket.on("success", (data) => {
+      console.log("Socket connected successfully", data);
+    });
+
+    // Handle connection errors
+    socket.on("connect_error", (error) => {
+      console.error("Socket connection error:", error);
     });
 
     // Listen to new notifications
@@ -38,6 +48,7 @@ export default function useNotifications(
       if (socket) {
         socket.off("success");
         socket.off("newNotification");
+        socket.off("connect_error");
       }
     };
   }, [userId, isAdmin]);
