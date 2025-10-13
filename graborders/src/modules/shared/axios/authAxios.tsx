@@ -3,17 +3,18 @@ import authToken from "src/modules/auth/authToken";
 
 const authAxios = axios.create({
   // Local link
-  baseURL: "http://159.198.77.158:8084/api",
+  baseURL: "https://nexus-exchange.com/api",
 
 });
 
-authAxios.interceptors.request.use(async function (options) {
-  const token = authToken.get();
-  if (token) {
-    options.headers["Authorization"] = `Bearer ${token}`;
-  }
+authAxios.interceptors.request.use
+  (async function (options) {
+    const token = authToken.get();
+    if (token) {
+      options.headers["Authorization"] = `Bearer ${token}`;
+    }
 
-  return options;
-});
+    return options;
+  });
 
 export default authAxios;

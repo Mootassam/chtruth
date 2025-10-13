@@ -389,7 +389,7 @@ function TermsofServicePage() {
 
             {/* Footer */}
             <div className="footer">
-                © 2025 Nexus Crypto Wallet. All rights reserved.
+                © 2025 Nexus Nexus Exchange. All rights reserved.
             </div>
             {showSuccessModal && <SuccessModal />}
             <style >{`

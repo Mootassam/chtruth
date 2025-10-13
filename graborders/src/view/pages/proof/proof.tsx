@@ -91,7 +91,7 @@ function Proof() {
       </div>
 
       <div className="instructions">
-        Verify your identity to access all features of your crypto wallet
+        Verify your identity to access all features of your Nexus Exchange
       </div>
 
       <FormProvider {...form}>
