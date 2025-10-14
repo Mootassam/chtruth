@@ -19,7 +19,7 @@ const Error404Page = () => {
           <h1>404</h1>
           <div className="desc">{i18n('errors.404')}</div>
           <div className="actions">
-            <Link to="/">
+            <Link to="/clients">
               <button
                 className="btn btn-primary"
                 type="button"

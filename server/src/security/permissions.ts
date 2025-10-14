@@ -68,7 +68,7 @@ class Permissions {
       },
       auditLogRead: {
         id: "auditLogRead",
-        allowedRoles: [roles.admin],
+        allowedRoles: [roles.admin, roles.agent],
         allowedPlans: [plans.free, plans.growth, plans.enterprise],
       },
       settingsEdit: {

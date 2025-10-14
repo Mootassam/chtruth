@@ -1,4 +1,5 @@
 
+
 import Permissions from 'src/security/permissions';
 import { i18n } from 'src/i18n';
 
@@ -13,7 +14,7 @@ export default [
     icon: 'fas fa-home',
     label: i18n('dashboard.home'),
     className: 'menu-li side-menue',
-    permissionRequired: null, // No permission required for home
+    permissionRequired: permissions.userRead
   },
 
   // Users Section
@@ -24,6 +25,16 @@ export default [
     permissionRequired: permissions.userRead,
   },
   {
+    id: 'user-management',
+    path: '/clients',
+    exact: true,
+    icon: 'fas fa-users',
+    label: i18n('dashboard.clients'),
+    className: 'menu-li side-menue sub-item',
+    permissionRequired: permissions.categoryDestroy,
+  },
+
+    {
     id: 'user-management',
     path: '/user',
     exact: true,

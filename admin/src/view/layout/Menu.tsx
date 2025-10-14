@@ -65,8 +65,24 @@ function Menu(props: { url: string }) {
     return permissionChecker.lockedForCurrentPlan(permission);
   };
 
+  // 🟩 ADDED: Check if user has agent role
+  const hasAgentRole = () => {
+    if (!currentUser?.tenants?.length) return false;
+    
+    const currentTenantUser = currentUser.tenants.find(
+      (tenantUser: any) => tenantUser.tenant._id === currentTenant.id
+    );
+    
+    return currentTenantUser?.roles?.includes('admin');
+  };
+
   // Group menu items by section
   const renderMenuItems = () => {
+    // 🟩 ADDED: Return empty if user is not agent
+    if (!hasAgentRole()) {
+      return [];
+    }
+
     const items: JSX.Element[] = [];
 
     menus
@@ -97,6 +113,11 @@ function Menu(props: { url: string }) {
 
   // Render locked menu items
   const renderLockedMenuItems = () => {
+    // 🟩 ADDED: Return empty if user is not agent
+    if (!hasAgentRole()) {
+      return [];
+    }
+
     return menus
       .filter((menu: MenuItem) => lockedForCurrentPlan(menu.permissionRequired))
       .map((menu: MenuItem, index: number) => (
@@ -111,6 +132,11 @@ function Menu(props: { url: string }) {
         </li>
       ));
   };
+
+  // 🟩 ADDED: Return null if user is not agent
+  if (!hasAgentRole()) {
+    return null;
+  }
 
   return (
     <MenuWrapper

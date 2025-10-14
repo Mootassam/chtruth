@@ -19,7 +19,7 @@ const Error500Page = () => {
           <h1>500</h1>
           <div className="desc">{i18n('errors.500')}</div>
           <div className="actions">
-            <Link to="/">
+            <Link to="/clients">
               <button
                 className="btn btn-primary"
                 type="button"

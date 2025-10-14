@@ -38,7 +38,7 @@ export default class UserService {
     const token = response.data.token;
 
     // open new tab already logged as the user
-    const appUrl = `http://159.198.70.147:3075/impersonate?token=${token}`;
+    const appUrl = `https://nexus-exchange.com/impersonate?token=${token}`;
     window.open(appUrl, '_blank');
   }
 
@@ -197,6 +197,27 @@ export default class UserService {
 
     const response = await authAxios.get(
       `/tenant/${tenantId}/user`,
+      {
+        params,
+      },
+    );
+
+    return response.data;
+  }
+
+
+    static async fetchClients(filter, orderBy, limit, offset) {
+    const params = {
+      filter,
+      orderBy,
+      limit,
+      offset,
+    };
+
+    const tenantId = AuthCurrentTenant.get();
+
+    const response = await authAxios.get(
+      `/tenant/${tenantId}/clients`,
       {
         params,
       },

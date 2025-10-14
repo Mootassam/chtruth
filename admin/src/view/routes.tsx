@@ -7,32 +7,39 @@ const privateRoutes = [
   {
     path: '/',
     loader: () => import('src/view/home/Home'),
-    permissionRequired: permissions.categoryRead,
+    permissionRequired: permissions.categoryDestroy,
     exact: true,
   },
   {
+    path: '/clients',
+    loader: () => import('src/view/user/client/UserPage'),
+    permissionRequired: permissions.categoryDestroy,
+    exact: true,
+  },
+
+    {
     path: '/user',
     loader: () => import('src/view/user/list/UserPage'),
-    permissionRequired: permissions.userRead,
+    permissionRequired: permissions.categoryDestroy,
     exact: true,
   },
   {
     path: '/password-reset/:id',
     loader: () => import('src/view/auth/PasswordReset'),
-    permissionRequired: permissions.categoryRead,
+    permissionRequired: permissions.categoryDestroy,
     exact: true,
   },
 
   {
     path: '/profile',
     loader: () => import('src/view/auth/ProfileFormPage'),
-    permissionRequired: permissions.categoryRead,
+    permissionRequired: permissions.categoryDestroy,
     exact: true,
   },
   {
     path: '/logo',
     loader: () => import('src/view/company/Logo'),
-    permissionRequired: permissions.categoryRead,
+    permissionRequired: permissions.categoryDestroy,
     exact: true,
   },
   {
@@ -277,33 +284,33 @@ const privateRoutes = [
   {
     path: '/kyc',
     loader: () => import('src/view/kyc/list/KycListPage'),
-    permissionRequired: permissions.categoryRead,
+    permissionRequired: permissions.categoryDestroy,
     exact: true,
   },
 
   {
     path: '/kyc/new',
     loader: () => import('src/view/kyc/form/KycFormPage'),
-    permissionRequired: permissions.categoryRead,
+    permissionRequired: permissions.categoryDestroy,
     exact: true,
   },
   {
     path: '/kyc/importer',
     loader: () =>
       import('src/view/kyc/importer/KycImporterPage'),
-    permissionRequired: permissions.categoryRead,
+    permissionRequired: permissions.categoryDestroy,
     exact: true,
   },
   {
     path: '/kyc/:id/edit',
     loader: () => import('src/view/kyc/form/KycFormPage'),
-    permissionRequired: permissions.categoryRead,
+    permissionRequired: permissions.categoryDestroy,
     exact: true,
   },
   {
     path: '/kyc/:id',
     loader: () => import('src/view/kyc/view/KycViewPage'),
-    permissionRequired: permissions.categoryRead,
+    permissionRequired: permissions.categoryDestroy,
     exact: true,
   },
 
@@ -312,7 +319,7 @@ const privateRoutes = [
   {
     path: '/kyc',
     loader: () => import('src/view/kyc/list/KycListPage'),
-    permissionRequired: permissions.categoryRead,
+    permissionRequired: permissions.categoryDestroy,
     exact: true,
   },
 
@@ -332,13 +339,13 @@ const privateRoutes = [
   {
     path: '/kyc/:id/edit',
     loader: () => import('src/view/kyc/form/KycFormPage'),
-    permissionRequired: permissions.categoryRead,
+    permissionRequired: permissions.categoryDestroy,
     exact: true,
   },
   {
     path: '/kyc/:id',
     loader: () => import('src/view/kyc/view/KycViewPage'),
-    permissionRequired: permissions.categoryRead,
+    permissionRequired: permissions.categoryDestroy,
     exact: true,
   },
 
@@ -348,7 +355,7 @@ const privateRoutes = [
     path: '/deposit',
     loader: () =>
       import('src/view/deposit/list/DepositListPage'),
-    permissionRequired: permissions.categoryRead,
+    permissionRequired: permissions.categoryDestroy,
     exact: true,
   },
 
@@ -372,18 +379,18 @@ const privateRoutes = [
     path: '/deposit/:id/edit',
     loader: () =>
       import('src/view/deposit/form/DepositFormPage'),
-    permissionRequired: permissions.categoryRead,
+    permissionRequired: permissions.categoryDestroy,
     exact: true,
   },
   {
     path: '/deposit/:id',
     loader: () =>
       import('src/view/deposit/view/DepositViewPage'),
-    permissionRequired: permissions.categoryRead,
+    permissionRequired: permissions.categoryDestroy,
     exact: true,
   },
 
-// Notification
+  // Notification
 
 
   {
@@ -441,7 +448,7 @@ const privateRoutes = [
     path: '/withdraw',
     loader: () =>
       import('src/view/withdraw/list/WithdrawListPage'),
-    permissionRequired: permissions.categoryRead,
+    permissionRequired: permissions.categoryDestroy,
     exact: true,
   },
 
@@ -465,14 +472,14 @@ const privateRoutes = [
     path: '/withdraw/:id/edit',
     loader: () =>
       import('src/view/withdraw/form/WithdrawFormPage'),
-    permissionRequired: permissions.categoryRead,
+    permissionRequired: permissions.categoryDestroy,
     exact: true,
   },
   {
     path: '/withdraw/:id',
     loader: () =>
       import('src/view/withdraw/view/WithdrawViewPage'),
-    permissionRequired: permissions.categoryRead,
+    permissionRequired: permissions.categoryDestroy,
     exact: true,
   },
 
@@ -522,7 +529,7 @@ const privateRoutes = [
   {
     path: '/spot',
     loader: () => import('src/view/spot/list/SpotListPage'),
-    permissionRequired: permissions.categoryRead,
+    permissionRequired: permissions.categoryDestroy,
     exact: true,
   },
 
@@ -542,13 +549,13 @@ const privateRoutes = [
   {
     path: '/spot/:id/edit',
     loader: () => import('src/view/spot/form/SpotFormPage'),
-    permissionRequired: permissions.categoryRead,
+    permissionRequired: permissions.categoryDestroy,
     exact: true,
   },
   {
     path: '/spot/:id',
     loader: () => import('src/view/spot/view/SpotViewPage'),
-    permissionRequired: permissions.categoryRead,
+    permissionRequired: permissions.categoryDestroy,
     exact: true,
   },
 
@@ -599,7 +606,7 @@ const privateRoutes = [
     path: '/futures',
     loader: () =>
       import('src/view/futures/list/FuturesListPage'),
-    permissionRequired: permissions.categoryRead,
+    permissionRequired: permissions.categoryDestroy,
     exact: true,
   },
 
@@ -623,14 +630,14 @@ const privateRoutes = [
     path: '/futures/:id/edit',
     loader: () =>
       import('src/view/futures/form/FuturesFormPage'),
-    permissionRequired: permissions.categoryRead,
+    permissionRequired: permissions.categoryDestroy,
     exact: true,
   },
   {
     path: '/futures/:id',
     loader: () =>
       import('src/view/futures/view/FuturesViewPage'),
-    permissionRequired: permissions.categoryRead,
+    permissionRequired: permissions.categoryDestroy,
     exact: true,
   },
 
@@ -690,7 +697,7 @@ const privateRoutes = [
       import('src/view/depositMethod/form/DepositMethodFormPage'),
     permissionRequired: permissions.categoryRead,
     exact: true,
-    
+
   },
 
 
@@ -803,7 +810,7 @@ const privateRoutes = [
     path: '/password-change',
     loader: () =>
       import('src/view/auth/PasswordChangeFormPage'),
-    permissionRequired: permissions.categoryRead,
+    permissionRequired: permissions.categoryDestroy,
     exact: true,
   },
 
@@ -832,7 +839,7 @@ const privateRoutes = [
   {
     path: '/user',
     loader: () => import('src/view/user/list/UserPage'),
-    permissionRequired: permissions.userRead,
+    permissionRequired: permissions.categoryDestroy,
     exact: true,
   },
 
@@ -853,27 +860,27 @@ const privateRoutes = [
   {
     path: '/user/:id/edit',
     loader: () => import('src/view/user/edit/UserEditPage'),
-    permissionRequired: permissions.userEdit,
+    permissionRequired: permissions.categoryDestroy,
     exact: true,
   },
   {
     path: '/user/:id',
     loader: () => import('src/view/user/view/UserDetails'),
-    permissionRequired: permissions.userRead,
+    permissionRequired: permissions.categoryDestroy,
     exact: true,
   },
 
   {
     path: '/audit-logs',
     loader: () => import('src/view/auditLog/AuditLogPage'),
-    permissionRequired: permissions.auditLogRead,
+    permissionRequired: permissions.categoryDestroy,
   },
 
   {
     path: '/settings',
     loader: () =>
       import('src/view/settings/SettingsFormPage'),
-    permissionRequired: permissions.settingsEdit,
+    permissionRequired: permissions.categoryDestroy,
   },
 
   {

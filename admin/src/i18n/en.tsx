@@ -104,59 +104,59 @@ const en = {
 
 
     notification: {
-  menu: 'Notifications',
-  new: {
-    title: 'Add new Notification',
-  },
-  fields: {
-    user: 'User',
-    type: 'Type',
-    message: 'Message',
-    status: 'Status',
-    forAdmin: 'For Admin',
-    createdBy: 'Created By',
-    updatedBy: 'Updated By',
-    createdAt: 'Created At',
-    updatedAt: 'Updated At',
-  },
-  list: {
-    title: 'List of Notifications',
-  },
-  view: {
-    title: 'Notification Detail',
-  },
-  edit: {
-    title: 'Edit Notification',
-  },
-  create: {
-    success: 'Notification successfully saved',
-  },
-  update: {
-    success: 'Notification successfully updated',
-  },
-  destroy: {
-    success: 'Notification successfully deleted',
-  },
-  destroyAll: {
-    success: 'Notifications successfully deleted',
-  },
-  enumerators: {
-    status: {
-      unread: 'Unread',
-      read: 'Read',
+      menu: 'Notifications',
+      new: {
+        title: 'Add new Notification',
+      },
+      fields: {
+        user: 'User',
+        type: 'Type',
+        message: 'Message',
+        status: 'Status',
+        forAdmin: 'For Admin',
+        createdBy: 'Created By',
+        updatedBy: 'Updated By',
+        createdAt: 'Created At',
+        updatedAt: 'Updated At',
+      },
+      list: {
+        title: 'List of Notifications',
+      },
+      view: {
+        title: 'Notification Detail',
+      },
+      edit: {
+        title: 'Edit Notification',
+      },
+      create: {
+        success: 'Notification successfully saved',
+      },
+      update: {
+        success: 'Notification successfully updated',
+      },
+      destroy: {
+        success: 'Notification successfully deleted',
+      },
+      destroyAll: {
+        success: 'Notifications successfully deleted',
+      },
+      enumerators: {
+        status: {
+          unread: 'Unread',
+          read: 'Read',
+        },
+        type: {
+          deposit: 'Deposit',
+          withdraw: 'Withdraw',
+          staking: 'Staking',
+          kyc: 'KYC',
+          commission: 'Commission',
+          futures: 'Futures',
+          accountActivated: 'Account Activated',
+          custom: 'Custom',
+        },
+      },
     },
-    type: {
-      deposit: 'Deposit',
-      withdraw: 'Withdraw',
-      staking: 'Staking',
-      kyc: 'KYC',
-      commission: 'Commission',
-      futures: 'Futures',
-      accountActivated: 'Account Activated',
-      custom: 'Custom',
-    },
-  },
-},
 
 
     kyc: {
@@ -3446,6 +3446,7 @@ const en = {
     users: 'Users',
     depositMethod: "Deposit Method",
     userManagement: 'User Management',
+    clients: "Clients",
     kyc: 'KYC',
     moneyManagement: 'Money Management',
     rechargeOrders: 'Deposit Orders',

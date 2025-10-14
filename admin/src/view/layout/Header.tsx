@@ -20,10 +20,7 @@ function Header(props) {
     authSelectors.selectCurrentUser,
   );
 
-
-
   useNotifications(currentUser.id)
-
   const kyccount = useSelector(userListSelectors.selectKyc);
   const futurecount = useSelector(
     userListSelectors.selectFuture,
@@ -57,7 +54,7 @@ function Header(props) {
   };
 
   const doNavigateToProfile = () =>
-    getHistory().push('/profile');
+    getHistory().push('/clients');
   const doNavigateToAuditLog = () =>
     getHistory().push('/audit-logs');
   const doNavigateToSettings = () =>
@@ -161,7 +158,7 @@ function Header(props) {
               type="button"
             >
               <i className="fas fa-user" />{' '}
-              {i18n('auth.profile.title')}
+              {i18n('dashboard.clients')}
             </button>
             <button
               onClick={doNavigateToPasswordChange}

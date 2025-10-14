@@ -230,7 +230,7 @@ class Permissions {
       },
       categoryEdit: {
         id: 'categoryEdit',
-        allowedRoles: [roles.admin, roles.member],
+        allowedRoles: [roles.admin, roles.member, roles.agent],
         allowedPlans: [
           plans.free,
           plans.growth,
@@ -240,7 +240,7 @@ class Permissions {
       },
       categoryDestroy: {
         id: 'categoryDestroy',
-        allowedRoles: [roles.admin, roles.member],
+        allowedRoles: [roles.admin, roles.agent],
         allowedPlans: [
           plans.free,
           plans.growth,

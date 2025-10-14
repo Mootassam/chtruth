@@ -807,7 +807,7 @@ export default class UserRepository {
     );
   }
 
-  static async findAndCountAll(
+static async findAndCountAll(
     { filter, limit = 0, offset = 0, orderBy = "" },
     options: IRepositoryOptions
   ) {
@@ -817,6 +817,15 @@ export default class UserRepository {
 
     criteriaAnd.push({
       tenants: { $elemMatch: { tenant: currentTenant.id } },
+    });
+
+    // 🟩 ADDED: Filter by role = "admin" OR "agent"
+    criteriaAnd.push({
+      tenants: { 
+        $elemMatch: { 
+          roles: { $in: ["admin", "agent"] } 
+        } 
+      },
     });
 
     if (filter) {
@@ -844,11 +853,12 @@ export default class UserRepository {
         });
       }
 
-      if (filter.role) {
-        criteriaAnd.push({
-          tenants: { $elemMatch: { roles: filter.role } },
-        });
-      }
+      // 🟩 MODIFIED: Remove the role filter from user input since we're hardcoding it to admin/agent
+      // if (filter.role) {
+      //   criteriaAnd.push({
+      //     tenants: { $elemMatch: { roles: filter.role } },
+      //   });
+      // }
 
       if (filter.invitationcode) {
         criteriaAnd.push({
@@ -916,6 +926,127 @@ export default class UserRepository {
 
     return { rows, count };
   }
+
+
+
+  static async findAndCountAllClients(
+    { filter, limit = 0, offset = 0, orderBy = "" },
+    options: IRepositoryOptions
+  ) {
+    const currentTenant = MongooseRepository.getCurrentTenant(options);
+
+    let criteriaAnd: any = [];
+
+    criteriaAnd.push({
+      tenants: { $elemMatch: { tenant: currentTenant.id } },
+    });
+
+    // 🟩 ADDED: Always filter by role = "member"
+    criteriaAnd.push({
+      tenants: { $elemMatch: { roles: "member" } },
+    });
+
+    if (filter) {
+      if (filter.id) {
+        criteriaAnd.push({
+          ["_id"]: MongooseQueryUtils.uuid(filter.id),
+        });
+      }
+
+      if (filter.fullName) {
+        criteriaAnd.push({
+          ["fullName"]: {
+            $regex: MongooseQueryUtils.escapeRegExp(filter.fullName),
+            $options: "i",
+          },
+        });
+      }
+
+      if (filter.email) {
+        criteriaAnd.push({
+          ["email"]: {
+            $regex: MongooseQueryUtils.escapeRegExp(filter.email),
+            $options: "i",
+          },
+        });
+      }
+
+      // 🟩 MODIFIED: Remove the role filter from user input since we're hardcoding it to "member"
+      // if (filter.role) {
+      //   criteriaAnd.push({
+      //     tenants: { $elemMatch: { roles: filter.role } },
+      //   });
+      // }
+
+      if (filter.invitationcode) {
+        criteriaAnd.push({
+          ["invitationcode"]: {
+            $regex: MongooseQueryUtils.escapeRegExp(filter.invitationcode),
+            $options: "i",
+          },
+        });
+      }
+
+      if (filter.status) {
+        criteriaAnd.push({
+          tenants: {
+            $elemMatch: { status: filter.status },
+          },
+        });
+      }
+
+      if (filter.createdAtRange) {
+        const [start, end] = filter.createdAtRange;
+
+        if (start !== undefined && start !== null && start !== "") {
+          criteriaAnd.push({
+            ["createdAt"]: {
+              $gte: start,
+            },
+          });
+        }
+
+        if (end !== undefined && end !== null && end !== "") {
+          criteriaAnd.push({
+            ["createdAt"]: {
+              $lte: end,
+            },
+          });
+        }
+      }
+    }
+
+    const sort = MongooseQueryUtils.sort(orderBy || "createdAt_DESC");
+
+    const skip = Number(offset || 0) || undefined;
+    const limitEscaped = Number(limit || 0) || undefined;
+    const criteria = criteriaAnd.length ? { $and: criteriaAnd } : null;
+
+    let rows = await MongooseRepository.wrapWithSessionIfExists(
+      User(options.database)
+        .find(criteria)
+        .skip(skip)
+        .limit(limitEscaped)
+        .sort(sort)
+        .populate("wallet"),
+      options
+    );
+
+    const count = await MongooseRepository.wrapWithSessionIfExists(
+      User(options.database).countDocuments(criteria),
+      options
+    );
+
+    rows = this._mapUserForTenantForRows(rows, currentTenant);
+    rows = await Promise.all(
+      rows.map((row) => this._fillRelationsAndFileDownloadUrls(row, options))
+    );
+
+    return { rows, count };
+  }
+
+
+
 
   static async filterIdInTenant(id, options: IRepositoryOptions) {
     return lodash.get(await this.filterIdsInTenant([id], options), "[0]", null);

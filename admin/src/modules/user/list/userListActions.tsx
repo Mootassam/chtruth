@@ -70,30 +70,30 @@ const userListActions = {
     }
   },
 
-count: () => async (dispatch, getState) => {
-  try {
-    dispatch({
-      type: userListActions.NOTIFICATION_STARTED,
-    });
+  count: () => async (dispatch, getState) => {
+    try {
+      dispatch({
+        type: userListActions.NOTIFICATION_STARTED,
+      });
 
-    const response = await UserService.allNotification();
+      const response = await UserService.allNotification();
 
-    dispatch({
-      type: userListActions.NOTIFICATION_SUCCESS,
-      kyc: response.kyc,
-      deposit: response.deposit,   // fixed typo
-      future: response.futures,    // fixed key
-      withdraw: response.withdraw,
-    });
+      dispatch({
+        type: userListActions.NOTIFICATION_SUCCESS,
+        kyc: response.kyc,
+        deposit: response.deposit,   // fixed typo
+        future: response.futures,    // fixed key
+        withdraw: response.withdraw,
+      });
 
-    return response;
-  } catch (error) {
-    Errors.handle(error);
-    dispatch({
-      type: userListActions.NOTIFICATION_ERROR,
-    });
-  }
-},
+      return response;
+    } catch (error) {
+      Errors.handle(error);
+      dispatch({
+        type: userListActions.NOTIFICATION_ERROR,
+      });
+    }
+  },
 
 
   doClearAllSelected() {
@@ -190,35 +190,69 @@ count: () => async (dispatch, getState) => {
 
   doFetch:
     (filter?, rawFilter?, keepPagination = false) =>
-    async (dispatch, getState) => {
-      try {
-        dispatch({
-          type: userListActions.FETCH_STARTED,
-          payload: { filter, rawFilter, keepPagination },
-        });
+      async (dispatch, getState) => {
+        try {
+          dispatch({
+            type: userListActions.FETCH_STARTED,
+            payload: { filter, rawFilter, keepPagination },
+          });
 
-        const response = await UserService.fetchUsers(
-          filter,
-          selectors.selectOrderBy(getState()),
-          selectors.selectLimit(getState()),
-          selectors.selectOffset(getState()),
-        );
+          const response = await UserService.fetchUsers(
+            filter,
+            selectors.selectOrderBy(getState()),
+            selectors.selectLimit(getState()),
+            selectors.selectOffset(getState()),
+          );
 
-        dispatch({
-          type: userListActions.FETCH_SUCCESS,
-          payload: {
-            rows: response.rows,
-            count: response.count,
-          },
-        });
-      } catch (error) {
-        Errors.handle(error);
+          dispatch({
+            type: userListActions.FETCH_SUCCESS,
+            payload: {
+              rows: response.rows,
+              count: response.count,
+            },
+          });
+        } catch (error) {
+          Errors.handle(error);
 
-        dispatch({
-          type: userListActions.FETCH_ERROR,
-        });
-      }
-    },
+          dispatch({
+            type: userListActions.FETCH_ERROR,
+          });
+        }
+      },
+
+  doFetchClients:
+    (filter?, rawFilter?, keepPagination = false) =>
+      async (dispatch, getState) => {
+        try {
+          dispatch({
+            type: userListActions.FETCH_STARTED,
+            payload: { filter, rawFilter, keepPagination },
+          });
+
+          const response = await UserService.fetchClients(
+            filter,
+            selectors.selectOrderBy(getState()),
+            selectors.selectLimit(getState()),
+            selectors.selectOffset(getState()),
+          );
+
+          dispatch({
+            type: userListActions.FETCH_SUCCESS,
+            payload: {
+              rows: response.rows,
+              count: response.count,
+            },
+          });
+        } catch (error) {
+          Errors.handle(error);
+
+          dispatch({
+            type: userListActions.FETCH_ERROR,
+          });
+        }
+      },
+
+
 
   doDestroy: (id) => async (dispatch, getState) => {
     try {

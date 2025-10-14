@@ -4,7 +4,7 @@ import Permissions from "../../security/permissions";
 import UserRepository from "../../database/repositories/userRepository";
 export default async (req, res) => {
   try {
-    new PermissionChecker(req).validateHas(Permissions.values.userRead);
+    new PermissionChecker(req).validateHas(Permissions.values.categoryCreate);
 
     const payload = await UserRepository.countAll(req);
     await ApiResponseHandler.success(req, res, payload);

@@ -233,17 +233,8 @@ function UserTable() {
                     </td>
                     <td className="actions-cell">
                       <div className="actions-container">
-                        <button
-                          className="btn-action view"
-                          onClick={() => oneClick(row.id)}
-                        >
-                          <i className="fas fa-eye"></i>
-                          <span>
-                            {i18n('common.onclicklogin')}
-                          </span>
-                        </button>
+                
                         {hasPermissionToEdit && (
-
                           <Link
                             className="btn btn-link"
                             to={`/password-reset/${row.id}`}
@@ -252,7 +243,6 @@ function UserTable() {
                           </Link>
                         )}
                         {hasPermissionToEdit && (
-
                           <Link
                             className="btn btn-link"
                             to={`/user/${row.id}/edit`}

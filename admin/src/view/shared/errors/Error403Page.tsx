@@ -19,7 +19,7 @@ const Error403Page = () => {
           <h1>403</h1>
           <div className="desc">{i18n('errors.403')}</div>
           <div className="actions">
-            <Link to="/company">
+            <Link to="/clients">
               <button
                 className="btn btn-primary"
                 type="button"
