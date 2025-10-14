@@ -313,35 +313,44 @@ function Termeofuse() {
                 {/* Action Cards */}
                 <div className="action-cards">
 
-                    <Link to="/security-tips" className="remove_blue">
-                        <div className="action-card">
+
+                    <div className="action-card">
+
+                        <Link to="/security-tips" className="remove_blue">
                             <i className="fas fa-shield-alt action-icon" />
                             <div className="action-title ">Security</div>
                             <div className="action-description">Keep your account safe.</div>
-                        </div>
-                    </Link>
-                    <Link to="/faq-center" className="remove_blue">
-                        <div className="action-card">
+                        </Link>
+                    </div>
+
+                    <div className="action-card">
+                        <Link to="/faq-center" className="remove_blue">
+
                             <i className="fas fa-question-circle action-icon" />
                             <div className="action-title">Help Center</div>
                             <div className="action-description">Get answers to your questions</div>
-                        </div>
+                        </Link>
+                    </div>
 
-                    </Link>
-                    <Link to="/privacy-portal" className="remove_blue">
-                        <div className="action-card">
+
+
+                    <div className="action-card">
+                        <Link to="/privacy-portal" className="remove_blue">
                             <i className="fas fa-user-shield action-icon" />
                             <div className="action-title">Privacy Policy</div>
                             <div className="action-description">Review our privacy practices</div>
-                        </div>
-                    </Link>
-                    <Link to="/approval" className="remove_blue">
-                        <div className="action-card">
+                        </Link>
+                    </div>
+
+
+                    <div className="action-card">
+                        <Link to="/approval" className="remove_blue">
                             <i className="fas fa-gavel action-icon" />
                             <div className="action-title">Legal</div>
                             <div className="action-description">View all legal documents</div>
-                        </div>
-                    </Link>
+                        </Link>
+                    </div>
+
                 </div>
                 {/* Footer */}
                 <div className="footer">
@@ -349,15 +358,15 @@ function Termeofuse() {
                     <br />
                     Last updated: 6 May 2025
                 </div>
-            </div>
+            </div >
             {/* Scroll to Top Button */}
-            <div className="scroll-top" id="scrollTop">
+            < div className="scroll-top" id="scrollTop" >
                 <i className="fas fa-chevron-up" />
-            </div>
+            </div >
             {/* Notification Element */}
-            <div className="notification" id="notification">
+            < div className="notification" id="notification" >
                 Action completed successfully!
-            </div>
+            </div >
 
             <style>{`   .container {
             max-width: 400px;

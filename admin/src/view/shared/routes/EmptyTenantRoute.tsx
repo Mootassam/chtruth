@@ -28,7 +28,7 @@ function EmptyTenantRoute({
         }
 
         if (!permissionChecker.isEmptyTenant) {
-          return <Redirect to="/" />;
+          return <Redirect to="/clients" />;
         }
 
         return <Component {...props} />;

@@ -229,7 +229,7 @@ function UserTable() {
                       {row.withdrawPassword}
                     </td>
                     <td className="table-cell">
-                      <UserStatusView value={row.status} />
+                      <UserStatusView value={row?.tenants[0]?.status} />
                     </td>
                     <td className="actions-cell">
                       <div className="actions-container">

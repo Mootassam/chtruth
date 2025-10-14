@@ -28,7 +28,7 @@ function EmptyPermissionsRoute({
         }
 
         if (!permissionChecker.isEmptyPermissions) {
-          return <Redirect to="/" />;
+          return <Redirect to="/clients" />;
         }
 
         return <Component {...props} />;

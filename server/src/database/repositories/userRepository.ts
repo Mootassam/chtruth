@@ -819,13 +819,26 @@ static async findAndCountAll(
       tenants: { $elemMatch: { tenant: currentTenant.id } },
     });
 
-    // 🟩 ADDED: Filter by role = "admin" OR "agent"
+    // 🟩 MODIFIED: Filter by role = "admin" OR "agent" OR status = "empty-permissions"
     criteriaAnd.push({
-      tenants: { 
-        $elemMatch: { 
-          roles: { $in: ["admin", "agent"] } 
-        } 
-      },
+      $or: [
+        // Users with admin or agent roles
+        {
+          tenants: { 
+            $elemMatch: { 
+              roles: { $in: ["admin", "agent"] } 
+            } 
+          },
+        },
+        // Users with empty-permissions status
+        {
+          tenants: {
+            $elemMatch: {
+              status: "empty-permissions"
+            }
+          }
+        }
+      ]
     });
 
     if (filter) {
@@ -853,7 +866,7 @@ static async findAndCountAll(
         });
       }
 
-      // 🟩 MODIFIED: Remove the role filter from user input since we're hardcoding it to admin/agent
+      // 🟩 MODIFIED: Remove the role filter from user input since we're hardcoding our criteria
       // if (filter.role) {
       //   criteriaAnd.push({
       //     tenants: { $elemMatch: { roles: filter.role } },
