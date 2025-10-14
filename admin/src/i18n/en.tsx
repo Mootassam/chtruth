@@ -487,6 +487,7 @@ const en = {
         contractDuration: 'Contract Duration',
         status: 'Futures Status',
         direction: 'Direction',
+        futuresCoin:"Pair Name",
         openPositionPrice: 'Open Position Price',
         openPositionTime: 'Open Position Time',
         closePositionPrice: 'Close Position Price',

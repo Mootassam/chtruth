@@ -87,6 +87,13 @@ function FuturesListTable() {
                   </span>
                 )}
               </th>
+                <th
+                className="sortable-header"
+                onClick={() => doChangeSort('futuresCoin')}
+              >
+                {i18n('entities.futures.fields.futuresCoin')}
+              
+              </th>
               <th
                 className="sortable-header"
                 onClick={() => doChangeSort('contractDuration')}
@@ -226,6 +233,7 @@ function FuturesListTable() {
                     </div>
                   </td>
                   <td className="table-cell numeric">{row.futuresAmount}</td>
+                  <td className="table-cell numeric">{row.futureCoin}</td>
                   <td className="table-cell">{row.contractDuration}</td>
                   <td className="table-cell">
                     <span className="status-badge">{row.futuresStatus}</span>
@@ -254,6 +262,7 @@ function FuturesListTable() {
                             }
                           >
                             {status}
+
                           </button>
                         ))
                       )}

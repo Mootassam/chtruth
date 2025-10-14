@@ -13,15 +13,18 @@ export default (database) => {
     {
       futuresAmount: { type: Number, required: true },
 
-      contractDuration: { 
+      contractDuration: {
         type: String, // '60s', '5m', '1h' etc.
-        required: true 
+        required: true
       },
 
-      futuresStatus: { 
-        type: String, 
-        enum: ["long", "short"], 
-        default: "long" 
+      futuresStatus: {
+        type: String,
+        enum: ["long", "short"],
+        default: "long"
+      },
+      futureCoin: {
+        type: String,
       },
 
       openPositionPrice: { type: Number, required: true },
@@ -34,7 +37,7 @@ export default (database) => {
       leverage: { type: Number, default: 1 },
 
       // ✅ Manual control field
-      control: { 
+      control: {
         type: String,
         enum: ["loss", "profit"],
         default: "loss",
@@ -55,19 +58,19 @@ export default (database) => {
         type: Date,
       },
 
-      operate: { 
+      operate: {
         type: String,
-        enum: ["high", "low"], 
-        default: "low" 
+        enum: ["high", "low"],
+        default: "low"
       },
 
       createdBy: { type: Schema.Types.ObjectId, ref: "user" },
       updatedBy: { type: Schema.Types.ObjectId, ref: "user" },
 
-      tenant: { 
-        type: Schema.Types.ObjectId, 
-        ref: "tenant", 
-        required: true 
+      tenant: {
+        type: Schema.Types.ObjectId,
+        ref: "tenant",
+        required: true
       },
 
       importHash: { type: String },

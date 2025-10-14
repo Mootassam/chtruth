@@ -234,6 +234,7 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
       leverage: parseInt(selectedLeverage, 10),
       control: "loss", // default — worker/ admin may set later
       operate: "low",
+      futureCoin: selectedCoin.replace("USDT", "/USDT"),
       closePositionTime: '',
       closePositionPrice: '',
       openPositionTime: new Date().toISOString(),
@@ -453,8 +454,8 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
                   <span>Futures Amount (USDT)</span>
                 </div>
                 <div className="amount-control">
-                  <button 
-                    className="amount-btn" 
+                  <button
+                    className="amount-btn"
                     onClick={() => setFuturesAmount((prev) => Math.max(30, prev - 1))} // Updated to 30
                   >
                     -
