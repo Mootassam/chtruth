@@ -9,7 +9,7 @@ services:
       - upload:/upload
     environment:
       DATABASE_CONNECTION: mongodb://db:27017/grap
-      REDIS_URL: redis://redis:6379
+      REDIS_URL: redis://:888999Qwer@123@redis:6379
       FUTURES_QUEUE_NAME: futures_queue
     depends_on:
       - db
@@ -21,7 +21,7 @@ services:
     restart: unless-stopped
     environment:
       DATABASE_CONNECTION: mongodb://db:27017/grap
-      REDIS_URL: redis://redis:6379
+      REDIS_URL: redis://:888999Qwer@123@redis:6379
       FUTURES_QUEUE_NAME: futures_queue
     depends_on:
       - db
@@ -37,80 +37,31 @@ services:
 
   redis:
     image: redis:6.2-alpine
-    ports:
-      - 6379:6379
     restart: unless-stopped
     volumes:
       - redis_data:/data
     command: >
       sh -c "
       mkdir -p /data &&
-      redis-server --appendonly yes --dir /data
-      "
-
-  web:
-    build: ./admin
-    ports:
-      - 3022:80
-    restart: unless-stopped
-    volumes:
-      - "./admin:/app"
-      - "/app/node_modules"
-    stdin_open: true
-    environment:
-      - CHOKIDAR_USEPOLLING=true
-
-volumes:
-  phone:
-  upload:
-  redis_data:version: "3.3"
-services:
-  backend:
-    build: ./server
-    ports:
-      - 8084:8084
-    restart: unless-stopped
-    volumes:
-      - upload:/upload
-    environment:
-      DATABASE_CONNECTION: mongodb://db:27017/grap
-      REDIS_URL: redis://redis:6379
-      FUTURES_QUEUE_NAME: futures_queue
-    depends_on:
-      - db
-      - redis
-
-  worker:
-    build: ./server
-    command: npx ts-node src/database/utils/stackingWorker.ts
-    restart: unless-stopped
-    environment:
-      DATABASE_CONNECTION: mongodb://db:27017/grap
-      REDIS_URL: redis://redis:6379
-      FUTURES_QUEUE_NAME: futures_queue
-    depends_on:
-      - db
-      - redis
-
-  db:
-    image: mongo:4.0-xenial
-    ports:
-      - 2757:27017
-    restart: unless-stopped
-    volumes:
-      - phone:/data/db
-
-  redis:
-    image: redis:6.2-alpine
-    ports:
-      - 6379:6379
-    restart: unless-stopped
-    volumes:
-      - redis_data:/data
-    command: >
-      sh -c "
-      mkdir -p /data &&
-      redis-server --appendonly yes --dir /data
+      redis-server 
+      --appendonly yes 
+      --dir /data 
+      --requirepass 888999Qwer@123
+      --bind 0.0.0.0
+      --protected-mode yes
+      --rename-command FLUSHDB ''
+      --rename-command FLUSHALL ''
+      --rename-command CONFIG ''
+      --rename-command SHUTDOWN ''
+      --rename-command DEBUG ''
+      --rename-command SAVE ''
+      --rename-command BGSAVE ''
+      --rename-command SLAVEOF ''
+      --rename-command REPLICAOF ''
+      --rename-command MODULE ''
+      --rename-command PSYNC ''
+      --maxmemory 1gb
+      --maxmemory-policy allkeys-lru
       "
 
   web:

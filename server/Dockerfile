@@ -20,9 +20,5 @@ ENV BACKEND_URL="https://www.nexus-exchange.com/api"
 # Expose your app port
 EXPOSE 8084
 
-# Install Redis (better to use a separate container, but keeping your setup)
-RUN apk add --no-cache redis
-EXPOSE 6379
-
-# Start Redis and your Node.js app together
-CMD ["sh", "-c", "redis-server & npm start"]
+# Remove Redis installation and just start your app
+CMD ["npm", "start"]
