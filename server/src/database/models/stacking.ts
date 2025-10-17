@@ -4,6 +4,7 @@ const Schema = mongoose.Schema;
 export default (database) => {
   try {
     return database.model("stacking");
+    
   } catch (error) {
     // continue, because model doesn't exist
   }
