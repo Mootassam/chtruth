@@ -17,7 +17,7 @@ export async function scheduleStackingJob(record, tenant) {
     `auto-finalize-${record.id}-${Date.now()}`,
     { stackingId: record.id, tenantId: tenant.id },
     {
-      delay: 30,
+      delay: finalDelay,
       attempts: 3,
       backoff: { type: "exponential", delay: 1000 },
     }

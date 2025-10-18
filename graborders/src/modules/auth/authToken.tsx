@@ -8,6 +8,7 @@ export default class AuthToken {
   static set(token, rememberMe) {
     if (rememberMe) {
       localStorage.setItem("jwt", token || "");
+
     } else {
       inMemoryToken = token;
       localStorage.setItem("jwt", "");
