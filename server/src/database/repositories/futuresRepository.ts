@@ -156,46 +156,65 @@ class FuturesRepository {
       leverage: any,
       duration: any
     ): number => {
-      // Convert to numbers with proper null checks
-      const leverageNum = parseInt(leverage?.toString() || '0', 10);
-      const durationNum = parseInt(duration?.toString() || '0', 10);
-      const amountNum = amount || 0;
+      if (!amount || !leverage || !duration) return 0;
 
-      return (amountNum * leverageNum * durationNum) / 100;
+      const data = [
+        { duration: "60", payout: "10" },
+        { duration: "120", payout: "20" },
+        { duration: "180", payout: "40" },
+        { duration: "240", payout: "80" },
+      ];
+
+      const leverageNum = parseFloat(leverage?.toString() || "0");
+      const durationNum = parseInt(duration?.toString() || "0", 10);
+      const amountNum = Number(amount) || 0;
+
+      // Find the matching payout for the given duration
+      const durationData = data.find((d) => parseInt(d.duration, 10) === durationNum);
+
+      // If no match, return 0
+      if (!durationData) return 0;
+
+      const payoutNum = parseFloat(durationData.payout);
+
+      // Calculate profit
+      const profit = (amountNum * leverageNum * payoutNum) / 100;
+      return profit + amountNum
     };
+
 
     // NEW: Calculate closing price based on your data pattern
     // UPDATED: Calculate closing price based on your new requirements
-   const calculateClosingPrice = (
-  openPrice: number,
-  direction: string, // "long" or "short"
-  control: string,   // "profit" or "loss"
-  assetType: string  // "BTC/USDT", "ETH/USDT", etc.
-): number => {
-  const basePrice = openPrice;
+    const calculateClosingPrice = (
+      openPrice: number,
+      direction: string, // "long" or "short"
+      control: string,   // "profit" or "loss"
+      assetType: string  // "BTC/USDT", "ETH/USDT", etc.
+    ): number => {
+      const basePrice = openPrice;
 
-  // Generate random percentage between 0.002% and 0.005%
-  const randomPercentage = 0.002 + Math.random() * (0.005 - 0.002); // 0.002% to 0.005%
-  const change = basePrice * (randomPercentage / 100); // convert percent to decimal
+      // Generate random percentage between 0.002% and 0.005%
+      const randomPercentage = 0.002 + Math.random() * (0.005 - 0.002); // 0.002% to 0.005%
+      const change = basePrice * (randomPercentage / 100); // convert percent to decimal
 
-  if (control === "profit") {
-    if (direction === "long") {
-      // Long + profit → price increases
-      return basePrice + change;
-    } else {
-      // Short + profit → price decreases
-      return basePrice - change;
-    }
-  } else {
-    if (direction === "long") {
-      // Long + loss → price decreases
-      return basePrice - change;
-    } else {
-      // Short + loss → price increases
-      return basePrice + change;
-    }
-  }
-};
+      if (control === "profit") {
+        if (direction === "long") {
+          // Long + profit → price increases
+          return basePrice + change;
+        } else {
+          // Short + profit → price decreases
+          return basePrice - change;
+        }
+      } else {
+        if (direction === "long") {
+          // Long + loss → price decreases
+          return basePrice - change;
+        } else {
+          // Short + loss → price increases
+          return basePrice + change;
+        }
+      }
+    };
 
 
     try {
@@ -216,6 +235,7 @@ class FuturesRepository {
           record.leverage,
           record.contractDuration
         );
+        console.log("🚀 ~ FuturesRepository ~ update ~ profitAmount:", profitAmount)
 
         const lossAmount = record.futuresAmount;
 

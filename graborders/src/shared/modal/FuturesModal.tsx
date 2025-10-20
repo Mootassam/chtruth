@@ -29,9 +29,9 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
   setOpeningOrders
 }) => {
   const [selectedDuration, setSelectedDuration] = useState<string>("120");
-  const [selectvalue, setSelectedValue] = useState("")
+  const [selectvalue, setSelectedValue] = useState<string>("20") // Set default value to "20"
   const [selectedLeverage, setSelectedLeverage] = useState<string>("2");
-  const [futuresAmount, setFuturesAmount] = useState<number>(30); // Changed default to 30
+  const [futuresAmount, setFuturesAmount] = useState<number>(30);
   const [tradeStatus, setTradeStatus] = useState<
     "configuring" | "in-progress" | "completed"
   >("configuring");
@@ -43,9 +43,9 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
   const [isCreating, setIsCreating] = useState<boolean>(false);
   const [tradeDetails, setTradeDetails] = useState<any>(null);
 
-  const changeValues = (duration, value) => {
+  const changeValues = (duration: string, value: string) => {
     setSelectedDuration(duration);
-    setSelectedValue(value)
+    setSelectedValue(value);
   }
 
   // prevent background scroll when modal open
@@ -63,13 +63,12 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
   // refresh list on mount (and when dispatch changes)
   useEffect(() => {
     dispatch(futuresListAction.doFetch());
-
   }, [dispatch]);
 
   // validate amount
   useEffect(() => {
-    if (futuresAmount < 30) { // Updated to 30
-      setAmountError("Amount must be at least 30 USDT");
+    if (futuresAmount < 30) {
+      setAmountError("Minimum amount is 30 USDT");
     } else if (futuresAmount > availableBalance) {
       setAmountError("Insufficient balance");
     } else {
@@ -82,7 +81,6 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
     let interval: NodeJS.Timeout | null = null;
 
     if (tradeStatus === "in-progress") {
-
       if (timeLeft > 0) {
         interval = setInterval(() => {
           setTimeLeft((prev) => prev - 1);
@@ -103,7 +101,7 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
 
   // Start the trade: create backend record then start timer
   const startTrade = async () => {
-    if (!direction || futuresAmount < 30 || futuresAmount > availableBalance) { // Updated to 30
+    if (!direction || futuresAmount < 30 || futuresAmount > availableBalance) {
       return;
     }
 
@@ -268,7 +266,9 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
     setFutureId(null);
     setPnlDisplay("");
     setTradeDetails(null);
-    setFuturesAmount(30); // Reset to 30 when starting new trade
+    setFuturesAmount(30);
+    setSelectedValue("20"); // Reset to default value
+    setSelectedDuration("120"); // Reset duration as well
   };
 
   const calculateProfit = (
@@ -276,8 +276,12 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
     leverage: string,
     value: string
   ): number => {
-
-    return (amount * parseInt(leverage, 10) * parseInt(value, 10)) / 100;
+    // Ensure all values are valid numbers, use 0 as fallback
+    const validAmount = Number.isFinite(amount) ? amount : 0;
+    const validLeverage = parseInt(leverage, 10) || 0;
+    const validValue = parseInt(value, 10) || 0;
+    
+    return (validAmount * validLeverage * validValue) / 100;
   };
 
   const calculateProgress = (): number => {
@@ -295,6 +299,12 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
   const formatDate = (date: Date | null): string => {
     if (!date) return "-";
     return new Date(date).toLocaleTimeString();
+  };
+
+  // Handle amount input change
+  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseInt(e.target.value, 10) || 0;
+    setFuturesAmount(value);
   };
 
   if (!isOpen) return null;
@@ -456,7 +466,7 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
                 <div className="amount-control">
                   <button
                     className="amount-btn"
-                    onClick={() => setFuturesAmount((prev) => Math.max(30, prev - 1))} // Updated to 30
+                    onClick={() => setFuturesAmount((prev) => Math.max(1, prev - 1))}
                   >
                     -
                   </button>
@@ -464,13 +474,9 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
                     type="number"
                     className="amount-inputs"
                     value={futuresAmount}
-                    onChange={(e) => {
-                      const value = parseInt(e.target.value, 10) || 0;
-                      setFuturesAmount(Math.max(30, value)); // Updated to 30
-                    }}
-                    min="30" // Updated to 30
-                    placeholder=""
-                    title="Number"
+                    onChange={handleAmountChange}
+                    min="1"
+                    placeholder="Enter amount"
                   />
                   <button className="amount-btn" onClick={() => setFuturesAmount((prev) => prev + 1)}>
                     +
@@ -486,19 +492,17 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
 
               {/* Projected Profit */}
               <div className="profit-info">
-                Projected Profit: {calculateProfit(futuresAmount, selectedLeverage, selectvalue
-
-                ).toFixed(2)} USDT
+                Projected Profit: {calculateProfit(futuresAmount, selectedLeverage, selectvalue).toFixed(2)} USDT
               </div>
 
               {/* Confirm Button */}
               <button
                 className="confirm-btn"
                 onClick={startTrade}
-                disabled={!direction || futuresAmount < 30 || futuresAmount > availableBalance || isCreating} // Updated to 30
+                disabled={!direction || futuresAmount < 30 || futuresAmount > availableBalance || isCreating}
                 style={{
-                  opacity: !direction || futuresAmount < 30 || futuresAmount > availableBalance ? 0.5 : 1, // Updated to 30
-                  cursor: !direction || futuresAmount < 30 || futuresAmount > availableBalance ? "not-allowed" : "pointer", // Updated to 30
+                  opacity: !direction || futuresAmount < 30 || futuresAmount > availableBalance ? 0.5 : 1,
+                  cursor: !direction || futuresAmount < 30 || futuresAmount > availableBalance ? "not-allowed" : "pointer",
                 }}
               >
                 {isCreating ? "CREATING..." : futuresAmount > availableBalance ? "INSUFFICIENT BALANCE" : "CONFIRM ORDER"}
@@ -514,7 +518,6 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
       top: 0;
       left: 0;
       right: 0;
-      // bottom: 0;
       background-color: rgba(0, 0, 0, 0.7);
       display: flex;
       justify-content: center;
