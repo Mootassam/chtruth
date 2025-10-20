@@ -179,7 +179,7 @@ class FuturesRepository {
 
       // Calculate profit
       const profit = (amountNum * leverageNum * payoutNum) / 100;
-      return profit + amountNum
+      return profit
     };
 
 
@@ -235,7 +235,6 @@ class FuturesRepository {
           record.leverage,
           record.contractDuration
         );
-        console.log("🚀 ~ FuturesRepository ~ update ~ profitAmount:", profitAmount)
 
         const lossAmount = record.futuresAmount;
 
