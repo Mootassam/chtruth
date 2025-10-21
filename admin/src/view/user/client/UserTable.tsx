@@ -64,6 +64,10 @@ function UserTable() {
     dispatch(actions.doChangePagination(pagination));
   };
 
+    const paginationClient = (pagination) => {
+    dispatch(actions.doChangePaginationClient(pagination));
+  };
+
   const doToggleAllSelected = () => {
     dispatch(actions.doToggleAllSelected());
   };
@@ -281,7 +285,7 @@ function UserTable() {
 
         <div className="pagination-container">
           <Pagination
-            onChange={doChangePagination}
+            onChange={paginationClient}
             disabled={loading}
             pagination={pagination}
           />

@@ -168,6 +168,16 @@ const userListActions = {
       dispatch(userListActions.doFetchCurrentFilter());
     },
 
+  doChangePaginationClient:
+    (pagination) => async (dispatch, getState) => {
+      dispatch({
+        type: userListActions.PAGINATION_CHANGED,
+        payload: pagination,
+      });
+
+      dispatch(userListActions.doFetchCurrentFilterClient());
+    },
+
   doChangeSort: (sorter) => async (dispatch, getState) => {
     dispatch({
       type: userListActions.SORTER_CHANGED,
@@ -185,6 +195,17 @@ const userListActions = {
       );
       dispatch(
         userListActions.doFetch(filter, rawFilter, true),
+      );
+    },
+
+  doFetchCurrentFilterClient:
+    () => async (dispatch, getState) => {
+      const filter = selectors.selectFilter(getState());
+      const rawFilter = selectors.selectRawFilter(
+        getState(),
+      );
+      dispatch(
+        userListActions.doFetchClients(filter, rawFilter, true),
       );
     },
 
