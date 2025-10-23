@@ -155,6 +155,7 @@ function StackingPage() {
     } catch (error) {
       console.error("Staking failed:", error);
     }
+
   };
 
   const calculateRewards = () => {
@@ -1198,7 +1199,7 @@ function StackingPage() {
                   <div className="stacking-stake-details">
                     <div className="stacking-stake-label">Date finish</div>
                     <div className="stacking-stake-value">
-                      {Dates.NewsDate(item?.plan?.updatedAt)}
+                      {Dates.NewsDate(item?.plan?.endDate)}
                     </div>
                   </div>
                   {/* Rewards Highlight Section */}
