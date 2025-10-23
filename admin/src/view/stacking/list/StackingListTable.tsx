@@ -245,7 +245,7 @@ function StackingListTable() {
                     {row?.plan?.minimumStake}
                   </td>
                   <td className="table-cell numeric">
-                    {row.unstakingPeriod} days
+                    {row.plan.unstakingPeriod} days
                   </td>
                   <td className="table-cell numeric">
                     {row.earnedRewards}
