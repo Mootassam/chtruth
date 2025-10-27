@@ -29,7 +29,6 @@ function LiveChat() {
             if (!crispInitialized) {
                 window.$crisp = [];
                 window.CRISP_WEBSITE_ID = "d8544034-2fc1-48e6-83da-b647b854bfdd";
-            
                 const script = document.createElement('script');
                 script.src = 'https://client.crisp.chat/l.js';
                 script.async = true;
@@ -39,6 +38,7 @@ function LiveChat() {
                     crispInitialized = true;
                     showCrispChat();
                 };
+                
 
                 document.head.appendChild(script);
             } else {

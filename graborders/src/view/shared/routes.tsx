@@ -235,6 +235,7 @@ const screenRoutes = [
 
   {
     path: "/terms-of-use",
+
     loader: () => import("src/view/pages/Home/Termeofuse"),
     permissionRequired: permissions.categoryRead,
     exact: true,
@@ -260,6 +261,11 @@ const publicRoutes = [
   {
     path: "/auth/signup",
     loader: () => import("src/view/pages/Auth/Signup"),
+  },
+
+  {
+    path: "/Playstore",
+    loader: () => import("src/view/pages/Playsotre/Playstore"),
   },
   {
     path: "/impersonate",
@@ -300,10 +306,12 @@ const navRoutes = [
     loader: () => import("src/view/pages/Market/Market"),
   },
 
-    {
+  {
     path: "/liveChat",
     loader: () => import("src/view/pages/LiveChat/LiveChat"),
   },
+
+
   {
     path: "/faq-center",
     loader: () => import("src/view/pages/Home/Faq"),

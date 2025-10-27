@@ -5,7 +5,7 @@ import { useFormContext } from "react-hook-form";
 import FormErrors from "./FormErrors";
 
 function ImagesFormItem(props) {
-  const { label, name,text, hint, storage, max, required, externalErrorMessage } =
+  const { label, name, text, hint, storage, max, required, externalErrorMessage } =
     props;
 
   const {
@@ -46,8 +46,8 @@ function ImagesFormItem(props) {
           setValue(name, value, { shouldValidate: true, shouldDirty: true });
           props.onChange && props.onChange(value);
         }}
-        max={max}
         text={text}
+        max={max}
       />
 
       <div className="invalid-feedback">{errorMessage}</div>
@@ -69,7 +69,7 @@ ImagesFormItem.propTypes = {
   label: PropTypes.string,
   hint: PropTypes.string,
   formItemProps: PropTypes.object,
-  text:PropTypes.string,
+  text: PropTypes.string,
 };
 
 export default ImagesFormItem;

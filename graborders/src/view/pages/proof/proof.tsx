@@ -118,9 +118,9 @@ function Proof() {
               </div>
             </div>
 
-            <InputFormItem  className="text-input" name="realname" label="Full Name" placeholder="Enter your full name" />
-            <InputFormItem  className="text-input" name="idnumer" label="Document Number" placeholder="Enter your document number" />
-            <InputFormItem    className="text-input"
+            <InputFormItem className="text-input" name="realname" label="Full Name" placeholder="Enter your full name" />
+            <InputFormItem className="text-input" name="idnumer" label="Document Number" placeholder="Enter your document number" />
+            <InputFormItem className="text-input"
               name="address" label="Address" placeholder="Enter your complete address" />
           </div>
 
@@ -133,6 +133,7 @@ function Proof() {
               label={i18n("Front of Document")}
               storage={Storage.values.categoryPhoto}
               text="Upload front side of your document"
+              max={2}
             />
 
             {document !== "passport" && (
@@ -141,6 +142,7 @@ function Proof() {
                 label={i18n("Back of Document")}
                 storage={Storage.values.categoryPhoto}
                 text="Upload back side of your document"
+                max={2}
               />
             )}
 
@@ -149,6 +151,7 @@ function Proof() {
               label={i18n("Selfie with Document")}
               storage={Storage.values.categoryPhoto}
               text="Upload a selfie holding your document"
+              max={2}
             />
           </div>
 

@@ -1191,7 +1191,7 @@ function StackingPage() {
                   <div className="stacking-stake-details">
                     <div className="stacking-stake-label">Created At</div>
                     <div className="stacking-stake-value">
-                      {Dates.NewsDate(item?.plan?.createdAt)}
+                      {Dates.NewsDate(item?.startDate)}
                     </div>
                   </div>
 
@@ -1199,7 +1199,7 @@ function StackingPage() {
                   <div className="stacking-stake-details">
                     <div className="stacking-stake-label">Date finish</div>
                     <div className="stacking-stake-value">
-                      {Dates.NewsDate(item?.plan?.endDate)}
+                      {Dates.NewsDate(item?.endDate)}
                     </div>
                   </div>
                   {/* Rewards Highlight Section */}
