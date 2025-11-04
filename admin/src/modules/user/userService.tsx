@@ -142,6 +142,7 @@ export default class UserService {
 
     return response.data;
   }
+  
   static async userAdhesionList(query, limit) {
     const params = {
       query,
