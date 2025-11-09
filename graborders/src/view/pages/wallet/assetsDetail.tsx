@@ -7,6 +7,7 @@ import assetsSelectors from 'src/modules/assets/view/assetsViewSelectors';
 import transactionListSelector from "src/modules/transaction/list/transactionListSelectors";
 import transactionListActions from "src/modules/transaction/list/transactionListActions";
 import { Link } from 'react-router-dom';
+import { i18n } from "../../../i18n";
 
 function AssetsDetail() {
     const { id } = useParams<{ id: string }>();
@@ -50,8 +51,8 @@ function AssetsDetail() {
         const isToday = date.toDateString() === now.toDateString();
         const isYesterday = new Date(now.setDate(now.getDate() - 1)).toDateString() === date.toDateString();
 
-        if (isToday) return `Today, ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
-        if (isYesterday) return `Yesterday, ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+        if (isToday) return `${i18n("pages.assetsDetail.today")}, ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+        if (isYesterday) return `${i18n("pages.assetsDetail.yesterday")}, ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
 
         return date.toLocaleDateString([], {
             month: 'short',
@@ -65,7 +66,7 @@ function AssetsDetail() {
     const getTransactionConfig = (type, direction, relatedAsset) => {
         const config = {
             icon: 'fa-exchange-alt',
-            typeText: 'Transaction',
+            typeText: i18n("pages.assetsDetail.transactionTypes.transaction"),
             iconClass: 'swap',
             color: '#627EEA',
             amountColor: direction === 'in' ? '#2ff378' : '#FF6838'
@@ -74,7 +75,7 @@ function AssetsDetail() {
         switch (type) {
             case 'deposit':
                 config.icon = 'fa-arrow-down';
-                config.typeText = 'Deposit';
+                config.typeText = i18n("pages.assetsDetail.transactionTypes.deposit");
                 config.iconClass = 'deposit';
                 config.color = '#F3BA2F';
                 config.amountColor = '#2ff378';
@@ -82,7 +83,7 @@ function AssetsDetail() {
 
             case 'withdraw':
                 config.icon = 'fa-arrow-up';
-                config.typeText = 'Withdrawal';
+                config.typeText = i18n("pages.assetsDetail.transactionTypes.withdrawal");
                 config.iconClass = 'withdraw';
                 config.color = '#FF6838';
                 config.amountColor = '#FF6838';
@@ -90,7 +91,9 @@ function AssetsDetail() {
 
             case 'convert_in':
                 config.icon = 'fa-exchange-alt';
-                config.typeText = relatedAsset ? `Converted from ${relatedAsset}` : 'Conversion In';
+                config.typeText = relatedAsset ? 
+                    i18n("pages.assetsDetail.transactionTypes.convertedFrom", { asset: relatedAsset }) : 
+                    i18n("pages.assetsDetail.transactionTypes.conversionIn");
                 config.iconClass = 'convert-in';
                 config.color = '#9C27B0';
                 config.amountColor = '#2ff378';
@@ -98,34 +101,34 @@ function AssetsDetail() {
 
             case 'convert_out':
                 config.icon = 'fa-exchange-alt';
-                config.typeText = relatedAsset ? `Converted to ${relatedAsset}` : 'Conversion Out';
+                config.typeText = relatedAsset ? 
+                    i18n("pages.assetsDetail.transactionTypes.convertedTo", { asset: relatedAsset }) : 
+                    i18n("pages.assetsDetail.transactionTypes.conversionOut");
                 config.iconClass = 'convert-out';
                 config.color = '#9C27B0';
                 config.amountColor = '#FF6838';
                 break;
 
             case 'stacking':
-                config.icon = 'fa-coins'; // More relevant than lock
-                config.typeText = 'Staked Amount';
+                config.icon = 'fa-coins';
+                config.typeText = i18n("pages.assetsDetail.transactionTypes.stakedAmount");
                 config.iconClass = 'stacking';
-                config.color = '#FF9800'; // Orange for investment/action
+                config.color = '#FF9800';
                 config.amountColor = '#FFB74D';
                 break;
 
-
             case 'staking_reward':
-                config.icon = 'fa-gift'; // Or fa-trophy for achievement
-                config.typeText = 'Staking Rewards';
+                config.icon = 'fa-gift';
+                config.typeText = i18n("pages.assetsDetail.transactionTypes.stakingRewards");
                 config.iconClass = 'staking_reward';
-                config.color = '#4CAF50'; // Green for earnings/growth
+                config.color = '#4CAF50';
                 config.amountColor = '#81C784';
                 break;
-
 
             // Futures Trading Transactions
             case 'futures_reserved':
                 config.icon = 'fa-lock';
-                config.typeText = 'Futures Reserved';
+                config.typeText = i18n("pages.assetsDetail.transactionTypes.futuresReserved");
                 config.iconClass = 'futures-reserved';
                 config.color = '#FF9800';
                 config.amountColor = '#FF9800';
@@ -133,7 +136,7 @@ function AssetsDetail() {
 
             case 'futures_profit':
                 config.icon = 'fa-chart-line';
-                config.typeText = 'Futures Profit';
+                config.typeText = i18n("pages.assetsDetail.transactionTypes.futuresProfit");
                 config.iconClass = 'futures-profit';
                 config.color = '#00C076';
                 config.amountColor = '#00C076';
@@ -141,7 +144,7 @@ function AssetsDetail() {
 
             case 'futures_loss':
                 config.icon = 'fa-chart-line';
-                config.typeText = 'Futures Loss';
+                config.typeText = i18n("pages.assetsDetail.transactionTypes.futuresLoss");
                 config.iconClass = 'futures-loss';
                 config.color = '#FF6838';
                 config.amountColor = '#FF6838';
@@ -149,7 +152,7 @@ function AssetsDetail() {
 
             case 'futures_settlement':
                 config.icon = 'fa-file-contract';
-                config.typeText = 'Futures Settlement';
+                config.typeText = i18n("pages.assetsDetail.transactionTypes.futuresSettlement");
                 config.iconClass = 'futures-settlement';
                 config.color = '#9C27B0';
                 config.amountColor = '#9C27B0';
@@ -157,7 +160,7 @@ function AssetsDetail() {
 
             case 'futures_fee':
                 config.icon = 'fa-receipt';
-                config.typeText = 'Futures Fee';
+                config.typeText = i18n("pages.assetsDetail.transactionTypes.futuresFee");
                 config.iconClass = 'futures-fee';
                 config.color = '#607D8B';
                 config.amountColor = '#607D8B';
@@ -165,7 +168,7 @@ function AssetsDetail() {
 
             case 'futures_refund':
                 config.icon = 'fa-undo';
-                config.typeText = 'Futures Refund';
+                config.typeText = i18n("pages.assetsDetail.transactionTypes.futuresRefund");
                 config.iconClass = 'futures-refund';
                 config.color = '#4CAF50';
                 config.amountColor = '#4CAF50';
@@ -173,7 +176,7 @@ function AssetsDetail() {
 
             case 'futures_bonus':
                 config.icon = 'fa-gift';
-                config.typeText = 'Futures Bonus';
+                config.typeText = i18n("pages.assetsDetail.transactionTypes.futuresBonus");
                 config.iconClass = 'futures-bonus';
                 config.color = '#E91E63';
                 config.amountColor = '#E91E63';
@@ -181,7 +184,7 @@ function AssetsDetail() {
 
             case 'futures_commission':
                 config.icon = 'fa-handshake';
-                config.typeText = 'Futures Commission';
+                config.typeText = i18n("pages.assetsDetail.transactionTypes.futuresCommission");
                 config.iconClass = 'futures-commission';
                 config.color = '#795548';
                 config.amountColor = '#795548';
@@ -190,7 +193,7 @@ function AssetsDetail() {
             // Manual Control Operations
             case 'manual_profit':
                 config.icon = 'fa-user-check';
-                config.typeText = 'Manual Profit';
+                config.typeText = i18n("pages.assetsDetail.transactionTypes.manualProfit");
                 config.iconClass = 'manual-profit';
                 config.color = '#00C076';
                 config.amountColor = '#00C076';
@@ -198,7 +201,7 @@ function AssetsDetail() {
 
             case 'manual_loss':
                 config.icon = 'fa-user-slash';
-                config.typeText = 'Manual Loss';
+                config.typeText = i18n("pages.assetsDetail.transactionTypes.manualLoss");
                 config.iconClass = 'manual-loss';
                 config.color = '#FF6838';
                 config.amountColor = '#FF6838';
@@ -206,7 +209,7 @@ function AssetsDetail() {
 
             case 'manual_adjustment':
                 config.icon = 'fa-cog';
-                config.typeText = 'Manual Adjustment';
+                config.typeText = i18n("pages.assetsDetail.transactionTypes.manualAdjustment");
                 config.iconClass = 'manual-adjustment';
                 config.color = '#9C27B0';
                 config.amountColor = '#9C27B0';
@@ -215,7 +218,7 @@ function AssetsDetail() {
             // Spot Trading
             case 'spot_profit':
                 config.icon = 'fa-coins';
-                config.typeText = 'Spot Trading Profit';
+                config.typeText = i18n("pages.assetsDetail.transactionTypes.spotTradingProfit");
                 config.iconClass = 'spot-profit';
                 config.color = '#4CAF50';
                 config.amountColor = '#2ff378';
@@ -223,7 +226,7 @@ function AssetsDetail() {
 
             case 'spot_loss':
                 config.icon = 'fa-coins';
-                config.typeText = 'Spot Trading Loss';
+                config.typeText = i18n("pages.assetsDetail.transactionTypes.spotTradingLoss");
                 config.iconClass = 'spot-loss';
                 config.color = '#FF5722';
                 config.amountColor = '#FF6838';
@@ -232,7 +235,7 @@ function AssetsDetail() {
             // Rewards & Bonuses
             case 'reward':
                 config.icon = 'fa-hand-holding-dollar';
-                config.typeText = 'Referral Reward';
+                config.typeText = i18n("pages.assetsDetail.transactionTypes.referralReward");
                 config.iconClass = 'spot-profit';
                 config.color = '#63f211ff';
                 config.amountColor = '#5ffc1bff';
@@ -240,7 +243,7 @@ function AssetsDetail() {
 
             case 'bonus':
                 config.icon = 'fa-gift';
-                config.typeText = 'Bonus';
+                config.typeText = i18n("pages.assetsDetail.transactionTypes.bonus");
                 config.iconClass = 'bonus';
                 config.color = '#E91E63';
                 config.amountColor = '#E91E63';
@@ -248,7 +251,7 @@ function AssetsDetail() {
 
             case 'referral_commission':
                 config.icon = 'fa-users';
-                config.typeText = 'Referral Commission';
+                config.typeText = i18n("pages.assetsDetail.transactionTypes.referralCommission");
                 config.iconClass = 'referral-commission';
                 config.color = '#FF9800';
                 config.amountColor = '#FF9800';
@@ -257,7 +260,7 @@ function AssetsDetail() {
             // Order Management
             case 'order_reserved':
                 config.icon = 'fa-clock';
-                config.typeText = 'Order Reserved';
+                config.typeText = i18n("pages.assetsDetail.transactionTypes.orderReserved");
                 config.iconClass = 'order-reserved';
                 config.color = '#FF9800';
                 config.amountColor = '#FF9800';
@@ -265,7 +268,7 @@ function AssetsDetail() {
 
             case 'order_cancelled':
                 config.icon = 'fa-ban';
-                config.typeText = 'Order Cancelled';
+                config.typeText = i18n("pages.assetsDetail.transactionTypes.orderCancelled");
                 config.iconClass = 'order-cancelled';
                 config.color = '#9E9E9E';
                 config.amountColor = '#9E9E9E';
@@ -273,7 +276,7 @@ function AssetsDetail() {
 
             case 'order_partial_fill':
                 config.icon = 'fa-chart-pie';
-                config.typeText = 'Order Partial Fill';
+                config.typeText = i18n("pages.assetsDetail.transactionTypes.orderPartialFill");
                 config.iconClass = 'order-partial';
                 config.color = '#FF9800';
                 config.amountColor = '#FF9800';
@@ -281,7 +284,7 @@ function AssetsDetail() {
 
             case 'order_completed':
                 config.icon = 'fa-check-circle';
-                config.typeText = 'Order Completed';
+                config.typeText = i18n("pages.assetsDetail.transactionTypes.orderCompleted");
                 config.iconClass = 'order-completed';
                 config.color = '#4CAF50';
                 config.amountColor = '#4CAF50';
@@ -290,7 +293,7 @@ function AssetsDetail() {
             // System Operations
             case 'fee_payment':
                 config.icon = 'fa-receipt';
-                config.typeText = 'Fee Payment';
+                config.typeText = i18n("pages.assetsDetail.transactionTypes.feePayment");
                 config.iconClass = 'fee-payment';
                 config.color = '#607D8B';
                 config.amountColor = '#607D8B';
@@ -298,7 +301,7 @@ function AssetsDetail() {
 
             case 'adjustment':
                 config.icon = 'fa-sliders-h';
-                config.typeText = 'Balance Adjustment';
+                config.typeText = i18n("pages.assetsDetail.transactionTypes.balanceAdjustment");
                 config.iconClass = 'adjustment';
                 config.color = '#9C27B0';
                 config.amountColor = '#9C27B0';
@@ -306,7 +309,7 @@ function AssetsDetail() {
 
             case 'transfer':
                 config.icon = 'fa-exchange-alt';
-                config.typeText = 'Transfer';
+                config.typeText = i18n("pages.assetsDetail.transactionTypes.transfer");
                 config.iconClass = 'transfer';
                 config.color = '#2196F3';
                 config.amountColor = '#2196F3';
@@ -314,7 +317,7 @@ function AssetsDetail() {
 
             default:
                 config.icon = 'fa-exchange-alt';
-                config.typeText = 'Transaction';
+                config.typeText = i18n("pages.assetsDetail.transactionTypes.transaction");
                 config.iconClass = 'default';
                 config.color = '#627EEA';
                 config.amountColor = '#627EEA';
@@ -334,7 +337,7 @@ function AssetsDetail() {
 
     return (
         <div className="container">
-            <SubHeader title="Detail" />
+            <SubHeader title={i18n("pages.assetsDetail.title")} />
 
             {/* Asset Card with Loading Placeholder */}
             {loading ? (
@@ -358,10 +361,10 @@ function AssetsDetail() {
 
             <div className="transaction-history">
                 <div className="section-header">
-                    <div className="section-title">Transaction History</div>
+                    <div className="section-title">{i18n("pages.assetsDetail.transactionHistory.title")}</div>
                     <div className="filter-button" onClick={() => setFilterModalOpen(true)}>
                         <i className="fas fa-filter" />
-                        Filter
+                        {i18n("pages.assetsDetail.filter")}
                     </div>
                 </div>
 
@@ -411,7 +414,7 @@ function AssetsDetail() {
                                         </div>
                                         <div className={`transaction-status ${tx.status === 'pending' ? 'pending' : tx.status === "canceled" ? 'canceled' : ''
                                             }`}>
-                                            {tx.status.charAt(0).toUpperCase() + tx.status.slice(1)}
+                                            {i18n(`pages.assetsDetail.status.${tx.status}`)}
                                         </div>
                                     </div>
                                 </div>
@@ -422,8 +425,8 @@ function AssetsDetail() {
                             <div className="no-transactions-icon">
                                 <i className="fas fa-file-invoice-dollar"></i>
                             </div>
-                            <h3>No Transactions Yet</h3>
-                            <p>Your transaction history will appear here once you start trading.</p>
+                            <h3>{i18n("pages.assetsDetail.noTransactions.title")}</h3>
+                            <p>{i18n("pages.assetsDetail.noTransactions.description")}</p>
                         </div>
                     )}
                 </div>
@@ -434,53 +437,53 @@ function AssetsDetail() {
                 <div className="modal-backdrop" onClick={() => setFilterModalOpen(false)}>
                     <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                         <div className="modal-header">
-                            <h3>Filter Transactions</h3>
+                            <h3>{i18n("pages.assetsDetail.filterModal.title")}</h3>
                             <span className="close" onClick={() => setFilterModalOpen(false)}>&times;</span>
                         </div>
                         <div className="modal-body">
                             <div className="filter-group">
-                                <label>Status</label>
+                                <label>{i18n("pages.assetsDetail.filterModal.status")}</label>
                                 <select
                                     value={filters.status}
                                     onChange={(e) => setFilters({ ...filters, status: e.target.value })}
                                 >
-                                    <option value="all">All Statuses</option>
-                                    <option value="completed">Completed</option>
-                                    <option value="pending">Pending</option>
-                                    <option value="canceled">Canceled</option>
+                                    <option value="all">{i18n("pages.assetsDetail.filterModal.allStatuses")}</option>
+                                    <option value="completed">{i18n("pages.assetsDetail.filterModal.completed")}</option>
+                                    <option value="pending">{i18n("pages.assetsDetail.filterModal.pending")}</option>
+                                    <option value="canceled">{i18n("pages.assetsDetail.filterModal.canceled")}</option>
                                 </select>
                             </div>
                             <div className="filter-group">
-                                <label>Type</label>
+                                <label>{i18n("pages.assetsDetail.filterModal.type")}</label>
                                 <select
                                     value={filters.type}
                                     onChange={(e) => setFilters({ ...filters, type: e.target.value })}
                                 >
-                                    <option value="all">All Types</option>
-                                    <option value="deposit">Deposit</option>
-                                    <option value="withdraw">Withdrawal</option>
-                                    <option value="convert_in">Conversion In</option>
-                                    <option value="convert_out">Conversion Out</option>
-                                    <option value="stacking">Stacking</option>
-                                    <option value="futures_profit">Futures Profit</option>
-                                    <option value="futures_loss">Futures Loss</option>
-                                    <option value="spot_profit">Spot Profit</option>
-                                    <option value="spot_loss">Spot Loss</option>
+                                    <option value="all">{i18n("pages.assetsDetail.filterModal.allTypes")}</option>
+                                    <option value="deposit">{i18n("pages.assetsDetail.transactionTypes.deposit")}</option>
+                                    <option value="withdraw">{i18n("pages.assetsDetail.transactionTypes.withdrawal")}</option>
+                                    <option value="convert_in">{i18n("pages.assetsDetail.transactionTypes.conversionIn")}</option>
+                                    <option value="convert_out">{i18n("pages.assetsDetail.transactionTypes.conversionOut")}</option>
+                                    <option value="stacking">{i18n("pages.assetsDetail.transactionTypes.stakedAmount")}</option>
+                                    <option value="futures_profit">{i18n("pages.assetsDetail.transactionTypes.futuresProfit")}</option>
+                                    <option value="futures_loss">{i18n("pages.assetsDetail.transactionTypes.futuresLoss")}</option>
+                                    <option value="spot_profit">{i18n("pages.assetsDetail.transactionTypes.spotTradingProfit")}</option>
+                                    <option value="spot_loss">{i18n("pages.assetsDetail.transactionTypes.spotTradingLoss")}</option>
                                 </select>
                             </div>
                             <div className="filter-group">
-                                <label>Direction</label>
+                                <label>{i18n("pages.assetsDetail.filterModal.direction")}</label>
                                 <select
                                     value={filters.direction}
                                     onChange={(e) => setFilters({ ...filters, direction: e.target.value })}
                                 >
-                                    <option value="all">Both Directions</option>
-                                    <option value="in">Incoming</option>
-                                    <option value="out">Outgoing</option>
+                                    <option value="all">{i18n("pages.assetsDetail.filterModal.bothDirections")}</option>
+                                    <option value="in">{i18n("pages.assetsDetail.filterModal.incoming")}</option>
+                                    <option value="out">{i18n("pages.assetsDetail.filterModal.outgoing")}</option>
                                 </select>
                             </div>
                             <div className="filter-group">
-                                <label>Start Date</label>
+                                <label>{i18n("pages.assetsDetail.filterModal.startDate")}</label>
                                 <input
                                     type="date"
                                     value={filters.startDate}
@@ -488,7 +491,7 @@ function AssetsDetail() {
                                 />
                             </div>
                             <div className="filter-group">
-                                <label>End Date</label>
+                                <label>{i18n("pages.assetsDetail.filterModal.endDate")}</label>
                                 <input
                                     type="date"
                                     value={filters.endDate}
@@ -497,17 +500,27 @@ function AssetsDetail() {
                             </div>
                         </div>
                         <div className="modal-footer">
-                            <button className="btn-secondary" onClick={resetFilters}>Reset Filters</button>
-                            <button className="btn-primary" onClick={() => setFilterModalOpen(false)}>Apply Filters</button>
+                            <button className="btn-secondary" onClick={resetFilters}>
+                                {i18n("pages.assetsDetail.filterModal.resetFilters")}
+                            </button>
+                            <button className="btn-primary" onClick={() => setFilterModalOpen(false)}>
+                                {i18n("pages.assetsDetail.filterModal.applyFilters")}
+                            </button>
                         </div>
                     </div>
                 </div>
             )}
 
             <div className="action-buttons">
-                <Link to="/deposit" className="action-button deposit-button remove_blue">Deposit</Link>
-                <Link to="/withdraw" className="action-button withdraw-button remove_blue">Withdraw</Link>
+                <Link to="/deposit" className="action-button deposit-button remove_blue">
+                    {i18n("pages.assetsDetail.actions.deposit")}
+                </Link>
+                <Link to="/withdraw" className="action-button withdraw-button remove_blue">
+                    {i18n("pages.assetsDetail.actions.withdraw")}
+                </Link>
             </div>
+
+
 
             <style>{`
                 /* Enhanced transaction icons */

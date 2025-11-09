@@ -15,6 +15,7 @@ import authSelectors from "src/modules/auth/authSelectors";
 import assetsActions from "src/modules/assets/list/assetsListActions";
 import selector from "src/modules/assets/form/assetsFormSelectors";
 import SuccessModalComponent from "src/view/shared/modals/sucessModal";
+import { i18n } from "../../../i18n";
 
 // Interface for Binance ticker data
 interface BinanceTicker {
@@ -489,17 +490,17 @@ function Conversion() {
   // Check if conversion is up-to-date (within last 3 seconds)
   const isConversionRecent = Date.now() - lastConversionUpdate < 3000;
 
-  return (
+return (
     <>
       <div className="container">
         {/* Header */}
-        <SubHeader title="Convert Crypto" />
+        <SubHeader title={i18n("pages.conversion.title")} />
 
         {/* Loading and error indicators */}
         {isLoading && (
           <div className="loading-overlay">
             <div className="loading-spinner-large"></div>
-            <span>Loading latest prices...</span>
+            <span>{i18n("pages.conversion.loading")}</span>
           </div>
         )}
 
@@ -515,11 +516,11 @@ function Conversion() {
           {/* From Amount */}
           <div className="amount-input">
             <div className="input-header">
-              <div className="input-label">You send</div>
+              <div className="input-label">{i18n("pages.conversion.youSend")}</div>
               <div className="balance-display">
-                Balance: {balances[fromCurrency] || 0} {fromCurrency}
+                {i18n("pages.conversion.balance")}: {balances[fromCurrency] || 0} {fromCurrency}
                 <button className="max-button" onClick={handleSetMaxAmount}>
-                  MAX
+                  {i18n("pages.conversion.max")}
                 </button>
               </div>
             </div>
@@ -574,7 +575,7 @@ function Conversion() {
             {!hasSufficientBalance && fromAmount > 0 && (
               <div className="error-text">
                 <i className="fas fa-exclamation-circle"></i>
-                Insufficient balance
+                {i18n("pages.conversion.insufficientBalance")}
               </div>
             )}
           </div>
@@ -589,9 +590,9 @@ function Conversion() {
           {/* To Amount */}
           <div className="amount-input">
             <div className="input-header">
-              <div className="input-label">You receive</div>
+              <div className="input-label">{i18n("pages.conversion.youReceive")}</div>
               <div className="balance-display">
-                Balance: {balances[toCurrency] || 0} {toCurrency}
+                {i18n("pages.conversion.balance")}: {balances[toCurrency] || 0} {toCurrency}
               </div>
             </div>
             <div className="input-field">
@@ -640,7 +641,7 @@ function Conversion() {
 
           {/* Conversion Result */}
           <div className="conversion-result">
-            <div className="result-label">Estimated conversion</div>
+            <div className="result-label">{i18n("pages.conversion.estimatedConversion")}</div>
             <div className="result-amount">
               1 {fromCurrency} = {conversionRate.toFixed(8)} {toCurrency}
               {!isConversionRecent && <span className="mini-loader"></span>}
@@ -665,16 +666,16 @@ function Conversion() {
             }
           >
             {fromCurrency === toCurrency
-              ? "Select different currencies"
+              ? i18n("pages.conversion.selectDifferentCurrencies")
               : !hasSufficientBalance
-                ? "Insufficient balance"
-                : "Convert Now"}
+                ? i18n("pages.conversion.insufficientBalance")
+                : i18n("pages.conversion.convertNow")}
           </button>
 
           {/* Last updated time */}
           <div className="last-updated">
             <i className="fas fa-sync-alt"></i>
-            Prices update in real-time
+            {i18n("pages.conversion.pricesUpdate")}
           </div>
         </div>
       </div>
@@ -684,7 +685,7 @@ function Conversion() {
         <div className="currency-modal">
           <div className="modal-content">
             <div className="modal-header">
-              <div className="modal-title">Select Currency</div>
+              <div className="modal-title">{i18n("pages.conversion.selectCurrency")}</div>
               <div className="close-modal" onClick={() => setShowModal(false)}>
                 ×
               </div>
@@ -694,7 +695,7 @@ function Conversion() {
               <i className="fas fa-search" />
               <input
                 type="text"
-                placeholder="Search currencies..."
+                placeholder={i18n("pages.conversion.searchCurrencies")}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -742,7 +743,7 @@ function Conversion() {
                         })}
                       </div>
                       <div className="currency-item-balance">
-                        Balance: {balances[currency.code] || 0}{" "}
+                        {i18n("pages.conversion.balance")}: {balances[currency.code] || 0}{" "}
                         {currency.code}
                       </div>
                     </div>
@@ -770,7 +771,7 @@ function Conversion() {
           ></div>
           <div className="modal-dialog">
             <div className="modal-header">
-              <h2>Confirm Conversion</h2>
+              <h2>{i18n("pages.conversion.confirmConversion")}</h2>
               <button
                 className="close-btn"
                 onClick={() => !isConverting && setShowConfirmationModal(false)}
@@ -827,25 +828,25 @@ function Conversion() {
               </div>
 
               <div className="conversion-details">
-                <h3>Conversion Details</h3>
+                <h3>{i18n("pages.conversion.conversionDetails")}</h3>
 
                 <div className="detail-item">
-                  <span className="detail-label">Exchange Rate</span>
+                  <span className="detail-label">{i18n("pages.conversion.exchangeRate")}</span>
                   <span className="detail-value">
                     1 {fromCurrency} = {conversionRate.toFixed(8)} {toCurrency}
                   </span>
                 </div>
 
                 <div className="detail-item">
-                  <span className="detail-label">Network Fee</span>
+                  <span className="detail-label">{i18n("pages.conversion.networkFee")}</span>
                   <span className="detail-value">
                     {conversionFee.toFixed(8)} {fromCurrency}
                   </span>
                 </div>
 
                 <div className="detail-item">
-                  <span className="detail-label">Estimated Arrival</span>
-                  <span className="detail-value">~30 seconds</span>
+                  <span className="detail-label">{i18n("pages.conversion.estimatedArrival")}</span>
+                  <span className="detail-value">{i18n("pages.conversion.arrivalTime")}</span>
                 </div>
               </div>
             </div>
@@ -859,12 +860,12 @@ function Conversion() {
                 {isConverting ? (
                   <>
                     <i className="fas fa-spinner fa-spin"></i>
-                    Processing Conversion...
+                    {i18n("pages.conversion.processingConversion")}
                   </>
                 ) : (
                   <>
                     <i className="fas fa-check-circle"></i>
-                    Confirm Conversion
+                    {i18n("pages.conversion.confirmConversion")}
                   </>
                 )}
               </button>
@@ -874,13 +875,12 @@ function Conversion() {
                 onClick={() => setShowConfirmationModal(false)}
                 disabled={isConverting}
               >
-                Cancel
+                {i18n("pages.conversion.cancel")}
               </button>
             </div>
           </div>
         </div>
       )}
-
 
       <style>{`
         /* Enhanced Confirmation Modal Styles */
@@ -913,14 +913,13 @@ function Conversion() {
           border-radius: 20px;
           width: 100%;
           max-width: 400px;
-       
           box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
           overflow: hidden;
           z-index: 2001;
           position: relative;
           border: 1px solid #333;
           animation: modalSlideIn 0.3s ease-out;
-             height:100%
+          height: 100%;
         }
         
         @keyframes modalSlideIn {

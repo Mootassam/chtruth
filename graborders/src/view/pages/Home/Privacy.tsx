@@ -1,11 +1,12 @@
 import React from 'react'
-
+import { i18n } from "../../../i18n";
 
 function Privacy() {
 
     const handleBackClick = () => {
         window.history.back();
     };
+
     return (
         <>
             <div className="container">
@@ -15,33 +16,31 @@ function Privacy() {
                         <div className="back-button" onClick={handleBackClick}>
                             <i className="fas fa-arrow-left" />
                         </div>
-                        <div className="page-title">Privacy Portal</div>
+                        <div className="page-title">{i18n("pages.privacy.title")}</div>
                         <div className="placeholder" />
                     </div>
                 </div>
                 {/* Hero Section */}
                 <div className="hero-section">
-                    <div className="hero-title">Nexus Privacy Portal</div>
+                    <div className="hero-title">{i18n("pages.privacy.hero.title")}</div>
                     <div className="hero-subtitle">
-                        Protecting your data and privacy with strict guidelines, legal
-                        compliance, and industry best practices.
+                        {i18n("pages.privacy.hero.subtitle")}
                     </div>
                 </div>
                 {/* Principles Section */}
                 <div className="principles-section">
-                    <div className="section-title">Our Privacy Principles</div>
+                    <div className="section-title">{i18n("pages.privacy.principles.title")}</div>
                     <div className="principle-category">
                         <div className="category-title">
                             <i className="fas fa-shield-alt category-icon" />
-                            Core Principles
+                            {i18n("pages.privacy.principles.corePrinciples")}
                         </div>
                         <div className="principle-item">
                             <i className="fas fa-eye principle-icon" />
                             <div className="principle-content">
-                                <div className="principle-title">Transparency</div>
+                                <div className="principle-title">{i18n("pages.privacy.principles.transparency.title")}</div>
                                 <div className="principle-description">
-                                    Regular updates and clear information about how we handle your
-                                    data.
+                                    {i18n("pages.privacy.principles.transparency.description")}
                                 </div>
                             </div>
                         </div>
@@ -49,21 +48,19 @@ function Privacy() {
                             <i className="fas fa-balance-scale principle-icon" />
                             <div className="principle-content">
                                 <div className="principle-title">
-                                    Accountability &amp; Compliance
+                                    {i18n("pages.privacy.principles.accountability.title")}
                                 </div>
                                 <div className="principle-description">
-                                    Regular audits, certifications, and adherence to global privacy
-                                    laws.
+                                    {i18n("pages.privacy.principles.accountability.description")}
                                 </div>
                             </div>
                         </div>
                         <div className="principle-item">
                             <i className="fas fa-lock principle-icon" />
                             <div className="principle-content">
-                                <div className="principle-title">Data Security</div>
+                                <div className="principle-title">{i18n("pages.privacy.principles.dataSecurity.title")}</div>
                                 <div className="principle-description">
-                                    Advanced encryption, strict access controls, and identity
-                                    verification protocols.
+                                    {i18n("pages.privacy.principles.dataSecurity.description")}
                                 </div>
                             </div>
                         </div>
@@ -71,21 +68,19 @@ function Privacy() {
                             <i className="fas fa-filter principle-icon" />
                             <div className="principle-content">
                                 <div className="principle-title">
-                                    Data Minimization &amp; Purpose Limitation
+                                    {i18n("pages.privacy.principles.dataMinimization.title")}
                                 </div>
                                 <div className="principle-description">
-                                    We collect only what's necessary for specific, legitimate
-                                    purposes.
+                                    {i18n("pages.privacy.principles.dataMinimization.description")}
                                 </div>
                             </div>
                         </div>
                         <div className="principle-item">
                             <i className="fas fa-cogs principle-icon" />
                             <div className="principle-content">
-                                <div className="principle-title">Privacy by Design</div>
+                                <div className="principle-title">{i18n("pages.privacy.principles.privacyByDesign.title")}</div>
                                 <div className="principle-description">
-                                    Privacy is built into all our products and services from the
-                                    ground up.
+                                    {i18n("pages.privacy.principles.privacyByDesign.description")}
                                 </div>
                             </div>
                         </div>
@@ -95,91 +90,82 @@ function Privacy() {
                 <div className="rights-section">
                     <div className="rights-title">
                         <i className="fas fa-user-check" />
-                        Your Privacy Rights
+                        {i18n("pages.privacy.userRights.title")}
                     </div>
                     <div className="rights-content">
-                        You have tools to access and manage your data via our app or webform,
-                        with detailed information available in our Privacy Notice.
+                        {i18n("pages.privacy.userRights.content")}
                     </div>
                     <div className="rights-note">
-                        Exercise your rights to access, correct, or delete your personal
-                        information at any time.
+                        {i18n("pages.privacy.userRights.note")}
                     </div>
                 </div>
                 {/* Personal Data Definition */}
                 <div className="data-definition">
                     <div className="definition-title">
                         <i className="fas fa-database" />
-                        What Is Personal Data?
+                        {i18n("pages.privacy.personalData.title")}
                     </div>
                     <div className="definition-content">
-                        Personal data refers to any information that identifies an individual.
+                        {i18n("pages.privacy.personalData.definition")}
                     </div>
                     <div className="definition-examples">
-                        Examples include: name, Nexus ID, email address, location data,
-                        transaction history, and device information.
+                        {i18n("pages.privacy.personalData.examples")}
                     </div>
                 </div>
                 {/* Data Usage Section */}
                 <div className="data-usage">
-                    <div className="section-title">How We Use Your Data</div>
+                    <div className="section-title">{i18n("pages.privacy.dataUsage.title")}</div>
                     <div className="usage-item">
                         <i className="fas fa-user-cog usage-icon" />
                         <div className="usage-content">
-                            <div className="usage-title">Account Management</div>
+                            <div className="usage-title">{i18n("pages.privacy.dataUsage.accountManagement.title")}</div>
                             <div className="usage-description">
-                                To create and maintain your account, provide services, and
-                                communicate with you.
+                                {i18n("pages.privacy.dataUsage.accountManagement.description")}
                             </div>
                         </div>
                     </div>
                     <div className="usage-item">
                         <i className="fas fa-gavel usage-icon" />
                         <div className="usage-content">
-                            <div className="usage-title">Legal Compliance</div>
+                            <div className="usage-title">{i18n("pages.privacy.dataUsage.legalCompliance.title")}</div>
                             <div className="usage-description">
-                                To fulfill our obligations under applicable laws including
-                                Anti-Money Laundering (AML) regulations.
+                                {i18n("pages.privacy.dataUsage.legalCompliance.description")}
                             </div>
                         </div>
                     </div>
                     <div className="usage-item">
                         <i className="fas fa-shield-alt usage-icon" />
                         <div className="usage-content">
-                            <div className="usage-title">Security &amp; Fraud Prevention</div>
+                            <div className="usage-title">{i18n("pages.privacy.dataUsage.securityFraud.title")}</div>
                             <div className="usage-description">
-                                To protect your account, detect and prevent fraud, and ensure
-                                platform security.
+                                {i18n("pages.privacy.dataUsage.securityFraud.description")}
                             </div>
                         </div>
                     </div>
                     <div className="usage-item">
                         <i className="fas fa-headset usage-icon" />
                         <div className="usage-content">
-                            <div className="usage-title">Customer Support</div>
+                            <div className="usage-title">{i18n("pages.privacy.dataUsage.customerSupport.title")}</div>
                             <div className="usage-description">
-                                To respond to your inquiries and provide technical assistance when
-                                needed.
+                                {i18n("pages.privacy.dataUsage.customerSupport.description")}
                             </div>
                         </div>
                     </div>
                     <div className="usage-item">
                         <i className="fas fa-bullhorn usage-icon" />
                         <div className="usage-content">
-                            <div className="usage-title">Marketing &amp; Communications</div>
+                            <div className="usage-title">{i18n("pages.privacy.dataUsage.marketing.title")}</div>
                             <div className="usage-description">
-                                To send you relevant updates, product information, and promotional
-                                materials (with your consent).
+                                {i18n("pages.privacy.dataUsage.marketing.description")}
                             </div>
                         </div>
                     </div>
                     <div className="usage-item">
                         <i className="fas fa-exchange-alt usage-icon" />
                         <div className="usage-content">
-                            <div className="usage-title">Transaction Processing</div>
+                            <div className="usage-title">{i18n("pages.privacy.dataUsage.transactionProcessing.title")}</div>
                             <div className="usage-description">
-                                To facilitate cryptocurrency transactions and maintain transaction
-                                records.
+                                {i18n("pages.privacy.dataUsage.transactionProcessing.description")}
                             </div>
                         </div>
                     </div>
@@ -188,75 +174,69 @@ function Privacy() {
                 <div className="retention-section">
                     <div className="retention-title">
                         <i className="fas fa-history" />
-                        Data Retention
+                        {i18n("pages.privacy.dataRetention.title")}
                     </div>
                     <div className="retention-content">
-                        We retain your data for as long as necessary to provide our services,
-                        comply with legal obligations (such as tax and AML requirements),
-                        resolve disputes, and enforce our agreements.
+                        {i18n("pages.privacy.dataRetention.content")}
                     </div>
                 </div>
                 {/* Data Sharing Section */}
                 <div className="sharing-section">
                     <div className="sharing-title">
                         <i className="fas fa-share-alt" />
-                        Data Sharing
+                        {i18n("pages.privacy.dataSharing.title")}
                     </div>
                     <div className="sharing-content">
-                        We may share your data with other Nexus entities or trusted third
-                        parties under strict contractual safeguards, only when necessary for the
-                        purposes outlined in our Privacy Notice.
+                        {i18n("pages.privacy.dataSharing.content")}
                     </div>
                 </div>
                 {/* Cookies Section */}
                 <div className="cookies-section">
                     <div className="cookies-title">
                         <i className="fas fa-cookie-bite" />
-                        Cookies &amp; Tracking
+                        {i18n("pages.privacy.cookies.title")}
                     </div>
                     <div className="cookies-content">
-                        We use cookies and similar technologies to enhance your user experience,
-                        provide personalized marketing, and analyze how our services are used.
+                        {i18n("pages.privacy.cookies.content")}
                     </div>
                     <a href="#" className="cookies-link">
-                        View our complete Cookie Policy
+                        {i18n("pages.privacy.cookies.link")}
                     </a>
                 </div>
                 {/* Action Cards */}
                 <div className="action-cards">
                     <div className="action-card">
                         <i className="fas fa-file-contract action-icon" />
-                        <div className="action-title">Privacy Notice</div>
-                        <div className="action-description">Read our full privacy policy</div>
+                        <div className="action-title">{i18n("pages.privacy.actionCards.privacyNotice.title")}</div>
+                        <div className="action-description">{i18n("pages.privacy.actionCards.privacyNotice.description")}</div>
                     </div>
                     <div className="action-card">
                         <i className="fas fa-user-edit action-icon" />
-                        <div className="action-title">Manage Data</div>
+                        <div className="action-title">{i18n("pages.privacy.actionCards.manageData.title")}</div>
                         <div className="action-description">
-                            Access and control your information
+                            {i18n("pages.privacy.actionCards.manageData.description")}
                         </div>
                     </div>
                     <div className="action-card">
                         <i className="fas fa-cookie action-icon" />
-                        <div className="action-title">Cookie Settings</div>
+                        <div className="action-title">{i18n("pages.privacy.actionCards.cookieSettings.title")}</div>
                         <div className="action-description">
-                            Adjust your tracking preferences
+                            {i18n("pages.privacy.actionCards.cookieSettings.description")}
                         </div>
                     </div>
                     <div className="action-card">
                         <i className="fas fa-question-circle action-icon" />
-                        <div className="action-title">Help Center</div>
+                        <div className="action-title">{i18n("pages.privacy.actionCards.helpCenter.title")}</div>
                         <div className="action-description">
-                            Get answers to privacy questions
+                            {i18n("pages.privacy.actionCards.helpCenter.description")}
                         </div>
                     </div>
                 </div>
             </div>
             {/* Notification Element */}
             <div className="notification" id="notification">
-                Action completed successfully!
+                {i18n("pages.privacy.notification")}
             </div>
-
 
             <style>{`   .container {
             max-width: 400px;

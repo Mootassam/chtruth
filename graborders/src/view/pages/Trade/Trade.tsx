@@ -8,6 +8,7 @@ import spotFormActions from "src/modules/spot/form/spotFormActions";
 import assetsActions from "src/modules/assets/list/assetsListActions";
 import assetsListSelectors from "src/modules/assets/list/assetsListSelectors";
 import spotService from "src/modules/spot/spotService";
+import { i18n } from "../../../i18n";
 
 // Utility: safe parseFloat that returns NaN if invalid
 const safeParse = (v) => {
@@ -324,12 +325,12 @@ function Trade() {
 
     // Validation
     if (!Number.isFinite(q) || q <= 0) {
-      setErrorMessage("Please enter a valid quantity.");
+      setErrorMessage(i18n("pages.trade.errors.invalidQuantity"));
       return;
     }
 
     if (!Number.isFinite(p) || p <= 0) {
-      setErrorMessage("Please enter a valid price.");
+      setErrorMessage(i18n("pages.trade.errors.invalidPrice"));
       return;
     }
 
@@ -337,12 +338,12 @@ function Trade() {
     if (activeTab === "buy") {
       const totalCost = p * q;
       if (totalCost > currentBalance) {
-        setErrorMessage(`Insufficient USDT balance. Available: ${formatNumber(currentBalance, 2)} USDT`);
+        setErrorMessage(i18n("pages.trade.errors.insufficientUSDT", formatNumber(currentBalance, 2)));
         return;
       }
     } else {
       if (q > currentBalance) {
-        setErrorMessage(`Insufficient ${baseSymbol} balance. Available: ${formatNumber(currentBalance, 6)} ${baseSymbol}`);
+        setErrorMessage(i18n("pages.trade.errors.insufficientCoin", formatNumber(currentBalance, 6), baseSymbol));
         return;
       }
     }
@@ -374,8 +375,6 @@ function Trade() {
       };
 
       await dispatch(spotFormActions.doCreate(orderData));
-   
-
 
       // Reset form
       setQuantity("");
@@ -383,7 +382,7 @@ function Trade() {
 
     } catch (err) {
       console.error("Place order error", err);
-      setErrorMessage("Failed to place order. Please try again.");
+      setErrorMessage(i18n("pages.trade.errors.failedOrder"));
     } finally {
       setPlacing(false);
     }
@@ -393,7 +392,7 @@ function Trade() {
   ]);
 
   const updateStatus = async (id, data) => {
-    data.status ="canceled"
+    data.status = "canceled"
     dispatch(spotFormActions.doUpdate(id, data))
   }
 
@@ -402,7 +401,7 @@ function Trade() {
       {/* Header */}
       <div className="trade-header">
         <div className="trade-header-top">
-          <div className="trade-page-title">SPOT</div>
+          <div className="trade-page-title">{i18n("pages.trade.title")}</div>
         </div>
 
         <div className="market-info">
@@ -450,7 +449,7 @@ function Trade() {
                     onClick={() => setActiveTab("buy")}
                     onKeyDown={(e) => e.key === "Enter" && setActiveTab("buy")}
                   >
-                    BUY
+                    {i18n("pages.trade.buy")}
                   </div>
                   <div
                     role="tab"
@@ -460,14 +459,14 @@ function Trade() {
                     onClick={() => setActiveTab("sell")}
                     onKeyDown={(e) => e.key === "Enter" && setActiveTab("sell")}
                   >
-                    SELL
+                    {i18n("pages.trade.sell")}
                   </div>
                 </>
               )}
             </div>
 
             <div className="order-type">
-              <div className="order-type-label">Order Type</div>
+              <div className="order-type-label">{i18n("pages.trade.orderType")}</div>
               {isLoading ? (
                 <div className="skeleton-input" />
               ) : (
@@ -476,8 +475,8 @@ function Trade() {
                   value={orderType}
                   onChange={(e) => setOrderType(e.target.value)}
                 >
-                  <option value="LIMIT">LIMIT</option>
-                  <option value="MARKET">MARKET</option>
+                  <option value="LIMIT">{i18n("pages.trade.limit")}</option>
+                  <option value="MARKET">{i18n("pages.trade.market")}</option>
                 </select>
               )}
             </div>
@@ -485,7 +484,7 @@ function Trade() {
             {/* Price input (limit only) */}
             {orderType === "LIMIT" && (
               <div className="input-group">
-                <div className="input-label">Price (USDT)</div>
+                <div className="input-label">{i18n("pages.trade.price")}</div>
                 {isLoading ? (
                   <div className="skeleton-input" />
                 ) : (
@@ -498,8 +497,8 @@ function Trade() {
                       aria-label="price"
                     />
                     <div className="value-buttons">
-                      <button className="value-button" onClick={handleIncrementPrice} aria-label="increase price">+</button>
-                      <button className="value-button" onClick={handleDecrementPrice} aria-label="decrease price">-</button>
+                      <button className="value-button" onClick={handleIncrementPrice} aria-label={i18n("pages.trade.increasePrice")}>+</button>
+                      <button className="value-button" onClick={handleDecrementPrice} aria-label={i18n("pages.trade.decreasePrice")}>-</button>
                     </div>
                   </div>
                 )}
@@ -508,7 +507,7 @@ function Trade() {
 
             {/* Quantity in Coin */}
             <div className="input-group">
-              <div className="input-label">Amount ({baseSymbol})</div>
+              <div className="input-label">{i18n("pages.trade.amount")} ({baseSymbol})</div>
               {isLoading ? (
                 <div className="skeleton-input" />
               ) : (
@@ -521,14 +520,13 @@ function Trade() {
                     inputMode="decimal"
                     aria-label="quantity"
                   />
-       
                 </div>
               )}
             </div>
 
             {/* Amount in USDT */}
             <div className="input-group">
-              <div className="input-label">Amount (USDT)</div>
+              <div className="input-label">{i18n("pages.trade.amount")} (USDT)</div>
               {isLoading ? (
                 <div className="skeleton-input" />
               ) : (
@@ -548,7 +546,7 @@ function Trade() {
               <div className="skeleton-balance" />
             ) : (
               <div className="balance-info">
-                Available: {formatNumber(currentBalance, activeTab === "buy" ? 2 : 6)} {activeTab === "buy" ? "USDT" : baseSymbol}
+                {i18n("pages.trade.available")}: {formatNumber(currentBalance, activeTab === "buy" ? 2 : 6)} {activeTab === "buy" ? "USDT" : baseSymbol}
               </div>
             )}
 
@@ -565,7 +563,7 @@ function Trade() {
                 disabled={placing}
                 aria-busy={placing}
               >
-                {placing ? "Placing..." : `${activeTab === "buy" ? "BUY" : "SELL"} ${baseSymbol}`}
+                {placing ? i18n("pages.trade.placing") : `${activeTab === "buy" ? i18n("pages.trade.buy") : i18n("pages.trade.sell")} ${baseSymbol}`}
               </button>
             )}
           </div>
@@ -573,8 +571,8 @@ function Trade() {
           {/* Order Book */}
           <div className="order-book" role="region" aria-label="order book">
             <div className="order-book-header">
-              <span>Price (USDT)</span>
-              <span>Amount ({baseSymbol})</span>
+              <span>{i18n("pages.trade.orderBook.price")}</span>
+              <span>{i18n("pages.trade.orderBook.amount")} ({baseSymbol})</span>
             </div>
 
             {isLoading ? (
@@ -620,9 +618,9 @@ function Trade() {
         {/* Open Orders */}
         <div className="open-orders">
           <div className="open-orders-header">
-            <div className="open-orders-title">OPEN ORDERS</div>
+            <div className="open-orders-title">{i18n("pages.trade.openOrders.title")}</div>
             <div className="orders-filter">
-              <Link to="/ordersPage" className="remove_blue" aria-label="view all orders">
+              <Link to="/ordersPage" className="remove_blue" aria-label={i18n("pages.trade.openOrders.viewAll")}>
                 <i className="fas fa-list" />
               </Link>
             </div>
@@ -650,22 +648,22 @@ function Trade() {
 
                   <div className="order-details">
                     <div className="order-detail">
-                      <span className="detail-label">Status</span>
+                      <span className="detail-label">{i18n("pages.trade.openOrders.status")}</span>
                       <span className={`order-status ${String(order.status).toLowerCase()}`}>{order.status}</span>
                     </div>
 
                     <div className="order-detail">
-                      <span className="detail-label">Price</span>
+                      <span className="detail-label">{i18n("pages.trade.openOrders.price")}</span>
                       <span className="order-price-value">{formatNumber(order.commissionPrice, 4)} USDT</span>
                     </div>
 
                     <div className="order-detail">
-                      <span className="detail-label">Amount</span>
+                      <span className="detail-label">{i18n("pages.trade.openOrders.amount")}</span>
                       <span className="order-amount-value">{order.orderQuantity} {order?.tradingPair?.split("/")[0]}</span>
                     </div>
 
                     <div className="order-detail">
-                      <span className="detail-label">Total</span>
+                      <span className="detail-label">{i18n("pages.trade.openOrders.total")}</span>
                       <span className="order-total">{formatNumber(order.entrustedValue)} USDT</span>
                     </div>
                   </div>
@@ -674,7 +672,7 @@ function Trade() {
                     {String(order.status).toLowerCase() === "pending" ||
                       String(order.status).toLowerCase() === "partially filled" ? (
                       <button className="cancel-order-btn" onClick={() => updateStatus(order.id ,order) }>
-                        Cancel
+                        {i18n("pages.trade.openOrders.cancel")}
                       </button>
                     ) : (
                       <div className="completed-indicator">
@@ -688,8 +686,8 @@ function Trade() {
           ) : (
             <div className="empty-orders">
               <div className="empty-icon"><i className="fas fa-clipboard-list" /></div>
-              <div className="empty-text">No open orders yet</div>
-              <div className="empty-subtext">Your open orders will appear here</div>
+              <div className="empty-text">{i18n("pages.trade.openOrders.noOrders")}</div>
+              <div className="empty-subtext">{i18n("pages.trade.openOrders.noOrdersSubtext")}</div>
             </div>
           )}
         </div>
@@ -701,6 +699,7 @@ function Trade() {
         onClose={handleCloseCoinModal}
         onSelectCoin={handleSelectCoin}
       />
+
 
 
       <style>{`

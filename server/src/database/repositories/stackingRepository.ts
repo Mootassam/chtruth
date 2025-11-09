@@ -9,6 +9,7 @@ import StackingPlan from "../models/stakeProgram"; // Import the StackingPlan mo
 import assets from "../models/wallet";
 import Error405 from "../../errors/Error405";
 import { scheduleStackingJob } from "../utils/scheduleStackingJob";
+import Error400 from "../../errors/Error400";
 class StackingRepository {
   static async create(data, options: IRepositoryOptions) {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
@@ -25,16 +26,22 @@ class StackingRepository {
     // Check user's wallet balance
     const WalletModel = assets(options.database);
     const wallet = await WalletModel.findOne({ user: currentUser.id, symbol: plan.currency });
-    if (!wallet) throw new Error405(`Wallet not found for ${plan.currency}`);
-    if (wallet.amount < data.amount) throw new Error405(`Insufficient balance. You have ${wallet.amount} ${plan.currency} but trying to stake ${data.amount} ${plan.currency}`);
+    if (!wallet) throw new Error400(options.language, "errors.walletNotFoundForCurrency", {
+  currency: plan.currency
+});
+    if (wallet.amount < data.amount) throw new Error400(options.language, "errors.insufficientBalanceWithAmounts", {
+  currentAmount: wallet.amount,
+  currency: plan.currency,
+  tryingAmount: data.amount
+});
 
     // Check if user already has active stake for this plan
     const existingStake = await Stacking(options.database).findOne({ user: currentUser.id, plan: data.plan, status: "active" });
 
     // Check if plan is available
     const now = new Date();
-    if (plan.startDate && now < plan.startDate) throw new Error405("This staking plan is not yet available");
-    if (plan.endDate && now > plan.endDate) throw new Error405("This staking plan has expired");
+    if (plan.startDate && now < plan.startDate) throw new Error400(options.language, "errors.stakingPlanNotAvailable");
+    if (plan.endDate && now > plan.endDate) throw new Error400(options.language, "errors.stakingPlanExpired");
 
     // Calculate end date
     const endDate = new Date(data.startDate);

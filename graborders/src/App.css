@@ -1677,83 +1677,47 @@
 
 
   /* Header styles */
-  .language-header {
+
+
+
+  /* Bottom Navigation */
+
+
+  .nav-item {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 24px;
-      position: relative;
-  }
-
-
-
-  .language-title {
-      font-size: 24px;
-      font-weight: 700;
-      width: 100%;
-      text-align: center;
-  }
-
-  /* Language selection card */
-  .language-card {
-      background: var(--bg-card);
-      border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 24px;
-      border: 1px solid var(--border-color);
-      max-width: 600px;
-      margin-left: auto;
-      margin-right: auto;
-  }
-
-  .language-option {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 18px 20px;
-      border-bottom: 1px solid var(--border-color);
-      transition: all 0.3s ease;
-      cursor: pointer;
-  }
-
-  .language-option:last-child {
-      border-bottom: none;
-  }
-
-  .language-option:hover {
-      background: rgba(243, 186, 47, 0.1);
-  }
-
-  .language-content {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-  }
-
-  .language-flag {
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
-      font-size: 18px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 11px;
+      flex: 1;
   }
 
-  .language-name {
-      font-weight: 500;
-  }
-
-  .language-check {
+  .nav-item.active {
       color: var(--accent-color);
-      font-size: 18px;
-      opacity: 0;
-      transition: opacity 0.3s ease;
   }
 
-  .language-option.selected .language-check {
-      opacity: 1;
+  .nav-icon {
+      font-size: 18px;
+      margin-bottom: 3px;
   }
+
+
+
+  /* Animation for page load */
+  @keyframes fadeIn {
+      from {
+          opacity: 0;
+          transform: translateY(10px);
+      }
+
+      to {
+          opacity: 1;
+          transform: translateY(0);
+      }
+  }
+
 
   /* Bottom Navigation */
 
@@ -1779,13 +1743,7 @@
   }
 
   /* Responsive adjustments */
-  @media (max-width: 480px) {
 
-
-      .language-option {
-          padding: 16px;
-      }
-  }
 
   /* Animation for page load */
   @keyframes fadeIn {
@@ -1800,169 +1758,7 @@
       }
   }
 
-  .language-card {
-      animation: fadeIn 0.5s ease-out;
-  }
-
-  .language-option:nth-child(1) {
-      animation-delay: 0.1s;
-  }
-
-  .language-option:nth-child(2) {
-      animation-delay: 0.2s;
-  }
-
-  .language-option:nth-child(3) {
-      animation-delay: 0.3s;
-  }
-
-  .language-option:nth-child(4) {
-      animation-delay: 0.4s;
-  }
-
-  /* Header styles */
-  .language-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 24px;
-      position: relative;
-  }
-
-
-
-  .language-title {
-      font-size: 24px;
-      font-weight: 700;
-      width: 100%;
-      text-align: center;
-  }
-
-  /* Language selection card */
-  .language-card {
-      background: var(--bg-card);
-      border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 24px;
-      border: 1px solid var(--border-color);
-      max-width: 600px;
-      margin-left: auto;
-      margin-right: auto;
-  }
-
-  .language-option {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 18px 20px;
-      border-bottom: 1px solid var(--border-color);
-      transition: all 0.3s ease;
-      cursor: pointer;
-  }
-
-  .language-option:last-child {
-      border-bottom: none;
-  }
-
-  .language-option:hover {
-      background: rgba(243, 186, 47, 0.1);
-  }
-
-  .language-content {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-  }
-
-  .language-flag {
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-  }
-
-  .language-name {
-      font-weight: 500;
-  }
-
-  .language-check {
-      color: var(--accent-color);
-      font-size: 18px;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-  }
-
-  .language-option.selected .language-check {
-      opacity: 1;
-  }
-
-  /* Bottom Navigation */
-
-
-  .nav-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      color: var(--text-secondary);
-      text-decoration: none;
-      font-size: 11px;
-      flex: 1;
-  }
-
-  .nav-item.active {
-      color: var(--accent-color);
-  }
-
-  .nav-icon {
-      font-size: 18px;
-      margin-bottom: 3px;
-  }
-
-  /* Responsive adjustments */
-  @media (max-width: 480px) {
-
-
-      .language-option {
-          padding: 16px;
-      }
-  }
-
-  /* Animation for page load */
-  @keyframes fadeIn {
-      from {
-          opacity: 0;
-          transform: translateY(10px);
-      }
-
-      to {
-          opacity: 1;
-          transform: translateY(0);
-      }
-  }
-
-  .language-card {
-      animation: fadeIn 0.5s ease-out;
-  }
-
-  .language-option:nth-child(1) {
-      animation-delay: 0.1s;
-  }
-
-  .language-option:nth-child(2) {
-      animation-delay: 0.2s;
-  }
-
-  .language-option:nth-child(3) {
-      animation-delay: 0.3s;
-  }
-
-  .language-option:nth-child(4) {
-      animation-delay: 0.4s;
-  }
+ 
 
 
   /* Page login  */
@@ -4582,21 +4378,9 @@
       flex: 1;
   }
 
-  .language-icon {
-      color: #AAAAAA;
-      font-size: 18px;
-      width: 40px;
-      height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 50%;
-      transition: background-color 0.2s;
-  }
 
-  .language-icon:hover {
-      background-color: #1A1A1A;
-  }
+
+
 
   /* Form Section */
   .form-section {
@@ -7203,21 +6987,6 @@
       flex: 1;
   }
 
-  .language-icon {
-      color: #AAAAAA;
-      font-size: 18px;
-      width: 40px;
-      height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 50%;
-      transition: background-color 0.2s;
-  }
-
-  .language-icon:hover {
-      background-color: #1A1A1A;
-  }
 
   /* Form Section */
   .form-section {

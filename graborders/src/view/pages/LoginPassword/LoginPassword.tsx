@@ -12,19 +12,19 @@ import actions from "src/modules/auth/authActions";
 import FieldFormItem from "src/shared/form/fieldFormItem";
 
 const schema = yup.object().shape({
-  oldPassword: yupFormSchemas.string(i18n("user.fields.oldPassword"), {
+  oldPassword: yupFormSchemas.string(i18n("pages.loginPassword.fields.oldPassword"), {
     required: true,
   }),
-  newPassword: yupFormSchemas.string(i18n("user.fields.newPassword"), {
+  newPassword: yupFormSchemas.string(i18n("pages.loginPassword.fields.newPassword"), {
     required: true,
   }),
   newPasswordConfirmation: yupFormSchemas
-    .string(i18n("user.fields.newPasswordConfirmation"), {
+    .string(i18n("pages.loginPassword.fields.newPasswordConfirmation"), {
       required: true,
     })
     .oneOf(
       [yup.ref("newPassword"), null],
-      i18n("auth.passwordChange.mustMatch")
+      i18n("pages.loginPassword.validation.mustMatch")
     ),
 });
 
@@ -43,62 +43,65 @@ function LoginPassword() {
     mode: "all",
     defaultValues: initialValues,
   });
+  
   const onSubmit = (values) => {
     dispatch(actions.doChangePassword(values.oldPassword, values.newPassword));
   };
 
   return (
     <div className="container">
-      <SubHeader title="Login Password" />
+      <SubHeader title={i18n("pages.loginPassword.title")} />
+      
       {/* Password Form */}
-
       <FormProvider {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <div className="card">
-            <h2 className="card-title">CHANGE LOGIN PASSWORD</h2>
+            <h2 className="card-title">
+              {i18n("pages.loginPassword.cardTitle")}
+            </h2>
 
             <FieldFormItem
               name="oldPassword"
               type="password"
-              label="Old Password"
+              label={i18n("pages.loginPassword.fields.oldPassword")}
               className="form-input"
               className1="form-group"
               className2="form-label"
               className3="password-input-container"
-              placeholder="Ener your current password"
+              placeholder={i18n("pages.loginPassword.placeholders.oldPassword")}
             />
 
             <FieldFormItem
               name="newPassword"
               type="password"
-              label="New Password"
+              label={i18n("pages.loginPassword.fields.newPassword")}
               className="form-input"
               className1="form-group"
               className2="form-label"
               className3="password-input-container"
-              placeholder="Create a new password"
+              placeholder={i18n("pages.loginPassword.placeholders.newPassword")}
             />
 
             <FieldFormItem
               name="newPasswordConfirmation"
               type="password"
-              label="Confirm Password"
+              label={i18n("pages.loginPassword.fields.newPasswordConfirmation")}
               className="form-input"
               className1="form-group"
               className2="form-label"
               className3="password-input-container"
-              placeholder="Confirm your new password"
+              placeholder={i18n("pages.loginPassword.placeholders.confirmPassword")}
             />
 
             <button
               className="save-button"
               onClick={form.handleSubmit(onSubmit)}
             >
-              SAVE CHANGES
+              {i18n("pages.loginPassword.buttons.saveChanges")}
             </button>
+            
             <p className="warning-message">
-              For the safety of your funds, withdrawals are not allowed within
-              24 hours after the login password has been changed.
+              {i18n("pages.loginPassword.warningMessage")}
             </p>
           </div>
         </form>

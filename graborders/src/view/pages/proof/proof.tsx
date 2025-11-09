@@ -17,16 +17,16 @@ import Storage from "src/security/storage";
 const createSchema = (documentType) =>
   yup.object().shape({
     user: yupFormSchemas.relationToOne(i18n("entities.vip.fields.title"), {}),
-    Documenttype: yupFormSchemas.string(i18n("Document Type")),
-    realname: yupFormSchemas.string(i18n("Full Name"), { required: true }),
-    idnumer: yupFormSchemas.string(i18n("Document Number"), { required: true }),
-    address: yupFormSchemas.string(i18n("Address"), { required: true }),
-    front: yupFormSchemas.images(i18n("Front Side"), { required: true }),
+    Documenttype: yupFormSchemas.string(i18n("pages.proof.fields.documentType")),
+    realname: yupFormSchemas.string(i18n("pages.proof.fields.fullName"), { required: true }),
+    idnumer: yupFormSchemas.string(i18n("pages.proof.fields.documentNumber"), { required: true }),
+    address: yupFormSchemas.string(i18n("pages.proof.fields.address"), { required: true }),
+    front: yupFormSchemas.images(i18n("pages.proof.fields.frontSide"), { required: true }),
     back:
       documentType === "passport"
-        ? yupFormSchemas.images(i18n("Back Side"))
-        : yupFormSchemas.images(i18n("Back Side"), { required: true }),
-    selfie: yupFormSchemas.images(i18n("Selfie"), { required: true }),
+        ? yupFormSchemas.images(i18n("pages.proof.fields.backSide"))
+        : yupFormSchemas.images(i18n("pages.proof.fields.backSide"), { required: true }),
+    selfie: yupFormSchemas.images(i18n("pages.proof.fields.selfie"), { required: true }),
     status: yupFormSchemas.enumerator(
       i18n("entities.transaction.fields.status"),
       { options: transactionEnumerators.status }
@@ -72,9 +72,9 @@ function Proof() {
   const goBack = () => history.goBack();
 
   const documentTypeOptions = [
-    { value: "passport", label: "Passport", icon: "fas fa-passport" },
-    { value: "idCard", label: "ID Card", icon: "fas fa-id-card" },
-    { value: "driversLicense", label: "Driver's License", icon: "fas fa-id-card-alt" },
+    { value: "passport", label: i18n("pages.proof.documentTypes.passport"), icon: "fas fa-passport" },
+    { value: "idCard", label: i18n("pages.proof.documentTypes.idCard"), icon: "fas fa-id-card" },
+    { value: "driversLicense", label: i18n("pages.proof.documentTypes.driversLicense"), icon: "fas fa-id-card-alt" },
   ];
 
   return (
@@ -85,24 +85,26 @@ function Proof() {
           <div className="back-button" onClick={goBack}>
             <i className="fas fa-arrow-left" />
           </div>
-          <div className="page-title">Identity Verification</div>
+          <div className="page-title">{i18n("pages.proof.title")}</div>
           <div className="placeholder" />
         </div>
       </div>
 
       <div className="instructions">
-        Verify your identity to access all features of your Nexus Exchange
+        {i18n("pages.proof.instructions")}
       </div>
 
       <FormProvider {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           {/* Document Info */}
           <div className="form-section">
-            <div className="proof-section-title">Document Information</div>
+            <div className="proof-section-title">
+              {i18n("pages.proof.sections.documentInfo")}
+            </div>
 
             <div className="input-group">
               <label className="input-label">
-                Document Type <span className="required">*</span>
+                {i18n("pages.proof.fields.documentType")} <span className="required">*</span>
               </label>
               <div className="radio-group">
                 {documentTypeOptions.map((item) => (
@@ -118,39 +120,55 @@ function Proof() {
               </div>
             </div>
 
-            <InputFormItem className="text-input" name="realname" label="Full Name" placeholder="Enter your full name" />
-            <InputFormItem className="text-input" name="idnumer" label="Document Number" placeholder="Enter your document number" />
-            <InputFormItem className="text-input"
-              name="address" label="Address" placeholder="Enter your complete address" />
+            <InputFormItem 
+              className="text-input" 
+              name="realname" 
+              label={i18n("pages.proof.fields.fullName")} 
+              placeholder={i18n("pages.proof.placeholders.fullName")} 
+            />
+            <InputFormItem 
+              className="text-input" 
+              name="idnumer" 
+              label={i18n("pages.proof.fields.documentNumber")} 
+              placeholder={i18n("pages.proof.placeholders.documentNumber")} 
+            />
+            <InputFormItem 
+              className="text-input"
+              name="address" 
+              label={i18n("pages.proof.fields.address")} 
+              placeholder={i18n("pages.proof.placeholders.address")} 
+            />
           </div>
 
           {/* Upload Section */}
           <div className="form-section">
-            <div className="proof-section-title">Document Upload</div>
+            <div className="proof-section-title">
+              {i18n("pages.proof.sections.documentUpload")}
+            </div>
 
             <ImagesFormItem
               name="front"
-              label={i18n("Front of Document")}
+              label={i18n("pages.proof.fields.frontSide")}
               storage={Storage.values.categoryPhoto}
-              text="Upload front side of your document"
+              text={i18n("pages.proof.uploadTexts.frontSide")}
               max={2}
             />
 
             {document !== "passport" && (
               <ImagesFormItem
                 name="back"
-                label={i18n("Back of Document")}
+                label={i18n("pages.proof.fields.backSide")}
                 storage={Storage.values.categoryPhoto}
-                text="Upload back side of your document"
+                text={i18n("pages.proof.uploadTexts.backSide")}
                 max={2}
               />
             )}
 
             <ImagesFormItem
               name="selfie"
-              label={i18n("Selfie with Document")}
+              label={i18n("pages.proof.fields.selfie")}
               storage={Storage.values.categoryPhoto}
-              text="Upload a selfie holding your document"
+              text={i18n("pages.proof.uploadTexts.selfie")}
               max={2}
             />
           </div>
@@ -158,22 +176,21 @@ function Proof() {
           {/* Security Note */}
           <div className="security-note">
             <div className="security-title">
-              <i className="fas fa-shield-alt" /> Security Notice
+              <i className="fas fa-shield-alt" /> {i18n("pages.proof.security.title")}
             </div>
             <div className="security-text">
-              Your information is encrypted and secure. We use bank-level
-              protection and manually verify each document for your safety.
+              {i18n("pages.proof.security.text")}
             </div>
           </div>
 
           <button type="submit" className="submit-button">
-            VALIDATE DOCUMENTS
+            {i18n("pages.proof.buttons.validateDocuments")}
           </button>
         </form>
       </FormProvider>
 
       <div className="footer">
-        © 2025 CryptoWallet. All rights reserved. | <a href="#">Privacy Policy</a>
+        {i18n("pages.proof.footer.copyright")} | <a href="#">{i18n("pages.proof.footer.privacyPolicy")}</a>
       </div>
     </div>
   );

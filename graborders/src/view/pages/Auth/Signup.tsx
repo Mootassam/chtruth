@@ -59,7 +59,7 @@ function Signup() {
     captcha: yup
       .string()
       .required(i18n("user.fields.captcha"))
-      .test("captcha-match", "Captcha does not match", function (value) {
+      .test("captcha-match", i18n("pages.signup.captchaMismatch"), function (value) {
         return value === captchaText;
       }),
   });
@@ -133,7 +133,7 @@ function Signup() {
         >
           <i className="fas fa-arrow-left" />
         </div>
-        <div className="page-title">SIGN UP</div>
+        <div className="page-title">{i18n("pages.signup.title")}</div>
       </div>
 
       {/* Form Section */}
@@ -142,24 +142,24 @@ function Signup() {
           <InputFormItem
             type="email"
             name="email"
-            placeholder="Enter your email"
+            placeholder={i18n("pages.signup.placeholders.email")}
             className="text-input"
             externalErrorMessage={errorMessage}
             autoComplete="email"
-            label="Email"
+            label={i18n("pages.signup.labels.email")}
           />
 
           <InputFormItem
             type="tel"
             name="phoneNumber"
-            placeholder="Enter your phone number"
+            placeholder={i18n("pages.signup.placeholders.phoneNumber")}
             className="text-input"
             autoComplete="tel"
-            label="Phone Number"
+            label={i18n("pages.signup.labels.phoneNumber")}
           />
 
           {/* Graphical Captcha */}
-          <label className="input-label">Graphical Captcha</label>
+          <label className="input-label">{i18n("pages.signup.labels.captcha")}</label>
           <div className="captcha-container">
             <div className="captcha-display">
               <div className="captcha-text">{captchaText}</div>
@@ -167,12 +167,12 @@ function Signup() {
             <div className="captcha-controls">
               <div className="refresh-captcha" onClick={refreshCaptcha}>
                 <i className="fas fa-sync-alt" />
-                <span>Refresh</span>
+                <span>{i18n("pages.signup.refresh")}</span>
               </div>
               <InputFormItem
                 type="text"
                 name="captcha"
-                placeholder="Enter code"
+                placeholder={i18n("pages.signup.placeholders.captcha")}
                 className="captcha-input"
               />
             </div>
@@ -181,40 +181,45 @@ function Signup() {
           <InputFormItem
             type={showPassword ? "text" : "password"}
             name="password"
-            placeholder="Create a password"
+            placeholder={i18n("pages.signup.placeholders.password")}
             className="text-input"
             autoComplete="new-password"
-            label="Password"
+            label={i18n("pages.signup.labels.password")}
           />
 
           <InputFormItem
             type="password"
             name="newPasswordConfirmation"
-            placeholder="Confirm your password"
+            placeholder={i18n("pages.signup.placeholders.confirmPassword")}
             className="text-input"
             autoComplete="new-password"
-            label="Confirm Password"
+            label={i18n("pages.signup.labels.confirmPassword")}
           />
           <InputFormItem
             type="text"
             name="withdrawPassword"
-            placeholder="Enter the withdraw Password"
+            placeholder={i18n("pages.signup.placeholders.withdrawPassword")}
             className="text-input"
             externalErrorMessage={errorMessage}
-            label="withdraw Password"
+            label={i18n("pages.signup.labels.withdrawPassword")}
           />
           <InputFormItem
             type="text"
             name="invitationcode"
-            placeholder="Enter invitation code"
+            placeholder={i18n("pages.signup.placeholders.invitationCode")}
             className="text-input"
             externalErrorMessage={errorMessage}
-            label="Invitation Code"
+            label={i18n("pages.signup.labels.invitationCode")}
           />
 
           <button className="signup-button" disabled={loading} type="submit">
             <ButtonIcon loading={loading} />
-            <span>{loading ? "CREATING..." : "CREATE ACCOUNT"}</span>
+            <span>
+              {loading 
+                ? i18n("pages.signup.creatingAccount") 
+                : i18n("pages.signup.createAccount")
+              }
+            </span>
           </button>
         </form>
       </FormProvider>
@@ -225,14 +230,16 @@ function Signup() {
         style={{ textAlign: "center", margin: "20px 0" }}
       >
         <Link to="/auth/signin" className="footer-link">
-          Already have an account? Log in
+          {i18n("pages.signup.alreadyHaveAccount")}
         </Link>
       </div>
 
       {/* Terms */}
       <div className="terms">
-        By creating an account, you agree to our{" "}
-        <Link to="/terms-of-use"  className="remove_blue">Terms of Service</Link>
+        {i18n("pages.signup.terms.text")}{" "}
+        <Link to="/terms-of-use" className="remove_blue">
+          {i18n("pages.signup.terms.link")}
+        </Link>
       </div>
     </div>
   );

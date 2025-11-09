@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import ReactDOM from "react-dom";
+import { i18n } from "../../i18n";
 
 // Interface for Binance ticker data
 interface BinanceTicker {
@@ -22,8 +23,9 @@ interface CryptoData {
   volumeFormatted: string;
   isPositive: boolean;
 }
+
 const CoinListModal = ({ isOpen, onClose, onSelectCoin }) => {
-const [cryptoData, setCryptoData] = useState<{ [key: string]: CryptoData }>({});
+  const [cryptoData, setCryptoData] = useState<{ [key: string]: CryptoData }>({});
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("All");
   const [isLoading, setIsLoading] = useState(true);
@@ -190,15 +192,13 @@ const [cryptoData, setCryptoData] = useState<{ [key: string]: CryptoData }>({});
     setActiveTab(tab);
   };
 
-
-
-
-
   const handleCoinSelect = (coin) => {
     onSelectCoin(coin.symbol);
     onClose();
   };
+
   if (!isOpen) return null;
+  
   const modalContent = (
     <div className="modal-overlay" onClick={onClose}>
       <div
@@ -207,7 +207,7 @@ const [cryptoData, setCryptoData] = useState<{ [key: string]: CryptoData }>({});
       >
         {/* Header Section */}
         <div className="coin-modal-header">
-          <div className="coin-modal-title">Select Cryptocurrency</div>
+          <div className="coin-modal-title">{i18n("components.coinListModal.title")}</div>
           <button className="close-btn" onClick={onClose}>
             <i className="fas fa-times"></i>
           </button>
@@ -219,7 +219,7 @@ const [cryptoData, setCryptoData] = useState<{ [key: string]: CryptoData }>({});
             <i className="fas fa-search search-icon"></i>
             <input
               type="text"
-              placeholder="Search cryptocurrencies..."
+              placeholder={i18n("components.coinListModal.search.placeholder")}
               className="search-input"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -239,14 +239,12 @@ const [cryptoData, setCryptoData] = useState<{ [key: string]: CryptoData }>({});
         {isLoading && (
           <div className="loading-state">
             <i className="fas fa-spinner fa-spin"></i>
-            <p>Loading cryptocurrency data...</p>
+            <p>{i18n("components.coinListModal.loading")}</p>
           </div>
         )}
 
-     
-
         {/* Coin List */}
-        {!isLoading  && (
+        {!isLoading && (
           <>
             <div className="coin-list">
               {filteredCrypto.length > 0 ? (
@@ -259,15 +257,15 @@ const [cryptoData, setCryptoData] = useState<{ [key: string]: CryptoData }>({});
                     <div className="coin-info">
                       <div className={`coin-icon ${coin.name.toLowerCase()}`}>
                         <img
-                        src={`https://images.weserv.nl/?url=https://bin.bnbstatic.com/static/assets/logos/${
-                          coin.name.split("/")[0]
-                        }.png`}
-                        style={{ width: 40, height: 40 }}
-                        alt={coin.name.split("/")[0]}
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src = `https://via.placeholder.com/40/3a3a3a/ffffff?text=${coin.name.split("/")[0].charAt(0)}`;
-                        }}
-                      />
+                          src={`https://images.weserv.nl/?url=https://bin.bnbstatic.com/static/assets/logos/${
+                            coin.name.split("/")[0]
+                          }.png`}
+                          style={{ width: 40, height: 40 }}
+                          alt={coin.name.split("/")[0]}
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src = `https://via.placeholder.com/40/3a3a3a/ffffff?text=${coin.name.split("/")[0].charAt(0)}`;
+                          }}
+                        />
                         <i className="fas fa-coins" style={{display: 'none'}}></i>
                       </div>
                       <div className="coin-details">
@@ -290,14 +288,14 @@ const [cryptoData, setCryptoData] = useState<{ [key: string]: CryptoData }>({});
               ) : (
                 <div className="no-results">
                   <i className="fas fa-search"></i>
-                  <p>No cryptocurrencies found</p>
+                  <p>{i18n("components.coinListModal.noResults")}</p>
                 </div>
               )}
             </div>
 
             {/* Popular Cryptocurrencies Quick Select */}
             <div className="quick-select-section">
-              <div className="section-label">Popular</div>
+              <div className="section-label">{i18n("components.coinListModal.popular")}</div>
               <div className="quick-select-chips">
                 <button className="chip" onClick={() => setSearchTerm("BTC")}>
                   BTC
@@ -316,6 +314,7 @@ const [cryptoData, setCryptoData] = useState<{ [key: string]: CryptoData }>({});
           </>
         )}
       </div>
+
 
       <style>{`
         .modal-overlay {

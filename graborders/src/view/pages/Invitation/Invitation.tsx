@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { i18n } from "../../../i18n";
 import authSelectors from "src/modules/auth/authSelectors";
 import userFormActions from "src/modules/user/form/userFormActions";
 import userFormSelectors from "src/modules/user/form/userFormSelectors";
@@ -136,21 +137,21 @@ function Invitation() {
 
   return (
     <div className="container">
-      {/* Header Section */}
-      <SubHeader title="Invite Friends" />
+
+
+      <SubHeader title={i18n("pages.invitation.title")} />
 
       {/* Invite Section */}
       <div className="invite-earn-section">
-        <div className="invite-section-title">Earn Together</div>
+        <div className="invite-section-title">{i18n("pages.invitation.earnTogether")}</div>
         <div className="invite-desc">
-          Invite friends to join NEXUS and earn rewards when they sign up and
-          start trading.
+          {i18n("pages.invitation.description")}
         </div>
 
         {/* Referral Code */}
-        <div className="referral-text">YOUR REFERRAL CODE</div>
+        <div className="referral-text">{i18n("pages.invitation.yourReferralCode")}</div>
         <div className="referral-code-value" id="referralCode">
-          {currentUser?.refcode || "Loading..."}
+          {currentUser?.refcode || i18n("pages.invitation.loading")}
         </div>
         <button
           className="referral-copy-btn"
@@ -158,7 +159,7 @@ function Invitation() {
           onClick={copyReferralCode}
         >
           <i className="fas fa-copy" />
-          {copySuccess ? "COPIED!" : "COPY CODE"}
+          {copySuccess ? i18n("pages.invitation.copied") : i18n("pages.invitation.copyCode")}
         </button>
 
         {/* Share Options */}
@@ -182,22 +183,22 @@ function Invitation() {
       {/* Total Earned Section */}
       <div className="total-earned-section">
         <div className="total-earned-card">
-          <div className="total-earned-label">Total Earned</div>
+          <div className="total-earned-label">{i18n("pages.invitation.totalEarned")}</div>
           <div className="total-earned-amount">{totalReward.toFixed(0)} USDT</div>
-          <div className="total-earned-subtitle">All Time Commission</div>
+          <div className="total-earned-subtitle">{i18n("pages.invitation.allTimeCommission")}</div>
         </div>
       </div>
 
       {/* Generation Stats Section */}
       <div className="generation-stats-container">
-        <div className="invite-section-title">Generation Members</div>
+        <div className="invite-section-title">{i18n("pages.invitation.generationMembers")}</div>
         <div className="generation-stats-grid">
-          {Loading && <h2> Loading ... </h2>}
+          {Loading && <h2> {i18n("pages.invitation.loading")} </h2>}
           {!Loading && listMembers?.length === 0 && (
             <div
               style={{ textAlign: "center", color: "#AAAAAA", padding: "20px" }}
             >
-              No generation data available
+              {i18n("pages.invitation.noGenerationData")}
             </div>
           )}
           {!Loading &&
@@ -217,7 +218,7 @@ function Invitation() {
                       {item?.approvedCount || 0}
                     </div>
                     <div className="generation-stat-label">
-                      Approved Members
+                      {i18n("pages.invitation.approvedMembers")}
                     </div>
                   </div>
                   <div
@@ -228,7 +229,7 @@ function Invitation() {
                     <div className="generation-stat-value">
                       {item?.pendingCount || 0}
                     </div>
-                    <div className="generation-stat-label">Pending Members</div>
+                    <div className="generation-stat-label">{i18n("pages.invitation.pendingMembers")}</div>
                   </div>
                 </div>
               </div>
@@ -238,23 +239,23 @@ function Invitation() {
 
       {/* Commission Structure Section */}
       <div className="commission-container">
-        <div className="invite-section-title">Commission Structure</div>
+        <div className="invite-section-title">{i18n("pages.invitation.commissionStructure")}</div>
         <div className="commission-grid">
           <div className="commission-item first-gen">
             <div className="commission-title">
               <i className="fas fa-crown" />
-              1st Generation
+              {i18n("pages.invitation.firstGeneration")}
             </div>
             <div className="commission-details">
               <div className="commission-detail">
                 <span className="commission-label">
-                  First Deposit Commission
+                  {i18n("pages.invitation.firstDepositCommission")}
                 </span>
                 <span className="commission-value">15%</span>
               </div>
               <div className="commission-detail">
                 <span className="commission-label">
-                  Staking Profits Commission
+                  {i18n("pages.invitation.stakingProfitsCommission")}
                 </span>
                 <span className="commission-value">10%</span>
               </div>
@@ -263,18 +264,18 @@ function Invitation() {
           <div className="commission-item second-gen">
             <div className="commission-title">
               <i className="fas fa-users" />
-              2nd Generation
+              {i18n("pages.invitation.secondGeneration")}
             </div>
             <div className="commission-details">
               <div className="commission-detail">
                 <span className="commission-label">
-                  First Deposit Commission
+                  {i18n("pages.invitation.firstDepositCommission")}
                 </span>
                 <span className="commission-value">10%</span>
               </div>
               <div className="commission-detail">
                 <span className="commission-label">
-                  Staking Profits Commission
+                  {i18n("pages.invitation.stakingProfitsCommission")}
                 </span>
                 <span className="commission-value">7%</span>
               </div>
@@ -283,18 +284,18 @@ function Invitation() {
           <div className="commission-item third-gen">
             <div className="commission-title">
               <i className="fas fa-user-friends" />
-              3rd Generation
+              {i18n("pages.invitation.thirdGeneration")}
             </div>
             <div className="commission-details">
               <div className="commission-detail">
                 <span className="commission-label">
-                  First Deposit Commission
+                  {i18n("pages.invitation.firstDepositCommission")}
                 </span>
                 <span className="commission-value">5%</span>
               </div>
               <div className="commission-detail">
                 <span className="commission-label">
-                  Staking Profits Commission
+                  {i18n("pages.invitation.stakingProfitsCommission")}
                 </span>
                 <span className="commission-value">4%</span>
               </div>
@@ -305,34 +306,32 @@ function Invitation() {
 
       {/* How It Works */}
       <div className="how-it-works-container">
-        <div className="invite-section-title">How It Works</div>
+        <div className="invite-section-title">{i18n("pages.invitation.howItWorks")}</div>
         <div className="steps-container">
           <div className="step-item">
             <div className="step-number-circle">1</div>
             <div className="step-content-text">
-              <div className="step-title-text">Share Your Referral Code</div>
+              <div className="step-title-text">{i18n("pages.invitation.steps.shareCode.title")}</div>
               <div className="step-desc">
-                Send your unique code to friends or share it on social media.
+                {i18n("pages.invitation.steps.shareCode.description")}
               </div>
             </div>
           </div>
           <div className="step-item">
             <div className="step-number-circle">2</div>
             <div className="step-content-text">
-              <div className="step-title-text">Friends Sign Up</div>
+              <div className="step-title-text">{i18n("pages.invitation.steps.friendsSignUp.title")}</div>
               <div className="step-desc">
-                Your friends sign up using your referral code and verify their
-                accounts.
+                {i18n("pages.invitation.steps.friendsSignUp.description")}
               </div>
             </div>
           </div>
           <div className="step-item">
             <div className="step-number-circle">3</div>
             <div className="step-content-text">
-              <div className="step-title-text">Earn Commissions</div>
+              <div className="step-title-text">{i18n("pages.invitation.steps.earnCommissions.title")}</div>
               <div className="step-desc">
-                Earn commissions from your network's first deposits and staking
-                profits.
+                {i18n("pages.invitation.steps.earnCommissions.description")}
               </div>
             </div>
           </div>
@@ -357,7 +356,7 @@ function Invitation() {
             zIndex: 1001,
           }}
         >
-          Referral code copied to clipboard!
+          {i18n("pages.invitation.referralCopied")}
         </div>
       )}
 
@@ -384,7 +383,7 @@ function Invitation() {
                     className="fas fa-spinner fa-spin"
                     style={{ fontSize: "24px", marginBottom: "15px" }}
                   ></i>
-                  <p>Loading members...</p>
+                  <p>{i18n("pages.invitation.loadingMembers")}</p>
                 </div>
               ) : listUser && listUser.length > 0 ? (
                 <ul className="members-list">
@@ -394,18 +393,18 @@ function Invitation() {
                         <div className="member-email">{member.email}</div>
                         <div className="member-date">
                           {modalData.type === "approved"
-                            ? `Approved: ${Dates.formatDateTime(
+                            ? `${i18n("pages.invitation.approved")}: ${Dates.formatDateTime(
                               member.updatedAt || member.createdAt
                             )}`
-                            : `Joined: ${Dates.formatDateTime(
+                            : `${i18n("pages.invitation.joined")}: ${Dates.formatDateTime(
                               member.createdAt
                             )}`}
                         </div>
                       </div>
                       <div
                         className={`member-status ${modalData.type === "approved"
-                            ? "status-approved"
-                            : "status-pending"
+                          ? "status-approved"
+                          : "status-pending"
                           }`}
                       >
                         {modalData.type}
@@ -416,7 +415,7 @@ function Invitation() {
               ) : (
                 <div className="empty-state">
                   <i className="fas fa-users"></i>
-                  <p>No members found</p>
+                  <p>{i18n("pages.invitation.noMembersFound")}</p>
                 </div>
               )}
             </div>
@@ -442,7 +441,7 @@ function Invitation() {
           zIndex: "1001",
         }}
       >
-        Referral code copied to clipboard!
+        {i18n("pages.invitation.referralCopied")}
       </div>
 
       {/* Members Modal */}
@@ -470,7 +469,7 @@ function Invitation() {
                   className="fas fa-spinner fa-spin"
                   style={{ fontSize: "24px", marginBottom: "15px" }}
                 ></i>
-                <p>Loading members...</p>
+                <p>{i18n("pages.invitation.loadingMembers")}</p>
               </div>
             ) : listUser && listUser.length > 0 ? (
               <ul className="members-list">
@@ -480,16 +479,16 @@ function Invitation() {
                       <div className="member-email">{member.email}</div>
                       <div className="member-date">
                         {modalData.type === "approved"
-                          ? `Approved: ${Dates.formatDateTime(
+                          ? `${i18n("pages.invitation.approved")}: ${Dates.formatDateTime(
                             member.updatedAt || member.createdAt
                           )}`
-                          : `Joined: ${Dates.formatDateTime(member.createdAt)}`}
+                          : `${i18n("pages.invitation.joined")}: ${Dates.formatDateTime(member.createdAt)}`}
                       </div>
                     </div>
                     <div
                       className={`member-status ${modalData.type === "approved"
-                          ? "status-approved"
-                          : "status-pending"
+                        ? "status-approved"
+                        : "status-pending"
                         }`}
                     >
                       {modalData.type}
@@ -500,12 +499,14 @@ function Invitation() {
             ) : (
               <div className="empty-state">
                 <i className="fas fa-users"></i>
-                <p>No members found</p>
+                <p>{i18n("pages.invitation.noMembersFound")}</p>
               </div>
             )}
           </div>
         </div>
       </div>
+
+
       <style>{`
         /* Modal Styles */
         .modal-overlay {

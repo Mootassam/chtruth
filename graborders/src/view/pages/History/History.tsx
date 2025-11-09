@@ -5,6 +5,7 @@ import assetsActions from "src/modules/assets/view/assetsViewActions";
 import assetsSelectors from "src/modules/assets/view/assetsViewSelectors";
 import transactionListSelector from "src/modules/transaction/list/transactionListSelectors";
 import transactionListActions from "src/modules/transaction/list/transactionListActions";
+import { i18n } from "../../../i18n";
 
 function History() {
   const dispatch = useDispatch();
@@ -23,7 +24,7 @@ function History() {
   const getTransactionConfig = (type, direction, relatedAsset) => {
     const config = {
       icon: 'fa-exchange-alt',
-      typeText: 'Transaction',
+      typeText: i18n("pages.history.transactionTypes.transaction"),
       iconClass: 'swap',
       color: '#627EEA',
       amountColor: direction === 'in' ? '#2ff378' : '#FF6838'
@@ -32,7 +33,7 @@ function History() {
     switch (type) {
       case 'deposit':
         config.icon = 'fa-arrow-down';
-        config.typeText = 'Deposit';
+        config.typeText = i18n("pages.history.transactionTypes.deposit");
         config.iconClass = 'deposit';
         config.color = '#F3BA2F';
         config.amountColor = '#2ff378';
@@ -40,7 +41,7 @@ function History() {
 
       case 'withdraw':
         config.icon = 'fa-arrow-up';
-        config.typeText = 'Withdrawal';
+        config.typeText = i18n("pages.history.transactionTypes.withdrawal");
         config.iconClass = 'withdraw';
         config.color = '#FF6838';
         config.amountColor = '#FF6838';
@@ -48,7 +49,7 @@ function History() {
 
       case 'convert_in':
         config.icon = 'fa-exchange-alt';
-        config.typeText = relatedAsset ? `Converted from ${relatedAsset}` : 'Conversion In';
+        config.typeText = relatedAsset ? i18n("pages.history.transactionTypes.convertedFrom", relatedAsset) : i18n("pages.history.transactionTypes.conversionIn");
         config.iconClass = 'convert-in';
         config.color = '#9C27B0';
         config.amountColor = '#2ff378';
@@ -56,34 +57,32 @@ function History() {
 
       case 'convert_out':
         config.icon = 'fa-exchange-alt';
-        config.typeText = relatedAsset ? `Converted to ${relatedAsset}` : 'Conversion Out';
+        config.typeText = relatedAsset ? i18n("pages.history.transactionTypes.convertedTo", relatedAsset) : i18n("pages.history.transactionTypes.conversionOut");
         config.iconClass = 'convert-out';
         config.color = '#9C27B0';
         config.amountColor = '#FF6838';
         break;
 
       case 'stacking':
-        config.icon = 'fa-coins'; // More relevant than lock
-        config.typeText = 'Staked Amount';
+        config.icon = 'fa-coins';
+        config.typeText = i18n("pages.history.transactionTypes.stakedAmount");
         config.iconClass = 'stacking';
-        config.color = '#FF9800'; // Orange for investment/action
+        config.color = '#FF9800';
         config.amountColor = '#FFB74D';
         break;
 
-
       case 'staking_reward':
-        config.icon = 'fa-gift'; // Or fa-trophy for achievement
-        config.typeText = 'Staking Rewards';
+        config.icon = 'fa-gift';
+        config.typeText = i18n("pages.history.transactionTypes.stakingRewards");
         config.iconClass = 'staking_reward';
-        config.color = '#4CAF50'; // Green for earnings/growth
+        config.color = '#4CAF50';
         config.amountColor = '#81C784';
         break;
-
 
       // Futures Trading Transactions
       case 'futures_reserved':
         config.icon = 'fa-lock';
-        config.typeText = 'Futures Reserved';
+        config.typeText = i18n("pages.history.transactionTypes.futuresReserved");
         config.iconClass = 'futures-reserved';
         config.color = '#FF9800';
         config.amountColor = '#FF9800';
@@ -91,7 +90,7 @@ function History() {
 
       case 'futures_profit':
         config.icon = 'fa-chart-line';
-        config.typeText = 'Futures Profit';
+        config.typeText = i18n("pages.history.transactionTypes.futuresProfit");
         config.iconClass = 'futures-profit';
         config.color = '#00C076';
         config.amountColor = '#00C076';
@@ -99,7 +98,7 @@ function History() {
 
       case 'futures_loss':
         config.icon = 'fa-chart-line';
-        config.typeText = 'Futures Loss';
+        config.typeText = i18n("pages.history.transactionTypes.futuresLoss");
         config.iconClass = 'futures-loss';
         config.color = '#FF6838';
         config.amountColor = '#FF6838';
@@ -107,7 +106,7 @@ function History() {
 
       case 'futures_settlement':
         config.icon = 'fa-file-contract';
-        config.typeText = 'Futures Settlement';
+        config.typeText = i18n("pages.history.transactionTypes.futuresSettlement");
         config.iconClass = 'futures-settlement';
         config.color = '#9C27B0';
         config.amountColor = '#9C27B0';
@@ -115,7 +114,7 @@ function History() {
 
       case 'futures_fee':
         config.icon = 'fa-receipt';
-        config.typeText = 'Futures Fee';
+        config.typeText = i18n("pages.history.transactionTypes.futuresFee");
         config.iconClass = 'futures-fee';
         config.color = '#607D8B';
         config.amountColor = '#607D8B';
@@ -123,7 +122,7 @@ function History() {
 
       case 'futures_refund':
         config.icon = 'fa-undo';
-        config.typeText = 'Futures Refund';
+        config.typeText = i18n("pages.history.transactionTypes.futuresRefund");
         config.iconClass = 'futures-refund';
         config.color = '#4CAF50';
         config.amountColor = '#4CAF50';
@@ -131,7 +130,7 @@ function History() {
 
       case 'futures_bonus':
         config.icon = 'fa-gift';
-        config.typeText = 'Futures Bonus';
+        config.typeText = i18n("pages.history.transactionTypes.futuresBonus");
         config.iconClass = 'futures-bonus';
         config.color = '#E91E63';
         config.amountColor = '#E91E63';
@@ -139,7 +138,7 @@ function History() {
 
       case 'futures_commission':
         config.icon = 'fa-handshake';
-        config.typeText = 'Futures Commission';
+        config.typeText = i18n("pages.history.transactionTypes.futuresCommission");
         config.iconClass = 'futures-commission';
         config.color = '#795548';
         config.amountColor = '#795548';
@@ -148,7 +147,7 @@ function History() {
       // Manual Control Operations
       case 'manual_profit':
         config.icon = 'fa-user-check';
-        config.typeText = 'Manual Profit';
+        config.typeText = i18n("pages.history.transactionTypes.manualProfit");
         config.iconClass = 'manual-profit';
         config.color = '#00C076';
         config.amountColor = '#00C076';
@@ -156,7 +155,7 @@ function History() {
 
       case 'manual_loss':
         config.icon = 'fa-user-slash';
-        config.typeText = 'Manual Loss';
+        config.typeText = i18n("pages.history.transactionTypes.manualLoss");
         config.iconClass = 'manual-loss';
         config.color = '#FF6838';
         config.amountColor = '#FF6838';
@@ -164,7 +163,7 @@ function History() {
 
       case 'manual_adjustment':
         config.icon = 'fa-cog';
-        config.typeText = 'Manual Adjustment';
+        config.typeText = i18n("pages.history.transactionTypes.manualAdjustment");
         config.iconClass = 'manual-adjustment';
         config.color = '#9C27B0';
         config.amountColor = '#9C27B0';
@@ -173,7 +172,7 @@ function History() {
       // Spot Trading
       case 'spot_profit':
         config.icon = 'fa-coins';
-        config.typeText = 'Spot Trading Profit';
+        config.typeText = i18n("pages.history.transactionTypes.spotTradingProfit");
         config.iconClass = 'spot-profit';
         config.color = '#4CAF50';
         config.amountColor = '#2ff378';
@@ -181,7 +180,7 @@ function History() {
 
       case 'spot_loss':
         config.icon = 'fa-coins';
-        config.typeText = 'Spot Trading Loss';
+        config.typeText = i18n("pages.history.transactionTypes.spotTradingLoss");
         config.iconClass = 'spot-loss';
         config.color = '#FF5722';
         config.amountColor = '#FF6838';
@@ -190,7 +189,7 @@ function History() {
       // Rewards & Bonuses
       case 'reward':
         config.icon = 'fa-hand-holding-dollar';
-        config.typeText = 'Referral Reward';
+        config.typeText = i18n("pages.history.transactionTypes.referralReward");
         config.iconClass = 'spot-profit';
         config.color = '#63f211ff';
         config.amountColor = '#5ffc1bff';
@@ -198,7 +197,7 @@ function History() {
 
       case 'bonus':
         config.icon = 'fa-gift';
-        config.typeText = 'Bonus';
+        config.typeText = i18n("pages.history.transactionTypes.bonus");
         config.iconClass = 'bonus';
         config.color = '#E91E63';
         config.amountColor = '#E91E63';
@@ -206,7 +205,7 @@ function History() {
 
       case 'referral_commission':
         config.icon = 'fa-users';
-        config.typeText = 'Referral Commission';
+        config.typeText = i18n("pages.history.transactionTypes.referralCommission");
         config.iconClass = 'referral-commission';
         config.color = '#FF9800';
         config.amountColor = '#FF9800';
@@ -215,7 +214,7 @@ function History() {
       // Order Management
       case 'order_reserved':
         config.icon = 'fa-clock';
-        config.typeText = 'Order Reserved';
+        config.typeText = i18n("pages.history.transactionTypes.orderReserved");
         config.iconClass = 'order-reserved';
         config.color = '#FF9800';
         config.amountColor = '#FF9800';
@@ -223,7 +222,7 @@ function History() {
 
       case 'order_cancelled':
         config.icon = 'fa-ban';
-        config.typeText = 'Order Cancelled';
+        config.typeText = i18n("pages.history.transactionTypes.orderCancelled");
         config.iconClass = 'order-cancelled';
         config.color = '#9E9E9E';
         config.amountColor = '#9E9E9E';
@@ -231,7 +230,7 @@ function History() {
 
       case 'order_partial_fill':
         config.icon = 'fa-chart-pie';
-        config.typeText = 'Order Partial Fill';
+        config.typeText = i18n("pages.history.transactionTypes.orderPartialFill");
         config.iconClass = 'order-partial';
         config.color = '#FF9800';
         config.amountColor = '#FF9800';
@@ -239,7 +238,7 @@ function History() {
 
       case 'order_completed':
         config.icon = 'fa-check-circle';
-        config.typeText = 'Order Completed';
+        config.typeText = i18n("pages.history.transactionTypes.orderCompleted");
         config.iconClass = 'order-completed';
         config.color = '#4CAF50';
         config.amountColor = '#4CAF50';
@@ -248,7 +247,7 @@ function History() {
       // System Operations
       case 'fee_payment':
         config.icon = 'fa-receipt';
-        config.typeText = 'Fee Payment';
+        config.typeText = i18n("pages.history.transactionTypes.feePayment");
         config.iconClass = 'fee-payment';
         config.color = '#607D8B';
         config.amountColor = '#607D8B';
@@ -256,7 +255,7 @@ function History() {
 
       case 'adjustment':
         config.icon = 'fa-sliders-h';
-        config.typeText = 'Balance Adjustment';
+        config.typeText = i18n("pages.history.transactionTypes.balanceAdjustment");
         config.iconClass = 'adjustment';
         config.color = '#9C27B0';
         config.amountColor = '#9C27B0';
@@ -264,7 +263,7 @@ function History() {
 
       case 'transfer':
         config.icon = 'fa-exchange-alt';
-        config.typeText = 'Transfer';
+        config.typeText = i18n("pages.history.transactionTypes.transfer");
         config.iconClass = 'transfer';
         config.color = '#2196F3';
         config.amountColor = '#2196F3';
@@ -272,7 +271,7 @@ function History() {
 
       default:
         config.icon = 'fa-exchange-alt';
-        config.typeText = 'Transaction';
+        config.typeText = i18n("pages.history.transactionTypes.transaction");
         config.iconClass = 'default';
         config.color = '#627EEA';
         config.amountColor = '#627EEA';
@@ -346,15 +345,15 @@ function History() {
     const isYesterday = transactionDate.toDateString() === yesterday.toDateString();
 
     if (isToday) {
-      return `Today, ${transactionDate.toLocaleTimeString([], {
+      return i18n("pages.history.dateFormats.today", transactionDate.toLocaleTimeString([], {
         hour: "2-digit",
         minute: "2-digit",
-      })}`;
+      }));
     } else if (isYesterday) {
-      return `Yesterday, ${transactionDate.toLocaleTimeString([], {
+      return i18n("pages.history.dateFormats.yesterday", transactionDate.toLocaleTimeString([], {
         hour: "2-digit",
         minute: "2-digit",
-      })}`;
+      }));
     } else {
       return transactionDate.toLocaleDateString([], {
         month: "short",
@@ -373,7 +372,7 @@ function History() {
   return (
     <div className="container">
       {/* Header Section */}
-      <SubHeader title="Transaction History" />
+      <SubHeader title={i18n("pages.history.title")} />
 
       {/* Filter Options */}
       <div className="filter-options">
@@ -381,49 +380,43 @@ function History() {
           className={`filter-option ${typeFilter === "all" ? "active" : ""}`}
           onClick={() => setTypeFilter("all")}
         >
-          All
+          {i18n("pages.history.filters.all")}
         </button>
         <button
-          className={`filter-option ${typeFilter === "deposits" ? "active" : ""
-            }`}
+          className={`filter-option ${typeFilter === "deposits" ? "active" : ""}`}
           onClick={() => setTypeFilter("deposits")}
         >
-          Deposits
+          {i18n("pages.history.filters.deposits")}
         </button>
         <button
-          className={`filter-option ${typeFilter === "withdrawals" ? "active" : ""
-            }`}
+          className={`filter-option ${typeFilter === "withdrawals" ? "active" : ""}`}
           onClick={() => setTypeFilter("withdrawals")}
         >
-          Withdrawals
+          {i18n("pages.history.filters.withdrawals")}
         </button>
         <button
-          className={`filter-option ${typeFilter === "profits" ? "active" : ""
-            }`}
+          className={`filter-option ${typeFilter === "profits" ? "active" : ""}`}
           onClick={() => setTypeFilter("profits")}
         >
-          Profits
+          {i18n("pages.history.filters.profits")}
         </button>
         <button
-          className={`filter-option ${typeFilter === "losses" ? "active" : ""
-            }`}
+          className={`filter-option ${typeFilter === "losses" ? "active" : ""}`}
           onClick={() => setTypeFilter("losses")}
         >
-          Losses
+          {i18n("pages.history.filters.losses")}
         </button>
         <button
-          className={`filter-option ${typeFilter === "conversions" ? "active" : ""
-            }`}
+          className={`filter-option ${typeFilter === "conversions" ? "active" : ""}`}
           onClick={() => setTypeFilter("conversions")}
         >
-          Conversions
+          {i18n("pages.history.filters.conversions")}
         </button>
         <button
-          className={`filter-option ${typeFilter === "stacking" ? "active" : ""
-            }`}
+          className={`filter-option ${typeFilter === "stacking" ? "active" : ""}`}
           onClick={() => setTypeFilter("stacking")}
         >
-          Stacking
+          {i18n("pages.history.filters.stacking")}
         </button>
       </div>
 
@@ -435,25 +428,25 @@ function History() {
             className={`status-option ${statusFilter === "all" ? "active" : ""}`}
             onClick={() => setStatusFilter("all")}
           >
-            All Status
+            {i18n("pages.history.statusFilters.allStatus")}
           </div>
           <div
             className={`status-option ${statusFilter === "completed" ? "active" : ""}`}
             onClick={() => handleStatusFilter("completed")}
           >
-            Completed
+            {i18n("pages.history.statusFilters.completed")}
           </div>
           <div
             className={`status-option ${statusFilter === "pending" ? "active" : ""}`}
             onClick={() => handleStatusFilter("pending")}
           >
-            Pending
+            {i18n("pages.history.statusFilters.pending")}
           </div>
           <div
             className={`status-option ${statusFilter === "canceled" ? "active" : ""}`}
             onClick={() => handleStatusFilter("canceled")}
           >
-            Canceled
+            {i18n("pages.history.statusFilters.canceled")}
           </div>
         </div>
 
@@ -463,31 +456,31 @@ function History() {
             className={`time-option ${timeFilter === "all" ? "active" : ""}`}
             onClick={() => setTimeFilter("all")}
           >
-            All Time
+            {i18n("pages.history.timeFilters.allTime")}
           </div>
           <div
             className={`time-option ${timeFilter === "today" ? "active" : ""}`}
             onClick={() => setTimeFilter("today")}
           >
-            Today
+            {i18n("pages.history.timeFilters.today")}
           </div>
           <div
             className={`time-option ${timeFilter === "week" ? "active" : ""}`}
             onClick={() => setTimeFilter("week")}
           >
-            Week
+            {i18n("pages.history.timeFilters.week")}
           </div>
           <div
             className={`time-option ${timeFilter === "month" ? "active" : ""}`}
             onClick={() => setTimeFilter("month")}
           >
-            Month
+            {i18n("pages.history.timeFilters.month")}
           </div>
           <div
             className={`time-option ${timeFilter === "year" ? "active" : ""}`}
             onClick={() => setTimeFilter("year")}
           >
-            Year
+            {i18n("pages.history.timeFilters.year")}
           </div>
         </div>
       </div>
@@ -531,8 +524,7 @@ function History() {
                   <div
                     className={`transaction-status status-${transaction.status}`}
                   >
-                    {transaction.status.charAt(0).toUpperCase() +
-                      transaction.status.slice(1)}
+                    {i18n(`pages.history.status.${transaction.status}`)}
                   </div>
                 </div>
               </div>
@@ -543,13 +535,14 @@ function History() {
             <div className="empty-icon">
               <i className="fas fa-receipt" />
             </div>
-            <div className="empty-title">No transactions found</div>
+            <div className="empty-title">{i18n("pages.history.emptyState.title")}</div>
             <div className="empty-text">
-              Try changing your filters to see more transactions
+              {i18n("pages.history.emptyState.description")}
             </div>
           </div>
         )}
       </div>
+  
 
       <style>{`
         .container {

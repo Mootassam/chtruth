@@ -6,6 +6,7 @@ import { IRepositoryOptions } from "./IRepositoryOptions";
 import FileRepository from "./fileRepository";
 import depositMethod from "../models/depositMethod";
 import Error405 from "../../errors/Error405";
+import Error400 from "../../errors/Error400";
 
 class depositMethodRepository {
 static async create(options: IRepositoryOptions) {
@@ -28,7 +29,7 @@ static async create(options: IRepositoryOptions) {
     });
     
     if (existing > 0) {
-      throw new Error405('Deposit methods already initialized');
+      throw new Error400(options.language,'auth.depositExist');
     }
 
     const recordsToCreate = defaultMethods.map(data => ({
@@ -51,7 +52,7 @@ static async create(options: IRepositoryOptions) {
   } catch (error:any) {
     // Handle specific MongoDB duplicate key errors
     if (error.code === 11000) {
-      throw new Error405('Deposit methods already exist for this tenant');
+      throw new Error400(options.language,'auth.depositExist');
     }
     
     // Re-throw other errors

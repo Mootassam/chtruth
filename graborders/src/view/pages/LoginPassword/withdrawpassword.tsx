@@ -10,15 +10,17 @@ import { useForm, FormProvider } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import FieldFormItem from "src/shared/form/fieldFormItem";
 import actions from "src/modules/user/form/userFormActions";
+
 const schema = yup.object().shape({
-  password: yupFormSchemas.string(i18n("user.fields.oldPassword"), {
+  password: yupFormSchemas.string(i18n("pages.withdrawPassword.fields.currentPassword"), {
     required: true,
   }),
-  newPassword: yupFormSchemas.string(i18n("user.fields.newPassword"), {
+  newPassword: yupFormSchemas.string(i18n("pages.withdrawPassword.fields.newPassword"), {
     required: true,
   }),
 });
-function LoginPassword() {
+
+function WithdrawPassword() {
   const dispatch = useDispatch();
   const currentUser = useSelector(authSelectors.selectCurrentUser);
 
@@ -36,52 +38,53 @@ function LoginPassword() {
   });
 
   const onSubmit = (values) => {
-
-    // alert("values");
     dispatch(actions.UpdateWithdraw(values));
   };
 
   return (
     <div className="container">
       {/* Header */}
-
-      <SubHeader title="Withdraw Password" />
+      <SubHeader title={i18n("pages.withdrawPassword.title")} />
+      
       {/* Password Form */}
       <FormProvider {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <div className="card">
-            <h2 className="card-title">CHANGE WITHDRAW PASSWORD</h2>
+            <h2 className="card-title">
+              {i18n("pages.withdrawPassword.cardTitle")}
+            </h2>
 
             <FieldFormItem
               name="password"
               type="password"
-              label="Current Password"
+              label={i18n("pages.withdrawPassword.fields.currentPassword")}
               className="form-input"
               className1="form-group"
               className2="form-label"
               className3="password-input-container"
-              placeholder="Enter your Old password"
+              placeholder={i18n("pages.withdrawPassword.placeholders.currentPassword")}
             />
 
             <FieldFormItem
               name="newPassword"
               type="password"
-              label="New Password"
+              label={i18n("pages.withdrawPassword.fields.newPassword")}
               className="form-input"
               className1="form-group"
               className2="form-label"
               className3="password-input-container"
-              placeholder="Confirm your new password"
+              placeholder={i18n("pages.withdrawPassword.placeholders.newPassword")}
             />
+            
             <button
               className="save-button"
               onClick={form.handleSubmit(onSubmit)}
             >
-              SAVE CHANGES
+              {i18n("pages.withdrawPassword.buttons.saveChanges")}
             </button>
+            
             <p className="warning-message">
-              For the safety of your funds, withdrawals are not allowed within
-              24 hours after the login password has been changed.
+              {i18n("pages.withdrawPassword.warningMessage")}
             </p>
           </div>
         </form>
@@ -90,4 +93,4 @@ function LoginPassword() {
   );
 }
 
-export default LoginPassword;
+export default WithdrawPassword;

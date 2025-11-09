@@ -1,4 +1,5 @@
 
+
 import path from "path";
 import Permissions from "src/security/permissions";
 const permissions = Permissions.values;
@@ -87,6 +88,7 @@ const screenRoutes = [
     loader: () => import("src/view/pages/invitation/invitation"),
     permissionRequired: permissions.categoryRead,
   },
+
   // {
   //   path: "/members",
   //   loader: () => import("src/view/pages/invitation/members"),
@@ -116,11 +118,7 @@ const screenRoutes = [
     permissionRequired: permissions.categoryRead,
     exact: true,
   },
-  {
-    path: "/language",
-    loader: () => import("src/view/pages/Language/Language"),
-    permissionRequired: permissions.categoryRead,
-  },
+
 
   {
     path: "/history",
@@ -263,10 +261,7 @@ const publicRoutes = [
     loader: () => import("src/view/pages/Auth/Signup"),
   },
 
-  {
-    path: "/Playstore",
-    loader: () => import("src/view/pages/Playsotre/Playstore"),
-  },
+
   {
     path: "/impersonate",
     loader: () => import("src/view/pages/Auth/ImpersonatePage"),
@@ -300,7 +295,14 @@ const navRoutes = [
     path: "/",
     loader: () => import("src/view/pages/Home/Home"),
   },
-
+  {
+    path: "/language",
+    loader: () => import("src/view/pages/Language/Language"),
+  },
+  {
+    path: "/Playstore",
+    loader: () => import("src/view/pages/Playsotre/Playstore"),
+  },
   {
     path: "/market",
     loader: () => import("src/view/pages/Market/Market"),

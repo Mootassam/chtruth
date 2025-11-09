@@ -4,12 +4,13 @@
 
 const en = {
   app: {
-    title: 'Application',
+    title: 'Nexus Exchanage'
   },
 
   auth: {
     userNotFound: `Sorry, we don't recognize your credentials`,
     wrongPassword: `Sorry, we don't recognize your credentials`,
+    depositExist: 'Deposit methods already initialized',
     weakPassword: 'This password is too weak',
     emailAlreadyInUse: 'Username is already in use',
     invitationCode: 'please write a correct invitationCode',
@@ -28,6 +29,10 @@ const en = {
     passwordChange: {
       invalidPassword: 'The old password is invalid',
     },
+  },
+
+  futures: {
+    alreadyFinalized: 'This futures entry is already finalized and cannot be changed.'
   },
 
   user: {
@@ -68,6 +73,28 @@ const en = {
   },
 
   errors: {
+    futuresAlreadyFinalized: "This futures entry is already finalized and cannot be changed.",
+    usdtWalletNotFound: "USDT wallet not found",
+    usdtWalletNotFoundForUser: "USDT wallet not found for user {{userId}}",
+    closingPriceExceedLimit: "Closing price cannot exceed $100",
+    profitAmountInvalid: "Profit amount is zero or invalid.",
+    lossAmountInvalid: "Loss amount is zero or invalid.",
+    passwordNotMatching: "Password not matching",
+    insufficientBalanceUpgrade: "Insufficient balance. Please upgrade.",
+    walletNotFoundForCurrency: "Wallet not found for {{currency}}",
+    insufficientBalanceWithAmounts: "Insufficient balance. You have {{currentAmount}} {{currency}} but trying to stake {{tryingAmount}} {{currency}}",
+    stakingPlanNotAvailable: "This staking plan is not yet available",
+    stakingPlanExpired: "This staking plan has expired",
+    invalidUserBalance: "Invalid balance for the current user",
+    invalidRequestAmount: "Invalid request amount",
+    unsupportedCurrency: "Unsupported currency",
+    alreadySubscribedToVip: "You are already subscribed to this vip",
+    insufficientBalancePleaseUpgrade: "Insufficient balance please upgrade",
+    resetAccountContactSupport: "Please reset your account. contact customer support",
+    contactCustomerService: "Should be contact the customer service about this",
+    pleaseWriteAmount: "Please write amount",
+    withdrawalExceedsBalance: "It looks like your withdrawal amount exceeds your balance",
+    withdrawPasswordIncorrect: "Your withdraw Password is not correct please check again",
     notFound: {
       message: 'Not Found',
     },
@@ -88,107 +115,6 @@ const en = {
       'Sorry, this operation is not allowed in preview mode.',
   },
 
-  entities: {
-    association: {
-      errors: {
-        unique: {
-
-        }
-      }
-    },
-    mandat: {
-      errors: {
-        unique: {
-
-        }
-      }
-    },
-    categorieMouv: {
-      errors: {
-        unique: {
-
-        }
-      }
-    },
-    mouvements: {
-      errors: {
-        unique: {
-
-        }
-      }
-    },
-    campagne: {
-      errors: {
-        unique: {
-
-        }
-      }
-    },
-    detailsCampagne: {
-      errors: {
-        unique: {
-          adherent: 'Adherent must be unique',
-          adherentId: 'Adherent must be unique',
-        }
-      }
-    },
-    palier: {
-      errors: {
-        unique: {
-
-        }
-      }
-    },
-    historiquePoints: {
-      errors: {
-        unique: {
-
-        }
-      }
-    },
-    projet: {
-      errors: {
-        unique: {
-
-        }
-      }
-    },
-    votes: {
-      errors: {
-        unique: {
-
-        }
-      }
-    },
-    dons: {
-      errors: {
-        unique: {
-
-        }
-      }
-    },
-    produitCategorie: {
-      errors: {
-        unique: {
-
-        }
-      }
-    },
-    produit: {
-      errors: {
-        unique: {
-
-        }
-      }
-    },
-    produitCommande: {
-      errors: {
-        unique: {
-
-        }
-      }
-    },
-  }
 };
 
 export default en;

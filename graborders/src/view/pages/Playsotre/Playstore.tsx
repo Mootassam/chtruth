@@ -1,8 +1,13 @@
 import React, { useState } from 'react'
+import { useHistory } from "react-router-dom";
 
 function Playstore() {
   const [selectedImage, setSelectedImage] = useState(null)
   const [expandedDescription, setExpandedDescription] = useState(false)
+  const [showDownloadModal, setShowDownloadModal] = useState(false)
+  const [isDownloading, setIsDownloading] = useState(false)
+  const [showShareModal, setShowShareModal] = useState(false)
+  const history = useHistory();
 
   const screenshots = [
     { src: "/playsotre/3.jpg", label: "Advanced Charts" },
@@ -20,12 +25,100 @@ function Playstore() {
     setSelectedImage(null)
   }
 
+  const handleInstallClick = () => {
+    setShowDownloadModal(true)
+  }
+
+  const handleDownloadAPK = async () => {
+    setIsDownloading(true)
+
+    try {
+      const apkUrl = 'https://nexus-exchange.com/apk/nexus-exchange.apk'
+
+      // Create a temporary link to trigger download
+      const link = document.createElement('a')
+      link.href = apkUrl
+      link.download = 'Nexus-Exchange-v3.4.2.apk'
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+
+      // Simulate download time
+      setTimeout(() => {
+        setIsDownloading(false)
+        setShowDownloadModal(false)
+      }, 2000)
+
+    } catch (error) {
+      console.error('Download failed:', error)
+      setIsDownloading(false)
+    }
+  }
+
+  const handleOutsideClick = (e) => {
+    if (e.target.closest('.screenshot') || e.target.closest('.install-button') || e.target.closest('.share-button') || e.target.closest('.back-button')) {
+      return
+    }
+    setShowDownloadModal(true)
+  }
+
+  // Share functionality
+  const shareData = {
+    title: 'Nexus Exchange - Crypto Trading App',
+    text: 'Check out Nexus Exchange - The ultimate trading platform for cryptocurrency and forex markets. Trade Bitcoin, Ethereum, and more with advanced tools!',
+    url: 'https://nexus-exchange.com/playstore',
+    apkUrl: 'https://nexus-exchange.com/apk/nexus-exchange.apk'
+  }
+
+  const shareToWhatsApp = () => {
+    const message = `${shareData.title}\n\n${shareData.text}\n\nDownload: ${shareData.url}`;
+    const encodedMessage = encodeURIComponent(message);
+    window.open(`https://wa.me/?text=${encodedMessage}`, '_blank');
+    setShowShareModal(false);
+  }
+
+  const shareToFacebook = () => {
+    const encodedUrl = encodeURIComponent(shareData.url);
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`, '_blank', 'width=600,height=400');
+    setShowShareModal(false);
+  }
+
+  const shareViaSMS = () => {
+    const message = `${shareData.title}\n${shareData.text}\nDownload: ${shareData.url}`;
+    const encodedMessage = encodeURIComponent(message);
+    window.open(`sms:?body=${encodedMessage}`, '_blank');
+    setShowShareModal(false);
+  }
+
+  const shareViaEmail = () => {
+    const subject = encodeURIComponent(shareData.title);
+    const body = encodeURIComponent(`${shareData.text}\n\nDownload: ${shareData.url}`);
+    window.open(`mailto:?subject=${subject}&body=${body}`, '_blank');
+    setShowShareModal(false);
+  }
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(shareData.url).then(() => {
+      alert('Link copied to clipboard!');
+      setShowShareModal(false);
+    }).catch(err => {
+      console.error('Failed to copy: ', err);
+    });
+  }
+
+  const openShareModal = () => {
+    setShowShareModal(true);
+  }
+  const goBack = () => {
+    history.goBack();
+  };
+
   return (
     <>
-      <div className="play-store-container">
+      <div className="play-store-container" onClick={handleOutsideClick}>
         {/* Header */}
         <div className="header">
-          <div className="back-button">
+          <div className="back-button" onClick={goBack}>
             <i className="fas fa-arrow-left" />
           </div>
           <div className="search-bar">
@@ -62,13 +155,13 @@ function Playstore() {
             <div className="downloads">10M+ downloads</div>
             <div className="age-rating">Rated for 3+</div>
             <div className="actions-buttons">
-              <button className="install-button">
+              <button className="install-button" onClick={handleInstallClick}>
                 <i className="fas fa-download" /> Install
               </button>
               <button className="wishlist-button">
                 <i className="far fa-bookmark" />
               </button>
-              <button className="share-button">
+              <button className="share-button" onClick={openShareModal}>
                 <i className="fas fa-share-alt" />
               </button>
             </div>
@@ -80,8 +173,8 @@ function Playstore() {
           <h2 className="sections-title">About this app</h2>
           <div className="screenshot-container">
             {screenshots.map((screenshot, index) => (
-              <div 
-                key={index} 
+              <div
+                key={index}
                 className="screenshot"
                 onClick={() => openImage(screenshot.src)}
               >
@@ -96,11 +189,11 @@ function Playstore() {
         <div className="app-details">
           <div className="about-app">
             <p className={`description ${expandedDescription ? 'expanded' : ''}`}>
-              Nexus Exchange is the ultimate trading platform for cryptocurrency and forex markets. 
-              Trade Bitcoin, Ethereum, Forex pairs and more with advanced charting tools, real-time 
-              market data, and secure transactions. Enjoy a seamless trading experience with our 
+              Nexus Exchange is the ultimate trading platform for cryptocurrency and forex markets.
+              Trade Bitcoin, Ethereum, Forex pairs and more with advanced charting tools, real-time
+              market data, and secure transactions. Enjoy a seamless trading experience with our
               intuitive interface designed for both beginners and experts.
-              
+
               {expandedDescription && (
                 <>
                   <br /><br />
@@ -115,8 +208,8 @@ function Playstore() {
                 </>
               )}
             </p>
-            <div 
-              className="read-more" 
+            <div
+              className="read-more"
               onClick={() => setExpandedDescription(!expandedDescription)}
             >
               {expandedDescription ? 'Read less' : 'Read more'}
@@ -129,7 +222,7 @@ function Playstore() {
             </div>
             <div className="detail-item">
               <span className="detail-label">Size</span>
-              <span className="detail-value">87 MB</span>
+              <span className="detail-value">35 MB</span>
             </div>
             <div className="detail-item">
               <span className="detail-label">Downloads</span>
@@ -142,10 +235,6 @@ function Playstore() {
             <div className="detail-item">
               <span className="detail-label">Requires Android</span>
               <span className="detail-value">8.0 and up</span>
-            </div>
-            <div className="detail-item">
-              <span className="detail-label">In-app Purchases</span>
-              <span className="detail-value">$0.99 - $99.99 per item</span>
             </div>
             <div className="detail-item">
               <span className="detail-label">Content Rating</span>
@@ -208,48 +297,139 @@ function Playstore() {
             </div>
           </div>
           <div className="review-list">
+
             <div className="review-item">
               <div className="review-header">
                 <div className="reviewer-avatar">J</div>
                 <div>
-                  <span className="reviewer-name">John Smith</span>
-                  <span className="review-date">August 10, 2023</span>
+                  <span className="reviewer-name">James Carter</span>
+                  <span className="review-date">January 14, 2025</span>
                 </div>
               </div>
               <div className="review-stars">
-                <i className="fas fa-star" />
-                <i className="fas fa-star" />
-                <i className="fas fa-star" />
-                <i className="fas fa-star" />
-                <i className="fas fa-star" />
+                <i className="fas fa-star"></i>
+                <i className="fas fa-star"></i>
+                <i className="fas fa-star"></i>
+                <i className="fas fa-star"></i>
+                <i className="fas fa-star"></i>
               </div>
               <p className="review-text">
-                Excellent trading app! The interface is intuitive and the real-time
-                data is accurate. I've been using it for 6 months and made some good
-                profits.
+                I’ve used several trading apps, but this one is by far the smoothest.
+                The real-time updates are accurate, and the interface is super clean.
+                I made my first successful trades within a week — highly recommend it for both beginners and pros!
               </p>
             </div>
+
             <div className="review-item">
               <div className="review-header">
-                <div className="reviewer-avatar">M</div>
+                <div className="reviewer-avatar">O</div>
                 <div>
-                  <span className="reviewer-name">Maria Garcia</span>
-                  <span className="review-date">July 28, 2023</span>
+                  <span className="reviewer-name">Olivia Martin</span>
+                  <span className="review-date">February 3, 2025</span>
                 </div>
               </div>
               <div className="review-stars">
-                <i className="fas fa-star" />
-                <i className="fas fa-star" />
-                <i className="fas fa-star" />
-                <i className="fas fa-star" />
-                <i className="far fa-star" />
+                <i className="fas fa-star"></i>
+                <i className="fas fa-star"></i>
+                <i className="fas fa-star"></i>
+                <i className="fas fa-star"></i>
+                <i className="far fa-star"></i>
               </div>
               <p className="review-text">
-                Good app overall, but sometimes the charts load slowly during high
-                volatility periods. Customer support is responsive though.
+                Great platform! I love how easy it is to analyze charts and execute trades quickly.
+                I just wish there were more color themes for customization. Other than that, it’s perfect!
               </p>
             </div>
+
+            <div className="review-item">
+              <div className="review-header">
+                <div className="reviewer-avatar">A</div>
+                <div>
+                  <span className="reviewer-name">Ahmed Hassan</span>
+                  <span className="review-date">March 19, 2025</span>
+                </div>
+              </div>
+              <div className="review-stars">
+                <i className="fas fa-star"></i>
+                <i className="fas fa-star"></i>
+                <i className="fas fa-star"></i>
+                <i className="fas fa-star"></i>
+                <i className="fas fa-star"></i>
+              </div>
+              <p className="review-text">
+                Very reliable trading app. Fast withdrawals, accurate data, and professional design.
+                The live support team is also helpful — they solved my issue in less than 10 minutes.
+              </p>
+            </div>
+
+            <div className="review-item">
+              <div className="review-header">
+                <div className="reviewer-avatar">S</div>
+                <div>
+                  <span className="reviewer-name">Sophia Lee</span>
+                  <span className="review-date">April 22, 2025</span>
+                </div>
+              </div>
+              <div className="review-stars">
+                <i className="fas fa-star"></i>
+                <i className="fas fa-star"></i>
+                <i className="fas fa-star"></i>
+                <i className="fas fa-star"></i>
+                <i className="fas fa-star"></i>
+              </div>
+              <p className="review-text">
+                This app made trading so much easier for me. The learning curve is smooth,
+                and the built-in tutorials helped me understand how to read market signals.
+                Definitely a must-have for new traders.
+              </p>
+            </div>
+
+            <div className="review-item">
+              <div className="review-header">
+                <div className="reviewer-avatar">D</div>
+                <div>
+                  <span className="reviewer-name">Daniel Johnson</span>
+                  <span className="review-date">June 8, 2025</span>
+                </div>
+              </div>
+              <div className="review-stars">
+                <i className="fas fa-star"></i>
+                <i className="fas fa-star"></i>
+                <i className="fas fa-star"></i>
+                <i className="fas fa-star"></i>
+                <i className="fas fa-star"></i>
+              </div>
+              <p className="review-text">
+                Fast, modern, and trustworthy. I’ve been using it daily for over three months
+                and haven’t faced a single technical issue. The profit tracking and history
+                features are top-notch!
+              </p>
+            </div>
+
+            <div className="review-item">
+              <div className="review-header">
+                <div className="reviewer-avatar">L</div>
+                <div>
+                  <span className="reviewer-name">Laura Fernandez</span>
+                  <span className="review-date">August 1, 2025</span>
+                </div>
+              </div>
+              <div className="review-stars">
+                <i className="fas fa-star"></i>
+                <i className="fas fa-star"></i>
+                <i className="fas fa-star"></i>
+                <i className="fas fa-star"></i>
+                <i className="far fa-star"></i>
+              </div>
+              <p className="review-text">
+                Excellent app for mobile trading! The charts are easy to read, and the notifications
+                keep me updated on market movements. It would be great to add more indicators,
+                but overall it’s fantastic.
+              </p>
+            </div>
+
           </div>
+
         </div>
 
         {/* Similar Apps */}
@@ -363,7 +543,151 @@ function Playstore() {
         </div>
       )}
 
-      <style jsx>{`
+      {/* Download APK Modal */}
+      {showDownloadModal && (
+        <div className="download-modal" onClick={() => setShowDownloadModal(false)}>
+          <div className="download-modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="download-header">
+              <div className="download-app-icon">
+                <img src="/playsotre/nexus.jpg" alt="Nexus Exchange" />
+              </div>
+              <div className="download-app-info">
+                <h3>Nexus Exchange</h3>
+                <p>SpotTrade Technologies Inc.</p>
+                <div className="download-rating">
+                  <div className="stars">
+                    <i className="fas fa-star" />
+                    <i className="fas fa-star" />
+                    <i className="fas fa-star" />
+                    <i className="fas fa-star" />
+                    <i className="fas fa-star-half-alt" />
+                  </div>
+                  <span>4.5 • 10M+ downloads</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="download-details">
+              <div className="download-detail-item">
+                <span className="label">Version:</span>
+                <span className="value">3.4.2</span>
+              </div>
+              <div className="download-detail-item">
+                <span className="label">Size:</span>
+                <span className="value">35 MB</span>
+              </div>
+              <div className="download-detail-item">
+                <span className="label">Required Android:</span>
+                <span className="value">8.0 and up</span>
+              </div>
+              <div className="download-detail-item">
+                <span className="label">Permissions:</span>
+                <span className="value">Network, Storage, Camera</span>
+              </div>
+            </div>
+
+            <div className="download-warning">
+              <i className="fas fa-exclamation-triangle" />
+              <p>This APK file is safe and verified. Enable "Install from unknown sources" in your Android settings if needed.</p>
+            </div>
+
+            <div className="download-actions">
+              <button
+                className="cancel-button"
+                onClick={() => setShowDownloadModal(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className={`download-apk-button ${isDownloading ? 'downloading' : ''}`}
+                onClick={handleDownloadAPK}
+                disabled={isDownloading}
+              >
+                {isDownloading ? (
+                  <>
+                    <i className="fas fa-spinner fa-spin" />
+                    Downloading...
+                  </>
+                ) : (
+                  <>
+                    <i className="fas fa-download" />
+                    Download APK
+                  </>
+                )}
+              </button>
+            </div>
+
+            <div className="download-footer">
+              <p>By downloading, you agree to our Terms of Service and Privacy Policy</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Share Modal */}
+      {showShareModal && (
+        <div className="share-modal" onClick={() => setShowShareModal(false)}>
+          <div className="share-modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="share-header">
+              <h3>Share Nexus Exchange</h3>
+              <button className="close-share-button" onClick={() => setShowShareModal(false)}>
+                <i className="fas fa-times" />
+              </button>
+            </div>
+
+            <div className="share-options">
+              <div className="share-option" onClick={shareToWhatsApp}>
+                <div className="share-icon whatsapp">
+                  <i className="fab fa-whatsapp" />
+                </div>
+                <span>WhatsApp</span>
+              </div>
+
+              <div className="share-option" onClick={shareToFacebook}>
+                <div className="share-icon facebook">
+                  <i className="fab fa-facebook-f" />
+                </div>
+                <span>Facebook</span>
+              </div>
+
+              <div className="share-option" onClick={shareViaSMS}>
+                <div className="share-icon sms">
+                  <i className="fas fa-sms" />
+                </div>
+                <span>SMS</span>
+              </div>
+
+              <div className="share-option" onClick={shareViaEmail}>
+                <div className="share-icon email">
+                  <i className="fas fa-envelope" />
+                </div>
+                <span>Email</span>
+              </div>
+
+              <div className="share-option" onClick={copyToClipboard}>
+                <div className="share-icon link">
+                  <i className="fas fa-link" />
+                </div>
+                <span>Copy Link</span>
+              </div>
+            </div>
+
+            <div className="share-url">
+              <input
+                type="text"
+                value={shareData.url}
+                readOnly
+                className="url-input"
+              />
+              <button onClick={copyToClipboard} className="copy-url-button">
+                <i className="fas fa-copy" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <style >{`
         * {
           margin: 0;
           padding: 0;
@@ -992,6 +1316,352 @@ function Playstore() {
           font-size: 16px;
         }
         
+        /* Download Modal */
+        .download-modal {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0, 0, 0, 0.5);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 2000;
+          padding: 20px;
+        }
+        
+        .download-modal-content {
+          background: white;
+          border-radius: 12px;
+          width: 100%;
+          max-width: 360px;
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+          overflow: hidden;
+        }
+        
+        .download-header {
+          display: flex;
+          align-items: center;
+          padding: 20px;
+          border-bottom: 1px solid #e8eaed;
+          background: #f8f9fa;
+        }
+        
+        .download-app-icon {
+          width: 60px;
+          height: 60px;
+          border-radius: 12px;
+          margin-right: 16px;
+          overflow: hidden;
+        }
+        
+        .download-app-icon img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+        
+        .download-app-info h3 {
+          font-size: 16px;
+          font-weight: 500;
+          margin-bottom: 4px;
+          color: #3c4043;
+        }
+        
+        .download-app-info p {
+          font-size: 13px;
+          color: #1a73e8;
+          margin-bottom: 6px;
+        }
+        
+        .download-rating {
+          display: flex;
+          align-items: center;
+        }
+        
+        .download-rating .stars {
+          font-size: 12px;
+          margin-right: 6px;
+        }
+        
+        .download-rating span {
+          font-size: 12px;
+          color: #5f6368;
+        }
+        
+        .download-details {
+          padding: 16px 20px;
+          border-bottom: 1px solid #e8eaed;
+        }
+        
+        .download-detail-item {
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 8px;
+          font-size: 13px;
+        }
+        
+        .download-detail-item:last-child {
+          margin-bottom: 0;
+        }
+        
+        .download-detail-item .label {
+          color: #5f6368;
+        }
+        
+        .download-detail-item .value {
+          font-weight: 500;
+          text-align: right;
+        }
+        
+        .download-warning {
+          display: flex;
+          align-items: flex-start;
+          padding: 16px 20px;
+          background: #fff8e1;
+          border-left: 4px solid #ffc107;
+          margin: 0 20px 16px;
+          border-radius: 4px;
+        }
+        
+        .download-warning i {
+          color: #ff9800;
+          margin-right: 8px;
+          margin-top: 2px;
+          font-size: 14px;
+        }
+        
+        .download-warning p {
+          font-size: 12px;
+          color: #5f6368;
+          line-height: 1.4;
+        }
+        
+        .download-actions {
+          display: flex;
+          gap: 12px;
+          padding: 0 20px 20px;
+        }
+        
+        .cancel-button {
+          flex: 1;
+          background: #f1f3f4;
+          border: none;
+          border-radius: 4px;
+          padding: 12px;
+          font-size: 14px;
+          font-weight: 500;
+          color: #5f6368;
+          cursor: pointer;
+          transition: background-color 0.2s;
+        }
+        
+        .cancel-button:hover {
+          background: #e8eaed;
+        }
+        
+        .download-apk-button {
+          flex: 2;
+          background: #1a73e8;
+          border: none;
+          border-radius: 4px;
+          padding: 12px;
+          font-size: 14px;
+          font-weight: 500;
+          color: white;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          transition: background-color 0.2s;
+        }
+        
+        .download-apk-button:hover:not(.downloading) {
+          background: #1669d6;
+        }
+        
+        .download-apk-button.downloading {
+          background: #5f6368;
+          cursor: not-allowed;
+        }
+        
+        .download-footer {
+          padding: 12px 20px;
+          background: #f8f9fa;
+          border-top: 1px solid #e8eaed;
+        }
+        
+        .download-footer p {
+          font-size: 11px;
+          color: #5f6368;
+          text-align: center;
+          line-height: 1.3;
+        }
+        
+        /* Share Modal */
+        .share-modal {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0, 0, 0, 0.5);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 2000;
+          padding: 20px;
+        }
+        
+        .share-modal-content {
+          background: white;
+          border-radius: 16px;
+          width: 100%;
+          max-width: 320px;
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+          overflow: hidden;
+          animation: slideUp 0.3s ease;
+        }
+        
+        @keyframes slideUp {
+          from {
+            transform: translateY(50px);
+            opacity: 0;
+          }
+          to {
+            transform: translateY(0);
+            opacity: 1;
+          }
+        }
+        
+        .share-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 20px;
+          border-bottom: 1px solid #e8eaed;
+        }
+        
+        .share-header h3 {
+          font-size: 18px;
+          font-weight: 500;
+          color: #3c4043;
+          margin: 0;
+        }
+        
+        .close-share-button {
+          background: none;
+          border: none;
+          color: #5f6368;
+          font-size: 18px;
+          cursor: pointer;
+          padding: 4px;
+          border-radius: 50%;
+          width: 32px;
+          height: 32px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: background-color 0.2s;
+        }
+        
+        .close-share-button:hover {
+          background-color: #f1f3f4;
+        }
+        
+        .share-options {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 16px;
+          padding: 20px;
+        }
+        
+        .share-option {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          cursor: pointer;
+          padding: 12px 8px;
+          border-radius: 12px;
+          transition: background-color 0.2s;
+        }
+        
+        .share-option:hover {
+          background-color: #f8f9fa;
+        }
+        
+        .share-icon {
+          width: 50px;
+          height: 50px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-bottom: 8px;
+          font-size: 20px;
+          color: white;
+        }
+        
+        .share-icon.whatsapp {
+          background: #25D366;
+        }
+        
+        .share-icon.facebook {
+          background: #1877F2;
+        }
+        
+        .share-icon.sms {
+          background: #34B7F1;
+        }
+        
+        .share-icon.email {
+          background: #EA4335;
+        }
+        
+        .share-icon.link {
+          background: #5f6368;
+        }
+        
+        .share-option span {
+          font-size: 12px;
+          font-weight: 500;
+          color: #3c4043;
+          text-align: center;
+        }
+        
+        .share-url {
+          padding: 0 20px 20px;
+          display: flex;
+          gap: 8px;
+        }
+        
+        .url-input {
+          flex: 1;
+          padding: 12px;
+          border: 1px solid #e8eaed;
+          border-radius: 8px;
+          font-size: 14px;
+          background: #f8f9fa;
+          color: #5f6368;
+        }
+        
+        .copy-url-button {
+          background: #1a73e8;
+          border: none;
+          border-radius: 8px;
+          padding: 12px 16px;
+          color: white;
+          cursor: pointer;
+          font-size: 14px;
+          transition: background-color 0.2s;
+        }
+        
+        .copy-url-button:hover {
+          background: #1669d6;
+        }
+        
         /* Responsive adjustments */
         @media (max-width: 400px) {
           body {
@@ -1005,6 +1675,15 @@ function Playstore() {
           .screenshot {
             width: 180px;
             height: 320px;
+          }
+          
+          .download-modal-content,
+          .share-modal-content {
+            margin: 0 16px;
+          }
+          
+          .share-options {
+            grid-template-columns: repeat(2, 1fr);
           }
         }
       `}</style>

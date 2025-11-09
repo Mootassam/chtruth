@@ -9,8 +9,8 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { QRCodeCanvas } from "qrcode.react";
 import FieldFormItem from "src/shared/form/FieldFormItem";
 import actions from "src/modules/deposit/form/depositFormActions";
-import selectors from 'src/modules/depositMethod/list/depositMethodSelectors'; // Fixed spelling
-import selectorsDeposit from 'src/modules/deposit/form/depositFormSelectors'; // Fixed spelling
+import selectors from 'src/modules/depositMethod/list/depositMethodSelectors';
+import selectorsDeposit from 'src/modules/deposit/form/depositFormSelectors';
 import method from 'src/modules/depositMethod/list/depositMethodListActions'
 import SuccessModalComponent from "src/view/shared/modals/sucessModal";
 
@@ -32,7 +32,7 @@ const createSchema = (selectedNetwork) => {
       required: true,
       min: minAmount
     }),
-    txid: yupFormSchemas.string(i18n("entities.deposit.fields.txid"), {
+    txid: yupFormSchemas.string(i18n("pages.deposit.fields.txid"), {
       required: true,
     }),
     rechargechannel: yupFormSchemas.string(
@@ -80,7 +80,7 @@ function Deposit() {
 
   useEffect(() => {
     dispatch(method.doFetch());
-  }, [dispatch]); // Added dispatch to dependency array
+  }, [dispatch]);
 
   // Update address when network changes or listMethod updates
   useEffect(() => {
@@ -178,27 +178,27 @@ function Deposit() {
 
   // Safe network display name
   const getNetworkDisplayName = () => {
-    return selectedNetworkData?.name || selectedNetwork || "Unknown Network";
+    return selectedNetworkData?.name || selectedNetwork || i18n("pages.deposit.unknownNetwork");
   };
 
   return (
     <div className="container">
       {/* Header Section */}
-      <SubHeader title="Deposit Crypto" />
+      <SubHeader title={i18n("pages.deposit.title")} />
 
       {/* Network Selection */}
-      {loading && <p>Deposit method loading ...</p>}
+      {loading && <p>{i18n("pages.deposit.loading")}</p>}
 
       {!loading && listMethod && listMethod.length > 0 && (
         <>
           <div className="networkSection">
-            <div className="sectionHeading">Select Network</div>
+            <div className="sectionHeading">{i18n("pages.deposit.selectNetwork")}</div>
             <div className="networkDropdownContainer">
               <select
                 className="networkDropdown"
                 value={selectedNetwork}
                 onChange={handleNetworkSelect}
-                aria-label="Select Network"
+                aria-label={i18n("pages.deposit.selectNetwork")}
               >
                 {listMethod.map((network) => (
                   <option key={network.symbol} value={network.symbol}>
@@ -229,7 +229,7 @@ function Deposit() {
                 className="qrBox"
               />
               <div className="addressSection">
-                <div className="addressLabel">Your deposit address</div>
+                <div className="addressLabel">{i18n("pages.deposit.depositAddress")}</div>
                 <div className="addressText" id="walletAddress">
                   {currentAddress}
                 </div>
@@ -239,7 +239,7 @@ function Deposit() {
                   onClick={copyAddressToClipboard}
                   disabled={!currentAddress}
                 >
-                  <i className="fas fa-copy" /> Copy Address
+                  <i className="fas fa-copy" /> {i18n("pages.deposit.copyAddress")}
                 </button>
               </div>
             </div>
@@ -251,42 +251,40 @@ function Deposit() {
               <div className="amountSection">
                 <FieldFormItem
                   name="amount"
-                  label={`Deposit amount (${selectedNetwork.toUpperCase()})`}
+                  label={i18n("pages.deposit.amountLabel", selectedNetwork.toUpperCase())}
                   className="textField"
                   className1="inputField"
                   className2="inputLabel"
                   className3="inputWrapper"
-                  placeholder={`Minimum: ${getMinAmount()} ${selectedNetwork.toUpperCase()}`}
+                  placeholder={i18n("pages.deposit.amountPlaceholder", getMinAmount(), selectedNetwork.toUpperCase())}
                 />
 
                 <FieldFormItem
                   name="txid"
                   type="text"
-                  label="Transaction ID (TXID)"
+                  label={i18n("pages.deposit.txidLabel")}
                   className="textField"
                   className1="inputField"
                   className2="inputLabel"
                   className3="inputWrapper"
-                  placeholder="Enter The TXID"
+                  placeholder={i18n("pages.deposit.txidPlaceholder")}
                 />
               </div>
 
               {/* Minimum Amount Warning */}
               <div className="minAmountWarning">
                 <i className="fas fa-info-circle" />
-                Minimum deposit: <strong>{getMinAmount()} {selectedNetwork.toUpperCase()}</strong>
+                {i18n("pages.deposit.minimumDeposit")}: <strong>{getMinAmount()} {selectedNetwork.toUpperCase()}</strong>
               </div>
 
               {/* Warning Section */}
               <div className="warningBox">
                 <div className="warningHeader">
                   <i className="fas fa-exclamation-circle warningIcon" />
-                  <div className="warningTitle">Important Notice</div>
+                  <div className="warningTitle">{i18n("pages.deposit.importantNotice")}</div>
                 </div>
                 <div className="warningContent">
-                  Please ensure that you select the correct network for your
-                  deposit. Sending funds through the wrong network may result in
-                  permanent loss of your assets, which cannot be recovered.
+                  {i18n("pages.deposit.warningMessage")}
                 </div>
               </div>
 
@@ -296,7 +294,7 @@ function Deposit() {
                 className="depositBtn"
                 disabled={!form.formState.isValid || !currentAddress}
               >
-                Confirm Deposit
+                {i18n("pages.deposit.confirmDeposit")}
               </button>
             </form>
           </FormProvider>
@@ -304,22 +302,22 @@ function Deposit() {
           {/* Network Details */}
           <div className="networkDetails">
             <div className="detailRow">
-              <div className="detailLabel">Network</div>
+              <div className="detailLabel">{i18n("pages.deposit.network")}</div>
               <div className="detailValue" id="detailNetwork">
                 {getNetworkDisplayName()} ({selectedNetwork.toUpperCase()})
               </div>
             </div>
             <div className="detailRow">
-              <div className="detailLabel">Minimum deposit</div>
+              <div className="detailLabel">{i18n("pages.deposit.minimumDeposit")}</div>
               <div className="detailValue">{getMinAmount()} {selectedNetwork.toUpperCase()}</div>
             </div>
             <div className="detailRow">
-              <div className="detailLabel">Estimated arrival</div>
-              <div className="detailValue">3 network confirmations</div>
+              <div className="detailLabel">{i18n("pages.deposit.estimatedArrival")}</div>
+              <div className="detailValue">{i18n("pages.deposit.networkConfirmations")}</div>
             </div>
             <div className="detailRow">
-              <div className="detailLabel">Processing time</div>
-              <div className="detailValue">10-30 minutes</div>
+              <div className="detailLabel">{i18n("pages.deposit.processingTime")}</div>
+              <div className="detailValue">{i18n("pages.deposit.processingTimeValue")}</div>
             </div>
           </div>
         </>
@@ -328,13 +326,13 @@ function Deposit() {
       {/* Show message if no deposit methods available */}
       {!loading && (!listMethod || listMethod.length === 0) && (
         <div className="no-methods-message">
-          No deposit methods available at the moment.
+          {i18n("pages.deposit.noMethods")}
         </div>
       )}
 
       {/* Toast Notification */}
       <div className={`toastMsg ${showToast ? 'visible' : ''}`} id="toast">
-        Address copied to clipboard!
+        {i18n("pages.deposit.addressCopied")}
       </div>
 
       {selectDepositModal && (
@@ -346,6 +344,7 @@ function Deposit() {
           coinType={selectedNetwork}
         />
       )}
+
 
       <style>{`
   .depositContainer {

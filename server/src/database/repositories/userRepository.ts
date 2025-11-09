@@ -21,6 +21,7 @@ import axios from "axios";
 import { sendNotification } from "../../services/notificationServices";
 import kyc from "../models/kyc";
 import auditLog from "../models/auditLog";
+import Error400 from "../../errors/Error400";
 export default class UserRepository {
   static async create(data, options: IRepositoryOptions) {
     const currentUser = MongooseRepository.getCurrentUser(options);
@@ -256,7 +257,7 @@ export default class UserRepository {
     });
 
     const check = item.some((item) => item.withdrawPassword === value.password);
-    if (!check) throw new Error405("The  Password not matching");
+    if (!check) throw new Error400(options.language, "errors.passwordNotMatching");
 
     await User(options.database).updateOne(
       { _id: currentUser.id },
@@ -277,13 +278,13 @@ export default class UserRepository {
     // Verify the user's withdrawal password
     const user = await User(options.database).findById(currentUser.id);
     if (!user || user.withdrawPassword !== password) {
-      throw new Error405("Password not matching");
+     throw new Error400(options.language, "errors.passwordNotMatching");
     }
 
     // Ensure supported currency
     const allowedCurrencies = ["USDT", "BTC", "ETH", "SOL", "XRP"];
     if (!allowedCurrencies.includes(currency)) {
-      throw new Error405("Unsupported currency");
+    throw new Error400(options.language, "errors.unsupportedCurrency");
     }
 
     // Define the update path based on the currency
@@ -708,11 +709,9 @@ export default class UserRepository {
     if (!data?.vip?.id) return;
 
     if (currentVip === data?.vip?.id) {
-      throw new Error405("You are ready subscribed to this vip");
-    }
+throw new Error400(options.language, "errors.alreadySubscribedToVip");    }
     if (currentBalance < data?.vip?.levellimit) {
-      throw new Error405("Insufficient balance please upgrade");
-    }
+throw new Error400(options.language, "errors.insufficientBalancePleaseUpgrade");    }
   }
 
   static async generateEmailVerificationToken(

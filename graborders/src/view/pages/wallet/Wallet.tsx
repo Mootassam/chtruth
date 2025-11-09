@@ -9,6 +9,7 @@ import { Link, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import assetsActions from "src/modules/assets/list/assetsListActions";
 import assetsListSelectors from "src/modules/assets/list/assetsListSelectors";
+import { i18n } from "../../../i18n";
 
 interface BinanceTicker {
   s: string;
@@ -34,27 +35,27 @@ function Wallet() {
     {
       path: "/deposit",
       icon: "fas fa-wallet",
-      name: "Deposit",
+      name: i18n("pages.wallet.quickActions.deposit"),
     },
     {
       path: "/withdraw",
       icon: "fas fa-money-bill-wave",
-      name: "Withdraw",
+      name: i18n("pages.wallet.quickActions.withdraw"),
     },
     {
       path: "/history",
       icon: "fas fa-history",
-      name: "History",
+      name: i18n("pages.wallet.quickActions.history"),
     },
     {
       path: "/conversion",
       icon: "fas fa-exchange-alt action-icon",
-      name: "Convert",
+      name: i18n("pages.wallet.quickActions.convert"),
     },
     {
       path: "/stacking",
       icon: "fas fa-coins action-icon",
-      name: "Staking",
+      name: i18n("pages.wallet.quickActions.staking"),
     },
   ];
 
@@ -256,7 +257,7 @@ function Wallet() {
   // Memoize the asset list rendering to prevent unnecessary re-renders
   const renderedAssets = useMemo(() => {
     if (listAssets.length === 0) {
-      return <div className="no-assets">No assets found</div>;
+      return <div className="no-assets">{i18n("pages.wallet.noAssets")}</div>;
     }
 
     return listAssets.map((asset, index) => {
@@ -350,16 +351,14 @@ function Wallet() {
           <div>
             <img src="/icons/asset.png" style={{ height: 33 }} />{" "}
           </div>
-                                <Link to="/notification" className="remove_blue" >
-          <div className="notification-profile">
-
-            <i className="fas fa-bell header-notification-icon profile-icon" />
-          
-          </div>
-        </Link>
+          <Link to="/notification" className="remove_blue" >
+            <div className="notification-profile">
+              <i className="fas fa-bell header-notification-icon profile-icon" />
+            </div>
+          </Link>
         </div>
         <div className="wallet-total-balance">
-          <div className="wallet-balance-label">Total Portfolio Value</div>
+          <div className="wallet-balance-label">{i18n("pages.wallet.totalPortfolioValue")}</div>
           {isLoadingTotal ? (
             <div className="wallet-balance-amount-placeholder">
               <div
@@ -418,13 +417,14 @@ function Wallet() {
       {/* Assets Section */}
       <div className="wallet-assets-section">
         <div className="wallet-section-header">
-          <div className="wallet-section-title">My Assets</div>
+          <div className="wallet-section-title">{i18n("pages.wallet.myAssets")}</div>
           <div className="wallet-see-all" role="button">
-            Manage
+            {i18n("pages.wallet.manage")}
           </div>
         </div>
         <div className="wallet-asset-list">{renderedAssets}</div>
       </div>
+
 
       {/* Styles remain the same */}
       <style>{`

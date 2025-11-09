@@ -1,5 +1,6 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
+import { i18n } from "../../i18n";
 
 interface TabItem {
   icon: string;
@@ -16,27 +17,27 @@ function TabBottomNavigator() {
     {
       icon: "fas fa-home",
       path: "/",
-      name: "Home",
+      name: i18n("components.bottomNav.home"),
     },
     {
       icon: "fas fa-chart-line",
       path: "/market",
-      name: "Market",
+      name: i18n("components.bottomNav.market"),
     },
     {
       icon: "fas fa-exchange-alt",
       path: "/trade",
-      name: "Trade",
+      name: i18n("components.bottomNav.trade"),
     },
     {
       icon: "fas fa-chart-bar",
       path: "/futures",
-      name: "Futures",
+      name: i18n("components.bottomNav.futures"),
     },
     {
       icon: "fas fa-wallet",
       path: "/wallets",
-      name: "Wallets",
+      name: i18n("components.bottomNav.wallets"),
     },
   ];
 

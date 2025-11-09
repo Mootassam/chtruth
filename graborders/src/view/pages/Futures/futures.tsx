@@ -1,4 +1,4 @@
-// src/components/Futures.tsx (optimized)
+// src/components/Futures.tsx (optimized with i18n)
 import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import CoinListModal from "src/shared/modal/CoinListModal";
 import FuturesModal from "src/shared/modal/FuturesModal";
@@ -9,6 +9,7 @@ import assetsListAction from "src/modules/assets/list/assetsListActions";
 import selector from "src/modules/assets/list/assetsListSelectors";
 import { useDispatch, useSelector } from "react-redux";
 import FutureList from "./FutureList";
+import { i18n } from '../../../i18n';
 
 // Interface for Binance ticker data
 interface BinanceTicker {
@@ -105,16 +106,16 @@ function Futures() {
     if (isNaN(volumeNum)) return "0";
 
     if (volumeNum >= 1e9) {
-      return (volumeNum / 1e9).toFixed(2) + "B";
+      return (volumeNum / 1e9).toFixed(2) + i18n('pages.marketDetail.volume.billion');
     } else if (volumeNum >= 1e6) {
-      return (volumeNum / 1e6).toFixed(2) + "M";
+      return (volumeNum / 1e6).toFixed(2) + i18n('pages.marketDetail.volume.million');
     } else {
       return formatNumber(volumeNum, 0);
     }
   }, [formatNumber]);
 
   const formatDateTime = useCallback((dateString: string): string => {
-    if (!dateString) return "N/A";
+    if (!dateString) return i18n('pages.assetsDetail.status.pending');
     try {
       const date = new Date(dateString);
       if (isNaN(date.getTime())) return dateString;
@@ -123,18 +124,15 @@ function Futures() {
       const isToday = date.toDateString() === now.toDateString();
 
       if (isToday) {
-        return `Today ${date.toLocaleTimeString([], {
+        return i18n('pages.history.dateFormats.today', date.toLocaleTimeString([], {
           hour: "2-digit",
           minute: "2-digit",
-        })}`;
+        }));
       } else {
-        return `${date.toLocaleDateString([], {
-          month: "short",
-          day: "numeric",
-        })} ${date.toLocaleTimeString([], {
+        return i18n('pages.history.dateFormats.yesterday', date.toLocaleTimeString([], {
           hour: "2-digit",
           minute: "2-digit",
-        })}`;
+        }));
       }
     } catch (error) {
       console.error("Error formatting date:", error, dateString);
@@ -143,7 +141,7 @@ function Futures() {
   }, []);
 
   const formatDateTimeDetailed = useCallback((dateString: string): string => {
-    if (!dateString) return "N/A";
+    if (!dateString) return i18n('pages.assetsDetail.status.pending');
     try {
       const date = new Date(dateString);
       if (isNaN(date.getTime())) return dateString;
@@ -447,7 +445,7 @@ function Futures() {
         </div>
         <div className="market-stats">
           <span>
-            24h High:{" "}
+            {i18n('pages.marketDetail.stats.high')}:{" "}
             {highPrice !== "0" ? (
               `$${formatNumber(highPrice)}`
             ) : (
@@ -455,7 +453,7 @@ function Futures() {
             )}
           </span>
           <span>
-            24h Vol:{" "}
+            {i18n('pages.marketDetail.stats.volume')}:{" "}
             {volume !== "0" ? (
               `${formatVolume(volume)} ${selectedCoin.replace("USDT", "")}`
             ) : (
@@ -463,7 +461,7 @@ function Futures() {
             )}
           </span>
           <span>
-            24h Low:{" "}
+            {i18n('pages.marketDetail.stats.low')}:{" "}
             {lowPrice !== "0" ? (
               `$${formatNumber(lowPrice)}`
             ) : (
@@ -482,13 +480,13 @@ function Futures() {
           className="action-button buy-button"
           onClick={() => handleOpenModal("up")}
         >
-          BUY UP
+          {i18n('pages.futures.actions.buyUp')}
         </button>
         <button
           className="action-button sell-button"
           onClick={() => handleOpenModal("down")}
         >
-          BUY DOWN
+          {i18n('pages.futures.actions.buyDown')}
         </button>
       </div>
 
@@ -498,13 +496,13 @@ function Futures() {
           className={`tab ${activeTab === "openOrders" ? "active" : ""}`}
           onClick={() => FetchTab("openOrders")}
         >
-          Open Orders ({pendingCount || 0})
+          {i18n('pages.futures.tabs.openOrders')} ({pendingCount || 0})
         </div>
         <div
           className={`tab ${activeTab === "recentOrders" ? "active" : ""}`}
           onClick={() => FetchTab("recentOrders")}
         >
-          Recent Orders ({countFutures || 0})
+          {i18n('pages.futures.tabs.recentOrders')} ({countFutures || 0})
         </div>
       </div>
 
@@ -1035,7 +1033,7 @@ const OrderDetailModal = ({
   <div className="modal-overlays" onClick={onClose}>
     <div className="modal-content" onClick={(e) => e.stopPropagation()}>
       <div className="modal-header">
-        <h2>Order Details</h2>
+        <h2>{i18n('pages.futures.orderDetails.title')}</h2>
         <button className="modal-close" onClick={onClose}>
           <i className="fas fa-times" />
         </button>
@@ -1053,9 +1051,9 @@ const OrderDetailModal = ({
                 }`}
             >
               {selectedOrder.futuresStatus === "long"
-                ? "BUY UP"
+                ? i18n('pages.futures.actions.buyUp')
                 : selectedOrder.futuresStatus === "short"
-                  ? "BUY DOWN"
+                  ? i18n('pages.futures.actions.buyDown')
                   : selectedOrder.direction}
             </span>
           </div>
@@ -1063,43 +1061,43 @@ const OrderDetailModal = ({
             className={`detail-status ${selectedOrder.finalized ? "closed" : "open"
               }`}
           >
-            ● {selectedOrder.finalized ? "Closed" : "Open"}
+            ● {selectedOrder.finalized ? i18n('pages.futures.orderDetails.closed') : i18n('pages.futures.orderDetails.open')}
           </div>
         </div>
 
         <div className="order-detail-section">
-          <OrderDetailRow label="Futures Amount:" value={`${selectedOrder.futuresAmount || selectedOrder.investment} USDT`} />
+          <OrderDetailRow label={i18n('pages.futures.orderDetails.futuresAmount')} value={`${selectedOrder.futuresAmount || selectedOrder.investment} USDT`} />
 
           {selectedOrder.contractDuration && (
-            <OrderDetailRow label="Contract Duration:" value={`${selectedOrder.contractDuration} Seconds`} />
+            <OrderDetailRow label={i18n('pages.futures.orderDetails.contractDuration')} value={`${selectedOrder.contractDuration} ${i18n('pages.futures.orderDetails.seconds')}`} />
           )}
 
           <OrderDetailRow
-            label="Futures Status:"
-            value={selectedOrder.closePositionTime ? "Completed" : "Open"}
+            label={i18n('pages.futures.orderDetails.futuresStatus')}
+            value={selectedOrder.closePositionTime ? i18n('pages.futures.orderDetails.completed') : i18n('pages.futures.orderDetails.open')}
           />
           <OrderDetailRow
-            label="Open Position Price:"
+            label={i18n('pages.futures.orderDetails.openPositionPrice')}
             value={selectedOrder.openPositionPrice || selectedOrder.openPrice}
           />
           <OrderDetailRow
-            label="Open Position Time:"
+            label={i18n('pages.futures.orderDetails.openPositionTime')}
             value={formatDateTimeDetailed(selectedOrder.openPositionTime || selectedOrder.openTime)}
           />
 
           {selectedOrder.closePositionPrice && (
-            <OrderDetailRow label="Close Position Price:" value={selectedOrder.closePositionPrice} />
+            <OrderDetailRow label={i18n('pages.futures.orderDetails.closePositionPrice')} value={selectedOrder.closePositionPrice} />
           )}
 
           {selectedOrder.closePositionTime && (
             <OrderDetailRow
-              label="Close Position Time:"
+              label={i18n('pages.futures.orderDetails.closePositionTime')}
               value={formatDateTimeDetailed(selectedOrder.closePositionTime)}
             />
           )}
 
           <OrderDetailRow
-            label="Profit And Loss Amount:"
+            label={i18n('pages.futures.orderDetails.profitLossAmount')}
             value={
               (selectedOrder.profitAndLossAmount || selectedOrder.pnl)
                 ? `${safeToFixed(selectedOrder.profitAndLossAmount || selectedOrder.pnl, 2)} USDT`
@@ -1108,13 +1106,12 @@ const OrderDetailModal = ({
             className={selectedOrder.control === "profit" ? "profit" : "loss"}
           />
 
-
-          <OrderDetailRow label="Leverage:" value={`${selectedOrder.leverage}X`} />
+          <OrderDetailRow label={i18n('pages.futures.orderDetails.leverage')} value={`${selectedOrder.leverage}X`} />
         </div>
       </div>
       <div className="modal-footer">
         <button className="modal-button" onClick={onClose}>
-          Done
+          {i18n('pages.futures.orderDetails.done')}
         </button>
       </div>
     </div>

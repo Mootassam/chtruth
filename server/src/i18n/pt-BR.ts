@@ -1,55 +1,63 @@
 /**
- * I18n dictionary for the en.
+ * I18n dictionary for the ptBR.
  */
 
 const ptBR = {
   app: {
-    title: 'Aplicação',
+    title: 'Nexus Exchange'
   },
 
   auth: {
     userNotFound: `Desculpe, não reconhecemos suas credenciais`,
     wrongPassword: `Desculpe, não reconhecemos suas credenciais`,
+    depositExist: 'Métodos de depósito já inicializados',
     weakPassword: 'Esta senha é muito fraca',
-    emailAlreadyInUse: 'O email já está sendo usado',
+    emailAlreadyInUse: 'Nome de usuário já está em uso',
+    invitationCode: 'Por favor escreva um código de convite correto',
     invalidEmail: 'Por favor forneça um email válido',
     passwordReset: {
       invalidToken:
-        'Link de redefinição de senha inválido ou expirado',
-      error: `Email não encontrado`,
+        'Link de redefinição de senha é inválido ou expirou',
+      error: `Email não reconhecido`,
     },
     emailAddressVerificationEmail: {
       invalidToken:
-        'Link de verificação de email inválido ou expirado.',
-      error: `Email não encontrado.`,
-      signedInAsWrongUser: `Esta confirmação de email foi enviada para {0} mas você está acessando como {1}.`,
+        'Link de verificação de email é inválido ou expirou.',
+      error: `Email não reconhecido.`,
+      signedInAsWrongUser: `Esta confirmação de email foi enviada para {0} mas você está conectado como {1}.`,
     },
     passwordChange: {
       invalidPassword: 'A senha antiga é inválida',
     },
   },
 
+  futures: {
+    alreadyFinalized: 'Esta entrada de futuros já está finalizada e não pode ser alterada.'
+  },
+
   user: {
     errors: {
-      userAlreadyExists: 'Usuário com este email já existe',
-      userNotFound: 'Usuário não encontrado',
-      destroyingHimself: `Você não pode deletar-se`,
-      revokingOwnPermission: `Você não pode revogar sua própria permissão de proprietário`,
-      revokingPlanUser: `Você não pode revogar a permissão do responsável pelo plano ativo`,
-      destroyingPlanUser: `Você não pode deletar o responsável pelo plano ativo`,
+      userAlreadyExists:
+        'Usuário com este email já existe.',
+      userNotFound: 'Usuário não encontrado.',
+      destroyingHimself: `Você não pode se excluir.`,
+      revokingOwnPermission: `Você não pode revogar suas próprias permissões de administrador.`,
+      revokingPlanUser: `Você não pode revogar as permissões de administrador do gerente do plano.`,
+      destroyingPlanUser: `Você não pode excluir o gerente do plano.`,
     },
   },
 
   tenant: {
-    exists: 'Já existe um inquilino para esta aplicação.',
+    exists:
+      'Já existe um workspace neste aplicativo.',
     url: {
-      exists:
-        'Esta URL de área de trabalho já está em uso.',
+      exists: 'Esta URL de workspace já está em uso.',
     },
     invitation: {
-      notSameEmail: `Este convite foi enviado para {0} mas você está acessando como {1}.`,
+      notSameEmail: `Este convite foi enviado para {0} mas você está conectado como {1}.`,
     },
-    planActive: `Existe um plano ativo para esta área de trabalho. Por favor primeiro cancele o plano.`,
+    planActive: `Há um plano ativo para este workspace. Por favor cancele o plano primeiro.`,
+    stripeNotConfigured: 'Stripe não está configurado.',
   },
 
   importer: {
@@ -58,18 +66,40 @@ const ptBR = {
       invalidFileExcel:
         'Apenas arquivos Excel (.xlsx) são permitidos',
       invalidFileUpload:
-        'Arquivo inválido. Verifique se você está usando a última versão do modelo.',
+        'Arquivo inválido. Certifique-se de estar usando a última versão do template.',
       importHashRequired: 'Hash de importação é necessário',
       importHashExistent: 'Dados já foram importados',
     },
   },
 
   errors: {
+    futuresAlreadyFinalized: "Esta entrada de futuros já está finalizada e não pode ser alterada.",
+    usdtWalletNotFound: "Carteira USDT não encontrada",
+    usdtWalletNotFoundForUser: "Carteira USDT não encontrada para o usuário {{userId}}",
+    closingPriceExceedLimit: "O preço de fechamento não pode exceder $100",
+    profitAmountInvalid: "O valor do lucro é zero ou inválido.",
+    lossAmountInvalid: "O valor da perda é zero ou inválido.",
+    passwordNotMatching: "A senha não coincide",
+    insufficientBalanceUpgrade: "Saldo insuficiente. Por favor faça upgrade.",
+    walletNotFoundForCurrency: "Carteira não encontrada para {{currency}}",
+    insufficientBalanceWithAmounts: "Saldo insuficiente. Você tem {{currentAmount}} {{currency}} mas está tentando fazer stake de {{tryingAmount}} {{currency}}",
+    stakingPlanNotAvailable: "Este plano de staking ainda não está disponível",
+    stakingPlanExpired: "Este plano de staking expirou",
+    invalidUserBalance: "Saldo inválido para o usuário atual",
+    invalidRequestAmount: "Valor da solicitação inválido",
+    unsupportedCurrency: "Moeda não suportada",
+    alreadySubscribedToVip: "Você já está inscrito neste vip",
+    insufficientBalancePleaseUpgrade: "Saldo insuficiente por favor faça upgrade",
+    resetAccountContactSupport: "Por favor redefina sua conta. entre em contato com o suporte ao cliente",
+    contactCustomerService: "Deve entrar em contato com o serviço ao cliente sobre isso",
+    pleaseWriteAmount: "Por favor escreva o valor",
+    withdrawalExceedsBalance: "Parece que seu valor de saque excede seu saldo",
+    withdrawPasswordIncorrect: "Sua senha de saque não está correta, por favor verifique novamente",
     notFound: {
       message: 'Não encontrado',
     },
     forbidden: {
-      message: 'Não permitido',
+      message: 'Proibido',
     },
     validation: {
       message: 'Ocorreu um erro',
@@ -77,115 +107,14 @@ const ptBR = {
   },
 
   email: {
-    error: `Email não configurado.`,
+    error: `O provedor de email não está configurado.`,
   },
 
   preview: {
     error:
-      'Desculpe, esta operação não é permitida em modo de demonstração.',
+      'Desculpe, esta operação não é permitida no modo de visualização.',
   },
 
-  entities: {
-    association: {
-      errors: {
-        unique: {
-
-        }
-      }
-    },
-    mandat: {
-      errors: {
-        unique: {
-
-        }
-      }
-    },
-    categorieMouv: {
-      errors: {
-        unique: {
-
-        }
-      }
-    },
-    mouvements: {
-      errors: {
-        unique: {
-
-        }
-      }
-    },
-    campagne: {
-      errors: {
-        unique: {
-
-        }
-      }
-    },
-    detailsCampagne: {
-      errors: {
-        unique: {
-          adherent: 'Adherent deve ser único',
-          adherentId: 'Adherent deve ser único',
-        }
-      }
-    },
-    palier: {
-      errors: {
-        unique: {
-
-        }
-      }
-    },
-    historiquePoints: {
-      errors: {
-        unique: {
-
-        }
-      }
-    },
-    projet: {
-      errors: {
-        unique: {
-
-        }
-      }
-    },
-    votes: {
-      errors: {
-        unique: {
-
-        }
-      }
-    },
-    dons: {
-      errors: {
-        unique: {
-
-        }
-      }
-    },
-    produitCategorie: {
-      errors: {
-        unique: {
-
-        }
-      }
-    },
-    produit: {
-      errors: {
-        unique: {
-
-        }
-      }
-    },
-    produitCommande: {
-      errors: {
-        unique: {
-
-        }
-      }
-    },
-  }
 };
 
 export default ptBR;

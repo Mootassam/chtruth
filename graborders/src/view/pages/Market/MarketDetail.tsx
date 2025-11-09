@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from "react"
 import { useHistory, useParams, Link } from "react-router-dom";
 import axios from "axios";
 import FuturesChart from "../Futures/FuturesChart";
+import { i18n } from "../../../i18n";
 
 // Interface for Binance trade data
 interface BinanceTrade {
@@ -57,9 +58,9 @@ function MarketDetail() {
   const formatVolume = useCallback((vol: string) => {
     const volumeNum = Number(vol);
     if (volumeNum >= 1000000000) {
-      return (volumeNum / 1000000000).toFixed(2) + "B";
+      return (volumeNum / 1000000000).toFixed(2) + i18n("pages.marketDetail.volume.billion");
     } else if (volumeNum >= 1000000) {
-      return (volumeNum / 1000000).toFixed(2) + "M";
+      return (volumeNum / 1000000).toFixed(2) + i18n("pages.marketDetail.volume.million");
     } else {
       return formatNumber(vol, 0);
     }
@@ -223,7 +224,7 @@ function MarketDetail() {
   const marketStatsSection = useMemo(() => (
     <div className="market-stats">
       <span>
-        24h High:{" "}
+        {i18n("pages.marketDetail.stats.high")}:{" "}
         {highPrice !== null ? (
           `$${formatNumber(highPrice)}`
         ) : (
@@ -231,7 +232,7 @@ function MarketDetail() {
         )}
       </span>
       <span>
-        24h Vol:{" "}
+        {i18n("pages.marketDetail.stats.volume")}:{" "}
         {volume !== null ? (
           `${formatVolume(volume)} ${selectedCoin.replace("USDT", "")}`
         ) : (
@@ -239,7 +240,7 @@ function MarketDetail() {
         )}
       </span>
       <span>
-        24h Low:{" "}
+        {i18n("pages.marketDetail.stats.low")}:{" "}
         {lowPrice !== null ? (
           `$${formatNumber(lowPrice)}`
         ) : (
@@ -308,20 +309,20 @@ function MarketDetail() {
       {/* Action Buttons */}
       <div className="action-buttons">
         <Link to="/trade" className="remove_blue action-button buy-button">
-          BUY
+          {i18n("pages.marketDetail.actions.buy")}
         </Link>
         <Link to="/trade" className="remove_blue action-button sell-button">
-          SELL
+          {i18n("pages.marketDetail.actions.sell")}
         </Link>
       </div>
 
       {/* Recent Trades */}
-      <div className="section-title">Recent Trades (Live)</div>
+      <div className="section-title">{i18n("pages.marketDetail.recentTrades.title")}</div>
       <div className="recent-trades">
         <div className="trades-header">
-          <span>Price (USDT)</span>
-          <span>Amount</span>
-          <span>Time</span>
+          <span>{i18n("pages.marketDetail.recentTrades.price")}</span>
+          <span>{i18n("pages.marketDetail.recentTrades.amount")}</span>
+          <span>{i18n("pages.marketDetail.recentTrades.time")}</span>
         </div>
         {recentTradesSection}
       </div>
@@ -434,26 +435,12 @@ function MarketDetail() {
           color: inherit;
         }
         
-        /* Loading placeholder animation */
-        .loading-placeholder {
-          background: linear-gradient(90deg, #2A2A2A 25%, #333 50%, #2A2A2A 75%);
-          background-size: 200% 100%;
-          animation: loading 1.5s infinite;
-          border-radius: 4px;
-          display: inline-block;
-        }
-        
-        @keyframes loading {
-          0% {
-            background-position: 200% 0;
-          }
-          100% {
-            background-position: -200% 0;
-          }
-        }
-        
-        /* Action Buttons */
-        
+        // /* Action Buttons */
+        // .action-buttons {
+        //   display: flex;
+        //   gap: 10px;
+        //   margin: 15px;
+        // }
         
         .action-button {
           flex: 1;
@@ -478,6 +465,24 @@ function MarketDetail() {
         .sell-button {
           background-color: #FF6838;
           color: white;
+        }
+        
+        /* Loading placeholder animation */
+        .loading-placeholder {
+          background: linear-gradient(90deg, #2A2A2A 25%, #333 50%, #2A2A2A 75%);
+          background-size: 200% 100%;
+          animation: loading 1.5s infinite;
+          border-radius: 4px;
+          display: inline-block;
+        }
+        
+        @keyframes loading {
+          0% {
+            background-position: 200% 0;
+          }
+          100% {
+            background-position: -200% 0;
+          }
         }
         
         /* Recent Trades */

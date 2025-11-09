@@ -1,0 +1,1970 @@
+
+
+import Withdraw from "src/view/pages/withdraw/Withdraw";
+
+const tr = {
+  app: {
+    title: "Nowspeed"
+  },
+  inputs: {
+    username: "Kullanıcı Adı",
+    password: "Şifre",
+    phoneNumber: "Telefon Numarası",
+    withdrawPassword: "Çekim Şifresi",
+    confirmPassword: "Şifreyi Onayla",
+    invitationcode: "Davet Kodu",
+    walletaddress: "Cüzdan adresi"
+
+
+  },
+    stake: {
+    enterAmount: "Bir miktar girin",
+    insufficientBalance: "Yetersiz bakiye",
+    minAmount: "Min: {{min}}",
+    maxAmount: "Maks: {{max}}",
+    confirmStake: "Stake'i Onayla"
+  },
+
+
+components: {
+    bottomNav: {
+      home: "Ana Sayfa",
+      market: "Pazar",
+      trade: "İşlem",
+      futures: "Vadeli İşlemler",
+      wallets: "Cüzdanlar"
+    },
+    coinListModal: {
+      title: "Kripto Para Seç",
+      loading: "Kripto para verileri yükleniyor...",
+      noResults: "Kripto para bulunamadı",
+      popular: "Popüler",
+      search: {
+        placeholder: "Kripto paraları ara..."
+      }
+    }
+  },
+
+  auth: {
+    signin: {
+      title: "GİRİŞ YAP",
+      button: "Giriş Yap",
+      signingIn: "Giriş yapılıyor...",
+      forgotPassword: "ŞİFREMİ UNUTTUM?",
+      signUp: "KAYIT OL",
+      orContinueWith: "veya ile devam et",
+      downloadApp: "UYGULAMAMIZI İNDİR",
+      appDescription: "Mobil cihazınızda en iyi kripto deneyimini elde edin",
+      googlePlay: "Google Play"
+    },
+    fields: {
+      emailOrPhone: "E-posta/Telefon Numarası",
+      password: "Şifre"
+    },
+    tenants: "Çalışma Alanları",
+    singindesc: "Giriş yapmak için e-posta ve şifrenizi girin",
+    signupdesc: "Kayıt olmak için e-posta ve şifrenizi girin",
+    profile: {
+      title: "Profil",
+      success: "Profil başarıyla güncellendi",
+      vip: "Abone olduğunuz için tebrikler",
+      wallet: "Para çekme ayarları tamamlandı.",
+    },
+    createAnAccount: "Hesap oluştur",
+    rememberMe: "Beni hatırla",
+    forgotPassword: "Şifremi unuttum",
+
+    signup: "Kayıt Ol",
+    signout: "Çıkış Yap",
+    alreadyHaveAnAccount: "Zaten hesabınız var mı? Giriş yapın.",
+    social: {
+      errors: {
+        "auth-invalid-provider": "Bu e-posta başka bir sağlayıcıya kayıtlı.",
+        "auth-no-email": "Bu hesapla ilişkili e-posta özel veya mevcut değil.",
+      },
+    },
+    signinWithAnotherAccount: "Başka bir hesapla giriş yap",
+    emailUnverified: {
+      message: "Devam etmek için lütfen <strong>{0}</strong> adresindeki e-postanızı onaylayın.",
+      submit: "E-posta doğrulamasını yeniden gönder",
+    },
+    emptyPermissions: {
+      message: "Henüz izniniz yok. Admin'in size ayrıcalık tanımasını bekleyin.",
+    },
+    passwordResetEmail: {
+      message: "Şifre sıfırlama e-postası gönder",
+      error: "E-posta tanınmadı",
+    },
+    passwordReset: {
+      message: "Şifreyi sıfırla",
+    },
+    passwordChange: {
+      title: "Şifreyi Değiştir",
+      success: "Şifre başarıyla değiştirildi",
+      mustMatch: "Şifreler eşleşmeli",
+    },
+    emailAddressVerificationEmail: {
+      error: "E-posta tanınmadı",
+    },
+    verificationEmailSuccess: "Doğrulama e-postası başarıyla gönderildi",
+    passwordResetEmailSuccess: "Şifre sıfırlama e-postası başarıyla gönderildi",
+    passwordResetSuccess: "Şifre başarıyla değiştirildi",
+    verifyEmail: {
+      success: "E-posta başarıyla doğrulandı.",
+      message: "Bir saniye, e-postanız doğrulanıyor...",
+    },
+  },
+
+  user: {
+    fields: {
+      gender: "Cinsiyet",
+      captcha: "Captcha",
+      username: "Kullanıcı Adı",
+      walletName: "Cüzdan Adı",
+      id: "Kimlik",
+      confirmPassword: "Şifreyi Onayla",
+      avatars: "Profil Resmi",
+      invitationcode: "Davet Kodu",
+      email: "E-posta",
+      emails: "E-posta(lar)",
+      erc20: "ERC20 cüzdan adresi",
+      trc20: "TRC20 cüzdan adresi",
+      fullName: "İsim",
+      balance: "Bakiye",
+      firstName: "Ad",
+      lastName: "Soyad",
+      status: "Durum",
+      phoneNumber: "Telefon Numarası",
+      withdrawPassword: "Para Çekme Şifresi",
+      sector: "Sektör",
+      employer: "İşveren",
+      profession: "Meslek",
+      address: "Adres",
+      birthDate: "Doğum Tarihi",
+      maritalStatus: "Medeni Durum",
+      facebookLink: "Facebook Bağlantısı",
+      sponsor: "Sponsor",
+      role: "Rol",
+      createdAt: "Oluşturulma Tarihi",
+      updatedAt: "Güncellenme Tarihi",
+      roleUser: "Rol/Kullanıcı",
+      roles: "Roller",
+      createdAtRange: "Oluşturulma Tarihi",
+      password: "Şifre",
+      oldPassword: "Eski Şifre",
+      newPassword: "Yeni Şifre",
+      newPasswordConfirmation: "Yeni Şifreyi Onayla",
+      rememberMe: "Beni hatırla",
+    },
+    sector: {
+      AGRO_ALIMENTAIRE: "Gıda endüstrisi",
+      ASSURANCES: "Sigorta",
+      AUDIOVISUEL: "Görsel-işitsel",
+      BANCAIRE: "Bankacılık",
+      CHIMIE: "Kimya",
+      COMPOSANTS_AUTOMOBILES: "Otomotiv bileşenleri",
+      DISTRIBUTION: "Dağıtım",
+      DISTRIBUTION_AUTOMOBILE: "Otomotiv Dağıtımı",
+      DIVERS: "Çeşitli",
+      FINANCIER: "Finansal",
+      HOLDING: "Holding",
+      IMMOBILIER: "Gayrimenkul",
+      INDUSTRIEL: "Endüstriyel",
+      LEASING: "Leasing",
+      LOGISTIQUE_TRANSPORT: "Lojistik ve taşımacılık",
+      PHARMACEUTIQUE: "Eczacılık",
+      SANTÉ: "Sağlık",
+      TOURSIME: "Turizm",
+      INFORMATION_TECHNOLOGY: "Bilgi Teknolojisi",
+    },
+    maritalStatus: {
+      célébataire: "Bekar",
+      marié: "Evli",
+    },
+    status: {
+      active: "Aktif",
+      invited: "Davetli",
+      "empty-permissions": "İzinler Bekleniyor",
+      inactive: "Pasif",
+    },
+
+    enumerators: {
+      status: {
+        USDT: "USDT",
+        ETH: "ETH",
+        BTC: "BTC",
+      },
+      gender: {
+        male: "Erkek",
+        female: "Kadın",
+      }
+    },
+    invite: "Davet Et",
+    validations: {
+      email: "${value} e-postası geçersiz",
+    },
+    title: "Kullanıcılar",
+    menu: "Kullanıcılar",
+    doAddSuccess: "Kullanıcı(lar) başarıyla kaydedildi",
+    doUpdateSuccess: "Kullanıcı başarıyla kaydedildi",
+    exporterFileName: "kullanıcılar_dışa_aktarım",
+    doDestroySuccess: "Kullanıcı başarıyla silindi",
+    doDestroyAllSelectedSuccess: "Kullanıcılar başarıyla silindi",
+    edit: {
+      title: "Kullanıcıyı Düzenle",
+    },
+    new: {
+      title: "Kullanıcı(lar) Davet Et",
+      titleModal: "Kullanıcı Davet Et",
+      emailsHint: "Birden fazla e-posta adresini virgülle ayırın.",
+    },
+    view: {
+      title: "Kullanıcıyı Görüntüle",
+      activity: "Aktivite",
+    },
+    importer: {
+      title: "Kullanıcıları İçe Aktar",
+      fileName: "kullanıcılar_içe_aktarım_şablonu",
+      hint: "Dosya/Resim sütunları, dosyaların URL'leri olmalı ve boşlukla ayrılmalıdır. İlişkiler, referans verilen kayıtların ID'leri olmalı ve boşlukla ayrılmalıdır. Roller, rol ID'leri olmalı ve boşlukla ayrılmalıdır.",
+    },
+    errors: {
+      userAlreadyExists: "Bu e-postaya sahip kullanıcı zaten var",
+      userNotFound: "Kullanıcı bulunamadı",
+      revokingOwnPermission: "Kendi admin izninizi iptal edemezsiniz",
+    },
+  },
+
+
+
+pages: {
+
+
+  futures: {
+  title: "Futures",
+  actions: {
+    buyUp: "YUKARI AL",
+    buyDown: "AŞAĞI AL"
+  },
+  tabs: {
+    openOrders: "Açık Emirler",
+    recentOrders: "Son Emirler"
+  },
+  orderDetails: {
+    title: "Emir Detayları",
+    open: "Açık",
+    closed: "Kapalı",
+    completed: "Tamamlandı",
+    futuresAmount: "Futures Miktarı:",
+    contractDuration: "Sözleşme Süresi:",
+    seconds: "Saniye",
+    futuresStatus: "Futures Durumu:",
+    openPositionPrice: "Pozisyon Açılış Fiyatı:",
+    openPositionTime: "Pozisyon Açılış Zamanı:",
+    closePositionPrice: "Pozisyon Kapanış Fiyatı:",
+    closePositionTime: "Pozisyon Kapanış Zamanı:",
+    profitLossAmount: "Kar/Zarar Miktarı:",
+    leverage: "Kaldıraç:",
+    done: "Tamamlandı"
+  },
+  status: {
+    open: "Açık",
+    closed: "Kapalı",
+    completed: "Tamamlandı"
+  },
+  list: {
+    noOrders: "Emir yok"
+  }
+},
+    proof: {
+        title: "Kimlik Doğrulama",
+        instructions: "Nexus Exchange'in tüm özelliklerine erişmek için kimliğinizi doğrulayın",
+        sections: {
+            documentInfo: "Belge Bilgileri",
+            documentUpload: "Belge Yükleme"
+        },
+        fields: {
+            documentType: "Belge Türü",
+            fullName: "Tam Adı",
+            documentNumber: "Belge Numarası",
+            address: "Adres",
+            frontSide: "Belgenin Ön Yüzü",
+            backSide: "Belgenin Arka Yüzü",
+            selfie: "Belge ile Selfie"
+        },
+        placeholders: {
+            fullName: "Tam adınızı girin",
+            documentNumber: "Belge numaranızı girin",
+            address: "Tam adresinizi girin"
+        },
+        uploadTexts: {
+            frontSide: "Belgenizin ön yüzünü yükleyin",
+            backSide: "Belgenizin arka yüzünü yükleyin",
+            selfie: "Belgenizi tuttuğunuz bir selfie yükleyin"
+        },
+        documentTypes: {
+            passport: "Pasaport",
+            idCard: "Kimlik Kartı",
+            driversLicense: "Sürücü Belgesi"
+        },
+        security: {
+            title: "Güvenlik Bildirimi",
+            text: "Bilgileriniz şifrelenmiş ve güvendedir. Güvenliğiniz için banka düzeyinde koruma kullanıyoruz ve her belgiyi manuel olarak doğruluyoruz."
+        },
+        buttons: {
+            validateDocuments: "BELGELERİ DOĞRULA"
+        },
+        footer: {
+            copyright: "© 2025 CryptoWallet. Tüm hakları saklıdır.",
+            privacyPolicy: "Gizlilik Politikası"
+        }
+    },
+    withdrawPassword: {
+        title: "Para Çekme Şifresi",
+        cardTitle: "PARA ÇEKME ŞİFRESİNİ DEĞİŞTİR",
+        fields: {
+            currentPassword: "Mevcut Şifre",
+            newPassword: "Yeni Şifre"
+        },
+        placeholders: {
+            currentPassword: "Mevcut şifrenizi girin",
+            newPassword: "Yeni şifrenizi onaylayın"
+        },
+        buttons: {
+            saveChanges: "DEĞİŞİKLİKLERİ KAYDET"
+        },
+        warningMessage: "Fonlarınızın güvenliği için, giriş şifresi değiştirildikten sonra 24 saat boyunca para çekme işlemine izin verilmez."
+    },
+    loginPassword: {
+        title: "Giriş Şifresi",
+        cardTitle: "GİRİŞ ŞİFRESİNİ DEĞİŞTİR",
+        fields: {
+            oldPassword: "Eski Şifre",
+            newPassword: "Yeni Şifre",
+            newPasswordConfirmation: "Şifreyi Onayla"
+        },
+        placeholders: {
+            oldPassword: "Mevcut şifrenizi girin",
+            newPassword: "Yeni bir şifre oluşturun",
+            confirmPassword: "Yeni şifrenizi onaylayın"
+        },
+        buttons: {
+            saveChanges: "DEĞİŞİKLİKLERİ KAYDET"
+        },
+        warningMessage: "Fonlarınızın güvenliği için, giriş şifresi değiştirildikten sonra 24 saat boyunca para çekme işlemine izin verilmez.",
+        validation: {
+            mustMatch: "Şifreler eşleşmeli"
+        }
+    },
+    passwordType: {
+        title: "Şifre Türü",
+        cardTitle: "ŞİFRE TÜRÜNÜ SEÇİN",
+        options: {
+            login: {
+                title: "Giriş Şifresi",
+                description: "Hesap giriş şifrenizi değiştirin"
+            },
+            withdrawal: {
+                title: "Para Çekme Şifresi",
+                description: "Kripto para çekme şifrenizi değiştirin"
+            }
+        }
+    },
+    withdrawAddressForm: {
+        title: "Para Çekme Adresi",
+        currencyType: "PARA BİRİMİ TÜRÜ",
+        withdrawalAddress: "PARA ÇEKME ADRESİ",
+        currencies: {
+            btc: "BTC (Bitcoin)",
+            eth: "ETH (Ethereum)",
+            usdt: "USDT (Tether)",
+            sol: "SOL (Solana)",
+            xrp: "XRP (Ripple)"
+        },
+        fields: {
+            address: "Adres",
+            password: "Kripto Para Çekme Şifresi"
+        },
+        placeholders: {
+            address: "Cüzdan adresinizi girin",
+            password: "Mevcut şifrenizi girin"
+        },
+        buttons: {
+            save: "KAYDET"
+        },
+        notification: {
+            success: "Adres başarıyla kaydedildi!"
+        }
+    },
+    withdrawAddress: {
+        title: "Para Çekme Adresi",
+        cardTitle: "PARA BİRİMİ TÜRÜ",
+        currencies: {
+            btc: "BTC (Bitcoin)",
+            eth: "ETH (Ethereum)",
+            usdt: "USDT (Tether)",
+            sol: "SOL (Solana)",
+            xrp: "XRP (Ripple)"
+        }
+    },
+    privacy: {
+        title: "Gizlilik Portalı",
+        hero: {
+            title: "Nexus Gizlilik Portalı",
+            subtitle: "Verilerinizi ve gizliliğinizi katı kurallar, yasal uyumluluk ve sektör en iyi uygulamaları ile koruyoruz."
+        },
+        principles: {
+            title: "Gizlilik İlkelerimiz",
+            corePrinciples: "Temel İlkeler",
+            transparency: {
+                title: "Şeffaflık",
+                description: "Verilerinizi nasıl işlediğimiz hakkında düzenli güncellemeler ve net bilgiler."
+            },
+            accountability: {
+                title: "Sorumluluk ve Uyumluluk",
+                description: "Düzenli denetimler, sertifikalar ve küresel gizlilik yasalarına uyum."
+            },
+            dataSecurity: {
+                title: "Veri Güvenliği",
+                description: "Gelişmiş şifreleme, katı erişim kontrolleri ve kimlik doğrulama protokolleri."
+            },
+            dataMinimization: {
+                title: "Veri Minimizasyonu ve Amaç Sınırlaması",
+                description: "Yalnızca belirli, meşru amaçlar için gerekli olanı topluyoruz."
+            },
+            privacyByDesign: {
+                title: "Tasarımda Gizlilik",
+                description: "Gizlilik, ürün ve hizmetlerimize en başından itibaren entegre edilmiştir."
+            }
+        },
+        userRights: {
+            title: "Gizlilik Haklarınız",
+            content: "Kişisel bilgilerinize erişmek ve yönetmek için uygulamamız veya web formumuz aracılığıyla araçlara sahipsiniz; detaylı bilgi Gizlilik Bildirimimizde mevcuttur.",
+            note: "Kişisel bilgilerinize erişme, düzeltme veya silme haklarınızı istediğiniz zaman kullanın."
+        },
+        personalData: {
+            title: "Kişisel Veri Nedir?",
+            definition: "Kişisel veri, bir bireyi tanımlayan her türlü bilgiyi ifade eder.",
+            examples: "Örnekler: isim, Nexus ID, e-posta adresi, konum verileri, işlem geçmişi ve cihaz bilgisi."
+        },
+        dataUsage: {
+            title: "Verilerinizi Nasıl Kullanıyoruz?",
+            accountManagement: {
+                title: "Hesap Yönetimi",
+                description: "Hesabınızı oluşturmak ve sürdürmek, hizmet sağlamak ve sizinle iletişim kurmak için."
+            },
+            legalCompliance: {
+                title: "Yasal Uyumluluk",
+                description: "Kara Para Aklamanın Önlenmesi (AML) düzenlemeleri de dahil olmak üzere uygulanabilir yasalar kapsamındaki yükümlülüklerimizi yerine getirmek için."
+            },
+            securityFraud: {
+                title: "Güvenlik ve Dolandırıcılık Önleme",
+                description: "Hesabınızı korumak, dolandırıcılığı tespit etmek ve önlemek ve platform güvenliğini sağlamak için."
+            },
+            customerSupport: {
+                title: "Müşteri Desteği",
+                description: "Sorularınıza yanıt vermek ve ihtiyaç duyulduğunda teknik yardım sağlamak için."
+            },
+            marketing: {
+                title: "Pazarlama ve İletişim",
+                description: "Size ilgili güncellemeler, ürün bilgileri ve promosyon materyalleri göndermek için (izin verirseniz)."
+            },
+            transactionProcessing: {
+                title: "İşlem İşleme",
+                description: "Kripto para işlemlerini kolaylaştırmak ve işlem kayıtlarını tutmak için."
+            }
+        },
+        dataRetention: {
+            title: "Veri Saklama",
+            content: "Hizmetlerimizi sağlamak, yasal yükümlülüklere uymak (vergi ve AML gereklilikleri gibi), anlaşmazlıkları çözmek ve sözleşmelerimizi uygulamak için verilerinizi gerekli olduğu sürece saklarız."
+        },
+        dataSharing: {
+            title: "Veri Paylaşımı",
+            content: "Verilerinizi, Gizlilik Bildirimimizde belirtilen amaçlar için yalnızca gerekli olduğunda, katı sözleşmesel güvenceler altında diğer Nexus birimleri veya güvenilir üçüncü taraflarla paylaşabiliriz."
+        },
+        cookies: {
+            title: "Çerezler ve İzleme",
+            content: "Kullanıcı deneyiminizi geliştirmek, kişiselleştirilmiş pazarlama sağlamak ve hizmetlerimizin nasıl kullanıldığını analiz etmek için çerezler ve benzer teknolojiler kullanıyoruz.",
+            link: "Tam Çerez Politikamızı görüntüleyin"
+        },
+        actionCards: {
+            privacyNotice: {
+                title: "Gizlilik Bildirimi",
+                description: "Tam gizlilik politikamızı okuyun"
+            },
+            manageData: {
+                title: "Verileri Yönetin",
+                description: "Bilgilerinize erişin ve kontrol edin"
+            },
+            cookieSettings: {
+                title: "Çerez Ayarları",
+                description: "İzleme tercihlerinizi ayarlayın"
+            },
+            helpCenter: {
+                title: "Yardım Merkezi",
+                description: "Gizlilik sorularına yanıt alın"
+            }
+        },
+        notification: "İşlem başarıyla tamamlandı!"
+    },
+    termsOfUse: {
+        title: "Kullanım Koşulları",
+        hero: {
+            title: "Nexus Kullanım Koşulları"
+        },
+        agreement: {
+            title: "Anlaşma",
+            content: "Bu, sizin (kullanıcı) ile Nexus arasında bağlayıcı bir anlaşmadır. Eriştiğiniz veya kullandığınız tüm Nexus Hizmetlerini kapsar."
+        },
+        riskWarning: {
+            title: "Risk Uyarısı",
+            content: "Dijital varlıklar oynaktır ve değerleri önemli ölçüde dalgalanabilir. Nexus bir aracı, finansal danışman veya yatırım danışmanı değildir. Herhangi bir finansal karar vermeden önce kendi due diligence'inizi yapmalısınız."
+        },
+        aboutServices: {
+            title: "Hizmetlerimiz Hakkında",
+            aboutNexus: {
+                title: "Nexus Hakkında",
+                content: "Nexus, platformumuz aracılığıyla dijital varlık değişimi, saklama hizmetleri ve ilgili finansal hizmetler sağlar."
+            },
+            eligibility: {
+                title: "Uygunluk",
+                content: "En az 18 yaşında, yasal olarak sözleşme yapabilme ehliyetine sahip, hizmetlerimizi kullanmaktan kısıtlanmamış ve yasaklı yargı bölgelerinde bulunmuyor olmalısınız."
+            },
+            communication: {
+                title: "İletişim",
+                content: "İletişim bilgilerinizi güncel tutmalısınız. Nexus, hesabınız ve hizmetlerimiz hakkında sizinle e-posta, SMS veya telefon yoluyla iletişime geçecektir."
+            }
+        },
+        services: {
+            title: "Hizmetlerimiz",
+            servicesProvided: {
+                title: "Sağlanan Hizmetler",
+                content: "Nexus, hem otomatik botlar hem de insan temsilciler aracılığıyla dijital varlık ticareti, güvenli saklama çözümleri ve müşteri desteği sunar. Kullanıcı sohbet işlevselliği de mevcuttur."
+            },
+            fees: {
+                title: "Ücretler",
+                content: "Tüm uygulanabilir ücretler Ücret Yapısı sayfamızda listelenmiştir ve güncellemelere tabidir. İşlem yapmadan önce güncel ücret tarifesini incelemek sizin sorumluluğunuzdadır."
+            }
+        },
+        accountManagement: {
+            title: "Hesap Yönetimi",
+            accountCreation: {
+                title: "Hesap Oluşturma",
+                content: "Hizmetlerimize erişmek için bir hesap (bireysel veya kurumsal) açmalısınız. Bu, yasa gereği gerekli olan kimlik doğrulama prosedürlerini (KYC/AML) tamamlamayı gerektirir."
+            },
+            identityVerification: {
+                title: "Kimlik Doğrulama",
+                content: "Belirli hizmetleri kullanmadan önce Müşterinizi Tanıyın (KYC) ve Kara Para Aklamayı Önleme (AML) doğrulama süreçlerimizi tamamlamalısınız."
+            },
+            accountRecords: {
+                title: "Hesap Kayıtları",
+                content: "Hesap yönetimi politikalarımızda belirtilen belirli koşullar altında kayıtları tutabilir ve alt hesaplar oluşturabilirsiniz."
+            }
+        },
+        transactions: {
+            title: "İşlemler",
+            sufficientBalance: {
+                title: "Yeterli Bakiye",
+                content: "Başlattığınız işlemler için hesabınızda yeterli bakiye bulundurmalısınız. Yetersiz fon durumunda işlemler başarısız olabilir veya ek ücretlere tabi olabilir."
+            },
+            transactionCancellation: {
+                title: "İşlem İptali",
+                content: "Nexus, şüpheli dolandırıcılık, hatalar veya bu Koşulların ihlali durumlarında işlemleri iptal etme veya değiştirme hakkını saklı tutar."
+            },
+            unauthorizedTransactions: {
+                title: "Yetkisiz İşlemler",
+                content: "Aksini ispatlayamadığınız sürece, yetkisiz işlemlerden siz sorumlusunuz."
+            }
+        },
+        digitalAssets: {
+            title: "Dijital Varlıklar",
+            supportedAssets: {
+                title: "Desteklenen Varlıklar",
+                content: "Yalnızca Nexus tarafından açıkça desteklenen dijital varlıklarla işlem yapabilirsiniz. Desteklenmeyen varlıkları yatırmaya çalışmak, varlıklarınızın kalıcı kaybına neden olabilir."
+            },
+            forksAirdrops: {
+                title: "Fork'lar ve Airdrop'lar",
+                content: "Nexus, blok zinciri fork'ları, airdrop'lar veya benzer diğer etkinlikler için destek garanti etmez. Destek kararları tamamen kendi takdirimize bağlı olarak verilir."
+            }
+        },
+        accountSecurity: {
+            title: "Hesap Güvenliği",
+            securityRequirements: {
+                title: "Güvenlik Gereksinimleri",
+                content: "Güçlü bir şifre kullanmalı, çok faktörlü kimlik doğrulamayı (MFA) etkinleştirmeli, kimlik bilgilerinizi asla paylaşmamalı, hesap aktivitesini düzenli olarak izlemeli ve herhangi bir güvenlik ihlalini derhal bildirmelisiniz."
+            }
+        },
+        privacy: {
+            title: "Gizlilik",
+            content: "Gizliliğiniz, kişisel bilgilerinizi nasıl topladığımızı, kullandığımızı ve koruduğumuzu açıklayan Nexus Gizlilik Bildirimi tarafından yönetilir."
+        },
+        termination: {
+            title: "Hesap Sonlandırma",
+            terminationSuspension: {
+                title: "Sonlandırma/Askıya Alma",
+                content: "Nexus, dolandırıcılık, yasa ihlalleri, şüpheli aktivite veya Koşul ihlalleri nedeniyle hesapları kısıtlayabilir, askıya alabilir veya sonlandırabilir. Kullanıcılar, dondurulmamış veya etkin olmayan hesaplar dışında hesaplarını kapatabilir."
+            }
+        },
+        prohibitedUse: {
+            title: "Yasaklanmış Kullanım",
+            content: "Nexus hizmetlerini dolandırıcılık, piyasa manipülasyonu, yasa dışı faaliyetler, yetkisiz erişim veya uygulanabilir yasaları veya bu Koşulları ihlal eden herhangi bir amaç için kullanamazsınız."
+        },
+        liability: {
+            title: "Sorumluluk ve Fikri Mülkiyet",
+            liability: {
+                title: "Sorumluluk",
+                content: "Nexus, kanıtlanmış ağır ihmal veya dolandırıcılık durumları dışındaki kayıplardan sorumlu değildir. Piyasa dalgalanmaları, teknik sorunlar veya üçüncü taraf eylemlerinden sorumlu değiliz."
+            },
+            intellectualProperty: {
+                title: "Fikri Mülkiyet",
+                content: "Nexus, platformumuz, teknolojimiz ve markalaşmamız üzerindeki tüm fikri mülkiyet haklarını saklı tutar. Kullanıcılar, bu Koşullarda belirtildiği şekilde hizmetlerimizi kullanmak için sınırlı bir lisans alır."
+            },
+            indemnity: {
+                title: "Tazminat",
+                content: "Hizmetlerimizi kötüye kullanmanız veya bu Koşulları ihlal etmenizden kaynaklanan herhangi bir talep, kayıp veya zarara karşı Nexus'u tazmin etmeyi kabul edersiniz."
+            }
+        },
+        importantNotice: {
+            title: "Önemli Bildirim",
+            content: "Nexus hizmetlerini kullanarak, bu Kullanım Koşullarını okuduğunuzu, anladığınızı ve bunlara bağlı kalacağınızı kabul etmiş olursunuz. Kabul etmiyorsanız, hizmetlerimizi kullanmayı derhal bırakmalısınız."
+        },
+        actionCards: {
+            security: {
+                title: "Güvenlik",
+                description: "Hesabınızı güvende tutun."
+            },
+            helpCenter: {
+                title: "Yardım Merkezi",
+                description: "Sorularınıza yanıt alın"
+            },
+            privacyPolicy: {
+                title: "Gizlilik Politikası",
+                description: "Gizlilik uygulamalarımızı inceleyin"
+            },
+            legal: {
+                title: "Yasal",
+                description: "Tüm yasal belgeleri görüntüleyin"
+            }
+        },
+        footer: {
+            copyright: "© 2025 Nexus Exchange. Tüm hakları saklıdır.",
+            lastUpdated: "Son güncelleme: 6 Mayıs 2025"
+        }
+    },
+    marketDetail: {
+        stats: {
+            high: "24s Yüksek",
+            low: "24s Düşük",
+            volume: "24s Hacim"
+        },
+        volume: {
+            billion: "Mrd",
+            million: "Mn"
+        },
+        actions: {
+            buy: "AL",
+            sell: "SAT"
+        },
+        recentTrades: {
+            title: "Son İşlemler (Canlı)",
+            price: "Fiyat (USDT)",
+            amount: "Miktar",
+            time: "Zaman"
+        }
+    },
+    assetsDetail: {
+        title: "Varlık Detayları",
+        today: "Bugün",
+        yesterday: "Dün",
+        filter: "Filtre",
+        transactionHistory: {
+            title: "İşlem Geçmişi"
+        },
+        noTransactions: {
+            title: "Henüz İşlem Yok",
+            description: "İşlem yapmaya başladığınızda işlem geçmişiniz burada görünecek."
+        },
+        status: {
+            completed: "Tamamlandı",
+            pending: "Beklemede",
+            canceled: "İptal Edildi"
+        },
+        filterModal: {
+            title: "İşlemleri Filtrele",
+            status: "Durum",
+            type: "Tür",
+            direction: "Yön",
+            startDate: "Başlangıç Tarihi",
+            endDate: "Bitiş Tarihi",
+            allStatuses: "Tüm Durumlar",
+            allTypes: "Tüm Türler",
+            bothDirections: "Her İki Yön",
+            incoming: "Gelen",
+            outgoing: "Giden",
+            completed: "Tamamlandı",
+            pending: "Beklemede",
+            canceled: "İptal Edildi",
+            resetFilters: "Filtreleri Sıfırla",
+            applyFilters: "Filtreleri Uygula"
+        },
+        actions: {
+            deposit: "Yatırma",
+            withdraw: "Çekme"
+        },
+        transactionTypes: {
+            transaction: "İşlem",
+            deposit: "Yatırma",
+            withdrawal: "Çekme",
+            convertedFrom: "{asset}'den dönüştürüldü",
+            convertedTo: "{asset}'ye dönüştürüldü",
+            conversionIn: "Dönüşüm Girişi",
+            conversionOut: "Dönüşüm Çıkışı",
+            stakedAmount: "Stake Edilen Miktar",
+            stakingRewards: "Stake Ödülleri",
+            futuresReserved: "Vadeli İşlem Rezervi",
+            futuresProfit: "Vadeli İşlem Karı",
+            futuresLoss: "Vadeli İşlem Zararı",
+            futuresSettlement: "Vadeli İşlem Kapatma",
+            futuresFee: "Vadeli İşlem Ücreti",
+            futuresRefund: "Vadeli İşlem İadesi",
+            futuresBonus: "Vadeli İşlem Bonusu",
+            futuresCommission: "Vadeli İşlem Komisyonu",
+            manualProfit: "Manuel Kar",
+            manualLoss: "Manuel Zarar",
+            manualAdjustment: "Manuel Ayarlama",
+            spotTradingProfit: "Spot İşlem Karı",
+            spotTradingLoss: "Spot İşlem Zararı",
+            referralReward: "Referans Ödülü",
+            bonus: "Bonus",
+            referralCommission: "Referans Komisyonu",
+            orderReserved: "Sipariş Rezervi",
+            orderCancelled: "Sipariş İptal Edildi",
+            orderPartialFill: "Sipariş Kısmi Dolumu",
+            orderCompleted: "Sipariş Tamamlandı",
+            feePayment: "Ücret Ödemesi",
+            balanceAdjustment: "Bakiye Ayarlaması",
+            transfer: "Transfer"
+        }
+    },
+    invitation: {
+        title: "Arkadaşlarını Davet Et",
+        earnTogether: "Birlikte Kazanın",
+        description: "Arkadaşlarınızı NEXUS'a katılmaya davet edin, kaydolup işlem yapmaya başladıklarında ödüller kazanın.",
+        yourReferralCode: "REFERANS KODUNUZ",
+        loading: "Yükleniyor...",
+        copied: "KOPYALANDI!",
+        copyCode: "KODU KOPYALA",
+        totalEarned: "Toplam Kazanç",
+        allTimeCommission: "Tüm Zamanlar Komisyonu",
+        generationMembers: "Kuşak Üyeleri",
+        noGenerationData: "Kuşak verisi mevcut değil",
+        approvedMembers: "Onaylanmış Üyeler",
+        pendingMembers: "Bekleyen Üyeler",
+        commissionStructure: "Komisyon Yapısı",
+        firstGeneration: "1. Kuşak",
+        secondGeneration: "2. Kuşak",
+        thirdGeneration: "3. Kuşak",
+        firstDepositCommission: "İlk Yatırım Komisyonu",
+        stakingProfitsCommission: "Stake Karı Komisyonu",
+        howItWorks: "Nasıl Çalışır?",
+        steps: {
+            shareCode: {
+                title: "Referans Kodunuzu Paylaşın",
+                description: "Benzersiz kodunuzu arkadaşlarınıza gönderin veya sosyal medyada paylaşın."
+            },
+            friendsSignUp: {
+                title: "Arkadaşlarınız Kaydolur",
+                description: "Arkadaşlarınız referans kodunuzu kullanarak kaydolur ve hesaplarını doğrular."
+            },
+            earnCommissions: {
+                title: "Komisyon Kazanın",
+                description: "Ağınızın ilk yatırımları ve stake karlarından komisyon kazanın."
+            }
+        },
+        referralCopied: "Referans kodu panoya kopyalandı!",
+        loadingMembers: "Üyeler yükleniyor...",
+        approved: "Onaylandı",
+        joined: "Katıldı",
+        noMembersFound: "Üye bulunamadı"
+    },
+    securityTips: {
+        title: "Güvenlik Merkezi",
+        essentialTips: "Temel Güvenlik İpuçları",
+        categories: {
+            passwordSecurity: "Şifre Güvenliği",
+            deviceSecurity: "Cihaz Güvenliği",
+            accountSecurity: "Hesap Güvenliği"
+        },
+        tips: {
+            strongPasswords: {
+                title: "Güçlü, Benzersiz Şifreler Kullanın",
+                description: "Büyük/küçük harf, sayı ve semboller içeren karmaşık şifreler oluşturun."
+            },
+            enable2FA: {
+                title: "İki Faktörlü Kimlik Doğrulamayı Etkinleştirin",
+                description: "Hesabınıza 2FA ile ekstra bir güvenlik katmanı ekleyin."
+            },
+            changePasswords: {
+                title: "Şifreleri Düzenli Olarak Değiştirin",
+                description: "Şifrelerinizi her 3-6 ayda bir güncelleyin."
+            },
+            softwareUpdated: {
+                title: "Yazılımı Güncel Tutun",
+                description: "İşletim sisteminizi, tarayıcınızı ve cüzdan yazılımınızı düzenli olarak güncelleyin."
+            },
+            antivirus: {
+                title: "Antivirüs Koruması Kullanın",
+                description: "Saygın bir antivirüs ve anti-malware yazılımı yükleyin."
+            },
+            publicWifi: {
+                title: "Herkese Açık Wi-Fi'dan Kaçının",
+                description: "VPN olmadan herkese açık ağlarda cüzdanınıza asla erişmeyin."
+            },
+            loginNotifications: {
+                title: "Giriş Bildirimlerini Etkinleştirin",
+                description: "Hesabınıza yeni girişler için uyarı alın."
+            },
+            reviewActivity: {
+                title: "Hesap Aktivitesini İnceleyin",
+                description: "Hesabınızı şüpheli aktiviteler için düzenli olarak kontrol edin."
+            },
+            whitelisting: {
+                title: "Beyaz Liste Kullanın",
+                description: "Ek güvenlik için güvenilen para çekme adreslerini beyaz listeye alın."
+            }
+        },
+        actions: {
+            enable2FA: "2FA'yı Etkinleştir",
+            enable2FADesc: "Ekstra bir güvenlik katmanı ekleyin",
+            activityLog: "Aktivite Günlüğü",
+            activityLogDesc: "Son hesap aktivitesini inceleyin",
+            settings: "Ayarlar",
+            settingsDesc: "Güvenlik tercihlerini yapılandırın",
+            backupCodes: "Yedek Kodlar",
+            backupCodesDesc: "Kurtarma kodlarınızı kaydedin"
+        },
+        emergency: {
+            title: "Acil Durum Prosedürleri",
+            unauthorizedAccess: "Hesabınıza yetkisiz erişim şüphesi duyuyorsanız, derhal şifrenizi değiştirin ve henüz etkin değilse 2FA'yı etkinleştirin.",
+            lostDevice: "Cihazınız kaybolursa veya çalınırsa, hesap ayarlarından oturum erişimini derhal iptal edin.",
+            phishing: "Bir oltalama saldırısının kurbanı olduysanız, hesabınızı dondurun ve derhal destekle iletişime geçin.",
+            supportTitle: "7/24 Güvenlik Desteği",
+            supportEmail: "support@nexus-exchange.com"
+        },
+        resources: {
+            title: "Güvenlik Kaynakları",
+            securityGuide: "Güvenlik Rehberi",
+            securityGuideLink: "Kapsamlı güvenlik dokümantasyonunu okuyun",
+            learningCenter: "Öğrenme Merkezi",
+            learningCenterLink: "Kripto güvenliği en iyi uygulamaları hakkında bilgi edinin",
+            faq: "SSS",
+            faqLink: "Yaygın güvenlik sorularının yanıtlarını bulun"
+        }
+    },
+    profile: {
+        title: "Profil",
+        settings: "Ayarlar",
+        status: {
+            verified: "DOĞRULANDI",
+            unverified: "DOĞRULANMADI"
+        },
+        accountInfo: {
+            title: "HESAP BİLGİSİ",
+            email: "E-posta",
+            creditScore: "Kredi Skoru",
+            invitationCode: "Davet Kodu"
+        },
+        verification: {
+            pending: {
+                title: "Doğrulama Bekliyor",
+                description: "Hesap doğrulamanız devam ediyor. Bu genellikle 1-3 iş günü sürer."
+            },
+            alert: {
+                title: "Hesap Doğrulanmadı",
+                description: "Tüm özelliklerin kilidini açmak ve daha yüksek limitler için hesabınızı doğrulayın",
+                verifyNow: "Şimdi Doğrula"
+            }
+        },
+        pendingVerifications: {
+            title: "BEKLEYEN DOĞRULAMALAR",
+            identity: {
+                title: "Kimlik Doğrulama",
+                description: "Resmi kimliğinizi gönderin"
+            },
+            address: {
+                title: "Adres Doğrulama",
+                description: "İkamet yerinizi doğrulayın"
+            },
+            status: {
+                pending: "Beklemede"
+            }
+        },
+        approvedVerifications: {
+            title: "DOĞRULAMALAR ONAYLANDI",
+            identity: {
+                title: "Kimlik Doğrulama"
+            },
+            address: {
+                title: "Adres Doğrulama"
+            },
+            status: {
+                completed: "Tamamlandı"
+            }
+        },
+        limitations: {
+            title: "Hesap Kısıtlamaları",
+            withdrawalLimit: "Para çekme limiti: günde $1,000",
+            stakingLimited: "Stake seçenekleri kısıtlı",
+            advancedTrading: "Gelişmiş işlem özellikleri devre dışı",
+            fiatDeposits: "Fiat para yatırma mevcut değil"
+        },
+        menu: {
+            withdrawalAddress: "Para Çekme Adresi",
+            password: "Şifre",
+            notifications: "Bildirimler",
+            myInvitation: "Davetiyem",
+            language: "Dil",
+            termsOfUse: "Kullanım Koşulları",
+            privacyPortal: "Gizlilik Portalı",
+            aboutUs: "Hakkımızda",
+            msbApproval: "MSB Onayı",
+            customerSupport: "Müşteri Desteği",
+            downloadApp: "Uygulamayı İndir",
+            logout: "Çıkış Yap"
+        }
+    },
+    notification: {
+        title: "Bildirim",
+        loading: "Yükleniyor",
+        filters: {
+            all: "Tümü",
+            unread: "Okunmamış",
+            read: "Okundu"
+        },
+        emptyState: {
+            title: "Henüz bildirim yok",
+            noNotifications: "Henüz hiç bildiriminiz yok",
+            noFilteredNotifications: "{0} bildirim bulunamadı"
+        },
+        types: {
+            deposit: {
+                title: "Yatırma Alındı",
+                message: "{0} tutarındaki yatırmanız onaylandı ve cüzdanınıza yatırıldı."
+            },
+            withdraw: {
+                title: "Para Çekme Başarılı",
+                message: "{0} tutarındaki para çekme işleminiz başarıyla gerçekleştirildi."
+            },
+            staking: {
+                title: "Stake Karı",
+                message: "Stake ödüllerinizden {0} kazandınız."
+            },
+            kyc: {
+                title: "KYC Güncellemesi",
+                defaultMessage: "Hesabınız etkinleştirildi."
+            },
+            commission: {
+                title: "Komisyon Alındı",
+                message: "{0} tutarında komisyon aldınız."
+            },
+            futures: {
+                title: "Vadeli İşlem Güncellemesi",
+                message: "{0} tutarındaki vadeli işlem işleminiz gerçekleştirildi."
+            },
+            accountActivated: {
+                title: "KYC Doğrulama",
+                message: "Merhaba {0}, KYC belgeleriniz doğrulandı, artık Nexus Exchange'de sınırsız özelliklerin keyfini çıkarabilirsiniz"
+            },
+            custom: {
+                title: "Bildirim",
+                defaultMessage: "Yeni bir bildiriminiz var."
+            },
+            cancelDeposit: {
+                title: "Yatırma İptal Edildi",
+                message: "{0} tutarındaki yatırmanız iptal edildi."
+            },
+            cancelWithdraw: {
+                title: "Para Çekme İptal Edildi",
+                message: "{0} tutarındaki para çekme işleminiz iptal edildi."
+            },
+            cancelActivated: {
+                title: "Aktivasyon İptal Edildi",
+                message: "KYC'niz sistem tarafından reddedildi, lütfen tekrar deneyin veya yardım için Müşteri Desteği ile iletişime geçin"
+            }
+        }
+    },
+    staking: {
+        title: "Staking",
+        totalStakedBalance: "Toplam Stake Edilen Bakiye",
+        earned: "kazanılan",
+        tabs: {
+            options: "Seçenekler",
+            active: "Aktif Stakeler",
+            completed: "Tamamlananlar"
+        },
+        daily: "Günlük",
+        minimumStake: "Minimum Stake",
+        unstakingPeriod: "Stake Çözme Süresi",
+        days: "gün",
+        stakeButton: "{0} Stake Et",
+        status: {
+            active: "AKTİF",
+            completed: "TAMAMLANDI"
+        },
+        remaining: "Kalan",
+        dailyRate: "Günlük Oran",
+        duration: "Süre",
+        createdAt: "Oluşturulma Tarihi",
+        dateFinish: "Bitiş Tarihi",
+        totalCompletedRewards: "TOPLAM TAMAMLANAN ÖDÜLLER",
+        stake: "STAKE ET",
+        stakes: "STAKELER",
+        allRewardsFromCompleted: "Tamamlanan stakelerden tüm ödüller",
+        totalRewardsEarned: "TOPLAM KAZANILAN ÖDÜLLER",
+        balance: "Bakiye",
+        maximumStake: "Maksimum Stake",
+        estimatedTotalRewards: "Tahmini Toplam Ödüller",
+        exploreStakingOptions: "Staking Seçeneklerini Keşfedin",
+        startStaking: "Staking'e Başlayın",
+        emptyStates: {
+            options: {
+                title: "Staking Planı Mevcut Değil",
+                message: "Şu anda mevcut bir staking planı bulunmuyor. Lütfen yeni staking fırsatları için daha sonra tekrar kontrol edin."
+            },
+            active: {
+                title: "Aktif Stake Yok",
+                message: "Henüz aktif stakeniz yok. Kripto varlıklarınız üzerinden ödül kazanmak için staking'e başlayın."
+            },
+            completed: {
+                title: "Tamamlanan Stake Yok",
+                message: "Henüz hiç stake tamamlamadınız. Tamamlanan stakeleriniz bittiğinde burada görünecek."
+            }
+        },
+        stakeModal: {
+            title: "Stake Et",
+            amountToStake: "Stake Edilecek Miktar",
+            enterAmount: "Miktarı Girin"
+        }
+    },
+    conversion: {
+        title: "Kripto Dönüştür",
+        loading: "Son fiyatlar yükleniyor...",
+        youSend: "Gönderiyorsunuz",
+        youReceive: "Alıyorsunuz",
+        balance: "Bakiye",
+        max: "MAKS",
+        insufficientBalance: "Yetersiz bakiye",
+        estimatedConversion: "Tahmini dönüşüm",
+        selectDifferentCurrencies: "Farklı para birimleri seçin",
+        convertNow: "Şimdi Dönüştür",
+        pricesUpdate: "Fiyatlar gerçek zamanlı güncellenir",
+        selectCurrency: "Para Birimi Seçin",
+        searchCurrencies: "Para birimlerinde ara...",
+        confirmConversion: "Dönüşümü Onayla",
+        conversionDetails: "Dönüşüm Detayları",
+        exchangeRate: "Döviz Kuru",
+        networkFee: "Ağ Ücreti",
+        estimatedArrival: "Tahmini Varış",
+        arrivalTime: "~30 saniye",
+        processingConversion: "Dönüşüm İşleniyor...",
+        cancel: "İptal"
+    },
+    history: {
+        title: "İşlem Geçmişi",
+        emptyState: {
+            title: "İşlem bulunamadı",
+            description: "Daha fazla işlem görmek için filtrelerinizi değiştirmeyi deneyin"
+        },
+        filters: {
+            all: "Tümü",
+            deposits: "Yatırmalar",
+            withdrawals: "Çekmeler",
+            profits: "Karlar",
+            losses: "Zararlar",
+            conversions: "Dönüşümler",
+            stacking: "Staking"
+        },
+        statusFilters: {
+            allStatus: "Tüm Durumlar",
+            completed: "Tamamlandı",
+            pending: "Beklemede",
+            canceled: "İptal Edildi"
+        },
+        timeFilters: {
+            allTime: "Tüm Zamanlar",
+            today: "Bugün",
+            week: "Hafta",
+            month: "Ay",
+            year: "Yıl"
+        },
+        status: {
+            completed: "Tamamlandı",
+            pending: "Beklemede",
+            canceled: "İptal Edildi"
+        },
+        dateFormats: {
+            today: "Bugün, {0}",
+            yesterday: "Dün, {0}"
+        },
+        transactionTypes: {
+            transaction: "İşlem",
+            deposit: "Yatırma",
+            withdrawal: "Çekme",
+            convertedFrom: "{0}'den dönüştürüldü",
+            convertedTo: "{0}'ye dönüştürüldü",
+            conversionIn: "Dönüşüm Girişi",
+            conversionOut: "Dönüşüm Çıkışı",
+            stakedAmount: "Stake Edilen Miktar",
+            stakingRewards: "Stake Ödülleri",
+            futuresReserved: "Vadeli İşlem Rezervi",
+            futuresProfit: "Vadeli İşlem Karı",
+            futuresLoss: "Vadeli İşlem Zararı",
+            futuresSettlement: "Vadeli İşlem Kapatma",
+            futuresFee: "Vadeli İşlem Ücreti",
+            futuresRefund: "Vadeli İşlem İadesi",
+            futuresBonus: "Vadeli İşlem Bonusu",
+            futuresCommission: "Vadeli İşlem Komisyonu",
+            manualProfit: "Manuel Kar",
+            manualLoss: "Manuel Zarar",
+            manualAdjustment: "Manuel Ayarlama",
+            spotTradingProfit: "Spot İşlem Karı",
+            spotTradingLoss: "Spot İşlem Zararı",
+            referralReward: "Referans Ödülü",
+            bonus: "Bonus",
+            referralCommission: "Referans Komisyonu",
+            orderReserved: "Sipariş Rezervi",
+            orderCancelled: "Sipariş İptal Edildi",
+            orderPartialFill: "Sipariş Kısmi Dolumu",
+            orderCompleted: "Sipariş Tamamlandı",
+            feePayment: "Ücret Ödemesi",
+            balanceAdjustment: "Bakiye Ayarlaması",
+            transfer: "Transfer"
+        }
+    },
+    withdraw: {
+        title: "Kripto Çek",
+        selectCurrency: "Para Birimi Seçin",
+        selectPlaceholder: "Bir para birimi seçin",
+        selectHint: "Lütfen devam etmek için bir para birimi seçin",
+        withdrawalAddress: "Para Çekme Adresi",
+        withdrawalAmount: "Para Çekme Miktarı",
+        withdrawalPassword: "Para Çekme Şifresi",
+        passwordPlaceholder: "Para çekme şifresini girin",
+        available: "Kullanılabilir",
+        amountWithdrawal: "Çekilecek miktar",
+        minimumWithdrawal: "Minimum çekim",
+        networkFee: "Ağ ücreti",
+        youWillReceive: "Alacaksınız",
+        confirmWithdrawal: "Para Çekmeyi Onayla",
+        processing: "İşleniyor...",
+        securityVerification: "Güvenlik Doğrulaması",
+        securityMessage: "Güvenliğiniz için, para çekme işlemleri şifre onayı gerektirir ve incelemeye tabi olabilir. Yanlış adreslere yapılan para çekme işlemleri geri alınamaz.",
+        networkInfo: "Ağ: {0} ({1})",
+        noWalletAddress: "(Cüzdan adresi yok)",
+        noWallet: {
+            title: "Cüzdan Adresi Bulunamadı",
+            description: "Henüz herhangi bir cüzdan adresi eklemediniz. Lütfen işleminize devam etmek için bir para çekme adresi ekleyin.",
+            addButton: "Cüzdan Adresi Ekle"
+        },
+        security: {
+            title: "Önce Güvenlik",
+            description: "Güvenliğiniz için, her kripto para birimi için doğrulanmış bir para çekme adresi gerektiriyoruz. Bu, hataları önlemeye ve fonlarınızın doğru yere ulaşmasını sağlamaya yardımcı olur."
+        },
+        errors: {
+            amountNumber: "Para çekme miktarı bir sayı olmalıdır",
+            amountRequired: "Para çekme miktarı gereklidir",
+            amountPositive: "Para çekme miktarı 0'dan büyük olmalıdır",
+            amountMin: "Miktar bu para birimi için minimum para çekme tutarının altında",
+            passwordRequired: "Para çekme şifresi gereklidir",
+            noWalletAddress: "{0} için cüzdan adresi bulunamadı. Lütfen önce bir cüzdan adresi ekleyin.",
+            minimumWithdraw: "{0} için minimum çekim: {1} {2}",
+            insufficientForFee: "Ücreti karşılayacak yeterli bakiye yok ({0} {1})"
+        },
+        validation: {
+            selectCurrency: "Para birimi seçin",
+            enterAmount: "Miktarı girin",
+            belowMin: "Minimumun altında ({0} {1})",
+            insufficientBalance: "Yetersiz bakiye",
+            insufficientForFee: "Yetersiz bakiye (ücret dahil)",
+            enterPassword: "Şifreyi girin"
+        }
+    },
+    deposit: {
+        title: "Kripto Yatır",
+        loading: "Yatırma yöntemi yükleniyor ...",
+        selectNetwork: "Ağ Seçin",
+        depositAddress: "Yatırma adresiniz",
+        copyAddress: "Adresi Kopyala",
+        amountLabel: "Yatırma miktarı ({0})",
+        amountPlaceholder: "Minimum: {0} {1}",
+        txidLabel: "İşlem Kimliği (TXID)",
+        txidPlaceholder: "TXID'yi Girin",
+        minimumDeposit: "Minimum yatırma",
+        importantNotice: "Önemli Uyarı",
+        warningMessage: "Lütfen yatırma işleminiz için doğru ağı seçtiğinizden emin olun. Yanlış ağ üzerinden fon göndermek, varlıklarınızın kalıcı kaybına neden olabilir ve bu geri alınamaz.",
+        confirmDeposit: "Yatırmayı Onayla",
+        network: "Ağ",
+        estimatedArrival: "Tahmini varış",
+        networkConfirmations: "3 ağ onayı",
+        processingTime: "İşlem süresi",
+        processingTimeValue: "10-30 dakika",
+        noMethods: "Şu anda mevcut yatırma yöntemi yok.",
+        addressCopied: "Adres panoya kopyalandı!",
+        unknownNetwork: "Bilinmeyen Ağ"
+    },
+    wallet: {
+        totalPortfolioValue: "Toplam Portföy Değeri",
+        myAssets: "Varlıklarım",
+        manage: "Yönet",
+        noAssets: "Varlık bulunamadı",
+        quickActions: {
+            deposit: "Yatırma",
+            withdraw: "Çekme",
+            history: "Geçmiş",
+            convert: "Dönüştür",
+            staking: "Staking"
+        }
+    },
+    trade: {
+        title: "SPOT",
+        buy: "AL",
+        sell: "SAT",
+        limit: "LİMİT",
+        market: "PİYASA",
+        orderType: "Emir Türü",
+        price: "Fiyat (USDT)",
+        amount: "Miktar",
+        available: "Kullanılabilir",
+        placing: "Veriliyor...",
+        increasePrice: "fiyatı artır",
+        decreasePrice: "fiyatı düşür",
+        errors: {
+            invalidQuantity: "Lütfen geçerli bir miktar girin.",
+            invalidPrice: "Lütfen geçerli bir fiyat girin.",
+            insufficientUSDT: "Yetersiz USDT bakiyesi. Kullanılabilir: {0} USDT",
+            insufficientCoin: "Yetersiz {1} bakiyesi. Kullanılabilir: {0} {1}",
+            failedOrder: "Emir verilemedi. Lütfen tekrar deneyin."
+        },
+        orderBook: {
+            price: "Fiyat (USDT)",
+            amount: "Miktar"
+        },
+        openOrders: {
+            title: "AÇIK EMİRLER",
+            viewAll: "tüm emirleri görüntüle",
+            status: "Durum",
+            price: "Fiyat",
+            amount: "Miktar",
+            total: "Toplam",
+            cancel: "İptal Et",
+            noOrders: "Henüz açık emir yok",
+            noOrdersSubtext: "Açık emirleriniz burada görünecek"
+        }
+    },
+    market: {
+        title: "USDT PİYASASI",
+        noResults: "Kripto para bulunamadı",
+        volume: "Hacim",
+        search: {
+            placeholder: "Kripto ara",
+            clear: "Aramayı temizle"
+        },
+        tabs: {
+            all: "Tümü",
+            gainers: "Yükselenler",
+            losers: "Düşenler",
+            favorites: "Favoriler"
+        }
+    },
+    signup: {
+        title: "KAYIT OL",
+        creatingAccount: "OLUŞTURULUYOR...",
+        createAccount: "HESAP OLUŞTUR",
+        refresh: "Yenile",
+        captchaMismatch: "Captcha eşleşmiyor",
+        alreadyHaveAccount: "Zaten hesabınız var mı? Giriş yapın",
+        terms: {
+            text: "Hesap oluşturarak",
+            link: "Hizmet Koşullarımızı"
+        },
+        labels: {
+            email: "E-posta",
+            phoneNumber: "Telefon Numarası",
+            captcha: "Grafik Captcha",
+            password: "Şifre",
+            confirmPassword: "Şifreyi Onayla",
+            withdrawPassword: "Para Çekme Şifresi",
+            invitationCode: "Davet Kodu"
+        },
+        placeholders: {
+            email: "E-posta adresinizi girin",
+            phoneNumber: "Telefon numaranızı girin",
+            captcha: "Kodu girin",
+            password: "Bir şifre oluşturun",
+            confirmPassword: "Şifrenizi onaylayın",
+            withdrawPassword: "Para çekme şifresini girin",
+            invitationCode: "Davet kodunu girin"
+        }
+    },
+    home: {
+        quickAccess: {
+            title: "Hızlı Erişim",
+            deposit: "Yatırma",
+            security: "Güvenlik",
+            faqCenter: "SSS Merkezi",
+            invitation: "Davet",
+            staking: "Staking"
+        },
+        popularCryptos: "Popüler Kriptoparalar",
+        seeAll: "Tümünü gör",
+        volume: "Hacim",
+        loading: "Yükleniyor...",
+        notifications: {
+            btcAlert: "BTC Fiyat Uyarısı",
+            btcReached: "Bitcoin $45.000'a ulaştı",
+            fiveMinAgo: "5 dakika önce",
+            depositSuccess: "Yatırma Başarılı",
+            depositConfirmed: "0.5 ETH tutarındaki yatırmanız onaylandı",
+            oneHourAgo: "1 saat önce",
+            securityUpdate: "Güvenlik Güncellemesi",
+            newSecurityFeatures: "Yeni güvenlik özellikleri mevcut",
+            twoHoursAgo: "2 saat önce",
+            marketNews: "Piyasa Haberleri",
+            ethUpgrade: "Ethereum yükseltmesi başarıyla tamamlandı",
+            fiveHoursAgo: "5 saat önce"
+        }
+    },
+    faq: {
+        title: "SSS Merkezi",
+        hero: {
+            title: "Sıkça Sorulan Sorular",
+            subtitle: "Nexus kullanımı hakkında yaygın soruların yanıtlarını bulun"
+        },
+        search: {
+            placeholder: "Yanıtlar için ara..."
+        },
+        categories: {
+            gettingStarted: "Başlarken",
+            managingAccount: "Hesabınızı Yönetme"
+        },
+        questions: {
+            howToCreateAccount: "Nasıl hesap oluşturabilirim?",
+            howToCompleteVerification: "Doğrulamayı nasıl tamamlarım?",
+            howToBuyCrypto: "Nasıl kripto para satın alabilirim?",
+            howToTrade: "Kripto paraları nasıl işlem yapabilirim?",
+            howToSendReceive: "Kripto nasıl alır ve gönderirim?",
+            howToBecomeP2PMerchant: "Nasıl P2P Tüccarı olurum?",
+            howStakingWorks: "Staking nasıl çalışır?"
+        },
+        answers: {
+            verificationProcess: "Resmi bir kimlik ve selfie fotoğrafı yükleyin. Doğrulama genellikle saatler içinde onaylanır."
+        },
+        steps: {
+            goToWebsite: "https://nexus-exchange.com adresine gidin",
+            clickSignUp: '"Kayıt Ol"a tıklayın',
+            enterDetails: "Bilgilerinizi girin",
+            verifyEmail: "E-posta adresinizi doğrulayın",
+            completeVerification: "Önce doğrulamayı tamamlayın",
+            clickBuyCrypto: '"Kripto Satın Al"a tıklayın',
+            selectCoinAndPayment: "Coin ve ödeme yöntemini seçin",
+            confirmTransaction: "İşlemi onaylayın",
+            cryptoInWallet: "Kripto cüzdanınızda görünecek",
+            goToTradeMarkets: '"İşlem/Piyasalar"a gidin',
+            pickTradingPair: "Bir işlem çifti seçin (ör. BTC/USDT)",
+            placeOrders: "Piyasa veya limit emirleri verin",
+            receiveCrypto: "Cüzdan > Al'a gidin → adresi veya QR kodu kopyalayın",
+            sendCrypto: "Cüzdan > Gönder'e gidin → adres/miktar girin → onaylayın",
+            applyP2P: '"P2P" bölümü altında başvurun',
+            meetCriteria: "Uygunluk kriterlerini karşılayın",
+            createOffers: "Onaylandıktan sonra teklifler oluşturun ve işlem yapın",
+            goToStaking: "Cüzdanlar > Staking'e gidin",
+            pickStakingPlan: "Bir staking planı seçin",
+            selectAmount: "Stake edilecek miktarı seçin",
+            confirmStaking: "İşlemi onaylayın",
+            rewardsProcessed: "Ödüller dönem sonunda otomatik olarak işlenir"
+        },
+        labels: {
+            toReceive: "Almak için:",
+            toSend: "Göndermek için:"
+        },
+        futures: {
+            title: "Vadeli İşlem Açıklaması",
+            whatAreFutures: "Vadeli işlem sözleşmeleri nedir?",
+            futuresExplanation: "Belirli bir tarihte önceden belirlenmiş bir fiyattan kripto alım veya satım anlaşmaları (nakit uzlaşmalı).",
+            whatIsLeverage: "Kaldıraç nedir?",
+            leverageExplanation: "Sahip olduğunuzdan daha fazla sermaye ile işlem yapma yeteneği (ör. 10x, 20x, 50x kaldıraç).",
+            longShortPositions: "Long ve Short pozisyonları nedir?",
+            long: "Long",
+            longExplanation: "= fiyatın yükseleceğine bahse girmek",
+            short: "Short",
+            shortExplanation: "= fiyatın düşeceğine bahse girmek",
+            marginLiquidation: "Teminat ve Likidasyon nedir?",
+            marginExplanation: "Pozisyonu sürdürmek için teminatınız çok düşerse pozisyon likidasyon riski.",
+            fundingRate: "Fonlama Oranı nedir?",
+            fundingRateExplanation: "Sürekli sözleşme fiyatlarını spot fiyatlarla dengelemek için uzun ve kısa vadeli yatırımcılar arasında her 8 saatte bir değiş tokuş edilen ücret.",
+            profitLossCalculation: "Kar/Zarar nasıl hesaplanır?",
+            profitLossExplanation: "Fiyat farkının kaldıracınız ve pozisyon büyüklüğünüzle çarpılmasına dayanarak hesaplanır."
+        },
+        benefits: {
+            title: "Neden Nexus Futures'ı Seçmelisiniz?",
+            hedge: "Piyasa oynaklığına karşı korunun",
+            multiplyProfits: "Kaldıraçla karları katlayın",
+            tradeBothMarkets: "Hem yükselen hem de düşen piyasalarda işlem yapın",
+            advancedStrategies: "Gelişmiş işlem stratejileri uygulayın"
+        },
+        actionCards: {
+            contactSupport: "Destekle İletişime Geçin",
+            getHelp: "Ekibimizden yardım alın",
+            community: "Topluluk",
+            joinDiscussions: "Tartışmalara katılın"
+        },
+        footer: {
+            copyright: "© 2025 Nexus Exchange. Tüm hakları saklıdır.",
+            needHelp: "Daha fazla yardıma mı ihtiyacınız var? support@nexus-exchange.com adresinden iletişime geçin"
+        }
+    },
+    tabBottomNavigator: {
+        home: "ana sayfa",
+        grap: "grafik",
+        records: "kayıtlar",
+        starting: "başlangıç"
+    },
+    language: {
+        title: "Uygulama Dili",
+        selectLanguage: "Dil Seçin",
+        choosePreferred: "Tercih ettiğiniz dili seçin",
+        searchPlaceholder: "Dillerde ara...",
+        currentLanguage: "Mevcut Dil",
+        languages: {
+            english: "İngilizce",
+            french: "Fransızca",
+            russian: "Rusça",
+            german: "Almanca",
+            spanish: "İspanyolca"
+        },
+        nativeNames: {
+            english: "English",
+            french: "Français",
+            russian: "Русский",
+            german: "Deutsch",
+            spanish: "Español"
+        }
+    }
+},
+
+
+  entities: {
+    record: {
+      menu: "Kayıtlar",
+      fields: {
+        user: "kullanıcı",
+        product: "ürün",
+        number: "kayıt numarası",
+        status: "durum",
+      },
+      list: {
+        title: "Kayıt listesi",
+      },
+      view: {
+        title: "Kayıt Detayı",
+      },
+      edit: {
+        title: "Kaydı Düzenle",
+      },
+      create: {
+        success: "Ürün başarıyla gönderildi.",
+      },
+      update: {
+        success: "Ürün başarıyla gönderildi.",
+      },
+      destroy: {
+        success: "Kayıt başarıyla silindi",
+      },
+      destroyAll: {
+        success: "Kayıt başarıyla silindi",
+      },
+      enumerators: {
+        status: {
+          pending: "Beklemede",
+          completed: "Tamamlandı",
+          canceled: "İptal edildi",
+        },
+      },
+    },
+
+    category: {
+      name: "kategori",
+      label: "Kategoriler",
+      menu: "Kategoriler",
+      exporterFileName: "kategori_dışa_aktar",
+      list: {
+        menu: "Kategoriler",
+        title: "Kategoriler",
+      },
+      create: {
+        success: "Kategori başarıyla kaydedildi",
+      },
+      update: {
+        success: "Kategori başarıyla kaydedildi",
+      },
+      destroy: {
+        success: "Kategori başarıyla silindi",
+      },
+      destroyAll: {
+        success: "Kategori(ler) başarıyla silindi",
+      },
+      edit: {
+        title: "Kategoriyi Düzenle",
+      },
+      fields: {
+        id: "Id",
+        name: "Ad",
+        slug: "Slug",
+        photo: "Fotoğraf",
+        metaKeywords: "Meta Anahtar Kelimeler",
+        metaDescriptions: "Meta Açıklamalar",
+        status: "Durum",
+        isFeature: "Öne Çıkan",
+        serialRange: "Seri",
+        serial: "Seri",
+        createdAt: "Oluşturulma tarihi",
+        updatedAt: "Güncelleme tarihi",
+        createdAtRange: "Oluşturulma tarihi",
+      },
+      enumerators: {
+        status: {
+          enable: "Etkin",
+          disable: "Devre dışı",
+        },
+      },
+      placeholders: {},
+      hints: {},
+      new: {
+        title: "Yeni Kategori",
+      },
+      view: {
+        title: "Kategoriyi Görüntüle",
+      },
+      importer: {
+        title: "Kategorileri İçe Aktar",
+        fileName: "kategori_içe_aktarım_şablonu",
+        hint: "Dosya/Resim sütunları, dosyaların URL'leri olmalı ve boşlukla ayrılmalıdır.",
+      },
+    },
+
+    product: {
+      name: "ürün",
+      label: "Ürünler",
+      menu: "Ürünler",
+      exporterFileName: "ürün_dışa_aktar",
+      list: {
+        menu: "Ürünler",
+        title: "Ürünler",
+      },
+      create: {
+        success: "Ürün başarıyla kaydedildi",
+      },
+      update: {
+        success: "Ürün başarıyla kaydedildi",
+      },
+      destroy: {
+        success: "Ürün başarıyla silindi",
+      },
+      destroyAll: {
+        success: "Ürün(ler) başarıyla silindi",
+      },
+      edit: {
+        title: "Ürünü Düzenle",
+      },
+      fields: {
+        id: "Id",
+        name: "Ad",
+        slug: "Slug",
+        tags: "Etiketler",
+        video: "Video",
+        specificationName: "Özellik Adı",
+        specificationDesciption: "Özellik Açıklaması",
+        isSpecification: "Özellik mi",
+        details: "Detaylar",
+        photo: "Fotoğraf",
+        discountPriceRange: "İndirimli Fiyat",
+        discountPrice: "Mevcut Fiyat",
+        previousPriceRange: "Önceki Fiyat",
+        previousPrice: "Önceki Fiyat",
+        stockRange: "Stok",
+        stock: "Stok",
+        metaKeywords: "Meta Anahtar Kelimeler",
+        metaDesctiption: "Kısa Açıklama",
+        status: "Durum",
+        isType: "Tür",
+        dateRange: "Tarih",
+        date: "Tarih",
+        itemType: "Ürün Türü",
+        file: "Dosya",
+        link: "Bağlantı",
+        fileType: "Dosya Türü",
+        taxe: "Vergi",
+        category: "Kategori",
+        subcategory: "Alt Kategori",
+        childcategory: "Alt Alt Kategori",
+        brand: "Marka",
+        gallery: "Galeri",
+        createdAt: "Oluşturulma tarihi",
+        updatedAt: "Güncelleme tarihi",
+        createdAtRange: "Oluşturulma tarihi",
+      },
+      enumerators: {
+        status: {
+          enable: "Etkin",
+          disable: "Devre dışı",
+        },
+        itemType: {
+          physical: "Fiziksel",
+          digitale: "Dijital",
+        },
+        fileType: {
+          file: "Dosya",
+          link: "Bağlantı",
+        },
+        isType: {
+          new_arrival: "Yeni Gelen",
+          feature_product: "Öne Çıkan Ürün",
+          top_pdroduct: "En İyi Ürün",
+          best_product: "En İyi Ürün",
+          flash_deal_product: "Fırsat Ürünü",
+        },
+      },
+      placeholders: {},
+      hints: {},
+      new: {
+        title: "Yeni Ürün",
+      },
+      view: {
+        title: "Ürünü Görüntüle",
+      },
+      importer: {
+        title: "Ürünleri İçe Aktar",
+        fileName: "ürün_içe_aktarım_şablonu",
+        hint: "Dosya/Resim sütunları, dosyaların URL'leri olmalı ve boşlukla ayrılmalıdır.",
+      },
+    },
+    transaction: {
+      name: "işlem",
+      label: "İşlemler",
+      menu: "İşlemler",
+      exporterFileName: "işlem_dışa_aktar",
+      list: {
+        menu: "İşlemler",
+        title: "İşlemler",
+      },
+      create: {
+        success: "İşlem başarıyla gönderildi",
+      },
+      update: {
+        success: "İşlem başarıyla kaydedildi",
+      },
+      destroy: {
+        success: "İşlem başarıyla silindi",
+      },
+      destroyAll: {
+        success: "İşlem(ler) başarıyla silindi",
+      },
+      edit: {
+        title: "İşlemi Düzenle",
+      },
+      fields: {
+        id: "Id",
+        amountRange: "Tutar",
+        amount: "Tutar",
+        email: "E-posta",
+        tax: "Vergi",
+        currencySign: "Para Birimi Sembolü",
+        currencyValue: "Para Birimi Değeri",
+        orderId: "Sipariş Kimliği",
+        createdAt: "Oluşturulma tarihi",
+        updatedAt: "Güncelleme tarihi",
+        createdAtRange: "Oluşturulma tarihi",
+      },
+      enumerators: {
+        status: {
+          pending: "Beklemede",
+          completed: "Başarılı",
+          canceled: "İptal edildi",
+        },
+      },
+      placeholders: {},
+      hints: {},
+      new: {
+        title: "Yeni İşlem",
+      },
+      view: {
+        title: "İşlemi Görüntüle",
+      },
+      importer: {
+        title: "İşlemleri İçe Aktar",
+        fileName: "işlem_içe_aktarım_şablonu",
+        hint: "Dosya/Resim sütunları, dosyaların URL'leri olmalı ve boşlukla ayrılmalıdır.",
+      },
+    },
+
+
+    order: {
+      name: "sipariş",
+      label: "Siparişler",
+      menu: "Siparişler",
+      exporterFileName: "sipariş_dışa_aktar",
+      list: {
+        menu: "Siparişler",
+        title: "Siparişler",
+      },
+      create: {
+        success: "Sipariş başarıyla kaydedildi",
+      },
+      update: {
+        success: "Sipariş başarıyla kaydedildi",
+      },
+      destroy: {
+        success: "Sipariş başarıyla silindi",
+      },
+      destroyAll: {
+        success: "Sipariş(ler) başarıyla silindi",
+      },
+      edit: {
+        title: "Siparişi Düzenle",
+      },
+      fields: {
+        id: "Id",
+        userId: "Kullanıcı",
+        cart: "Sepet",
+        shipping: "Nakliye",
+        discountRange: "İndirim",
+        discount: "İndirim",
+        paymentMethod: "Ödeme Yöntemi",
+        taxe: "Vergi",
+        transactionNumber: "İşlem Numarası",
+        orderStatus: "Sipariş Durumu",
+        createdAt: "Oluşturulma tarihi",
+        updatedAt: "Güncelleme tarihi",
+        createdAtRange: "Oluşturulma tarihi",
+      },
+      enumerators: {
+        orderStatus: {
+          pending: "Beklemede",
+          in_progress: "İşlemde",
+          delivered: "Teslim edildi",
+          canceled: "İptal edildi",
+        },
+      },
+      placeholders: {},
+      hints: {},
+      new: {
+        title: "Yeni Sipariş",
+      },
+      view: {
+        title: "Siparişi Görüntüle",
+      },
+      importer: {
+        title: "Siparişleri İçe Aktar",
+        fileName: "sipariş_içe_aktarım_şablonu",
+        hint: "Dosya/Resim sütunları, dosyaların URL'leri olmalı ve boşlukla ayrılmalıdır.",
+      },
+    },
+  },
+
+
+  buttons: {
+    login: "Giriş Yap",
+    registerNow: "Şimdi Kaydol",
+    signup: "Kayıt Ol",
+    start: "Başla",
+    orders: "Siparişler",
+    submit: "Gönder",
+    backtohome: "Ana Sayfaya Dön",
+    confirm: "Onayla",
+    logout: "Çıkış Yap",
+    getstarted: "Başla",
+  },
+  text: {
+    welcome: "Hoş Geldiniz",
+    discover: "Size özel fırsatları keşfedin",
+    signin: "Giriş Yap",
+    haveaccount: "Zaten bir hesabınız var mı?",
+    noaccount: "Hesabınız yok mu?",
+    showingnow: "Şu An Gösterimde",
+    comingsoon: "Yakında",
+    termsconditions: "Şartlar & Koşullar",
+    todayearning: "Bugünkü Kazanç",
+    accountbalance: "Hesap Bakiyesi",
+    freezebalance: "Dondurulmuş Bakiye",
+    sumbitInformation: "Bilgileri Gönder",
+    order: "Sipariş",
+    pending: "Beklemede",
+    completed: "Tamamlandı",
+    canceled: "İptal Edildi",
+    notransaction: "Henüz işlem bulunmamaktadır!",
+    createdtime: "Oluşturulma Zamanı",
+    creationtime: "Oluşturma zamanı",
+    orderNumber: "Sipariş Numarası",
+    orderamount: "Sipariş Tutarı",
+    income: "Gelir",
+    buyerating: "Alıcı Puanı",
+    uid: "UID",
+    promotioncode: "Promosyon Kodu",
+    walletamount: "Cüzdan Bakiyesi",
+    creditassesment: "Kredi Değerlendirmesi",
+    myfinance: "Finanslarım",
+    withdraw: "Para Çek",
+    mydetails: "Bilgilerim",
+    profile: "Profil",
+    wallet: "Cüzdan",
+    other: "Diğer",
+    customersupport: "Müşteri Desteği",
+    transaction: "İşlem",
+    taskshistory: "Görev Geçmişi",
+    security: "Güvenlik",
+    sponsor: `Güvenliğimiz en büyük önceliğimizdir ve sizi 
+              potansiyel risklerden korumak istiyoruz. Lütfen unutmayın, 
+              asla bilinmeyen bir adrese para göndermenizi istemeyiz. 
+              Ödeme yapmadan önce lütfen bilgileri bizimle doğrulayın.`,
+  },
+  errors: {
+    backToHome: "Ana Sayfaya Dön",
+    403: "Üzgünüz, bu sayfaya erişim yetkiniz yok",
+    404: "Üzgünüz, ziyaret ettiğiniz sayfa mevcut değil",
+    500: "Üzgünüz, sunucu bir hata bildiriyor",
+    429: "Çok fazla istek gönderildi. Lütfen daha sonra tekrar deneyin.",
+    forbidden: {
+      message: "Erişim Engellendi",
+    },
+    validation: {
+      message: "Bir hata oluştu",
+    },
+    defaultErrorMessage: "Üzgünüz, bir hata oluştu",
+  },
+
+  withdraw: {
+    withdrawamount: "Çekilecek Tutar",
+    Withdrawpassword: "Çekim Şifresi",
+    availablebalance: "Mevcut Bakiye",
+    rules: "Kurallar Açıklaması",
+    rule1: "Minimum çekim tutarı 20$",
+    rule2: "Çekim talebi yapıldıktan sonra ödeme 24 saat içinde yapılacaktır",
+    rule3: "Günlük siparişlerin tamamı verilmezse çekim yapılamaz, tüm ürünler sunulmalıdır"
+  },
+  profile: {
+    profile: "Profil",
+    fullname: "Tam Ad",
+    email: "E-Posta",
+    phonenumber: "Telefon Numarası",
+    country: "Ülke",
+    Invitationcode: "Davet Kodu"
+  },
+  wallet: {
+    wallet: "Cüzdan",
+    info: "Çekim yöntemi bilgileri",
+    username: "Kullanıcı Adı",
+    walletname: "Cüzdan Adı",
+    walletaddress: "Cüzdan Adresi",
+    note: "Not",
+    notedesctiption: "Lütfen bu bilgileri doldururken dikkatli olun."
+  },
+
+  cs: {
+    cs: "Müşteri Hizmetleri",
+    note: "Sorularınız veya sorunlarınız varsa, lütfen bize e-posta gönderin veya çevrimiçi müşteri destek ekibimizle sohbet edin.",
+    contactnow: "Şimdi İletişime Geç"
+  },
+  transaction: {
+    transaction: "İşlem",
+    all: "Tümü",
+    withdraw: "Para Çekme",
+    dposit: "Para Yatırma",
+    notransaction: "Henüz işlem bulunmamaktadır!"
+  },
+  order: {
+    order: "Sipariş",
+    completed: "Tamamlandı",
+    pending: "Beklemede",
+    canceled: "İptal Edildi",
+    ordertime: "Sipariş Zamanı",
+    ordernumber: "Sipariş Numarası",
+    total: "Toplam Sipariş Tutarı",
+    commission: "Komisyon",
+    return: "Tahmini Getiri"
+  },
+
+  security: {
+    changepassword: "Şifre Değiştir",
+    oldpassword: "Eski Şifre",
+    newpassword: "Yeni Şifre",
+    confirmpassword: "Şifreyi Onayla",
+    note: "Not",
+    notedesc: "Lütfen bu bilgileri dikkatlice doldurun"
+  },
+
+
+
+  tabbarmenue: {
+    home: "Ana Sayfa",
+    rate: "Değerlendir",
+    profile: "Profil"
+  },
+  validation: {
+    mixed: {
+      default: "${path} geçersiz",
+      required: "${path} zorunludur",
+      oneOf: "${path} şu değerlerden biri olmalıdır: ${values}",
+      notOneOf: "${path} şu değerlerden biri olmamalıdır: ${values}",
+      notType: ({ path, type, value, originalValue }) => {
+        return `${path} bir ${type} olmalıdır`;
+      },
+    },
+    string: {
+      length: "${path} tam olarak ${length} karakter olmalıdır",
+      min: "${path} en az ${min} karakter olmalıdır",
+      max: "${path} en fazla ${max} karakter olmalıdır",
+      matches: '${path} şu desenle eşleşmelidir: "${regex}"',
+      email: "${path} geçerli bir e-posta adresi olmalıdır",
+      url: "${path} geçerli bir URL olmalıdır",
+      trim: "${path} başında ve sonunda boşluk olmamalıdır",
+      lowercase: "${path} küçük harflerden oluşmalıdır",
+      uppercase: "${path} büyük harflerden oluşmalıdır",
+      selected: "${path} seçilmelidir",
+    },
+    number: {
+      min: "${path} ${min} veya daha büyük olmalıdır",
+      max: "${path} ${max} veya daha küçük olmalıdır",
+      lessThan: "${path} ${less} değerinden küçük olmalıdır",
+      moreThan: "${path} ${more} değerinden büyük olmalıdır",
+      notEqual: "${path} ${notEqual} değerine eşit olmamalıdır",
+      positive: "${path} pozitif bir sayı olmalıdır",
+      negative: "${path} negatif bir sayı olmalıdır",
+      integer: "${path} bir tam sayı olmalıdır",
+    },
+    date: {
+      min: "${path} ${min} tarihinden sonra olmalıdır",
+      max: "${path} ${max} tarihinden önce olmalıdır",
+    },
+    boolean: {},
+    object: {
+      noUnknown:
+        "${path} belirtilmeyen anahtarlar içermemelidir",
+    },
+    array: {
+      min: ({ min, path }) =>
+        min === 1
+          ? `${path} zorunludur`
+          : `${path} en az ${min} öğe içermelidir`,
+      max: "${path} en fazla ${max} öğe içermelidir",
+    },
+  },
+  /* eslint-disable */
+  fileUploader: {
+    upload: "Yükle",
+    image: "Bir resim yüklemelisiniz",
+    size: "Dosya çok büyük. Maksimum izin verilen boyut {0}",
+    formats: `Geçersiz format. Şunlardan biri olmalıdır: {0}.`,
+  },
+
+};
+
+export default tr;

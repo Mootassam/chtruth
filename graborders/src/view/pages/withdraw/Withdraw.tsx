@@ -10,15 +10,12 @@ import { i18n } from "../../../i18n";
 import authSelectors from "src/modules/auth/authSelectors";
 import actions from "src/modules/withdraw/form/withdrawFormActions";
 import selectors from "src/modules/withdraw/form/withdrawFormSelectors";
-
 import FieldFormItem from "src/shared/form/FieldFormItem";
 import assetsListSelectors from "src/modules/assets/list/assetsListSelectors";
 import assetsListActions from "src/modules/assets/list/assetsListActions";
 import SuccessModalComponent from "src/view/shared/modals/sucessModal";
 
-//
 // Currency rules: minimum withdrawal and fee per currency
-//
 const withdrawRules = {
   BTC: { min: 0.00091, fee: 0.00002, decimals: 8 },
   ETH: { min: 0.0077, fee: 0.0005, decimals: 8 },
@@ -32,16 +29,16 @@ const schema = yup.object().shape({
   currency: yupFormSchemas.string(i18n("entities.withdraw.fields.currency")),
   withdrawAmount: yup
     .number()
-    .typeError("Withdrawal amount must be a number")
-    .required("Withdrawal amount is required")
+    .typeError(i18n("pages.withdraw.errors.amountNumber"))
+    .required(i18n("pages.withdraw.errors.amountRequired"))
     .test(
       "positive",
-      "Withdrawal amount must be greater than 0",
+      i18n("pages.withdraw.errors.amountPositive"),
       (val) => typeof val === "number" && val > 0
     )
     .test(
       "min-by-currency",
-      "Amount is below the minimum withdrawal for this currency",
+      i18n("pages.withdraw.errors.amountMin"),
       function (value) {
         const { currency } = this.parent || {};
         if (!currency || !withdrawRules[currency]) return true;
@@ -57,7 +54,7 @@ const schema = yup.object().shape({
   status: yupFormSchemas.enumerator(i18n("entities.withdraw.fields.status"), {
     options: ["pending", "canceled", "success"],
   }),
-  withdrawPassword: yup.string().required("Withdrawal password is required"),
+  withdrawPassword: yup.string().required(i18n("pages.withdraw.errors.passwordRequired")),
 });
 
 function Withdraw() {
@@ -158,19 +155,19 @@ function Withdraw() {
   const computeValidationState = () => {
     // not allowed if currency is not selected
     if (!selected) {
-      return { disabled: true, label: "Select currency", reason: "selectCurrency" };
+      return { disabled: true, label: i18n("pages.withdraw.validation.selectCurrency"), reason: "selectCurrency" };
     }
 
     // amount missing or invalid
     if (!isAmountNumber || parsedAmount <= 0) {
-      return { disabled: true, label: "Enter amount", reason: "enterAmount" };
+      return { disabled: true, label: i18n("pages.withdraw.validation.enterAmount"), reason: "enterAmount" };
     }
 
     // below minimum for currency
     if (min && parsedAmount < min) {
       return {
         disabled: true,
-        label: `Below minimum (${formatNumber(min)} ${selected})`,
+        label: i18n("pages.withdraw.validation.belowMin", formatNumber(min), selected),
         reason: "belowMin",
       };
     }
@@ -179,7 +176,7 @@ function Withdraw() {
     if (parsedAmount > availableBalance) {
       return {
         disabled: true,
-        label: "Insufficient balance",
+        label: i18n("pages.withdraw.validation.insufficientBalance"),
         reason: "insufficientBalance",
       };
     }
@@ -188,18 +185,18 @@ function Withdraw() {
     if (parsedAmount + fee > availableBalance) {
       return {
         disabled: true,
-        label: "Insufficient balance (including fee)",
+        label: i18n("pages.withdraw.validation.insufficientForFee"),
         reason: "insufficientForFee",
       };
     }
 
     // password required
     if (!watchedPassword || (typeof watchedPassword === "string" && watchedPassword.trim() === "")) {
-      return { disabled: true, label: "Enter password", reason: "enterPassword" };
+      return { disabled: true, label: i18n("pages.withdraw.validation.enterPassword"), reason: "enterPassword" };
     }
 
     // everything okay
-    return { disabled: false, label: "Confirm Withdrawal", reason: "ok" };
+    return { disabled: false, label: i18n("pages.withdraw.confirmWithdrawal"), reason: "ok" };
   };
 
   const validationState = computeValidationState();
@@ -267,7 +264,7 @@ function Withdraw() {
 
   return (
     <div className="withdrawContainer">
-      <SubHeader title="Withdraw Crypto" />
+      <SubHeader title={i18n("pages.withdraw.title")} />
       <div className="container">
         {!hasAnyWallet ? (
           <div className="noWalletSection">
@@ -275,24 +272,21 @@ function Withdraw() {
               <div className="noWalletIcon">
                 <i className="fas fa-wallet"></i>
               </div>
-              <h3>No Wallet Address Found</h3>
+              <h3>{i18n("pages.withdraw.noWallet.title")}</h3>
               <p>
-                You haven't added any wallet addresses yet. Please add a
-                withdrawal address to proceed with your transaction.
+                {i18n("pages.withdraw.noWallet.description")}
               </p>
               <Link to="/withdrawaddress" className="addWalletBtn">
                 <i className="fas fa-plus" />
-                Add Wallet Address
+                {i18n("pages.withdraw.noWallet.addButton")}
               </Link>
               <div className="securityNotice">
                 <div className="securityHeader">
                   <i className="fas fa-shield-alt securityIcon" />
-                  <div className="securityTitle">Security First</div>
+                  <div className="securityTitle">{i18n("pages.withdraw.security.title")}</div>
                 </div>
                 <div className="securityText">
-                  For your security, we require a verified withdrawal address
-                  for each cryptocurrency. This helps prevent errors and ensures
-                  your funds reach the correct destination.
+                  {i18n("pages.withdraw.security.description")}
                 </div>
               </div>
             </div>
@@ -300,7 +294,7 @@ function Withdraw() {
         ) : (
           <>
             <div className="currencySection">
-              <div className="sectionHeading">Select Currency</div>
+              <div className="sectionHeading">{i18n("pages.withdraw.selectCurrency")}</div>
               <div className="currencyDropdownContainer">
                 <select
                   className="currencyDropdown"
@@ -314,12 +308,12 @@ function Withdraw() {
                     form.setValue("withdrawPassword", "");
                   }}
                 >
-                  <option value="">Select a currency</option>
+                  <option value="">{i18n("pages.withdraw.selectPlaceholder")}</option>
                   {currencyOptions.map((currency) => {
                     const hasWallet = currentUser?.wallet?.[currency.id]?.address;
                     return (
                       <option key={currency.id} value={currency.id} disabled={!hasWallet}>
-                        {currency.name} {!hasWallet && "(No wallet address)"}
+                        {currency.name} {!hasWallet && i18n("pages.withdraw.noWalletAddress")}
                       </option>
                     );
                   })}
@@ -330,7 +324,7 @@ function Withdraw() {
                   </div>
                 )}
               </div>
-              {!selected && <div className="dropdownHint">Please select a currency to continue</div>}
+              {!selected && <div className="dropdownHint">{i18n("pages.withdraw.selectHint")}</div>}
             </div>
 
             {selectModal && (
@@ -348,7 +342,7 @@ function Withdraw() {
                 <form onSubmit={form.handleSubmit(onSubmit)}>
                   <div className="formSection">
                     <div className="inputField">
-                      <label className="inputLabel">Withdrawal Address</label>
+                      <label className="inputLabel">{i18n("pages.withdraw.withdrawalAddress")}</label>
                       <div className="inputWrapper">
                         <input
                           type="text"
@@ -359,18 +353,18 @@ function Withdraw() {
                           aria-readonly
                         />
                         <div className="networkInfo" id="networkDetails">
-                          Network: {selectedCurrencyData?.name} ({selected})
+                          {i18n("pages.withdraw.networkInfo", selectedCurrencyData?.name, selected)}
                         </div>
                       </div>
                       {!address && (
                         <div className="fieldError" role="alert" style={{ color: "#d9534f", marginTop: 6 }}>
-                          No wallet address found for {selected}. Please add a wallet address first.
+                          {i18n("pages.withdraw.errors.noWalletAddress", selected)}
                         </div>
                       )}
                     </div>
 
                     <div className="inputField">
-                      <label className="inputLabel">Withdrawal Amount</label>
+                      <label className="inputLabel">{i18n("pages.withdraw.withdrawalAmount")}</label>
                       <div className="inputWrapper">
                         <FieldFormItem
                           name="withdrawAmount"
@@ -382,7 +376,7 @@ function Withdraw() {
                           disabled={isSubmitting}
                         />
                         <div className="balanceText">
-                          Available:{" "}
+                          {i18n("pages.withdraw.available")}:{" "}
                           <span id="availableBalance">
                             {formatNumber(availableBalance, decimals)} {selected}
                           </span>
@@ -392,57 +386,57 @@ function Withdraw() {
                       <div className="fieldError" role="alert" style={{ color: "#d9534f", marginTop: 6 }}>
                         {errors.withdrawAmount?.message && <div>{errors.withdrawAmount?.message}</div>}
                         {!errors.withdrawAmount?.message && validationState.reason === "enterAmount" && (
-                          <div>Enter amount</div>
+                          <div>{i18n("pages.withdraw.validation.enterAmount")}</div>
                         )}
                         {!errors.withdrawAmount?.message && validationState.reason === "belowMin" && (
                           <div>
-                            Minimum withdraw for {selected}: {formatNumber(min, decimals)} {selected}
+                            {i18n("pages.withdraw.errors.minimumWithdraw", selected, formatNumber(min, decimals), selected)}
                           </div>
                         )}
                         {!errors.withdrawAmount?.message && validationState.reason === "insufficientBalance" && (
-                          <div>Insufficient balance</div>
+                          <div>{i18n("pages.withdraw.validation.insufficientBalance")}</div>
                         )}
                         {!errors.withdrawAmount?.message && validationState.reason === "insufficientForFee" && (
-                          <div>Not enough balance to cover fee ({formatNumber(fee, decimals)} {selected})</div>
+                          <div>{i18n("pages.withdraw.errors.insufficientForFee", formatNumber(fee, decimals), selected)}</div>
                         )}
                       </div>
                     </div>
 
                     <div className="inputField">
-                      <label className="inputLabel">Withdrawal Password</label>
+                      <label className="inputLabel">{i18n("pages.withdraw.withdrawalPassword")}</label>
                       <div className="inputWrapper">
                         <FieldFormItem
                           name="withdrawPassword"
                           type="password"
                           className="textField"
-                          placeholder="Enter withdrawal password"
+                          placeholder={i18n("pages.withdraw.passwordPlaceholder")}
                           disabled={isSubmitting}
                         />
                       </div>
                       <div className="fieldError" role="alert" style={{ color: "#d9534f", marginTop: 6 }}>
                         {errors.withdrawPassword?.message && <div>{errors.withdrawPassword?.message}</div>}
                         {!errors.withdrawPassword?.message && validationState.reason === "enterPassword" && (
-                          <div>Enter withdrawal password</div>
+                          <div>{i18n("pages.withdraw.validation.enterPassword")}</div>
                         )}
                       </div>
                     </div>
 
                     <div className="feeContainer">
                       <div className="feeRow">
-                        <div className="feeLabel">Amount withdrawal</div>
+                        <div className="feeLabel">{i18n("pages.withdraw.amountWithdrawal")}</div>
                         <div className="feeValue">{isAmountNumber ? formatNumber(parsedAmount, decimals) : "-"} {selected}</div>
                       </div>
 
                       <div className="feeRow">
-                        <div className="feeLabel">Minimum withdrawal</div>
+                        <div className="feeLabel">{i18n("pages.withdraw.minimumWithdrawal")}</div>
                         <div className="feeValue">{formatNumber(min, decimals)} {selected}</div>
                       </div>
                       <div className="feeRow">
-                        <div className="feeLabel">Network fee</div>
+                        <div className="feeLabel">{i18n("pages.withdraw.networkFee")}</div>
                         <div className="feeValue">{formatNumber(fee, decimals)} {selected}</div>
                       </div>
                       <div className="feeRow receiveAmount">
-                        <div className="feeLabel">You will receive</div>
+                        <div className="feeLabel">{i18n("pages.withdraw.youWillReceive")}</div>
                         <div className="feeValue">{formatNumber(receiveAmount, decimals)} {selected}</div>
                       </div>
                     </div>
@@ -450,10 +444,10 @@ function Withdraw() {
                     <div className="securityNotice">
                       <div className="securityHeader">
                         <i className="fas fa-shield-alt securityIcon" />
-                        <div className="securityTitle">Security Verification</div>
+                        <div className="securityTitle">{i18n("pages.withdraw.securityVerification")}</div>
                       </div>
                       <div className="securityText">
-                        For your security, withdrawals require password confirmation and may be subject to review. Withdrawals to incorrect addresses cannot be reversed.
+                        {i18n("pages.withdraw.securityMessage")}
                       </div>
                     </div>
 
@@ -466,7 +460,7 @@ function Withdraw() {
                       {isSubmitting ? (
                         <>
                           <i className="fas fa-spinner fa-spin" style={{ marginRight: '8px' }}></i>
-                          Processing...
+                          {i18n("pages.withdraw.processing")}
                         </>
                       ) : (
                         validationState.label
@@ -480,8 +474,6 @@ function Withdraw() {
           </>
         )}
       </div>
-
-
 
 
       <style>{`

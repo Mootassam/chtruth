@@ -10,6 +10,7 @@ import Wallet from "../models/wallet";
 import { sendNotification } from "../../services/notificationServices";
 import Error405 from "../../errors/Error405";
 import Transaction from '../models/transaction'
+import Error400 from "../../errors/Error400";
 class FuturesRepository {
   // inside FuturesRepository class:
 
@@ -143,9 +144,8 @@ class FuturesRepository {
     }
 
     if (record.finalized) {
-      throw new Error405(
-        "This futures entry is already finalized and cannot be changed."
-      );
+      throw new Error400(options.language, "futures.alreadyFinalized");
+
     }
 
     const isControlUpdate = data.control === "loss" || data.control === "profit";
@@ -226,8 +226,9 @@ class FuturesRepository {
         });
 
         if (!selectedWallet) {
-          throw new Error405(`USDT wallet not found for user ${record.createdBy}`);
-        }
+throw new Error400(options.language, "errors.usdtWalletNotFoundForUser", {
+  userId: record.createdBy
+});        }
 
         // CALCULATE PROFIT USING YOUR FORMULA WITH SAFE ACCESS
         const profitAmount = calculateProfit(
@@ -243,8 +244,7 @@ class FuturesRepository {
 
         // Validate closing price doesn't exceed $100
         if (closePrice && closePrice > 100) {
-          throw new Error405("Closing price cannot exceed $100");
-        }
+throw new Error400(options.language, "errors.closingPriceExceedLimit");        }
 
         // If no manual closing price provided, calculate it USING NEW FORMULA
         if (!closePrice) {
@@ -271,8 +271,7 @@ class FuturesRepository {
         // Handle wallet updates based on profit/loss
         if (data.control === "profit") {
           if (!(profitAmount > 0)) {
-            throw new Error405("Profit amount is zero or invalid.");
-          }
+throw new Error400(options.language, "errors.profitAmountInvalid");          }
 
           // Add profit to wallet (original amount + profit)
           await walletModel.findOneAndUpdate(
@@ -307,8 +306,7 @@ class FuturesRepository {
           const lossAmount = record.futuresAmount;
 
           if (!(lossAmount > 0)) {
-            throw new Error405("Loss amount is zero or invalid.");
-          }
+throw new Error400(options.language, "errors.lossAmountInvalid");          }
 
           // Create loss transaction (amount already deducted during trade creation)
           await transactionModel.create({
@@ -350,8 +348,7 @@ class FuturesRepository {
 
         // Validate closing price for regular updates too
         if (data.closePositionPrice && data.closePositionPrice > 100) {
-          throw new Error405("Closing price cannot exceed $100");
-        }
+throw new Error400(options.language, "errors.closingPriceExceedLimit");        }
 
         await FuturesModel.updateOne(
           { _id: id, tenant: currentTenant.id },

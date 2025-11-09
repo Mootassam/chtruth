@@ -10,6 +10,7 @@ import transaction from "../models/transaction";
 import { sendNotification } from "../../services/notificationServices";
 import Error405 from "../../errors/Error405";
 import User from "../models/user";
+import Error400 from "../../errors/Error400";
 
 class WithdrawRepository {
   static async create(data, options: IRepositoryOptions) {
@@ -19,8 +20,7 @@ class WithdrawRepository {
 
     const user = await User(options.database).findById(currentUser.id);
     if (!user || user.withdrawPassword !== data.withdrawPassword) {
-      throw new Error405("Password not matching");
-    }
+throw new Error400(options.language, "errors.passwordNotMatching");    }
 
 
     const [record] = await Withdraw(options.database).create(

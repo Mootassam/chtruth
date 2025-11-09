@@ -1,102 +1,90 @@
 import React, { useEffect, useState } from "react";
-import { useHistory } from "react-router-dom"; // Import useHistory
+import { useHistory } from "react-router-dom";
 import SubHeader from "src/view/shared/Header/SubHeader";
 import { useDispatch, useSelector } from "react-redux";
 import notificationFormActions from "src/modules/notification/form/notificationFormActions";
 import notificationListActions from "src/modules/notification/list/notificationListActions";
 import notificationListSelectors from "src/modules/notification/list/notificationListSelectors";
 import Dates from "src/view/shared/utils/Dates";
+import { i18n } from "../../../i18n";
 
 const typeConfig = {
   deposit: {
     icon: "fas fa-arrow-down",
-    title: "Deposit Received",
-    getMessage: (item) =>
-      `Your deposit of ${item.message} has been confirmed and credited to your wallet.`,
+    title: i18n("pages.notification.types.deposit.title"),
+    getMessage: (item) => i18n("pages.notification.types.deposit.message", item.message),
   },
   withdraw: {
     icon: "fas fa-arrow-up",
-    title: "Withdrawal Successful",
-    getMessage: (item) =>
-      `Your withdrawal of ${item.message} has been processed successfully.`,
+    title: i18n("pages.notification.types.withdraw.title"),
+    getMessage: (item) => i18n("pages.notification.types.withdraw.message", item.message),
   },
   staking: {
     icon: "fas fa-coins",
-    title: "Staking Profit",
-    getMessage: (item) =>
-      `You earned ${item.message} from your staking rewards.`,
+    title: i18n("pages.notification.types.staking.title"),
+    getMessage: (item) => i18n("pages.notification.types.staking.message", item.message),
   },
   kyc: {
     icon: "fas fa-id-card",
-    title: "KYC Update",
-    getMessage: (item) => item.message || "Your account has been activated.",
+    title: i18n("pages.notification.types.kyc.title"),
+    getMessage: (item) => item.message || i18n("pages.notification.types.kyc.defaultMessage"),
   },
   commission: {
     icon: "fas fa-hand-holding-dollar",
-    title: "Commission Received",
-    getMessage: (item) => `You received a commission of ${item.message}.`,
+    title: i18n("pages.notification.types.commission.title"),
+    getMessage: (item) => i18n("pages.notification.types.commission.message", item.message),
   },
   futures: {
     icon: "fas fa-chart-line",
-    title: "Futures Update",
-    getMessage: (item) =>
-      `Your futures transaction amount ${item.message} has been executed.`,
+    title: i18n("pages.notification.types.futures.title"),
+    getMessage: (item) => i18n("pages.notification.types.futures.message", item.message),
   },
   accountActivated: {
     icon: "fas fa-user-check",
-    title: "kyc Verification",
-    getMessage: (item) => `Hello ${item.message} your KYC documents have been verified you can now enjoy unlimited features on Nexus Exchange`,
+    title: i18n("pages.notification.types.accountActivated.title"),
+    getMessage: (item) => i18n("pages.notification.types.accountActivated.message", item.message),
   },
   custom: {
     icon: "fas fa-bell",
-    title: "Notification",
-    getMessage: (item) => item.message || "You have a new notification.",
+    title: i18n("pages.notification.types.custom.title"),
+    getMessage: (item) => item.message || i18n("pages.notification.types.custom.defaultMessage"),
   },
   cancel_deposit: {
     icon: "fas fa-ban",
-    title: "Deposit Cancelled",
-    getMessage: (item) =>
-      `Your deposit of ${item.message} has been cancelled.`,
+    title: i18n("pages.notification.types.cancelDeposit.title"),
+    getMessage: (item) => i18n("pages.notification.types.cancelDeposit.message", item.message),
   },
   cancel_withdraw: {
     icon: "fas fa-ban",
-    title: "Withdrawal Cancelled",
-    getMessage: (item) =>
-      `Your withdrawal of ${item.message} has been cancelled.`,
+    title: i18n("pages.notification.types.cancelWithdraw.title"),
+    getMessage: (item) => i18n("pages.notification.types.cancelWithdraw.message", item.message),
   },
   cancel_activated: {
     icon: "fas fa-user-slash",
-    title: "Activation Cancelled",
-    getMessage: () => "Your KYC was declined  by system please try again or contact Customer Support for help",
+    title: i18n("pages.notification.types.cancelActivated.title"),
+    getMessage: () => i18n("pages.notification.types.cancelActivated.message"),
   },
 };
 
 function Notification() {
   const dispatch = useDispatch();
-  const history = useHistory(); // Initialize useHistory
+  const history = useHistory();
   const allNotification = useSelector(notificationListSelectors.selectRows);
   const loadingNotification = useSelector(
     notificationListSelectors.selectLoading
   );
-  const [activeFilter, setActiveFilter] = useState("all"); // Track active filter
+  const [activeFilter, setActiveFilter] = useState("all");
 
   useEffect(() => {
-    // Send empty string for "All" filter, otherwise send the status
     const status = activeFilter === "all" ? "" : activeFilter;
     dispatch(notificationListActions.doFetch(status));
   }, [dispatch, activeFilter]);
 
   const handleNotificationClick = (item) => {
-    // Mark as read first
     dispatch(notificationFormActions.doUpdate(item.id));
 
-    // If it's an account activation notification, redirect to profile
     if (item.type === "accountActivated") {
-      // Refresh the page and redirect to profile
-      window.location.href = "/profile"; // This will do a full page refresh and redirect
-      // Alternatively, if you want to use React Router without refresh:
-      // history.push('/profile');
-      // window.location.reload(); // If you want to force refresh
+      window.location.href = "/profile";
     }
   };
 
@@ -104,16 +92,15 @@ function Notification() {
     setActiveFilter(filter);
   };
 
-  // Filter tabs configuration
   const filterTabs = [
-    { key: "all", label: "All" },
-    { key: "unread", label: "Unread" },
-    { key: "read", label: "Read" },
+    { key: "all", label: i18n("pages.notification.filters.all") },
+    { key: "unread", label: i18n("pages.notification.filters.unread") },
+    { key: "read", label: i18n("pages.notification.filters.read") },
   ];
 
   return (
     <div className="container">
-      <SubHeader title="Notification" />
+      <SubHeader title={i18n("pages.notification.title")} />
 
       {/* Filter Tabs */}
       <div className="filter-tabs">
@@ -133,7 +120,7 @@ function Notification() {
         {loadingNotification ? (
           <div className="loading-state">
             <div className="binance-spinner"></div>
-            <span>Loading</span>
+            <span>{i18n("pages.notification.loading")}</span>
           </div>
         ) : allNotification?.length > 0 ? (
           <div className="notification-list">
@@ -170,11 +157,11 @@ function Notification() {
             <div className="empty-icon">
               <i className="fas fa-bell-slash" />
             </div>
-            <div className="empty-title">No notifications yet</div>
+            <div className="empty-title">{i18n("pages.notification.emptyState.title")}</div>
             <div className="empty-message">
               {activeFilter === "all"
-                ? "You don't have any notifications yet"
-                : `No ${activeFilter} notifications found`}
+                ? i18n("pages.notification.emptyState.noNotifications")
+                : i18n("pages.notification.emptyState.noFilteredNotifications", activeFilter)}
             </div>
           </div>
         )}

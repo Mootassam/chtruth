@@ -3,6 +3,7 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
 import ReactDOM from "react-dom";
 import { Link } from "react-router-dom";
 import Header from "src/view/shared/Header/Header";
+import { i18n } from "../../../i18n";
 
 // Interface for Binance ticker data
 interface BinanceTicker {
@@ -237,13 +238,13 @@ const Market: React.FC = () => {
     <div className="container">
   
       <div className="market-headers">
-        <div className="market-page-title">USDT MARKET</div>
+        <div className="market-page-title">{i18n("pages.market.title")}</div>
         {/* Search Bar */}
         <div className="search-bar">
           <i className="fas fa-search" style={{ color: "#AAAAAA" }} />
           <input
             type="text"
-            placeholder="Search crypto"
+            placeholder={i18n("pages.market.search.placeholder")}
             value={searchTerm}
             onChange={handleSearchChange}
           />
@@ -251,7 +252,7 @@ const Market: React.FC = () => {
             <button
               className="clear-search"
               onClick={() => setSearchTerm("")}
-              aria-label="Clear search"
+              aria-label={i18n("pages.market.search.clear")}
             >
               ×
             </button>
@@ -267,7 +268,7 @@ const Market: React.FC = () => {
             className={`tab ${activeTab === tab ? "active" : ""}`}
             onClick={() => handleTabClick(tab)}
           >
-            {tab}
+            {i18n(`pages.market.tabs.${tab.toLowerCase()}`)}
           </div>
         ))}
       </div>
@@ -340,7 +341,7 @@ const Market: React.FC = () => {
                     <div>
                       <div className="crypto-name">{crypto.name}</div>
                       <div className="crypto-volume">
-                        Vol: {crypto.volumeFormatted}
+                        {i18n("pages.market.volume")}: {crypto.volumeFormatted}
                       </div>
                     </div>
                   </div>
@@ -365,10 +366,11 @@ const Market: React.FC = () => {
               className="fas fa-search"
               style={{ fontSize: "24px", marginBottom: "10px" }}
             />
-            <div>No cryptocurrencies found</div>
+            <div>{i18n("pages.market.noResults")}</div>
           </div>
         )}
       </div>
+
 
       <style>{`
         /* Shimmer animation for loading placeholders */

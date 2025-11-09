@@ -45,14 +45,13 @@ export default class TransactionService {
     const currentUser = MongooseRepository.getCurrentUser(options);
     if (currentUser.withdraw) return;
 
-    throw new Error405("Should be contact the customer service about this");
-  }
+throw new Error400(options.language, "errors.contactCustomerService");  }
 
   async checkSolde(data, options) {
     const currentUser = MongooseRepository.getCurrentUser(options);
 
     if (!data) {
-      throw new Error405("Please write amoutn");
+throw new Error400(options.language, "errors.pleaseWriteAmount");
     }
     const amount = data.amount;
     const type = data.type;
@@ -60,14 +59,10 @@ export default class TransactionService {
     if (type === "withdraw") {
       if (currentUser.withdrawPassword == data.withdrawPassword) {
         if (currentUser.balance < amount) {
-          throw new Error405(
-            "It looks like your withdrawal amount exceeds your balance"
-          );
+         throw new Error400(options.language, "errors.withdrawalExceedsBalance");
         }
       } else {
-        throw new Error405(
-          "Your withdraw Password is not correct please check again"
-        );
+       throw new Error400(options.language, "errors.withdrawPasswordIncorrect");
       }
     }
   }

@@ -1,195 +1,120 @@
+/**
+ * I18n dictionary for the es.
+ */
+
 const es = {
   app: {
-    title: 'Application',
+    title: 'Nexus Exchange'
   },
+
   auth: {
-    userNotFound:
-      'Désolé, nous ne reconnaissons pas vos identifiants',
-    wrongPassword:
-      'Désolé, nous ne reconnaissons pas vos identifiants',
-    weakPassword: 'Ce mot de passe est très faible.',
-    emailAlreadyInUse: 'Cet email est déjà utilisé',
-    invalidEmail:
-      'Veuillez fournir un email valide',
+    userNotFound: `Lo sentimos, no reconocemos tus credenciales`,
+    wrongPassword: `Lo sentimos, no reconocemos tus credenciales`,
+    depositExist: 'Los métodos de depósito ya están inicializados',
+    weakPassword: 'Esta contraseña es demasiado débil',
+    emailAlreadyInUse: 'El nombre de usuario ya está en uso',
+    invitationCode: 'Por favor escribe un código de invitación correcto',
+    invalidEmail: 'Por favor proporciona un email válido',
     passwordReset: {
       invalidToken:
-        'Le lien de réinitialisation du mot de passe est invalide ou a expiré',
-      error: 'E-mail non reconnu',
+        'El enlace de restablecimiento de contraseña no es válido o ha expirado',
+      error: `Email no reconocido`,
     },
     emailAddressVerificationEmail: {
       invalidToken:
-        "Le lien de vérification de l'e-mail est invalide ou a expiré.",
-      error: 'E-mail non reconnu',
-      signedInAsWrongUser:
-        'Cet e-mail de confirmation a été envoyé à {0} mais vous êtes connecté en tant que {1}.',
+        'El enlace de verificación de email no es válido o ha expirado.',
+      error: `Email no reconocido.`,
+      signedInAsWrongUser: `Esta confirmación de email fue enviada a {0} pero has iniciado sesión como {1}.`,
     },
     passwordChange: {
-      invalidPassword:
-        "L'ancien mot de passe n'est pas valide.",
+      invalidPassword: 'La contraseña anterior no es válida',
     },
   },
+
+  futures: {
+    alreadyFinalized: 'Esta entrada de futuros ya está finalizada y no se puede cambiar.'
+  },
+
   user: {
     errors: {
       userAlreadyExists:
-        "L'utilisateur avec cet e-mail existe déjà.",
-      userNotFound: 'Utilisateur non trouvé.',
-      destroyingHimself: 'Vous ne pouvez pas vous éliminer.',
-      revokingOwnPermission:
-        "Vous ne pouvez pas révoquer votre propre autorisation d'administrateur.",
-      revokingPlanUser:
-        "Vous ne pouvez pas révoquer l'autorisation d'administrateur de l'administrateur du plan.",
-      destroyingPlanUser:
-        "Vous ne pouvez pas supprimer l'administrateur du plan.",
+        'Ya existe un usuario con este email.',
+      userNotFound: 'Usuario no encontrado.',
+      destroyingHimself: `No puedes eliminarte a ti mismo.`,
+      revokingOwnPermission: `No puedes revocar tus propios permisos de administrador.`,
+      revokingPlanUser: `No puedes revocar los permisos de administrador del gestor del plan.`,
+      destroyingPlanUser: `No puedes eliminar al gestor del plan.`,
     },
   },
+
   tenant: {
     exists:
-      'Il y a déjà un espace de travail dans cette application.',
+      'Ya existe un espacio de trabajo en esta aplicación.',
     url: {
-      exists:
-        "Cette URL d'espace de travail est déjà utilisée.",
+      exists: 'Esta URL de espacio de trabajo ya está en uso.',
     },
     invitation: {
-      notSameEmail:
-        "Cette invitation a été envoyée à {0} mais vous êtes connecté en tant que {1}.",
+      notSameEmail: `Esta invitación fue enviada a {0} pero has iniciado sesión como {1}.`,
     },
-    planActive:
-      "Il existe un plan actif pour cet espace de travail. Veuillez d'abord annuler le plan.",
-    stripeNotConfigured: "Stripe n'est pas configuré.",
+    planActive: `Hay un plan activo para este espacio de trabajo. Por favor cancela el plan primero.`,
+    stripeNotConfigured: 'Stripe no está configurado.',
   },
+
   importer: {
     errors: {
-      invalidFileEmpty: 'Le fichier est vide',
+      invalidFileEmpty: 'El archivo está vacío',
       invalidFileExcel:
-        'Seuls les fichiers Excel (.xlsx) sont autorisés',
+        'Solo se permiten archivos de Excel (.xlsx)',
       invalidFileUpload:
-        'Fichier non valide. Assurez-vous que vous utilisez la dernière version du modèle.',
-      importHashRequired: 'Importer le hachage requis',
-      importHashExistent:
-        'Les données ont déjà été importées',
+        'Archivo no válido. Asegúrate de estar usando la última versión de la plantilla.',
+      importHashRequired: 'Se requiere hash de importación',
+      importHashExistent: 'Los datos ya han sido importados',
     },
   },
+
   errors: {
+    futuresAlreadyFinalized: "Esta entrada de futuros ya está finalizada y no se puede cambiar.",
+    usdtWalletNotFound: "Billetera USDT no encontrada",
+    usdtWalletNotFoundForUser: "Billetera USDT no encontrada para el usuario {{userId}}",
+    closingPriceExceedLimit: "El precio de cierre no puede exceder $100",
+    profitAmountInvalid: "El monto de ganancia es cero o no válido.",
+    lossAmountInvalid: "El monto de pérdida es cero o no válido.",
+    passwordNotMatching: "La contraseña no coincide",
+    insufficientBalanceUpgrade: "Saldo insuficiente. Por favor actualiza.",
+    walletNotFoundForCurrency: "Billetera no encontrada para {{currency}}",
+    insufficientBalanceWithAmounts: "Saldo insuficiente. Tienes {{currentAmount}} {{currency}} pero intentas hacer stake de {{tryingAmount}} {{currency}}",
+    stakingPlanNotAvailable: "Este plan de staking aún no está disponible",
+    stakingPlanExpired: "Este plan de staking ha expirado",
+    invalidUserBalance: "Saldo no válido para el usuario actual",
+    invalidRequestAmount: "Monto de solicitud no válido",
+    unsupportedCurrency: "Moneda no compatible",
+    alreadySubscribedToVip: "Ya estás suscrito a este vip",
+    insufficientBalancePleaseUpgrade: "Saldo insuficiente por favor actualiza",
+    resetAccountContactSupport: "Por favor restablece tu cuenta. contacta al servicio al cliente",
+    contactCustomerService: "Deberías contactar al servicio al cliente sobre esto",
+    pleaseWriteAmount: "Por favor escribe el monto",
+    withdrawalExceedsBalance: "Parece que tu monto de retiro excede tu saldo",
+    withdrawPasswordIncorrect: "Tu contraseña de retiro no es correcta, por favor verifica nuevamente",
     notFound: {
-      message: 'Perdu',
+      message: 'No encontrado',
     },
     forbidden: {
-      message: 'Interdit',
+      message: 'Prohibido',
     },
     validation: {
-      message: "Une erreur s'est produite",
+      message: 'Ocurrió un error',
     },
   },
+
   email: {
-    error:
-      "Le fournisseur de messagerie n'est pas configuré.",
+    error: `El proveedor de email no está configurado.`,
   },
+
   preview: {
     error:
-      "Désolé, cette opération n'est pas autorisée en mode aperçu.",
+      'Lo sentimos, esta operación no está permitida en modo de vista previa.',
   },
 
-  entities: {
-    association: {
-      errors: {
-        unique: {
-
-        }
-      }
-    },
-    mandat: {
-      errors: {
-        unique: {
-
-        }
-      }
-    },
-    categorieMouv: {
-      errors: {
-        unique: {
-
-        }
-      }
-    },
-    mouvements: {
-      errors: {
-        unique: {
-
-        }
-      }
-    },
-    campagne: {
-      errors: {
-        unique: {
-
-        }
-      }
-    },
-    detailsCampagne: {
-      errors: {
-        unique: {
-          adherent: "L'adhérent doit être unique",
-          adherentId: "L'adhérent doit être unique",
-        }
-      }
-    },
-    palier: {
-      errors: {
-        unique: {
-
-        }
-      }
-    },
-    historiquePoints: {
-      errors: {
-        unique: {
-
-        }
-      }
-    },
-    projet: {
-      errors: {
-        unique: {
-
-        }
-      }
-    },
-    votes: {
-      errors: {
-        unique: {
-
-        }
-      }
-    },
-    dons: {
-      errors: {
-        unique: {
-
-        }
-      }
-    },
-    produitCategorie: {
-      errors: {
-        unique: {
-
-        }
-      }
-    },
-    produit: {
-      errors: {
-        unique: {
-
-        }
-      }
-    },
-    produitCommande: {
-      errors: {
-        unique: {
-
-        }
-      }
-    },
-  }
 };
 
 export default es;

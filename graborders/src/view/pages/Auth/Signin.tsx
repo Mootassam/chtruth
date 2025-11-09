@@ -58,26 +58,16 @@ function Signin() {
   };
 
   return (
-    <div className="container" style={{ marginTop: 30 }}>
-      <div className="header" style={{ display: "flex", marginBottom: 20 }}>
+    <div className="container">
+      <div className="header">
         <div className="back-button" onClick={goBack}>
-          <i className="fas fa-arrow-left" />
+          <i className="fas fa-arrow-left"></i>
         </div>
+        <div className="page-title">{i18n("auth.signin.title")}</div>
+        <Link to="/language" className="language-icon remove_blue">
+          <i className="fas fa-globe"></i>
+        </Link>
       </div>
-      {/* Logo and Title Section - Moved to top center */}
-      <div style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        margin: '20px 0 30px 0'
-      }}>
-        <img src="/icons/nexus.png" alt="" style={{ height: 70 }} />
-
-      </div>
-
-      {/* Header with Back Button - Moved below logo/title */}
-
 
       <FormProvider {...form}>
         <div className="form-section">
@@ -102,28 +92,27 @@ function Signin() {
             <div className="auth__form">
               <div className="form__authgroup">
                 <InputFormItem
-                  type="text" // Changed to text to allow both email and phone
+                  type="text"
                   name="email"
-                  label={"Email/Phone Number"}
+                  label={i18n("auth.fields.emailOrPhone")}
                   placeholder={i18n("user.fields.username")}
                   className="text-input"
-                // Removed externalErrorMessage from here since we display it above
                 />
               </div>
 
               <div className="form__authgroup">
                 <InputFormItem
-                  type="password" // ✅ Fixed: Changed to password type
+                  type="password"
                   name="password"
                   placeholder={i18n("user.fields.password")}
                   className="text-input"
-                  label={"Password"}
-                  autoComplete="current-password" // Added for better browser support
+                  label={i18n("auth.fields.password")}
+                  autoComplete="current-password"
                 />
               </div>
             </div>
 
-            {/* Remember Me checkbox - if you want to use it */}
+            {/* Remember Me checkbox */}
             <div className="remember-me" style={{ marginBottom: "1rem" }}>
               <input
                 type="checkbox"
@@ -140,10 +129,15 @@ function Signin() {
                 className="login-button"
                 disabled={loading}
                 type="submit"
-                style={{ opacity: loading ? 0.6 : 1 }} // Visual feedback for loading
+                style={{ opacity: loading ? 0.6 : 1 }}
               >
                 <ButtonIcon loading={loading} iconClass="fas fa-sign-in-alt" />
-                <span>{loading ? "Logging in..." : "Login"}</span>
+                <span>
+                  {loading 
+                    ? i18n("auth.signin.signingIn") 
+                    : i18n("auth.signin.button")
+                  }
+                </span>
               </button>
             </div>
           </form>
@@ -151,13 +145,217 @@ function Signin() {
       </FormProvider>
 
       <div className="footer-links">
-        <Link to="/LiveChat" className="footer-link">
-          FORGOT PASSWORD?
+        <Link to="/forgot-password" className="footer-link">
+          {i18n("auth.signin.forgotPassword")}
         </Link>
         <Link to="/auth/signup" className="footer-link">
-          SIGN UP
+          {i18n("auth.signin.signUp")}
         </Link>
       </div>
+
+      <div className="divider">
+        <div className="divider-line"></div>
+        <div className="divider-text">{i18n("auth.signin.orContinueWith")}</div>
+        <div className="divider-line"></div>
+      </div>
+
+      {/* App Download Section */}
+      <div className="app-promotion">
+        <div className="promo-title">{i18n("auth.signin.downloadApp")}</div>
+        <div className="promo-text">
+          {i18n("auth.signin.appDescription")}
+        </div>
+        <div className="app-badges">
+          <Link
+            className="app-badge remove_blue"
+            to="/playstore"
+            style={{ cursor: 'pointer' }}
+          >
+            <i className="fab fa-google-play" style={{ color: '#F3BA2F' }}></i>
+            <span>{i18n("auth.signin.googlePlay")}</span>
+          </Link>
+        </div>
+      </div>
+
+      <style>{`
+        .container {
+          width: 100%;
+          max-width: 400px;
+          padding: 20px 0px;
+          margin: 0 auto;
+        }
+        
+        .header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 0 5px;
+        }
+        
+        .back-button {
+          color: #AAAAAA;
+          font-size: 18px;
+          width: 40px;
+          height: 40px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 50%;
+          transition: background-color 0.2s;
+          cursor: pointer;
+        }
+        
+        .back-button:hover {
+          background-color: #1A1A1A;
+        }
+        
+        .form-section {
+          background-color: #1A1A1A;
+          border-radius: 12px;
+          padding: 25px 20px;
+          margin-bottom: 25px;
+        }
+        
+        .footer-links {
+          display: flex;
+          justify-content: space-between;
+          padding: 0 10px;
+          margin-bottom: 30px;
+        }
+        
+        .footer-link {
+          color: #F3BA2F;
+          text-decoration: none;
+          font-size: 14px;
+          font-weight: 500;
+          padding: 8px 5px;
+          transition: opacity 0.2s;
+        }
+        
+        .footer-link:hover {
+          opacity: 0.8;
+        }
+        
+        .login-button {
+          width: 100%;
+          background-color: #F3BA2F;
+          color: #000000;
+          border: none;
+          border-radius: 8px;
+          padding: 16px;
+          font-size: 16px;
+          font-weight: bold;
+          cursor: pointer;
+          margin-top: 10px;
+          transition: background-color 0.2s;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+        }
+        
+        .login-button:hover {
+          background-color: #e0ab29;
+        }
+        
+        .login-button:disabled {
+          cursor: not-allowed;
+          opacity: 0.6;
+        }
+        
+        /* App Promotion Section */
+        .app-promotion {
+          text-align: center;
+          margin-top: 10px;
+          padding: 20px;
+          background-color: #1A1A1A;
+          border-radius: 12px;
+        }
+        
+        .promo-title {
+          font-size: 18px;
+          font-weight: bold;
+          margin-bottom: 15px;
+          color: #F3BA2F;
+        }
+        
+        .promo-text {
+          font-size: 14px;
+          color: #AAAAAA;
+          margin-bottom: 20px;
+        }
+        
+        .app-badges {
+          display: flex;
+          justify-content: center;
+          gap: 15px;
+        }
+        
+        .app-badge {
+          background-color: #2A2A2A;
+          padding: 10px 15px;
+          border-radius: 8px;
+          font-size: 14px;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          cursor: pointer;
+          transition: background-color 0.2s;
+          color: #FFFFFF;
+        }
+        
+        .app-badge:hover {
+          background-color: #363636;
+        }
+        
+        /* Input styling to match the original theme */
+        :global(.form__authgroup) {
+          margin-bottom: 20px;
+        }
+        
+        :global(.text-input) {
+          width: 100%;
+          background-color: #2A2A2A;
+          border: none;
+          border-radius: 8px;
+          padding: 14px 16px;
+          color: #FFFFFF;
+          font-size: 16px;
+          outline: none;
+        }
+        
+        :global(.text-input:focus) {
+          outline: 1px solid #F3BA2F;
+        }
+        
+        :global(.text-input::placeholder) {
+          color: #777777;
+        }
+        
+        :global(label) {
+          display: block;
+          font-size: 14px;
+          color: #AAAAAA;
+          margin-bottom: 8px;
+          padding-left: 5px;
+        }
+        
+        /* Remember me checkbox styling */
+        .remember-me {
+          display: flex;
+          align-items: center;
+          color: #AAAAAA;
+        }
+        
+        .remember-me input[type="checkbox"] {
+          margin: 0;
+        }
+        
+        .remember-me label {
+          margin: 0;
+          padding: 0;
+        }
+      `}</style>
     </div>
   );
 }

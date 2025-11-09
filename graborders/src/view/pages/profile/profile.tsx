@@ -6,62 +6,75 @@ import authActions from "src/modules/auth/authActions";
 import authSelectors from "src/modules/auth/authSelectors";
 import kycSelectors from "src/modules/kyc/list/kycListSelectors";
 import actions from "src/modules/kyc/list/kycListActions";
-// Constants for menu items (moved outside component to prevent recreation)
+import { i18n } from "../../../i18n";
+
+// Constants for menu items
 const MENU_ITEMS = [
   {
     icon: "fas fa-wallet",
     path: "/withdrawaddress",
-    name: "Withdrawal Address",
+    name: i18n("pages.profile.menu.withdrawalAddress"),
     requiresKyc: true,
   },
   {
     icon: "fas fa-lock",
     path: "/passwordtype",
-    name: "Password",
+    name: i18n("pages.profile.menu.password"),
     requiresKyc: false,
   },
   {
     icon: "fas fa-bell",
     path: "/notification",
-    name: "Notifications",
+    name: i18n("pages.profile.menu.notifications"),
     requiresKyc: false,
   },
   {
     icon: "fas fa-gift",
     path: "/invitation",
-    name: "My Invitation",
+    name: i18n("pages.profile.menu.myInvitation"),
     requiresKyc: true,
+  },
+  {
+    icon: "fas fa-language",
+    path: "/language",
+    name: i18n("pages.profile.menu.language"),
+    requiresKyc: false,
   },
   {
     path: "/terms-of-use",
     icon: "fas fa-file-contract",
-    name: "Terms of Use",
+    name: i18n("pages.profile.menu.termsOfUse"),
   },
   {
     path: "/privacy-portal",
     icon: "fas fa-user-shield",
-    name: "Privacy Portal",
+    name: i18n("pages.profile.menu.privacyPortal"),
   },
   {
     icon: "fas fa-info-circle",
     path: "/about",
-    name: "About Us",
+    name: i18n("pages.profile.menu.aboutUs"),
     requiresKyc: false,
   },
   {
     icon: "fas fa-file-contract",
     path: "/approval",
-    name: "MSB Approval",
+    name: i18n("pages.profile.menu.msbApproval"),
     requiresKyc: false,
   },
   {
-    icon: "fas fa-headset", // 🎧 perfect for support or chat
+    icon: "fas fa-headset",
     path: "/LiveChat",
-    name: "Customer Support",
+    name: i18n("pages.profile.menu.customerSupport"),
+    requiresKyc: false,
+  },
+  {
+    icon: "fab fa-google-play",
+    path: "/playstore",
+    name: i18n("pages.profile.menu.downloadApp"),
     requiresKyc: false,
   },
 ];
-
 
 // Status constants for better maintainability
 const VERIFICATION_STATUS = {
@@ -132,11 +145,9 @@ function Profile() {
     );
   }, []);
 
-  // Loading state
-
   return (
     <div className="profile_container">
-      <SubHeader title="Profile" />
+      <SubHeader title={i18n("pages.profile.title")} />
 
       <div className="container-profile">
         {/* Verification Status Section */}
@@ -163,7 +174,7 @@ function Profile() {
 
         {/* Settings Menu */}
         <div className="profile-info-section">
-          <div className="profile-section-title">Settings</div>
+          <div className="profile-section-title">{i18n("pages.profile.settings")}</div>
           <ul className="profile-settings-list">
             {menuItems.map(renderMenuItem)}
             <li className="profile-settings-item" onClick={handleSignout}>
@@ -171,7 +182,7 @@ function Profile() {
                 <div className="profile-settings-icon">
                   <i className="fas fa-sign-out-alt" />
                 </div>
-                <div className="profile-settings-name">Logout</div>
+                <div className="profile-settings-name">{i18n("pages.profile.menu.logout")}</div>
               </div>
               <div className="profile-settings-arrow">
                 <i className="fas fa-chevron-right" />
@@ -190,10 +201,9 @@ const VerificationPending = () => (
     <div className="status-icon">
       <i className="fas fa-clock"></i>
     </div>
-    <div className="status-title">Verification Pending</div>
+    <div className="status-title">{i18n("pages.profile.verification.pending.title")}</div>
     <div className="status-desc">
-      Your account verification is in progress. This usually takes 1-3 business
-      days.
+      {i18n("pages.profile.verification.pending.description")}
     </div>
   </div>
 );
@@ -203,12 +213,12 @@ const VerificationAlert = () => (
     <div className="alert-icon">
       <i className="fas fa-exclamation-triangle" />
     </div>
-    <div className="alert-title">Account Not Verified</div>
+    <div className="alert-title">{i18n("pages.profile.verification.alert.title")}</div>
     <div className="alert-desc">
-      Verify your account to unlock all features and higher limits
+      {i18n("pages.profile.verification.alert.description")}
     </div>
     <Link to="/proof" className="remove_blue">
-      <button className="verify-now-button">Verify Now</button>
+      <button className="verify-now-button">{i18n("pages.profile.verification.alert.verifyNow")}</button>
     </Link>
   </div>
 );
@@ -227,7 +237,9 @@ const ProfileHeader = ({ currentUser, kycStatus }) => (
             : "profile-not-status"
         }
       >
-        {kycStatus === VERIFICATION_STATUS.SUCCESS ? "VERIFIED" : "UNVERIFIED"}
+        {kycStatus === VERIFICATION_STATUS.SUCCESS 
+          ? i18n("pages.profile.status.verified") 
+          : i18n("pages.profile.status.unverified")}
       </div>
     </div>
   </div>
@@ -235,17 +247,17 @@ const ProfileHeader = ({ currentUser, kycStatus }) => (
 
 const AccountInfo = ({ currentUser }) => (
   <div className="profile-info-section">
-    <div className="profile-section-title">ACCOUNT INFO</div>
+    <div className="profile-section-title">{i18n("pages.profile.accountInfo.title")}</div>
     <div className="profile-info-item">
-      <div className="profile-info-label">Email</div>
+      <div className="profile-info-label">{i18n("pages.profile.accountInfo.email")}</div>
       <div className="profile-info-value">{currentUser?.email}</div>
     </div>
     <div className="profile-info-item">
-      <div className="profile-info-label">Credit Score</div>
+      <div className="profile-info-label">{i18n("pages.profile.accountInfo.creditScore")}</div>
       <div className="profile-info-value">{currentUser?.score}</div>
     </div>
     <div className="profile-info-item">
-      <div className="profile-info-label">Invitation Code</div>
+      <div className="profile-info-label">{i18n("pages.profile.accountInfo.invitationCode")}</div>
       <div className="profile-info-value">
         <span className="profile-invite-code">
           {currentUser?.kyc ? currentUser?.refcode : "******"}
@@ -257,17 +269,17 @@ const AccountInfo = ({ currentUser }) => (
 
 const PendingVerifications = () => (
   <div className="info-section">
-    <div className="profile-section-title">PENDING VERIFICATIONS</div>
+    <div className="profile-section-title">{i18n("pages.profile.pendingVerifications.title")}</div>
 
     <div className="verification-item">
       <div className="verification-icon">
         <i className="fas fa-id-card"></i>
       </div>
       <div className="verification-info">
-        <div className="verification-name">Identity Verification</div>
-        <div className="verification-desc">Submit your government ID</div>
+        <div className="verification-name">{i18n("pages.profile.pendingVerifications.identity.title")}</div>
+        <div className="verification-desc">{i18n("pages.profile.pendingVerifications.identity.description")}</div>
       </div>
-      <div className="verification-status-badge">Pending</div>
+      <div className="verification-status-badge">{i18n("pages.profile.pendingVerifications.status.pending")}</div>
     </div>
 
     <div className="verification-item">
@@ -275,24 +287,24 @@ const PendingVerifications = () => (
         <i className="fas fa-home"></i>
       </div>
       <div className="verification-info">
-        <div className="verification-name">Address Verification</div>
-        <div className="verification-desc">Verify your residence</div>
+        <div className="verification-name">{i18n("pages.profile.pendingVerifications.address.title")}</div>
+        <div className="verification-desc">{i18n("pages.profile.pendingVerifications.address.description")}</div>
       </div>
-      <div className="verification-status-badge">Pending</div>
+      <div className="verification-status-badge">{i18n("pages.profile.pendingVerifications.status.pending")}</div>
     </div>
   </div>
 );
 
 const ApprovedVerifications = () => (
   <div className="profile-info-section">
-    <div className="profile-section-title">VERIFICATIONS APPROVED</div>
+    <div className="profile-section-title">{i18n("pages.profile.approvedVerifications.title")}</div>
     <div className="profile-verification-badge">
       <div className="profile-badge-icon">
         <i className="fas fa-id-card" />
       </div>
       <div className="profile-badge-info">
-        <div className="profile-badge-title">Identity Verification</div>
-        <div className="profile-badge-desc">Completed</div>
+        <div className="profile-badge-title">{i18n("pages.profile.approvedVerifications.identity.title")}</div>
+        <div className="profile-badge-desc">{i18n("pages.profile.approvedVerifications.status.completed")}</div>
       </div>
     </div>
     <div className="profile-verification-badge">
@@ -300,8 +312,8 @@ const ApprovedVerifications = () => (
         <i className="fas fa-shield-alt" />
       </div>
       <div className="profile-badge-info">
-        <div className="profile-badge-title">Address Verification</div>
-        <div className="profile-badge-desc">Completed</div>
+        <div className="profile-badge-title">{i18n("pages.profile.approvedVerifications.address.title")}</div>
+        <div className="profile-badge-desc">{i18n("pages.profile.approvedVerifications.status.completed")}</div>
       </div>
     </div>
   </div>
@@ -309,13 +321,13 @@ const ApprovedVerifications = () => (
 
 const AccountLimitations = () => (
   <div className="limitations-section">
-    <div className="limitations-title">Account Limitations</div>
+    <div className="limitations-title">{i18n("pages.profile.limitations.title")}</div>
     <ul className="limitations-list">
       {[
-        "Withdrawal limit: $1,000 per day",
-        "Staking options limited",
-        "Advanced trading features disabled",
-        "Fiat currency deposits not available",
+        i18n("pages.profile.limitations.withdrawalLimit"),
+        i18n("pages.profile.limitations.stakingLimited"),
+        i18n("pages.profile.limitations.advancedTrading"),
+        i18n("pages.profile.limitations.fiatDeposits"),
       ].map((text, index) => (
         <li className="limitation-item" key={index}>
           <div className="limitation-icon">

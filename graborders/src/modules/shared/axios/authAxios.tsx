@@ -1,23 +1,46 @@
-import axios from "axios";
-import authToken from "src/modules/auth/authToken";
+import Axios from 'axios';
+// import config from 'src/config';
+import { getLanguageCode } from '../../../i18n';
+import Qs from 'qs';
+import moment from 'moment';
+import AuthToken from 'src/modules/auth/authToken';
 
-const authAxios = axios.create({
-  // Local link
-  baseURL: "https://nexus-exchange.com/api",
+const authAxios = Axios.create({
+  // baseURL: "https://nexus-exchange.com/api",
 
-  // baseURL: "http://localhost:8084/api",
+  baseURL: "http://localhost:8084/api",
 
+  paramsSerializer: function (params) {
+    return Qs.stringify(params, {
+      arrayFormat: 'brackets',
+      filter: (prefix, value) => {
+        if (
+          moment.isMoment(value) ||
+          value instanceof Date
+        ) {
+          return value.toISOString();
+        }
+
+        return value;
+      },
+    });
+  },
 });
 
-authAxios.interceptors.request.use
-  (async function (options) {
-    const token = authToken.get();
+authAxios.interceptors.request.use(
+  async function (options) {
+    const token = AuthToken.get();
     if (token) {
-      options.headers["Authorization"] = `Bearer ${token}`;
+      options.headers['Authorization'] = `Bearer ${token}`;
     }
-
+    options.headers['ngrok-skip-browser-warning'] = 'true';
+    options.headers['Accept-Language'] = getLanguageCode();
     return options;
-  });
+  },
+  function (error) {
+    console.log('Request error: ', error);
+    return Promise.reject(error);
+  },
+);
 
 export default authAxios;
-

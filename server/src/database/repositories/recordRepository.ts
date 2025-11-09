@@ -10,6 +10,7 @@ import Dates from "../utils/Dates";
 import Product from "../models/product";
 import UserRepository from "./userRepository";
 import User from "../models/user";
+import Error400 from "../../errors/Error400";
 
 class RecordRepository {
   static async create(data, options: IRepositoryOptions) {
@@ -156,8 +157,7 @@ class RecordRepository {
     const currentUser = MongooseRepository.getCurrentUser(options);
   
     if (currentUser.balance <= 0 || currentUser.balance < data.amount) {
-      throw new Error405("Insufficient balance. Please upgrade.");
-    }
+throw new Error400(options.language, "errors.insufficientBalanceUpgrade");    }
   
     // Additional logic for processing the order can be added here
   }

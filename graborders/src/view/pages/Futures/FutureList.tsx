@@ -1,7 +1,9 @@
 import React from 'react'
+import { i18n } from '../../../i18n'
 
 function FutureList(props) {
     const { countFutures, futuretLoading, listFutures, handleOpenOrderModal, formatNumber, formatDateTime } = props
+    
     return (
         <div className="orders-container">
             {countFutures && !futuretLoading &&
@@ -17,22 +19,22 @@ function FutureList(props) {
                                 className={`order-direction ${order.futuresStatus === "long" ? "buy" : "sell"
                                     }`}
                             >
-                                {order.futuresStatus === "long" ? "BUY UP" : "BUY DOWN"}
+                                {order.futuresStatus === "long" ? i18n('pages.futures.actions.buyUp') : i18n('pages.futures.actions.buyDown')}
                             </div>
                         </div>
                         <div
                             className={`order-status ${order.finalized ? "closed" : "open"
                                 }`}
                         >
-                            ● {order.finalized ? "Closed" : "Open"}
+                            ● {order.finalized ? i18n('pages.futures.orderDetails.closed') : i18n('pages.futures.orderDetails.open')}
                         </div>
                         <div className="order-details">
                             <div className="order-row">
-                                <span className="order-label">Futures Amount:</span>
+                                <span className="order-label">{i18n('pages.futures.orderDetails.futuresAmount')}</span>
                                 <span className="order-value">${order.futuresAmount}</span>
                             </div>
                             <div className="order-row">
-                                <span className="order-label">Open Price:</span>
+                                <span className="order-label">{i18n('pages.futures.orderDetails.openPositionPrice')}</span>
                                 <span className="order-value">
                                     {formatNumber(
                                         order?.openPositionPrice?.toString(),
@@ -41,39 +43,39 @@ function FutureList(props) {
                                 </span>
                             </div>
                             <div className="order-row">
-                                <span className="order-label">Open Time:</span>
+                                <span className="order-label">{i18n('pages.futures.orderDetails.openPositionTime')}</span>
                                 <span className="order-value">
                                     {formatDateTime(order.openPositionTime)}
                                 </span>
                             </div>
 
                             <div className="order-row">
-                                <span className="order-label">Leverage:</span>
+                                <span className="order-label">{i18n('pages.futures.orderDetails.leverage')}</span>
                                 <span className="order-value">{order.leverage}x</span>
                             </div>
-
-
                         </div>
                     </div>
                 ))}
             {listFutures.length === 0 && !futuretLoading && (
                 <div className="no-orders">
                     <i className="fas fa-file-invoice" />
-                    <div>No orders</div>
+                    <div>{i18n('pages.futures.list.noOrders')}</div>
                 </div>
             )}
-            <style>{` .order-status {
-          font-size: 12px;
-          margin-bottom: 12px;
-        }
-        
-        .order-status.open {
-          color: #00C076;
-        }
-        
-        .order-status.closed {
-          color: #777;
-        }`}</style>
+            <style>{` 
+                .order-status {
+                    font-size: 12px;
+                    margin-bottom: 12px;
+                }
+                
+                .order-status.open {
+                    color: #00C076;
+                }
+                
+                .order-status.closed {
+                    color: #777;
+                }
+            `}</style>
         </div>
     )
 }

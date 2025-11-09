@@ -1,10 +1,13 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import { i18n } from "../../../i18n";
+
 function Termeofuse() {
 
     const handleBackClick = () => {
         window.history.back();
     };
+    
     return (
         <>
             <div className="container">
@@ -14,13 +17,13 @@ function Termeofuse() {
                         <div className="back-button" onClick={handleBackClick}>
                             <i className="fas fa-arrow-left" />
                         </div>
-                        <div className="page-title">Terms of Use</div>
+                        <div className="page-title">{i18n("pages.termsOfUse.title")}</div>
                         <div className="placeholder" />
                     </div>
                 </div>
                 {/* Hero Section */}
                 <div className="hero-section">
-                    <div className="hero-title">Nexus Terms of Use</div>
+                    <div className="hero-title">{i18n("pages.termsOfUse.hero.title")}</div>
                     {/* <div class="hero-subtitle">Updated 6 May 2025</div> */}
                 </div>
                 {/* Agreement Section */}
@@ -28,11 +31,10 @@ function Termeofuse() {
                     <div className="content-item">
                         <div className="item-title">
                             <i className="fas fa-handshake item-icon" />
-                            Agreement
+                            {i18n("pages.termsOfUse.agreement.title")}
                         </div>
                         <div className="item-content">
-                            This is a binding agreement between you (the user) and Nexus. It
-                            covers all Nexus Services you access or use.
+                            {i18n("pages.termsOfUse.agreement.content")}
                         </div>
                     </div>
                 </div>
@@ -40,184 +42,159 @@ function Termeofuse() {
                 <div className="warning-section">
                     <div className="warning-title">
                         <i className="fas fa-exclamation-triangle" />
-                        Risk Warning
+                        {i18n("pages.termsOfUse.riskWarning.title")}
                     </div>
                     <div className="warning-content">
-                        Digital assets are volatile and can fluctuate significantly in value.
-                        Nexus is not a broker, financial advisor, or investment advisor. You
-                        must conduct your own due diligence before making any financial
-                        decisions.
+                        {i18n("pages.termsOfUse.riskWarning.content")}
                     </div>
                 </div>
                 {/* About Nexus Section */}
                 <div className="content-section">
-                    <div className="section-title">About Our Services</div>
+                    <div className="section-title">{i18n("pages.termsOfUse.aboutServices.title")}</div>
                     <div className="content-item">
                         <div className="item-title">
                             <i className="fas fa-info-circle item-icon" />
-                            About Nexus
+                            {i18n("pages.termsOfUse.aboutServices.aboutNexus.title")}
                         </div>
                         <div className="item-content">
-                            Nexus provides digital asset exchange, custody services, and related
-                            financial services through our platform.
+                            {i18n("pages.termsOfUse.aboutServices.aboutNexus.content")}
                         </div>
                     </div>
                     <div className="content-item">
                         <div className="item-title">
                             <i className="fas fa-user-check item-icon" />
-                            Eligibility
+                            {i18n("pages.termsOfUse.aboutServices.eligibility.title")}
                         </div>
                         <div className="item-content">
-                            You must be at least 18 years old, legally able to enter into
-                            contracts, not restricted from using our services, and not located in
-                            prohibited jurisdictions.
+                            {i18n("pages.termsOfUse.aboutServices.eligibility.content")}
                         </div>
                     </div>
                     <div className="content-item">
                         <div className="item-title">
                             <i className="fas fa-comments item-icon" />
-                            Communication
+                            {i18n("pages.termsOfUse.aboutServices.communication.title")}
                         </div>
                         <div className="item-content">
-                            You must keep your contact information updated. Nexus will contact you
-                            via email, SMS, or phone regarding your account and our services.
+                            {i18n("pages.termsOfUse.aboutServices.communication.content")}
                         </div>
                     </div>
                 </div>
                 {/* Services Section */}
                 <div className="content-section">
-                    <div className="section-title">Our Services</div>
+                    <div className="section-title">{i18n("pages.termsOfUse.services.title")}</div>
                     <div className="content-item">
                         <div className="item-title">
                             <i className="fas fa-exchange-alt item-icon" />
-                            Services Provided
+                            {i18n("pages.termsOfUse.services.servicesProvided.title")}
                         </div>
                         <div className="item-content">
-                            Nexus offers digital asset trading, secure custody solutions, and
-                            customer support through both automated bots and human
-                            representatives. User chat functionality is also available.
+                            {i18n("pages.termsOfUse.services.servicesProvided.content")}
                         </div>
                     </div>
                     <div className="content-item">
                         <div className="item-title">
                             <i className="fas fa-money-bill-wave item-icon" />
-                            Fees
+                            {i18n("pages.termsOfUse.services.fees.title")}
                         </div>
                         <div className="item-content">
-                            All applicable fees are listed on our Fee Structure page and are
-                            subject to updates. You are responsible for reviewing the current fee
-                            schedule before conducting transactions.
+                            {i18n("pages.termsOfUse.services.fees.content")}
                         </div>
                     </div>
                 </div>
                 {/* Accounts Section */}
                 <div className="content-section">
-                    <div className="section-title">Account Management</div>
+                    <div className="section-title">{i18n("pages.termsOfUse.accountManagement.title")}</div>
                     <div className="content-item">
                         <div className="item-title">
                             <i className="fas fa-user-circle item-icon" />
-                            Account Creation
+                            {i18n("pages.termsOfUse.accountManagement.accountCreation.title")}
                         </div>
                         <div className="item-content">
-                            You must open an account (individual or corporate) to access our
-                            services. This requires completing identity verification procedures
-                            (KYC/AML) as required by law.
+                            {i18n("pages.termsOfUse.accountManagement.accountCreation.content")}
                         </div>
                     </div>
                     <div className="content-item">
                         <div className="item-title">
                             <i className="fas fa-id-card item-icon" />
-                            Identity Verification
+                            {i18n("pages.termsOfUse.accountManagement.identityVerification.title")}
                         </div>
                         <div className="item-content">
-                            You must complete our Know Your Customer (KYC) and Anti-Money
-                            Laundering (AML) verification processes before using certain services.
+                            {i18n("pages.termsOfUse.accountManagement.identityVerification.content")}
                         </div>
                     </div>
                     <div className="content-item">
                         <div className="item-title">
                             <i className="fas fa-folder item-icon" />
-                            Account Records
+                            {i18n("pages.termsOfUse.accountManagement.accountRecords.title")}
                         </div>
                         <div className="item-content">
-                            You may maintain records and create sub-accounts under specific
-                            conditions outlined in our account management policies.
+                            {i18n("pages.termsOfUse.accountManagement.accountRecords.content")}
                         </div>
                     </div>
                 </div>
                 {/* Transactions Section */}
                 <div className="content-section">
-                    <div className="section-title">Transactions</div>
+                    <div className="section-title">{i18n("pages.termsOfUse.transactions.title")}</div>
                     <div className="content-item">
                         <div className="item-title">
                             <i className="fas fa-wallet item-icon" />
-                            Sufficient Balance
+                            {i18n("pages.termsOfUse.transactions.sufficientBalance.title")}
                         </div>
                         <div className="item-content">
-                            You must maintain sufficient balance in your account for any
-                            transactions you initiate. Transactions may fail or incur additional
-                            fees if insufficient funds are available.
+                            {i18n("pages.termsOfUse.transactions.sufficientBalance.content")}
                         </div>
                     </div>
                     <div className="content-item">
                         <div className="item-title">
                             <i className="fas fa-ban item-icon" />
-                            Transaction Cancellation
+                            {i18n("pages.termsOfUse.transactions.transactionCancellation.title")}
                         </div>
                         <div className="item-content">
-                            Nexus reserves the right to cancel or amend transactions in cases of
-                            suspected fraud, errors, or violations of these Terms.
+                            {i18n("pages.termsOfUse.transactions.transactionCancellation.content")}
                         </div>
                     </div>
                     <div className="content-item">
                         <div className="item-title">
                             <i className="fas fa-user-shield item-icon" />
-                            Unauthorized Transactions
+                            {i18n("pages.termsOfUse.transactions.unauthorizedTransactions.title")}
                         </div>
                         <div className="item-content">
-                            You are responsible for any unauthorized transactions unless you can
-                            prove otherwise through our dispute resolution process.
+                            {i18n("pages.termsOfUse.transactions.unauthorizedTransactions.content")}
                         </div>
                     </div>
                 </div>
                 {/* Digital Assets Section */}
                 <div className="content-section">
-                    <div className="section-title">Digital Assets</div>
+                    <div className="section-title">{i18n("pages.termsOfUse.digitalAssets.title")}</div>
                     <div className="content-item">
                         <div className="item-title">
                             <i className="fas fa-coins item-icon" />
-                            Supported Assets
+                            {i18n("pages.termsOfUse.digitalAssets.supportedAssets.title")}
                         </div>
                         <div className="item-content">
-                            You may only transact with digital assets explicitly supported by
-                            Nexus. Attempting to deposit unsupported assets may result in
-                            permanent loss.
+                            {i18n("pages.termsOfUse.digitalAssets.supportedAssets.content")}
                         </div>
                     </div>
                     <div className="content-item">
                         <div className="item-title">
                             <i className="fas fa-code-branch item-icon" />
-                            Forks &amp; Airdrops
+                            {i18n("pages.termsOfUse.digitalAssets.forksAirdrops.title")}
                         </div>
                         <div className="item-content">
-                            Nexus does not guarantee support for blockchain forks, airdrops, or
-                            other similar events. Support decisions are made at our sole
-                            discretion.
+                            {i18n("pages.termsOfUse.digitalAssets.forksAirdrops.content")}
                         </div>
                     </div>
                 </div>
                 {/* Account Security Section */}
                 <div className="content-section">
-                    <div className="section-title">Account Security</div>
+                    <div className="section-title">{i18n("pages.termsOfUse.accountSecurity.title")}</div>
                     <div className="content-item">
                         <div className="item-title">
                             <i className="fas fa-lock item-icon" />
-                            Security Requirements
+                            {i18n("pages.termsOfUse.accountSecurity.securityRequirements.title")}
                         </div>
                         <div className="item-content">
-                            You must use a strong password, enable multi-factor authentication
-                            (MFA), never share credentials, monitor account activity regularly,
-                            and immediately report any security breaches.
+                            {i18n("pages.termsOfUse.accountSecurity.securityRequirements.content")}
                         </div>
                     </div>
                 </div>
@@ -226,26 +203,23 @@ function Termeofuse() {
                     <div className="content-item">
                         <div className="item-title">
                             <i className="fas fa-user-secret item-icon" />
-                            Privacy
+                            {i18n("pages.termsOfUse.privacy.title")}
                         </div>
                         <div className="item-content">
-                            Your privacy is governed by the Nexus Privacy Notice, which explains
-                            how we collect, use, and protect your personal information.
+                            {i18n("pages.termsOfUse.privacy.content")}
                         </div>
                     </div>
                 </div>
                 {/* Termination Section */}
                 <div className="content-section">
-                    <div className="section-title">Account Termination</div>
+                    <div className="section-title">{i18n("pages.termsOfUse.termination.title")}</div>
                     <div className="content-item">
                         <div className="item-title">
                             <i className="fas fa-power-off item-icon" />
-                            Termination/Suspension
+                            {i18n("pages.termsOfUse.termination.terminationSuspension.title")}
                         </div>
                         <div className="item-content">
-                            Nexus may restrict, suspend, or terminate accounts for fraud, law
-                            violations, suspicious activity, or Terms violations. Users may close
-                            accounts unless frozen or dormant.
+                            {i18n("pages.termsOfUse.termination.terminationSuspension.content")}
                         </div>
                     </div>
                 </div>
@@ -253,48 +227,40 @@ function Termeofuse() {
                 <div className="warning-section">
                     <div className="warning-title">
                         <i className="fas fa-ban" />
-                        Prohibited Use
+                        {i18n("pages.termsOfUse.prohibitedUse.title")}
                     </div>
                     <div className="warning-content">
-                        You may not use Nexus services for fraud, market manipulation, illegal
-                        activities, unauthorized access, or any purpose that violates applicable
-                        laws or these Terms.
+                        {i18n("pages.termsOfUse.prohibitedUse.content")}
                     </div>
                 </div>
                 {/* Liability Section */}
                 <div className="content-section">
-                    <div className="section-title">Liability &amp; Intellectual Property</div>
+                    <div className="section-title">{i18n("pages.termsOfUse.liability.title")}</div>
                     <div className="content-item">
                         <div className="item-title">
                             <i className="fas fa-balance-scale item-icon" />
-                            Liability
+                            {i18n("pages.termsOfUse.liability.liability.title")}
                         </div>
                         <div className="item-content">
-                            Nexus is not responsible for losses except in cases of proven gross
-                            negligence or fraud. We are not liable for market fluctuations,
-                            technical issues, or third-party actions.
+                            {i18n("pages.termsOfUse.liability.liability.content")}
                         </div>
                     </div>
                     <div className="content-item">
                         <div className="item-title">
                             <i className="fas fa-copyright item-icon" />
-                            Intellectual Property
+                            {i18n("pages.termsOfUse.liability.intellectualProperty.title")}
                         </div>
                         <div className="item-content">
-                            Nexus retains all intellectual property rights to our platform,
-                            technology, and branding. Users receive a limited license to use our
-                            services as outlined in these Terms.
+                            {i18n("pages.termsOfUse.liability.intellectualProperty.content")}
                         </div>
                     </div>
                     <div className="content-item">
                         <div className="item-title">
                             <i className="fas fa-shield-alt item-icon" />
-                            Indemnity
+                            {i18n("pages.termsOfUse.liability.indemnity.title")}
                         </div>
                         <div className="item-content">
-                            You agree to indemnify and hold Nexus harmless against any claims,
-                            losses, or damages resulting from your misuse of our services or
-                            violation of these Terms.
+                            {i18n("pages.termsOfUse.liability.indemnity.content")}
                         </div>
                     </div>
                 </div>
@@ -302,53 +268,48 @@ function Termeofuse() {
                 <div className="notice-section">
                     <div className="notice-title">
                         <i className="fas fa-file-contract" />
-                        Important Notice
+                        {i18n("pages.termsOfUse.importantNotice.title")}
                     </div>
                     <div className="notice-content">
-                        By using Nexus services, you acknowledge that you have read, understood,
-                        and agree to be bound by these Terms of Use. If you do not agree, you
-                        must discontinue use of our services immediately.
+                        {i18n("pages.termsOfUse.importantNotice.content")}
                     </div>
                 </div>
                 {/* Action Cards */}
                 <div className="action-cards">
-
                     <Link to="/security-tips" className="remove_blue">
                         <div className="action-card">
                             <i className="fas fa-shield-alt action-icon" />
-                            <div className="action-title ">Security</div>
-                            <div className="action-description">Keep your account safe.</div>
+                            <div className="action-title">{i18n("pages.termsOfUse.actionCards.security.title")}</div>
+                            <div className="action-description">{i18n("pages.termsOfUse.actionCards.security.description")}</div>
                         </div>
                     </Link>
                     <Link to="/faq-center" className="remove_blue">
                         <div className="action-card">
                             <i className="fas fa-question-circle action-icon" />
-                            <div className="action-title">Help Center</div>
-                            <div className="action-description">Get answers to your questions</div>
+                            <div className="action-title">{i18n("pages.termsOfUse.actionCards.helpCenter.title")}</div>
+                            <div className="action-description">{i18n("pages.termsOfUse.actionCards.helpCenter.description")}</div>
                         </div>
                     </Link>
-
                     <Link to="/privacy-portal" className="remove_blue">
                         <div className="action-card">
                             <i className="fas fa-user-shield action-icon" />
-                            <div className="action-title">Privacy Policy</div>
-                            <div className="action-description">Review our privacy practices</div>
+                            <div className="action-title">{i18n("pages.termsOfUse.actionCards.privacyPolicy.title")}</div>
+                            <div className="action-description">{i18n("pages.termsOfUse.actionCards.privacyPolicy.description")}</div>
                         </div>
                     </Link>
                     <Link to="/approval" className="remove_blue">
                         <div className="action-card" >
                             <i className="fas fa-gavel action-icon" />
-                            <div className="action-title">Legal</div>
-                            <div className="action-description">View all legal documents</div>
+                            <div className="action-title">{i18n("pages.termsOfUse.actionCards.legal.title")}</div>
+                            <div className="action-description">{i18n("pages.termsOfUse.actionCards.legal.description")}</div>
                         </div>
                     </Link>
-
                 </div>
                 {/* Footer */}
                 <div className="footer">
-                    © 2025 Nexus Exchange. All rights reserved.
+                    {i18n("pages.termsOfUse.footer.copyright")}
                     <br />
-                    Last updated: 6 May 2025
+                    {i18n("pages.termsOfUse.footer.lastUpdated")}
                 </div>
             </div >
             {/* Scroll to Top Button */}
@@ -356,7 +317,6 @@ function Termeofuse() {
                 <i className="fas fa-chevron-up" />
             </div >
             {/* Notification Element */}
-
 
             <style>{`   .container {
             max-width: 400px;
@@ -600,7 +560,6 @@ function Termeofuse() {
             opacity: 1;
         }`}</style>
         </>
-
     )
 }
 

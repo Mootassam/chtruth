@@ -1,1569 +1,1970 @@
+
+
 const ptBR = {
-  common: {
-    or: 'ou',
-    cancel: 'Cancelar',
-    reset: 'Limpar',
-    save: 'Salvar',
-    search: 'Buscar',
-    edit: 'Editar',
-    new: 'Novo',
-    export: 'Exportar para Excel',
-    noDataToExport: 'Não há dados para exportar',
-    import: 'Importar',
-    discard: 'Descartar',
-    yes: 'Sim',
-    no: 'Não',
-    pause: 'Pausar',
-    areYouSure: 'Tem certeza?',
-    view: 'Visualizar',
-    destroy: 'Deletar',
-    mustSelectARow: 'Selecine uma linha',
-    start: 'Inicio',
-    end: 'Fim',
-    select: 'Selecionar',
-    continue: 'Continuar',
-    filters: 'Filtros',
-  },
-
   app: {
-    title: 'Aplicação',
+    title: "Nowspeed"
+  },
+  inputs: {
+    username: "Nome de Usuário",
+    password: "Senha",
+    phoneNumber: "Número de Telefone",
+    withdrawPassword: "Senha de Saque",
+    confirmPassword: "Confirmar Senha",
+    invitationcode: "Código de Convite",
+    walletaddress: "Endereço da carteira"
+
+  },
+  stake: {
+    enterAmount: "Digite um valor",
+    insufficientBalance: "Saldo insuficiente",
+    minAmount: "Mín: {{min}}",
+    maxAmount: "Máx: {{max}}",
+    confirmStake: "Confirmar Stake"
   },
 
-  api: {
-    menu: 'API',
-  },
 
-  entities: {
-    category: {
-      name: 'Category',
-      label: 'Categories',
-      menu: 'Categories',
-      exporterFileName: 'Category_exportados',
-      list: {
-        menu: 'Categories',
-        title: 'Categories',
-      },
-      create: {
-        success: 'Category salvo com sucesso',
-      },
-      update: {
-        success: 'Category salvo com sucesso',
-      },
-      destroy: {
-        success: 'Category deletado com sucesso',
-      },
-      destroyAll: {
-        success: 'Category(s) deletado com sucesso',
-      },
-      edit: {
-        title: 'Editar Category',
-      },
-      fields: {
-        id: 'Id',
-        name: 'Name',
-        slug: 'Slug',
-        photo: 'Photo',
-        metaKeywords: 'MetaKeywords',
-        metaDescriptions: 'MetaDescriptions',
-        status: 'Status',
-        isFeature: 'IsFeature',
-        serialRange: 'Serial',
-        serial: 'Serial',
-        createdAt: 'Criado em',
-        updatedAt: 'Atualizado em',
-        createdAtRange: 'Criado em',
-      },
-      enumerators: {
-        status: {
-          enable: 'Enable',
-          disable: 'Disable',
-        },
-      },
-      placeholders: {},
-      hints: {},
-      new: {
-        title: 'Novo Category',
-      },
-      view: {
-        title: 'Visualizar Category',
-      },
-      importer: {
-        title: 'Importar Categories',
-        fileName: 'category_template_importacao',
-        hint: 'Arquivos/Imagens devem ser as URLs dos arquivos, separados por espaço. Relacionamentos devem ser os IDs separados por espaço.',
-      },
+  components: {
+    bottomNav: {
+      home: "Início",
+      market: "Mercado",
+      trade: "Negociar",
+      futures: "Futuros",
+      wallets: "Carteiras"
     },
-
-    subcategories: {
-      name: 'Subcategories',
-      label: 'Subcategories',
-      menu: 'Subcategories',
-      exporterFileName: 'Subcategories_exportados',
-      list: {
-        menu: 'Subcategories',
-        title: 'Subcategories',
-      },
-      create: {
-        success: 'Subcategories salvo com sucesso',
-      },
-      update: {
-        success: 'Subcategories salvo com sucesso',
-      },
-      destroy: {
-        success: 'Subcategories deletado com sucesso',
-      },
-      destroyAll: {
-        success: 'Subcategories(s) deletado com sucesso',
-      },
-      edit: {
-        title: 'Editar Subcategories',
-      },
-      fields: {
-        id: 'Id',
-        name: 'Name',
-        slug: 'Slug',
-        status: 'Status',
-        categoryId: 'Category',
-        createdAt: 'Criado em',
-        updatedAt: 'Atualizado em',
-        createdAtRange: 'Criado em',
-      },
-      enumerators: {
-        status: {
-          enable: 'Enable',
-          disable: 'Disable',
-        },
-      },
-      placeholders: {},
-      hints: {},
-      new: {
-        title: 'Novo Subcategories',
-      },
-      view: {
-        title: 'Visualizar Subcategories',
-      },
-      importer: {
-        title: 'Importar Subcategories',
-        fileName: 'subcategories_template_importacao',
-        hint: 'Arquivos/Imagens devem ser as URLs dos arquivos, separados por espaço. Relacionamentos devem ser os IDs separados por espaço.',
-      },
-    },
-
-    chieldCategories: {
-      name: 'ChieldCategories',
-      label: 'ChieldCategories',
-      menu: 'ChieldCategories',
-      exporterFileName: 'ChieldCategories_exportados',
-      list: {
-        menu: 'ChieldCategories',
-        title: 'ChieldCategories',
-      },
-      create: {
-        success: 'ChieldCategories salvo com sucesso',
-      },
-      update: {
-        success: 'ChieldCategories salvo com sucesso',
-      },
-      destroy: {
-        success: 'ChieldCategories deletado com sucesso',
-      },
-      destroyAll: {
-        success: 'ChieldCategories(s) deletado com sucesso',
-      },
-      edit: {
-        title: 'Editar ChieldCategories',
-      },
-      fields: {
-        id: 'Id',
-        name: 'Name',
-        slug: 'Slug',
-        categoryId: 'CategoryId',
-        subcategoryId: 'SubcategoryId',
-        createdAt: 'Criado em',
-        updatedAt: 'Atualizado em',
-        createdAtRange: 'Criado em',
-      },
-      enumerators: {},
-      placeholders: {
-        subcategoryId: ' ',
-      },
-      hints: {},
-      new: {
-        title: 'Novo ChieldCategories',
-      },
-      view: {
-        title: 'Visualizar ChieldCategories',
-      },
-      importer: {
-        title: 'Importar ChieldCategories',
-        fileName: 'chieldCategories_template_importacao',
-        hint: 'Arquivos/Imagens devem ser as URLs dos arquivos, separados por espaço. Relacionamentos devem ser os IDs separados por espaço.',
-      },
-    },
-
-    taxes: {
-      name: 'Taxes',
-      label: 'Taxes',
-      menu: 'Taxes',
-      exporterFileName: 'Taxes_exportados',
-      list: {
-        menu: 'Taxes',
-        title: 'Taxes',
-      },
-      create: {
-        success: 'Taxes salvo com sucesso',
-      },
-      update: {
-        success: 'Taxes salvo com sucesso',
-      },
-      destroy: {
-        success: 'Taxes deletado com sucesso',
-      },
-      destroyAll: {
-        success: 'Taxes(s) deletado com sucesso',
-      },
-      edit: {
-        title: 'Editar Taxes',
-      },
-      fields: {
-        id: 'Id',
-        name: 'Name',
-        valueRange: 'Value',
-        value: 'Value',
-        status: 'Status',
-        createdAt: 'Criado em',
-        updatedAt: 'Atualizado em',
-        createdAtRange: 'Criado em',
-      },
-      enumerators: {
-        status: {
-          enable: 'Enable',
-          disable: 'Disable',
-        },
-      },
-      placeholders: {},
-      hints: {},
-      new: {
-        title: 'Novo Taxes',
-      },
-      view: {
-        title: 'Visualizar Taxes',
-      },
-      importer: {
-        title: 'Importar Taxes',
-        fileName: 'taxes_template_importacao',
-        hint: 'Arquivos/Imagens devem ser as URLs dos arquivos, separados por espaço. Relacionamentos devem ser os IDs separados por espaço.',
-      },
-    },
-
-    brands: {
-      name: 'Brands',
-      label: 'Brands',
-      menu: 'Brands',
-      exporterFileName: 'Brands_exportados',
-      list: {
-        menu: 'Brands',
-        title: 'Brands',
-      },
-      create: {
-        success: 'Brands salvo com sucesso',
-      },
-      update: {
-        success: 'Brands salvo com sucesso',
-      },
-      destroy: {
-        success: 'Brands deletado com sucesso',
-      },
-      destroyAll: {
-        success: 'Brands(s) deletado com sucesso',
-      },
-      edit: {
-        title: 'Editar Brands',
-      },
-      fields: {
-        id: 'Id',
-        name: 'Name',
-        slug: 'Slug',
-        photo: 'Photo',
-        status: 'Status',
-        isPopular: 'IsPopular',
-        createdAt: 'Criado em',
-        updatedAt: 'Atualizado em',
-        createdAtRange: 'Criado em',
-      },
-      enumerators: {
-        status: {
-          enbale: 'Enbale',
-          disable: 'Disable',
-        },
-        isPopular: {
-          enable: 'Enable',
-          disable: 'Disable',
-        },
-      },
-      placeholders: {},
-      hints: {},
-      new: {
-        title: 'Novo Brands',
-      },
-      view: {
-        title: 'Visualizar Brands',
-      },
-      importer: {
-        title: 'Importar Brands',
-        fileName: 'brands_template_importacao',
-        hint: 'Arquivos/Imagens devem ser as URLs dos arquivos, separados por espaço. Relacionamentos devem ser os IDs separados por espaço.',
-      },
-    },
-
-    edit: {
-      name: 'Edit',
-      label: 'Edits',
-      menu: 'Edits',
-      exporterFileName: 'Edit_exportados',
-      list: {
-        menu: 'Edits',
-        title: 'Edits',
-      },
-      create: {
-        success: 'Edit salvo com sucesso',
-      },
-      update: {
-        success: 'Edit salvo com sucesso',
-      },
-      destroy: {
-        success: 'Edit deletado com sucesso',
-      },
-      destroyAll: {
-        success: 'Edit(s) deletado com sucesso',
-      },
-      edit: {
-        title: 'Editar Edit',
-      },
-      fields: {
-        id: 'Id',
-        campaignTitle: 'CampaignTitle',
-        campaignLastDateTimeRange: 'CampaignLastDateTime',
-        campaignLastDateTime: 'CampaignLastDateTime',
-        status: 'Status',
-        createdAt: 'Criado em',
-        updatedAt: 'Atualizado em',
-        createdAtRange: 'Criado em',
-      },
-      enumerators: {
-        status: {
-          enable: 'Enable',
-          disable: 'Disable',
-        },
-      },
-      placeholders: {},
-      hints: {},
-      new: {
-        title: 'Novo Edit',
-      },
-      view: {
-        title: 'Visualizar Edit',
-      },
-      importer: {
-        title: 'Importar Edits',
-        fileName: 'edit_template_importacao',
-        hint: 'Arquivos/Imagens devem ser as URLs dos arquivos, separados por espaço. Relacionamentos devem ser os IDs separados por espaço.',
-      },
-    },
-
-    campaignItems: {
-      name: 'CampaignItems',
-      label: 'CampaignItems',
-      menu: 'CampaignItems',
-      exporterFileName: 'CampaignItems_exportados',
-      list: {
-        menu: 'CampaignItems',
-        title: 'CampaignItems',
-      },
-      create: {
-        success: 'CampaignItems salvo com sucesso',
-      },
-      update: {
-        success: 'CampaignItems salvo com sucesso',
-      },
-      destroy: {
-        success: 'CampaignItems deletado com sucesso',
-      },
-      destroyAll: {
-        success: 'CampaignItems(s) deletado com sucesso',
-      },
-      edit: {
-        title: 'Editar CampaignItems',
-      },
-      fields: {
-        id: 'Id',
-        status: 'Status',
-        isFeature: 'IsFeature',
-        itemId: 'ItemId',
-        createdAt: 'Criado em',
-        updatedAt: 'Atualizado em',
-        createdAtRange: 'Criado em',
-      },
-      enumerators: {
-        status: {
-          enable: 'Enable',
-          disable: 'Disable',
-        },
-        isFeature: {
-          enable: 'Enable',
-          disable: 'Disable',
-        },
-      },
-      placeholders: {},
-      hints: {},
-      new: {
-        title: 'Novo CampaignItems',
-      },
-      view: {
-        title: 'Visualizar CampaignItems',
-      },
-      importer: {
-        title: 'Importar CampaignItems',
-        fileName: 'campaignItems_template_importacao',
-        hint: 'Arquivos/Imagens devem ser as URLs dos arquivos, separados por espaço. Relacionamentos devem ser os IDs separados por espaço.',
-      },
-    },
-
-    gallery: {
-      name: 'Gallery',
-      label: 'Galleries',
-      menu: 'Galleries',
-      exporterFileName: 'Gallery_exportados',
-      list: {
-        menu: 'Galleries',
-        title: 'Galleries',
-      },
-      create: {
-        success: 'Gallery salvo com sucesso',
-      },
-      update: {
-        success: 'Gallery salvo com sucesso',
-      },
-      destroy: {
-        success: 'Gallery deletado com sucesso',
-      },
-      destroyAll: {
-        success: 'Gallery(s) deletado com sucesso',
-      },
-      edit: {
-        title: 'Editar Gallery',
-      },
-      fields: {
-        id: 'Id',
-        photos: 'Photos',
-        createdAt: 'Criado em',
-        updatedAt: 'Atualizado em',
-        createdAtRange: 'Criado em',
-      },
-      enumerators: {},
-      placeholders: {},
-      hints: {},
-      new: {
-        title: 'Novo Gallery',
-      },
-      view: {
-        title: 'Visualizar Gallery',
-      },
-      importer: {
-        title: 'Importar Galleries',
-        fileName: 'gallery_template_importacao',
-        hint: 'Arquivos/Imagens devem ser as URLs dos arquivos, separados por espaço. Relacionamentos devem ser os IDs separados por espaço.',
-      },
-    },
-
-    product: {
-      name: 'Product',
-      label: 'Products',
-      menu: 'Products',
-      exporterFileName: 'Product_exportados',
-      list: {
-        menu: 'Products',
-        title: 'Products',
-      },
-      create: {
-        success: 'Product salvo com sucesso',
-      },
-      update: {
-        success: 'Product salvo com sucesso',
-      },
-      destroy: {
-        success: 'Product deletado com sucesso',
-      },
-      destroyAll: {
-        success: 'Product(s) deletado com sucesso',
-      },
-      edit: {
-        title: 'Editar Product',
-      },
-      fields: {
-        id: 'Id',
-        name: 'Name',
-        slug: 'Slug',
-        tags: 'Tags',
-        video: 'Video',
-        specificationName: 'SpecificationName',
-        specificationDesciption: 'SpecificationDesciption',
-        isSpecification: 'IsSpecification',
-        details: 'Details',
-        photo: 'Photo',
-        discountPriceRange: 'DiscountPrice',
-        discountPrice: 'DiscountPrice',
-        previousPriceRange: 'PreviousPrice',
-        previousPrice: 'PreviousPrice',
-        stockRange: 'Stock',
-        stock: 'Stock',
-        metaKeywords: 'MetaKeywords',
-        metaDesctiption: 'MetaDesctiption',
-        status: 'Status',
-        isType: 'Type',
-        dateRange: 'Date',
-        date: 'Date',
-        itemType: 'ItemType',
-        file: 'File',
-        link: 'Link',
-        fileType: 'FileType',
-        taxe: 'Taxe',
-        category: 'Category',
-        subcategory: 'Subcategory',
-        childcategory: 'Childcategory',
-        brand: 'Brand',
-        gallery: 'Gallery',
-        createdAt: 'Criado em',
-        updatedAt: 'Atualizado em',
-        createdAtRange: 'Criado em',
-      },
-      enumerators: {
-        status: {
-          enable: 'Enable',
-          disable: 'Disable',
-        },
-        itemType: {
-          normal: 'Normal',
-          digitale: 'Digitale',
-        },
-        fileType: {
-          file: 'File',
-          link: 'Link',
-        },
-      },
-      placeholders: {},
-      hints: {},
-      new: {
-        title: 'Novo Product',
-      },
-      view: {
-        title: 'Visualizar Product',
-      },
-      importer: {
-        title: 'Importar Products',
-        fileName: 'product_template_importacao',
-        hint: 'Arquivos/Imagens devem ser as URLs dos arquivos, separados por espaço. Relacionamentos devem ser os IDs separados por espaço.',
-      },
-    },
-
-    shippingservice: {
-      name: 'Shippingservice',
-      label: 'Shippingservices',
-      menu: 'Shippingservices',
-      exporterFileName: 'Shippingservice_exportados',
-      list: {
-        menu: 'Shippingservices',
-        title: 'Shippingservices',
-      },
-      create: {
-        success: 'Shippingservice salvo com sucesso',
-      },
-      update: {
-        success: 'Shippingservice salvo com sucesso',
-      },
-      destroy: {
-        success: 'Shippingservice deletado com sucesso',
-      },
-      destroyAll: {
-        success: 'Shippingservice(s) deletado com sucesso',
-      },
-      edit: {
-        title: 'Editar Shippingservice',
-      },
-      fields: {
-        id: 'Id',
-        name: 'Name',
-        priceRange: 'Price',
-        price: 'Price',
-        status: 'Status',
-        minimumPriceRange: 'MinimumPrice',
-        minimumPrice: 'MinimumPrice',
-        isCondition: 'IsCondition',
-        createdAt: 'Criado em',
-        updatedAt: 'Atualizado em',
-        createdAtRange: 'Criado em',
-      },
-      enumerators: {
-        status: {
-          enable: 'Enable',
-          disable: 'Disable',
-        },
-      },
-      placeholders: {},
-      hints: {},
-      new: {
-        title: 'Novo Shippingservice',
-      },
-      view: {
-        title: 'Visualizar Shippingservice',
-      },
-      importer: {
-        title: 'Importar Shippingservices',
-        fileName: 'shippingservice_template_importacao',
-        hint: 'Arquivos/Imagens devem ser as URLs dos arquivos, separados por espaço. Relacionamentos devem ser os IDs separados por espaço.',
-      },
-    },
-
-    coupons: {
-      name: 'Coupons',
-      label: 'Coupons',
-      menu: 'Coupons',
-      exporterFileName: 'Coupons_exportados',
-      list: {
-        menu: 'Coupons',
-        title: 'Coupons',
-      },
-      create: {
-        success: 'Coupons salvo com sucesso',
-      },
-      update: {
-        success: 'Coupons salvo com sucesso',
-      },
-      destroy: {
-        success: 'Coupons deletado com sucesso',
-      },
-      destroyAll: {
-        success: 'Coupons(s) deletado com sucesso',
-      },
-      edit: {
-        title: 'Editar Coupons',
-      },
-      fields: {
-        id: 'Id',
-        title: 'Title',
-        codeName: 'CodeName',
-        discountRange: 'Discount',
-        discount: 'Discount',
-        noOfTimesRange: 'NoOfTimes',
-        noOfTimes: 'NoOfTimes',
-        status: 'Status',
-        type: 'Type',
-        createdAt: 'Criado em',
-        updatedAt: 'Atualizado em',
-        createdAtRange: 'Criado em',
-      },
-      enumerators: {
-        status: {
-          enable: 'Enable',
-          disable: 'Disable',
-        },
-        type: {
-          'Percentage (%)': 'Percentage (%)',
-          'amount ( TND)': 'Amount ( TND)',
-        },
-      },
-      placeholders: {},
-      hints: {},
-      new: {
-        title: 'Novo Coupons',
-      },
-      view: {
-        title: 'Visualizar Coupons',
-      },
-      importer: {
-        title: 'Importar Coupons',
-        fileName: 'coupons_template_importacao',
-        hint: 'Arquivos/Imagens devem ser as URLs dos arquivos, separados por espaço. Relacionamentos devem ser os IDs separados por espaço.',
-      },
-    },
-
-    transaction: {
-      name: 'Transaction',
-      label: 'Transactions',
-      menu: 'Transactions',
-      exporterFileName: 'Transaction_exportados',
-      list: {
-        menu: 'Transactions',
-        title: 'Transactions',
-      },
-      create: {
-        success: 'Transaction salvo com sucesso',
-      },
-      update: {
-        success: 'Transaction salvo com sucesso',
-      },
-      destroy: {
-        success: 'Transaction deletado com sucesso',
-      },
-      destroyAll: {
-        success: 'Transaction(s) deletado com sucesso',
-      },
-      edit: {
-        title: 'Editar Transaction',
-      },
-      fields: {
-        id: 'Id',
-        amountRange: 'Amount',
-        amount: 'Amount',
-        email: 'Email',
-        tax: 'Tax',
-        currencySign: 'CurrencySign',
-        currencyValue: 'CurrencyValue',
-        orderId: 'OrderId',
-        createdAt: 'Criado em',
-        updatedAt: 'Atualizado em',
-        createdAtRange: 'Criado em',
-      },
-      enumerators: {},
-      placeholders: {},
-      hints: {},
-      new: {
-        title: 'Novo Transaction',
-      },
-      view: {
-        title: 'Visualizar Transaction',
-      },
-      importer: {
-        title: 'Importar Transactions',
-        fileName: 'transaction_template_importacao',
-        hint: 'Arquivos/Imagens devem ser as URLs dos arquivos, separados por espaço. Relacionamentos devem ser os IDs separados por espaço.',
-      },
-    },
-
-    trackOrder: {
-      name: 'TrackOrder',
-      label: 'TrackOrders',
-      menu: 'TrackOrders',
-      exporterFileName: 'TrackOrder_exportados',
-      list: {
-        menu: 'TrackOrders',
-        title: 'TrackOrders',
-      },
-      create: {
-        success: 'TrackOrder salvo com sucesso',
-      },
-      update: {
-        success: 'TrackOrder salvo com sucesso',
-      },
-      destroy: {
-        success: 'TrackOrder deletado com sucesso',
-      },
-      destroyAll: {
-        success: 'TrackOrder(s) deletado com sucesso',
-      },
-      edit: {
-        title: 'Editar TrackOrder',
-      },
-      fields: {
-        id: 'Id',
-        title: 'Title',
-        item: 'Item',
-        order: 'Order',
-        createdAt: 'Criado em',
-        updatedAt: 'Atualizado em',
-        createdAtRange: 'Criado em',
-      },
-      enumerators: {},
-      placeholders: {},
-      hints: {},
-      new: {
-        title: 'Novo TrackOrder',
-      },
-      view: {
-        title: 'Visualizar TrackOrder',
-      },
-      importer: {
-        title: 'Importar TrackOrders',
-        fileName: 'trackOrder_template_importacao',
-        hint: 'Arquivos/Imagens devem ser as URLs dos arquivos, separados por espaço. Relacionamentos devem ser os IDs separados por espaço.',
-      },
-    },
-
-    order: {
-      name: 'Order',
-      label: 'Orders',
-      menu: 'Orders',
-      exporterFileName: 'Order_exportados',
-      list: {
-        menu: 'Orders',
-        title: 'Orders',
-      },
-      create: {
-        success: 'Order salvo com sucesso',
-      },
-      update: {
-        success: 'Order salvo com sucesso',
-      },
-      destroy: {
-        success: 'Order deletado com sucesso',
-      },
-      destroyAll: {
-        success: 'Order(s) deletado com sucesso',
-      },
-      edit: {
-        title: 'Editar Order',
-      },
-      fields: {
-        id: 'Id',
-        userId: 'UserId',
-        cart: 'Cart',
-        shipping: 'Shipping',
-        discountRange: 'Discount',
-        discount: 'Discount',
-        paymentMethod: 'PaymentMethod',
-        taxe: 'Taxe',
-        transactionNumber: 'TransactionNumber',
-        orderStatus: 'OrderStatus',
-        createdAt: 'Criado em',
-        updatedAt: 'Atualizado em',
-        createdAtRange: 'Criado em',
-      },
-      enumerators: {
-        orderStatus: {
-          pending: 'Pending',
-          in_progress: 'In_progress',
-          delivered: 'Delivered',
-          canceled: 'Canceled',
-        },
-      },
-      placeholders: {},
-      hints: {},
-      new: {
-        title: 'Novo Order',
-      },
-      view: {
-        title: 'Visualizar Order',
-      },
-      importer: {
-        title: 'Importar Orders',
-        fileName: 'order_template_importacao',
-        hint: 'Arquivos/Imagens devem ser as URLs dos arquivos, separados por espaço. Relacionamentos devem ser os IDs separados por espaço.',
-      },
-    },
-
-    state: {
-      name: 'State',
-      label: 'States',
-      menu: 'States',
-      exporterFileName: 'State_exportados',
-      list: {
-        menu: 'States',
-        title: 'States',
-      },
-      create: {
-        success: 'State salvo com sucesso',
-      },
-      update: {
-        success: 'State salvo com sucesso',
-      },
-      destroy: {
-        success: 'State deletado com sucesso',
-      },
-      destroyAll: {
-        success: 'State(s) deletado com sucesso',
-      },
-      edit: {
-        title: 'Editar State',
-      },
-      fields: {
-        id: 'Id',
-        name: 'Name',
-        priceRange: 'Price',
-        price: 'Price',
-        status: 'Status',
-        type: 'Type',
-        createdAt: 'Criado em',
-        updatedAt: 'Atualizado em',
-        createdAtRange: 'Criado em',
-      },
-      enumerators: {
-        status: {
-          enable: 'Enable',
-          disable: 'Disable',
-        },
-      },
-      placeholders: {},
-      hints: {},
-      new: {
-        title: 'Novo State',
-      },
-      view: {
-        title: 'Visualizar State',
-      },
-      importer: {
-        title: 'Importar States',
-        fileName: 'state_template_importacao',
-        hint: 'Arquivos/Imagens devem ser as URLs dos arquivos, separados por espaço. Relacionamentos devem ser os IDs separados por espaço.',
-      },
-    },
-
-    attributeOptions: {
-      name: 'AttributeOptions',
-      label: 'AttributeOptions',
-      menu: 'AttributeOptions',
-      exporterFileName: 'AttributeOptions_exportados',
-      list: {
-        menu: 'AttributeOptions',
-        title: 'AttributeOptions',
-      },
-      create: {
-        success: 'AttributeOptions salvo com sucesso',
-      },
-      update: {
-        success: 'AttributeOptions salvo com sucesso',
-      },
-      destroy: {
-        success: 'AttributeOptions deletado com sucesso',
-      },
-      destroyAll: {
-        success: 'AttributeOptions(s) deletado com sucesso',
-      },
-      edit: {
-        title: 'Editar AttributeOptions',
-      },
-      fields: {
-        id: 'Id',
-        name: 'Name',
-        priceRange: 'Price',
-        price: 'Price',
-        keyword: 'Keyword',
-        item: 'Item',
-        createdAt: 'Criado em',
-        updatedAt: 'Atualizado em',
-        createdAtRange: 'Criado em',
-      },
-      enumerators: {},
-      placeholders: {},
-      hints: {},
-      new: {
-        title: 'Novo AttributeOptions',
-      },
-      view: {
-        title: 'Visualizar AttributeOptions',
-      },
-      importer: {
-        title: 'Importar AttributeOptions',
-        fileName: 'attributeOptions_template_importacao',
-        hint: 'Arquivos/Imagens devem ser as URLs dos arquivos, separados por espaço. Relacionamentos devem ser os IDs separados por espaço.',
-      },
-    },
-
-    cart: {
-      name: 'Cart',
-      label: 'Carts',
-      menu: 'Carts',
-      exporterFileName: 'Cart_exportados',
-      list: {
-        menu: 'Carts',
-        title: 'Carts',
-      },
-      create: {
-        success: 'Cart salvo com sucesso',
-      },
-      update: {
-        success: 'Cart salvo com sucesso',
-      },
-      destroy: {
-        success: 'Cart deletado com sucesso',
-      },
-      destroyAll: {
-        success: 'Cart(s) deletado com sucesso',
-      },
-      edit: {
-        title: 'Editar Cart',
-      },
-      fields: {
-        id: 'Id',
-        optionsId: 'OptionsId',
-        attribute: 'Attribute',
-        name: 'Name',
-        slug: 'Slug',
-        qtyRange: 'Qty',
-        qty: 'Qty',
-        priceRange: 'Price',
-        price: 'Price',
-        mainPriceRange: 'MainPrice',
-        mainPrice: 'MainPrice',
-        photo: 'Photo',
-        itemType: 'ItemType',
-        itemLN: 'ItemLN',
-        itemLK: 'ItemLK',
-        createdAt: 'Criado em',
-        updatedAt: 'Atualizado em',
-        createdAtRange: 'Criado em',
-      },
-      enumerators: {},
-      placeholders: {},
-      hints: {},
-      new: {
-        title: 'Novo Cart',
-      },
-      view: {
-        title: 'Visualizar Cart',
-      },
-      importer: {
-        title: 'Importar Carts',
-        fileName: 'cart_template_importacao',
-        hint: 'Arquivos/Imagens devem ser as URLs dos arquivos, separados por espaço. Relacionamentos devem ser os IDs separados por espaço.',
-      },
-    },
-
-    paymentsettings: {
-      name: 'Paymentsettings',
-      label: 'Paymentsettings',
-      menu: 'Paymentsettings',
-      exporterFileName: 'Paymentsettings_exportados',
-      list: {
-        menu: 'Paymentsettings',
-        title: 'Paymentsettings',
-      },
-      create: {
-        success: 'Paymentsettings salvo com sucesso',
-      },
-      update: {
-        success: 'Paymentsettings salvo com sucesso',
-      },
-      destroy: {
-        success: 'Paymentsettings deletado com sucesso',
-      },
-      destroyAll: {
-        success: 'Paymentsettings(s) deletado com sucesso',
-      },
-      edit: {
-        title: 'Editar Paymentsettings',
-      },
-      fields: {
-        id: 'Id',
-        name: 'Name',
-        information: 'Information',
-        uniqueKeywords: 'UniqueKeywords',
-        photo: 'Photo',
-        text: 'Text',
-        status: 'Status',
-        type: 'Type',
-        createdAt: 'Criado em',
-        updatedAt: 'Atualizado em',
-        createdAtRange: 'Criado em',
-      },
-      enumerators: {
-        status: {
-          enable: 'Enable',
-          disable: 'Disable',
-        },
-      },
-      placeholders: {},
-      hints: {},
-      new: {
-        title: 'Novo Paymentsettings',
-      },
-      view: {
-        title: 'Visualizar Paymentsettings',
-      },
-      importer: {
-        title: 'Importar Paymentsettings',
-        fileName: 'paymentsettings_template_importacao',
-        hint: 'Arquivos/Imagens devem ser as URLs dos arquivos, separados por espaço. Relacionamentos devem ser os IDs separados por espaço.',
-      },
-    },
-
-    review: {
-      name: 'Review',
-      label: 'Reviews',
-      menu: 'Reviews',
-      exporterFileName: 'Review_exportados',
-      list: {
-        menu: 'Reviews',
-        title: 'Reviews',
-      },
-      create: {
-        success: 'Review salvo com sucesso',
-      },
-      update: {
-        success: 'Review salvo com sucesso',
-      },
-      destroy: {
-        success: 'Review deletado com sucesso',
-      },
-      destroyAll: {
-        success: 'Review(s) deletado com sucesso',
-      },
-      edit: {
-        title: 'Editar Review',
-      },
-      fields: {
-        id: 'Id',
-        review: 'Review',
-        ratingRange: 'Rating',
-        rating: 'Rating',
-        status: 'Status',
-        subject: 'Subject',
-        item: 'Item',
-        user: 'User',
-        createdAt: 'Criado em',
-        updatedAt: 'Atualizado em',
-        createdAtRange: 'Criado em',
-      },
-      enumerators: {
-        status: {
-          enable: 'Enable',
-          disable: 'Disable',
-        },
-      },
-      placeholders: {},
-      hints: {},
-      new: {
-        title: 'Novo Review',
-      },
-      view: {
-        title: 'Visualizar Review',
-      },
-      importer: {
-        title: 'Importar Reviews',
-        fileName: 'review_template_importacao',
-        hint: 'Arquivos/Imagens devem ser as URLs dos arquivos, separados por espaço. Relacionamentos devem ser os IDs separados por espaço.',
-      },
-    },
+    coinListModal: {
+      title: "Selecionar Criptomoeda",
+      loading: "Carregando dados de criptomoedas...",
+      noResults: "Nenhuma criptomoeda encontrada",
+      popular: "Populares",
+      search: {
+        placeholder: "Pesquisar criptomoedas..."
+      }
+    }
   },
 
   auth: {
-    tenants: 'Áreas de Trabalho',
-    profile: {
-      title: 'Perfil',
-      success: 'Perfil atualizado com sucesso',
+    signin: {
+      title: "ENTRAR",
+      button: "Entrar",
+      signingIn: "Entrando...",
+      forgotPassword: "ESQUECEU A SENHA?",
+      signUp: "CADASTRAR",
+      orContinueWith: "ou continuar com",
+      downloadApp: "BAIXE NOSSO APP",
+      appDescription: "Tenha a melhor experiência crypto no seu dispositivo móvel",
+      googlePlay: "Google Play"
     },
-    createAnAccount: 'Criar uma conta',
-    rememberMe: 'Lembrar-me',
-    forgotPassword: 'Esqueci minha senha',
-    signin: 'Entrar',
-    signup: 'Registrar',
-    signout: 'Sair',
-    alreadyHaveAnAccount: 'Já possui uma conta? Entre.',
+    fields: {
+      emailOrPhone: "Email/Telefone",
+      password: "Senha"
+    },
+    tenants: "Espaços de Trabalho",
+    singindesc: "Digite seu email e senha para entrar",
+    signupdesc: "Digite seu email e senha para cadastrar",
+    profile: {
+      title: "Perfil",
+      success: "Perfil atualizado com sucesso",
+      vip: "Parabéns pela assinatura",
+      wallet: "Configurações de saque concluídas.",
+    },
+    createAnAccount: "Criar uma conta",
+    rememberMe: "Lembrar-me",
+    forgotPassword: "Esqueci a senha",
+
+    signup: "Cadastrar",
+    signout: "Sair",
+    alreadyHaveAnAccount: "Já tem uma conta? Entre.",
     social: {
       errors: {
-        'auth-invalid-provider':
-          'Este email está registrado para outro provedor.',
-        'auth-no-email': `O email associado a esta conta é privado ou não existe.`,
+        "auth-invalid-provider": "Este email já está registrado com outro provedor.",
+        "auth-no-email": "O email associado a esta conta é privado ou inexistente.",
       },
     },
-    signinWithAnotherAccount: 'Entrar com outra conta',
+    signinWithAnotherAccount: "Entrar com outra conta",
     emailUnverified: {
-      message: `Por favor, confirme seu email em <strong>{0}</strong> para continuar.`,
-      submit: `Reenviar confirmação por email`,
-    },
-    passwordResetEmail: {
-      message: 'Enviar email de redefinição de senha',
-      error: `Email não encontrado`,
+      message: "Confirme seu email em <strong>{0}</strong> para continuar.",
+      submit: "Reenviar verificação de email",
     },
     emptyPermissions: {
-      message: `Você ainda não possui permissões. Aguarde o administrador conceder seus privilégios.`,
+      message: "Você ainda não tem permissões. Aguarde o admin conceder privilégios.",
+    },
+    passwordResetEmail: {
+      message: "Enviar email de redefinição de senha",
+      error: "Email não reconhecido",
     },
     passwordReset: {
-      message: 'Alterar senha',
+      message: "Redefinir senha",
     },
     passwordChange: {
-      title: 'Mudar a Senha',
-      success: 'Senha alterada com sucesso',
-      mustMatch: 'Senhas devem ser iguais',
+      title: "Alterar Senha",
+      success: "Senha alterada com sucesso",
+      mustMatch: "As senhas devem coincidir",
     },
     emailAddressVerificationEmail: {
-      error: `Email não encontrado`,
+      error: "Email não reconhecido",
     },
-    verificationEmailSuccess: `Verificação de email enviada com sucesso`,
-    passwordResetEmailSuccess: `Email de redefinição de senha enviado com sucesso`,
-    passwordResetSuccess: `Senha alterada com sucesso`,
+    verificationEmailSuccess: "Email de verificação enviado com sucesso",
+    passwordResetEmailSuccess: "Email de redefinição de senha enviado com sucesso",
+    passwordResetSuccess: "Senha alterada com sucesso",
     verifyEmail: {
-      success: 'Email verificado com sucesso.',
-      message:
-        'Aguarde um momento, seu email está sendo verificado...',
-    },
-  },
-
-  roles: {
-    admin: {
-      label: 'Administrador',
-      description: 'Acesso completo a todos os recursos',
-    },
-    adherent: {
-      label: 'Perfil adherentizado',
-      description: 'Acesso adherentizado',
+      success: "Email verificado com sucesso.",
+      message: "Um momento, seu email está sendo verificado...",
     },
   },
 
   user: {
     fields: {
-      id: 'Id',
-      avatars: 'Avatar',
-      email: 'Email',
-      emails: 'Email(s)',
-      fullName: 'Nome',
-      firstName: 'Nome',
-      lastName: 'Sobrenome',
-      status: 'Estado',
-      phoneNumber: 'Telefone',
-      role: 'Perfil',
-      createdAt: 'Criado em',
-      updatedAt: 'Atualizado em',
-      roleUser: 'Perfil/Usuário',
-      roles: 'Perfis',
-      createdAtRange: 'Criado em',
-      password: 'Senha',
-      oldPassword: 'Senha Antiga',
-      newPassword: 'Nova Senha',
-      newPasswordConfirmation: 'Confirmação da Nova Senha',
-      rememberMe: 'Lembrar-me',
+      gender: "Gênero",
+      captcha: "Captcha",
+      username: "Nome de usuário",
+      walletName: "Nome da carteira",
+      id: "ID",
+      confirmPassword: "Confirmar Senha",
+      avatars: "Avatar",
+      invitationcode: "Código de Convite",
+      email: "Email",
+      emails: "Email(s)",
+      erc20: "Endereço da carteira ERC20",
+      trc20: "Endereço da carteira TRC20",
+      fullName: "Nome",
+      balance: "Saldo",
+      firstName: "Nome",
+      lastName: "Sobrenome",
+      status: "Status",
+      phoneNumber: "Telefone",
+      withdrawPassword: "Senha de Saque",
+      sector: "Setor",
+      employer: "Empregador",
+      profession: "Profissão",
+      address: "Endereço",
+      birthDate: "Data de Nascimento",
+      maritalStatus: "Estado Civil",
+      facebookLink: "Link do Facebook",
+      sponsor: "Patrocinador",
+      role: "Função",
+      createdAt: "Criado em",
+      updatedAt: "Atualizado em",
+      roleUser: "Função/Usuário",
+      roles: "Funções",
+      createdAtRange: "Criado em",
+      password: "Senha",
+      oldPassword: "Senha Antiga",
+      newPassword: "Nova Senha",
+      newPasswordConfirmation: "Confirmar Nova Senha",
+      rememberMe: "Lembrar-me",
+    },
+    sector: {
+      AGRO_ALIMENTAIRE: "Indústria alimentícia",
+      ASSURANCES: "Seguros",
+      AUDIOVISUEL: "Audiovisual",
+      BANCAIRE: "Bancário",
+      CHIMIE: "Química",
+      COMPOSANTS_AUTOMOBILES: "Componentes automotivos",
+      DISTRIBUTION: "Distribuição",
+      DISTRIBUTION_AUTOMOBILE: "Distribuição automotiva",
+      DIVERS: "Diversos",
+      FINANCIER: "Financeiro",
+      HOLDING: "Holding",
+      IMMOBILIER: "Imobiliário",
+      INDUSTRIEL: "Industrial",
+      LEASING: "Leasing",
+      LOGISTIQUE_TRANSPORT: "Logística e Transporte",
+      PHARMACEUTIQUE: "Farmacêutico",
+      SANTÉ: "Saúde",
+      TOURSIME: "Turismo",
+      INFORMATION_TECHNOLOGY: "Tecnologia da Informação",
+    },
+    maritalStatus: {
+      célébataire: "Solteiro",
+      marié: "Casado",
     },
     status: {
-      active: 'Ativo',
-      invited: 'Convidado',
-      'empty-permissions': 'Aguardando Permissões',
+      active: "Ativo",
+      invited: "Convidado",
+      "empty-permissions": "Aguardando Permissões",
+      inactive: "Inativo",
     },
-    invite: 'Convidar',
+
+    enumerators: {
+      status: {
+        USDT: "USDT",
+        ETH: "ETH",
+        BTC: "BTC",
+      },
+      gender: {
+        male: "Masculino",
+        female: "Feminino",
+      }
+    },
+    invite: "Convidar",
     validations: {
-      // eslint-disable-next-line
-      email: 'Email ${value} é inválido',
+      email: "Email ${value} é inválido",
     },
-    title: 'Usuários',
-    menu: 'Usuários',
-    doAddSuccess: 'Usuário(s) salvos com sucesso',
-    doUpdateSuccess: 'Usuário salvo com sucesso',
-    exporterFileName: 'usuarios_exportados',
-    doDestroySuccess: 'Usuário deletado com sucesso',
-    doDestroyAllSelectedSuccess:
-      'Usuários deletado com sucesso',
+    title: "Usuários",
+    menu: "Usuários",
+    doAddSuccess: "Usuário(s) salvo(s) com sucesso",
+    doUpdateSuccess: "Usuário salvo com sucesso",
+    exporterFileName: "exportacao_usuarios",
+    doDestroySuccess: "Usuário excluído com sucesso",
+    doDestroyAllSelectedSuccess: "Usuários excluídos com sucesso",
     edit: {
-      title: 'Editar usuário',
+      title: "Editar Usuário",
     },
     new: {
-      title: 'Novo(s) Usuário(s)',
-      titleModal: 'Novo Usuário',
-      emailsHint:
-        'Separe múltiplos endereços de e-mail usando a vírgula.',
+      title: "Convidar Usuário(s)",
+      titleModal: "Convidar Usuário",
+      emailsHint: "Separe múltiplos emails usando vírgula.",
     },
     view: {
-      title: 'Visualizar Usuário',
-      activity: 'Atividades',
+      title: "Visualizar Usuário",
+      activity: "Atividade",
     },
     importer: {
-      title: 'Importar Usuários',
-      fileName: 'usuarios_template_importacao',
-      hint: 'Arquivos/Imagens devem ser as URLs dos arquivos, separados por espaço. Relacionamentos devem ser os IDs separados por espaço.',
+      title: "Importar Usuários",
+      fileName: "modelo_importacao_usuarios",
+      hint: "Colunas de Arquivos/Imagens devem ser URLs separados por espaço. Relacionamentos devem ser IDs dos registros separados por espaço. Funções devem ser IDs de função separados por espaço.",
     },
     errors: {
-      userAlreadyExists: 'Usuário com este email já existe',
-      userNotFound: 'Usuário não encontrado',
-      revokingOwnPermission: `Você não pode revogar sua própria permissão de proprietário`,
+      userAlreadyExists: "Usuário com este email já existe",
+      userNotFound: "Usuário não encontrado",
+      revokingOwnPermission: "Você não pode revogar sua própria permissão de admin",
     },
   },
 
-  tenant: {
-    name: 'tenant',
-    label: 'Área de Trabalho',
-    menu: 'Áreas de Trabalho',
-    list: {
-      menu: 'Áreas de Trabalho',
-      title: 'Áreas de Trabalho',
+
+
+
+pages: {
+  futures: {
+  title: "Futuros",
+  actions: {
+    buyUp: "COMPRAR ALTA",
+    buyDown: "COMPRAR BAIXA"
+  },
+  tabs: {
+    openOrders: "Ordens Abertas",
+    recentOrders: "Ordens Recentes"
+  },
+  orderDetails: {
+    title: "Detalhes da Ordem",
+    open: "Aberto",
+    closed: "Fechado",
+    completed: "Concluído",
+    futuresAmount: "Valor Futuros:",
+    contractDuration: "Duração do Contrato:",
+    seconds: "Segundos",
+    futuresStatus: "Status Futuros:",
+    openPositionPrice: "Preço Abertura:",
+    openPositionTime: "Hora Abertura:",
+    closePositionPrice: "Preço Fechamento:",
+    closePositionTime: "Hora Fechamento:",
+    profitLossAmount: "Valor Lucro/Perda:",
+    leverage: "Alavancagem:",
+    done: "Concluído"
+  },
+  status: {
+    open: "Aberto",
+    closed: "Fechado",
+    completed: "Concluído"
+  },
+  list: {
+    noOrders: "Nenhuma ordem"
+  }
+},
+    proof: {
+        title: "Verificación de Identidad",
+        instructions: "Verifica tu identidad para acceder a todas las funciones de tu Nexus Exchange",
+        sections: {
+            documentInfo: "Información del Documento",
+            documentUpload: "Carga de Documento"
+        },
+        fields: {
+            documentType: "Tipo de Documento",
+            fullName: "Nombre Completo",
+            documentNumber: "Número de Documento",
+            address: "Dirección",
+            frontSide: "Frente del Documento",
+            backSide: "Reverso del Documento",
+            selfie: "Selfie con Documento"
+        },
+        placeholders: {
+            fullName: "Ingresa tu nombre completo",
+            documentNumber: "Ingresa tu número de documento",
+            address: "Ingresa tu dirección completa"
+        },
+        uploadTexts: {
+            frontSide: "Carga el frente de tu documento",
+            backSide: "Carga el reverso de tu documento",
+            selfie: "Carga un selfie sosteniendo tu documento"
+        },
+        documentTypes: {
+            passport: "Pasaporte",
+            idCard: "Carnet de Identidad",
+            driversLicense: "Licencia de Conducir"
+        },
+        security: {
+            title: "Aviso de Seguridad",
+            text: "Tu información está encriptada y segura. Usamos protección de nivel bancario y verificamos manualmente cada documento para tu seguridad."
+        },
+        buttons: {
+            validateDocuments: "VALIDAR DOCUMENTOS"
+        },
+        footer: {
+            copyright: "© 2025 CryptoWallet. Todos los derechos reservados.",
+            privacyPolicy: "Política de Privacidad"
+        }
     },
-    create: {
-      button: 'Criar Área de Trabalho',
-      success: 'Área de Trabalho salva com sucesso',
+    withdrawPassword: {
+        title: "Contraseña de Retiro",
+        cardTitle: "CAMBIAR CONTRASEÑA DE RETIRO",
+        fields: {
+            currentPassword: "Contraseña Actual",
+            newPassword: "Nueva Contraseña"
+        },
+        placeholders: {
+            currentPassword: "Ingresa tu contraseña anterior",
+            newPassword: "Confirma tu nueva contraseña"
+        },
+        buttons: {
+            saveChanges: "GUARDAR CAMBIOS"
+        },
+        warningMessage: "Para la seguridad de tus fondos, no se permiten retiros dentro de las 24 horas después de cambiar la contraseña de acceso."
     },
-    update: {
-      success: 'Área de Trabalho salva com sucesso',
+    loginPassword: {
+        title: "Contraseña de Acceso",
+        cardTitle: "CAMBIAR CONTRASEÑA DE ACCESO",
+        fields: {
+            oldPassword: "Contraseña Anterior",
+            newPassword: "Nueva Contraseña",
+            newPasswordConfirmation: "Confirmar Contraseña"
+        },
+        placeholders: {
+            oldPassword: "Ingresa tu contraseña actual",
+            newPassword: "Crea una nueva contraseña",
+            confirmPassword: "Confirma tu nueva contraseña"
+        },
+        buttons: {
+            saveChanges: "GUARDAR CAMBIOS"
+        },
+        warningMessage: "Para la seguridad de tus fondos, no se permiten retiros dentro de las 24 horas después de cambiar la contraseña de acceso.",
+        validation: {
+            mustMatch: "Las contraseñas deben coincidir"
+        }
     },
-    destroy: {
-      success: 'Área de Trabalho deletada com sucesso',
+    passwordType: {
+        title: "Tipo de Contraseña",
+        cardTitle: "SELECCIONAR TIPO DE CONTRASEÑA",
+        options: {
+            login: {
+                title: "Contraseña de Acceso",
+                description: "Cambia tu contraseña de acceso a la cuenta"
+            },
+            withdrawal: {
+                title: "Contraseña de Retiro",
+                description: "Cambia tu contraseña de retiro de cripto"
+            }
+        }
     },
-    destroyAll: {
-      success: 'Área(s) de Trabalho deletadas com sucesso',
+    withdrawAddressForm: {
+        title: "Dirección de Retiro",
+        currencyType: "TIPO DE MONEDA",
+        withdrawalAddress: "DIRECCIÓN DE RETIRO",
+        currencies: {
+            btc: "BTC (Bitcoin)",
+            eth: "ETH (Ethereum)",
+            usdt: "USDT (Tether)",
+            sol: "SOL (Solana)",
+            xrp: "XRP (Ripple)"
+        },
+        fields: {
+            address: "Dirección",
+            password: "Contraseña de Retiro Cripto"
+        },
+        placeholders: {
+            address: "Ingresa tu dirección de wallet",
+            password: "Ingresa tu contraseña actual"
+        },
+        buttons: {
+            save: "GUARDAR"
+        },
+        notification: {
+            success: "¡Dirección guardada exitosamente!"
+        }
     },
-    edit: {
-      title: 'Editar Área de Trabalho',
+    withdrawAddress: {
+        title: "Dirección de Retiro",
+        cardTitle: "TIPO DE MONEDA",
+        currencies: {
+            btc: "BTC (Bitcoin)",
+            eth: "ETH (Ethereum)",
+            usdt: "USDT (Tether)",
+            sol: "SOL (Solana)",
+            xrp: "XRP (Ripple)"
+        }
     },
-    fields: {
-      id: 'Id',
-      name: 'Nome',
-      tenantName: 'Nome da Área de Trabalho',
-      tenantUrl: 'URL da Área de Trabalho',
-      tenantId: 'Área de Trabalho',
-      plan: 'Plano',
+    privacy: {
+        title: "Portal de Privacidad",
+        hero: {
+            title: "Portal de Privacidad Nexus",
+            subtitle: "Protegiendo tus datos y privacidad con lineamientos estrictos, cumplimiento legal y las mejores prácticas de la industria."
+        },
+        principles: {
+            title: "Nuestros Principios de Privacidad",
+            corePrinciples: "Principios Fundamentales",
+            transparency: {
+                title: "Transparencia",
+                description: "Actualizaciones regulares e información clara sobre cómo manejamos tus datos."
+            },
+            accountability: {
+                title: "Responsabilidad y Cumplimiento",
+                description: "Auditorías y certificaciones regulares, adherencia a leyes globales de privacidad."
+            },
+            dataSecurity: {
+                title: "Seguridad de Datos",
+                description: "Encriptación avanzada, controles de acceso estrictos y protocolos de verificación de identidad."
+            },
+            dataMinimization: {
+                title: "Minimización y Limitación de Datos",
+                description: "Solo recolectamos lo necesario para propósitos legítimos específicos."
+            },
+            privacyByDesign: {
+                title: "Privacidad por Diseño",
+                description: "La privacidad está integrada en todos nuestros productos y servicios desde su concepción."
+            }
+        },
+        userRights: {
+            title: "Tus Derechos de Privacidad",
+            content: "Tienes herramientas para acceder y gestionar tus datos mediante nuestra app o formulario web, con información detallada disponible en nuestro Aviso de Privacidad.",
+            note: "Ejerce tus derechos de acceso, corrección o eliminación de tu información personal en cualquier momento."
+        },
+        personalData: {
+            title: "¿Qué son los Datos Personales?",
+            definition: "Los datos personales se refieren a cualquier información que identifique a un individuo.",
+            examples: "Ejemplos: nombre, ID Nexus, dirección de correo, datos de ubicación, historial de transacciones e información del dispositivo."
+        },
+        dataUsage: {
+            title: "Cómo Usamos Tus Datos",
+            accountManagement: {
+                title: "Gestión de Cuenta",
+                description: "Para crear y mantener tu cuenta, proporcionar servicios y comunicarnos contigo."
+            },
+            legalCompliance: {
+                title: "Cumplimiento Legal",
+                description: "Para cumplir con nuestras obligaciones bajo leyes aplicables incluyendo regulaciones Anti-Lavado (AML)."
+            },
+            securityFraud: {
+                title: "Seguridad y Prevención de Fraude",
+                description: "Para proteger tu cuenta, detectar y prevenir fraudes y garantizar la seguridad de la plataforma."
+            },
+            customerSupport: {
+                title: "Soporte al Cliente",
+                description: "Para responder a tus consultas y proporcionar asistencia técnica cuando sea necesario."
+            },
+            marketing: {
+                title: "Marketing y Comunicaciones",
+                description: "Para enviarte actualizaciones relevantes, información de productos y material promocional (con tu consentimiento)."
+            },
+            transactionProcessing: {
+                title: "Procesamiento de Transacciones",
+                description: "Para facilitar transacciones de criptomonedas y mantener registros de transacciones."
+            }
+        },
+        dataRetention: {
+            title: "Retención de Datos",
+            content: "Retenemos tus datos mientras sea necesario para proporcionar nuestros servicios, cumplir con obligaciones legales (como requisitos fiscales y AML), resolver disputas y hacer cumplir nuestros acuerdos."
+        },
+        dataSharing: {
+            title: "Compartición de Datos",
+            content: "Podemos compartir tus datos con otras entidades Nexus o terceros confiables bajo estrictas salvaguardas contractuales, solo cuando sea necesario para los propósitos delineados en nuestro Aviso de Privacidad."
+        },
+        cookies: {
+            title: "Cookies y Rastreo",
+            content: "Usamos cookies y tecnologías similares para mejorar tu experiencia de usuario, proporcionar marketing personalizado y analizar cómo se usan nuestros servicios.",
+            link: "Ver nuestra Política de Cookies completa"
+        },
+        actionCards: {
+            privacyNotice: {
+                title: "Aviso de Privacidad",
+                description: "Lee nuestra política de privacidad completa"
+            },
+            manageData: {
+                title: "Gestionar Datos",
+                description: "Accede y controla tu información"
+            },
+            cookieSettings: {
+                title: "Configuración de Cookies",
+                description: "Ajusta tus preferencias de rastreo"
+            },
+            helpCenter: {
+                title: "Centro de Ayuda",
+                description: "Obtén respuestas a preguntas sobre privacidad"
+            }
+        },
+        notification: "¡Acción completada exitosamente!"
     },
-    enumerators: {},
-    new: {
-      title: 'Nova Área de Trabalho',
+    termsOfUse: {
+        title: "Términos de Uso",
+        hero: {
+            title: "Términos de Uso Nexus"
+        },
+        agreement: {
+            title: "Acuerdo",
+            content: "Este es un acuerdo vinculante entre tú (el usuario) y Nexus. Cubre todos los Servicios Nexus que accedes o usas."
+        },
+        riskWarning: {
+            title: "Advertencia de Riesgo",
+            content: "Los activos digitales son volátiles y pueden fluctuar significativamente en valor. Nexus no es un bróker, asesor financiero o inversor. Debes realizar tu propia debida diligencia antes de tomar cualquier decisión financiera."
+        },
+        aboutServices: {
+            title: "Acerca de Nuestros Servicios",
+            aboutNexus: {
+                title: "Acerca de Nexus",
+                content: "Nexus proporciona intercambio de activos digitales, servicios de custodia y servicios financieros relacionados a través de nuestra plataforma."
+            },
+            eligibility: {
+                title: "Elegibilidad",
+                content: "Debes tener al menos 18 años, ser legalmente capaz de celebrar contratos, no estar restringido de usar nuestros servicios y no estar ubicado en jurisdicciones prohibidas."
+            },
+            communication: {
+                title: "Comunicación",
+                content: "Debes mantener actualizada tu información de contacto. Nexus te contactará vía email, SMS o teléfono respecto a tu cuenta y nuestros servicios."
+            }
+        },
+        services: {
+            title: "Nuestros Servicios",
+            servicesProvided: {
+                title: "Servicios Proporcionados",
+                content: "Nexus ofrece trading de activos digitales, soluciones de custodia seguras y soporte al cliente mediante bots automatizados y representantes humanos. También está disponible la funcionalidad de chat de usuario."
+            },
+            fees: {
+                title: "Comisiones",
+                content: "Todas las comisiones aplicables se listan en nuestra página Estructura de Comisiones y están sujetas a actualizaciones. Eres responsable de revisar la tarifa actual antes de realizar transacciones."
+            }
+        },
+        accountManagement: {
+            title: "Gestión de Cuenta",
+            accountCreation: {
+                title: "Creación de Cuenta",
+                content: "Debes abrir una cuenta (individual o corporativa) para acceder a nuestros servicios. Esto requiere completar procedimientos de verificación de identidad (KYC/AML) según lo requiera la ley."
+            },
+            identityVerification: {
+                title: "Verificación de Identidad",
+                content: "Debes completar nuestros procesos de verificación Conoce a Tu Cliente (KYC) y Anti-Lavado (AML) antes de usar ciertos servicios."
+            },
+            accountRecords: {
+                title: "Registros de Cuenta",
+                content: "Puedes mantener registros y crear subcuentas bajo condiciones específicas delineadas en nuestras políticas de gestión de cuentas."
+            }
+        },
+        transactions: {
+            title: "Transacciones",
+            sufficientBalance: {
+                title: "Saldo Suficiente",
+                content: "Debes mantener saldo suficiente en tu cuenta para cualquier transacción que inicies. Las transacciones pueden fallar o incurrir en comisiones adicionales si los fondos son insuficientes."
+            },
+            transactionCancellation: {
+                title: "Cancelación de Transacción",
+                content: "Nexus se reserva el derecho de cancelar o modificar transacciones en casos de sospecha de fraude, errores o violaciones de estos Términos."
+            },
+            unauthorizedTransactions: {
+                title: "Transacciones No Autorizadas",
+                content: "Eres responsable de cualquier transacción no autorizada a menos que puedas probar lo contrario mediante nuestro proceso de resolución de disputas."
+            }
+        },
+        digitalAssets: {
+            title: "Activos Digitales",
+            supportedAssets: {
+                title: "Activos Soportados",
+                content: "Solo puedes realizar transacciones con activos digitales explícitamente soportados por Nexus. Intentar depositar activos no soportados puede resultar en pérdida permanente."
+            },
+            forksAirdrops: {
+                title: "Forks y Airdrops",
+                content: "Nexus no garantiza soporte para forks de blockchain, airdrops u otros eventos similares. Las decisiones de soporte se toman a nuestra sola discreción."
+            }
+        },
+        accountSecurity: {
+            title: "Seguridad de la Cuenta",
+            securityRequirements: {
+                title: "Requisitos de Seguridad",
+                content: "Debes usar una contraseña fuerte, habilitar autenticación multi-factor (MFA), nunca compartir credenciales, monitorear regularmente la actividad de la cuenta e informar inmediatamente cualquier brecha de seguridad."
+            }
+        },
+        privacy: {
+            title: "Privacidad",
+            content: "Tu privacidad se rige por el Aviso de Privacidad de Nexus, que explica cómo recopilamos, usamos y protegemos tu información personal."
+        },
+        termination: {
+            title: "Terminación de Cuenta",
+            terminationSuspension: {
+                title: "Terminación/Suspensión",
+                content: "Nexus puede restringir, suspender o terminar cuentas por fraude, violaciones legales, actividad sospechosa o violaciones de los Términos. Los usuarios pueden cerrar cuentas a menos que estén congeladas o inactivas."
+            }
+        },
+        prohibitedUse: {
+            title: "Uso Prohibido",
+            content: "No puedes usar los servicios Nexus para fraude, manipulación de mercado, actividades ilegales, acceso no autorizado o cualquier propósito que viole leyes aplicables o estos Términos."
+        },
+        liability: {
+            title: "Responsabilidad y Propiedad Intelectual",
+            liability: {
+                title: "Responsabilidad",
+                content: "Nexus no es responsable por pérdidas excepto en casos de negligencia grave probada o fraude. No somos responsables por fluctuaciones de mercado, problemas técnicos o acciones de terceros."
+            },
+            intellectualProperty: {
+                title: "Propiedad Intelectual",
+                content: "Nexus retiene todos los derechos de propiedad intelectual sobre nuestra plataforma, tecnología y marca. Los usuarios reciben una licencia limitada para usar nuestros servicios como se describe en estos Términos."
+            },
+            indemnity: {
+                title: "Indemnización",
+                content: "Aceptas indemnizar y mantener a Nexus indemne contra cualquier reclamo, pérdida o daño resultante del uso indebido de nuestros servicios o violación de estos Términos."
+            }
+        },
+        importantNotice: {
+            title: "Aviso Importante",
+            content: "Al usar los servicios Nexus, reconoces que has leído, entendido y aceptas estar vinculado por estos Términos de Uso. Si no estás de acuerdo, debes discontinuar el uso de nuestros servicios inmediatamente."
+        },
+        actionCards: {
+            security: {
+                title: "Seguridad",
+                description: "Mantén tu cuenta segura."
+            },
+            helpCenter: {
+                title: "Centro de Ayuda",
+                description: "Obtén respuestas a tus preguntas"
+            },
+            privacyPolicy: {
+                title: "Política de Privacidad",
+                description: "Revisa nuestras prácticas de privacidad"
+            },
+            legal: {
+                title: "Legal",
+                description: "Ver todos los documentos legales"
+            }
+        },
+        footer: {
+            copyright: "© 2025 Nexus Exchange. Todos los derechos reservados.",
+            lastUpdated: "Última actualización: 6 de mayo de 2025"
+        }
+    },
+    marketDetail: {
+        stats: {
+            high: "Máximo 24h",
+            low: "Mínimo 24h",
+            volume: "Volumen 24h"
+        },
+        volume: {
+            billion: "MilM",
+            million: "M"
+        },
+        actions: {
+            buy: "COMPRAR",
+            sell: "VENDER"
+        },
+        recentTrades: {
+            title: "Transacciones Recientes (En Vivo)",
+            price: "Precio (USDT)",
+            amount: "Cantidad",
+            time: "Hora"
+        }
+    },
+    assetsDetail: {
+        title: "Detalles del Activo",
+        today: "Hoy",
+        yesterday: "Ayer",
+        filter: "Filtrar",
+        transactionHistory: {
+            title: "Historial de Transacciones"
+        },
+        noTransactions: {
+            title: "Aún No Hay Transacciones",
+            description: "Tu historial de transacciones aparecerá aquí una vez que comiences a operar."
+        },
+        status: {
+            completed: "Completado",
+            pending: "Pendiente",
+            canceled: "Cancelado"
+        },
+        filterModal: {
+            title: "Filtrar Transacciones",
+            status: "Estado",
+            type: "Tipo",
+            direction: "Dirección",
+            startDate: "Fecha de Inicio",
+            endDate: "Fecha de Fin",
+            allStatuses: "Todos los Estados",
+            allTypes: "Todos los Tipos",
+            bothDirections: "Ambas Direcciones",
+            incoming: "Entrante",
+            outgoing: "Saliente",
+            completed: "Completado",
+            pending: "Pendiente",
+            canceled: "Cancelado",
+            resetFilters: "Restablecer Filtros",
+            applyFilters: "Aplicar Filtros"
+        },
+        actions: {
+            deposit: "Depositar",
+            withdraw: "Retirar"
+        },
+        transactionTypes: {
+            transaction: "Transacción",
+            deposit: "Depósito",
+            withdrawal: "Retiro",
+            convertedFrom: "Convertido desde {{asset}}",
+            convertedTo: "Convertido a {{asset}}",
+            conversionIn: "Conversión Entrante",
+            conversionOut: "Conversión Saliente",
+            stakedAmount: "Monto en Staking",
+            stakingRewards: "Recompensas de Staking",
+            futuresReserved: "Futuros Reservados",
+            futuresProfit: "Ganancia de Futuros",
+            futuresLoss: "Pérdida de Futuros",
+            futuresSettlement: "Liquidación de Futuros",
+            futuresFee: "Comisión de Futuros",
+            futuresRefund: "Reembolso de Futuros",
+            futuresBonus: "Bono de Futuros",
+            futuresCommission: "Comisión de Futuros",
+            manualProfit: "Ganancia Manual",
+            manualLoss: "Pérdida Manual",
+            manualAdjustment: "Ajuste Manual",
+            spotTradingProfit: "Ganancia de Trading Spot",
+            spotTradingLoss: "Pérdida de Trading Spot",
+            referralReward: "Recompensa de Referido",
+            bonus: "Bono",
+            referralCommission: "Comisión de Referido",
+            orderReserved: "Orden Reservada",
+            orderCancelled: "Orden Cancelada",
+            orderPartialFill: "Orden Parcialmente Ejecutada",
+            orderCompleted: "Orden Completada",
+            feePayment: "Pago de Comisión",
+            balanceAdjustment: "Ajuste de Saldo",
+            transfer: "Transferencia"
+        }
     },
     invitation: {
-      view: 'Ver Convites',
-      invited: 'Convidado',
-      accept: 'Aceitar Convite',
-      decline: 'Recusar Convite',
-      declined: 'Convite recusado com sucesso',
-      acceptWrongEmail: 'Aceitar Convite Com Este Email',
+        title: "Invitar Amigos",
+        earnTogether: "Gana Junto a Ellos",
+        description: "Invita amigos a unirse a NEXUS y gana recompensas cuando se registren y comiencen a operar.",
+        yourReferralCode: "TU CÓDIGO DE REFERIDO",
+        loading: "Cargando...",
+        copied: "¡COPIADO!",
+        copyCode: "COPIAR CÓDIGO",
+        totalEarned: "Total Ganado",
+        allTimeCommission: "Comisión de Todos los Tiempos",
+        generationMembers: "Miembros de Generación",
+        noGenerationData: "No hay datos de generación disponibles",
+        approvedMembers: "Miembros Aprobados",
+        pendingMembers: "Miembros Pendientes",
+        commissionStructure: "Estructura de Comisiones",
+        firstGeneration: "1ra Generación",
+        secondGeneration: "2da Generación",
+        thirdGeneration: "3ra Generación",
+        firstDepositCommission: "Comisión por Primer Depósito",
+        stakingProfitsCommission: "Comisión por Ganancias de Staking",
+        howItWorks: "Cómo Funciona",
+        steps: {
+            shareCode: {
+                title: "Comparte Tu Código de Referido",
+                description: "Envía tu código único a amigos o compártelo en redes sociales."
+            },
+            friendsSignUp: {
+                title: "Amigos Se Registran",
+                description: "Tus amigos se registran usando tu código de referido y verifican sus cuentas."
+            },
+            earnCommissions: {
+                title: "Gana Comisiones",
+                description: "Gana comisiones de los primeros depósitos y ganancias de staking de tu red."
+            }
+        },
+        referralCopied: "¡Código de referido copiado al portapapeles!",
+        loadingMembers: "Cargando miembros...",
+        approved: "Aprobado",
+        joined: "Se Unió",
+        noMembersFound: "No se encontraron miembros"
     },
-    select: 'Selecionar Área de Trabalho',
-    url: {
-      exists:
-        'Esta URL de área de trabalho já está em uso.',
+    securityTips: {
+        title: "Centro de Seguridad",
+        essentialTips: "Consejos de Seguridad Esenciales",
+        categories: {
+            passwordSecurity: "Seguridad de Contraseñas",
+            deviceSecurity: "Seguridad del Dispositivo",
+            accountSecurity: "Seguridad de la Cuenta"
+        },
+        tips: {
+            strongPasswords: {
+                title: "Usa Contraseñas Fuertes y Únicas",
+                description: "Crea contraseñas complejas con mayúsculas, minúsculas, números y símbolos."
+            },
+            enable2FA: {
+                title: "Habilita la Autenticación de Dos Factores",
+                description: "Añade una capa adicional de seguridad a tu cuenta con 2FA."
+            },
+            changePasswords: {
+                title: "Cambia las Contraseñas Regularmente",
+                description: "Actualiza tus contraseñas cada 3-6 meses."
+            },
+            softwareUpdated: {
+                title: "Mantén el Software Actualizado",
+                description: "Actualiza regularmente tu SO, navegador y software de wallet."
+            },
+            antivirus: {
+                title: "Usa Protección Antivirus",
+                description: "Instala software antivirus y anti-malware reputado."
+            },
+            publicWifi: {
+                title: "Evita el Wi-Fi Público",
+                description: "Nunca accedas a tu wallet en redes públicas sin VPN."
+            },
+            loginNotifications: {
+                title: "Habilita Notificaciones de Inicio de Sesión",
+                description: "Recibe alertas por nuevos inicios de sesión en tu cuenta."
+            },
+            reviewActivity: {
+                title: "Revisa la Actividad de la Cuenta",
+                description: "Revisa regularmente tu cuenta por actividad sospechosa."
+            },
+            whitelisting: {
+                title: "Usa Lista Blanca",
+                description: "Lista blanca de direcciones de retiro confiables para mayor seguridad."
+            }
+        },
+        actions: {
+            enable2FA: "Habilitar 2FA",
+            enable2FADesc: "Añade una capa adicional de seguridad",
+            activityLog: "Registro de Actividad",
+            activityLogDesc: "Revisa la actividad reciente de la cuenta",
+            settings: "Configuración",
+            settingsDesc: "Configura preferencias de seguridad",
+            backupCodes: "Códigos de Respaldo",
+            backupCodesDesc: "Guarda tus códigos de recuperación"
+        },
+        emergency: {
+            title: "Procedimientos de Emergencia",
+            unauthorizedAccess: "Si sospechas acceso no autorizado a tu cuenta, cambia inmediatamente tu contraseña y habilita 2FA si no está activa.",
+            lostDevice: "Si tu dispositivo se pierde o es robado, revoca inmediatamente el acceso de sesión desde la configuración de tu cuenta.",
+            phishing: "Si has sido víctima de un intento de phishing, congela tu cuenta y contacta al soporte inmediatamente.",
+            supportTitle: "Soporte de Seguridad 24/7",
+            supportEmail: "support@nexus-exchange.com"
+        },
+        resources: {
+            title: "Recursos de Seguridad",
+            securityGuide: "Guía de Seguridad",
+            securityGuideLink: "Lee documentación completa de seguridad",
+            learningCenter: "Centro de Aprendizaje",
+            learningCenterLink: "Aprende mejores prácticas de seguridad cripto",
+            faq: "Preguntas Frecuentes",
+            faqLink: "Encuentra respuestas a preguntas comunes de seguridad"
+        }
     },
-  },
+    profile: {
+        title: "Perfil",
+        settings: "Configuración",
+        status: {
+            verified: "VERIFICADO",
+            unverified: "NO VERIFICADO"
+        },
+        accountInfo: {
+            title: "INFORMACIÓN DE LA CUENTA",
+            email: "Correo Electrónico",
+            creditScore: "Puntuación de Crédito",
+            invitationCode: "Código de Invitación"
+        },
+        verification: {
+            pending: {
+                title: "Verificación Pendiente",
+                description: "La verificación de tu cuenta está en progreso. Esto usualmente toma 1-3 días hábiles."
+            },
+            alert: {
+                title: "Cuenta No Verificada",
+                description: "Verifica tu cuenta para desbloquear todas las funciones y límites más altos",
+                verifyNow: "Verificar Ahora"
+            }
+        },
+        pendingVerifications: {
+            title: "VERIFICACIONES PENDIENTES",
+            identity: {
+                title: "Verificación de Identidad",
+                description: "Envía tu identificación gubernamental"
+            },
+            address: {
+                title: "Verificación de Dirección",
+                description: "Verifica tu residencia"
+            },
+            status: {
+                pending: "Pendiente"
+            }
+        },
+        approvedVerifications: {
+            title: "VERIFICACIONES APROBADAS",
+            identity: {
+                title: "Verificación de Identidad"
+            },
+            address: {
+                title: "Verificación de Dirección"
+            },
+            status: {
+                completed: "Completado"
+            }
+        },
+        limitations: {
+            title: "Limitaciones de la Cuenta",
+            withdrawalLimit: "Límite de retiro: $1,000 por día",
+            stakingLimited: "Opciones de staking limitadas",
+            advancedTrading: "Funciones de trading avanzadas deshabilitadas",
+            fiatDeposits: "Depósitos en moneda fiduciaria no disponibles"
+        },
+        menu: {
+            withdrawalAddress: "Dirección de Retiro",
+            password: "Contraseña",
+            notifications: "Notificaciones",
+            myInvitation: "Mi Invitación",
+            language: "Idioma",
+            termsOfUse: "Términos de Uso",
+            privacyPortal: "Portal de Privacidad",
+            aboutUs: "Acerca de Nosotros",
+            msbApproval: "Aprobación MSB",
+            customerSupport: "Soporte al Cliente",
+            downloadApp: "Descargar App",
+            logout: "Cerrar Sesión"
+        }
+    },
+    notification: {
+        title: "Notificación",
+        loading: "Cargando",
+        filters: {
+            all: "Todas",
+            unread: "No leídas",
+            read: "Leídas"
+        },
+        emptyState: {
+            title: "Aún no hay notificaciones",
+            noNotifications: "Aún no tienes notificaciones",
+            noFilteredNotifications: "No se encontraron notificaciones {0}"
+        },
+        types: {
+            deposit: {
+                title: "Depósito Recibido",
+                message: "Tu depósito de {0} ha sido confirmado y acreditado en tu wallet."
+            },
+            withdraw: {
+                title: "Retiro Exitoso",
+                message: "Tu retiro de {0} ha sido procesado exitosamente."
+            },
+            staking: {
+                title: "Ganancia de Staking",
+                message: "Ganaste {0} de tus recompensas de staking."
+            },
+            kyc: {
+                title: "Actualización KYC",
+                defaultMessage: "Tu cuenta ha sido activada."
+            },
+            commission: {
+                title: "Comisión Recibida",
+                message: "Recibiste una comisión de {0}."
+            },
+            futures: {
+                title: "Actualización de Futuros",
+                message: "El monto de tu transacción de futuros {0} ha sido ejecutado."
+            },
+            accountActivated: {
+                title: "Verificación KYC",
+                message: "Hola {0} tus documentos KYC han sido verificados, ahora puedes disfrutar de funciones ilimitadas en Nexus Exchange"
+            },
+            custom: {
+                title: "Notificación",
+                defaultMessage: "Tienes una nueva notificación."
+            },
+            cancelDeposit: {
+                title: "Depósito Cancelado",
+                message: "Tu depósito de {0} ha sido cancelado."
+            },
+            cancelWithdraw: {
+                title: "Retiro Cancelado",
+                message: "Tu retiro de {0} ha sido cancelado."
+            },
+            cancelActivated: {
+                title: "Activación Cancelada",
+                message: "Tu KYC fue rechazado por el sistema, por favor intenta nuevamente o contacta al Soporte al Cliente para ayuda"
+            }
+        }
+    },
+    staking: {
+        title: "Staking",
+        totalStakedBalance: "Saldo Total en Staking",
+        earned: "ganado",
+        tabs: {
+            options: "Opciones",
+            active: "Staking Activos",
+            completed: "Completados"
+        },
+        daily: "Diario",
+        minimumStake: "Staking Mínimo",
+        unstakingPeriod: "Período de Unstaking",
+        days: "días",
+        stakeButton: "Hacer Staking {0}",
+        status: {
+            active: "ACTIVO",
+            completed: "COMPLETADO"
+        },
+        remaining: "Restante",
+        dailyRate: "Tasa Diaria",
+        duration: "Duración",
+        createdAt: "Creado En",
+        dateFinish: "Fecha de finalización",
+        totalCompletedRewards: "RECOMPENSAS TOTALES COMPLETADAS",
+        stake: "STAKING",
+        stakes: "STAKINGS",
+        allRewardsFromCompleted: "Todas las recompensas de stakings completados",
+        totalRewardsEarned: "RECOMPENSAS TOTALES GANADAS",
+        balance: "Saldo",
+        maximumStake: "Staking Máximo",
+        estimatedTotalRewards: "Recompensas Totales Estimadas",
+        exploreStakingOptions: "Explorar Opciones de Staking",
+        startStaking: "Comenzar Staking",
+        emptyStates: {
+            options: {
+                title: "No Hay Planes de Staking Disponibles",
+                message: "Actualmente no hay planes de staking disponibles. Por favor, vuelve más tarde para nuevas oportunidades de staking."
+            },
+            active: {
+                title: "No Hay Staking Activos",
+                message: "Aún no tienes staking activos. Comienza a hacer staking para ganar recompensas en tus activos cripto."
+            },
+            completed: {
+                title: "No Hay Staking Completados",
+                message: "Aún no has completado stakings. Tus stakings completados aparecerán aquí una vez que finalicen."
+            }
+        },
+        stakeModal: {
+            title: "Staking",
+            amountToStake: "Monto a Staking",
+            enterAmount: "Ingresa el Monto"
+        }
+    },
+    conversion: {
+        title: "Convertir Cripto",
+        loading: "Cargando últimos precios...",
+        youSend: "Envías",
+        youReceive: "Recibes",
+        balance: "Saldo",
+        max: "MÁX",
+        insufficientBalance: "Saldo insuficiente",
+        estimatedConversion: "Conversión estimada",
+        selectDifferentCurrencies: "Seleccionar monedas diferentes",
+        convertNow: "Convertir Ahora",
+        pricesUpdate: "Los precios se actualizan en tiempo real",
+        selectCurrency: "Seleccionar Moneda",
+        searchCurrencies: "Buscar monedas...",
+        confirmConversion: "Confirmar Conversión",
+        conversionDetails: "Detalles de Conversión",
+        exchangeRate: "Tipo de Cambio",
+        networkFee: "Comisión de Red",
+        estimatedArrival: "Llegada Estimada",
+        arrivalTime: "~30 segundos",
+        processingConversion: "Procesando Conversión...",
+        cancel: "Cancelar"
+    },
+    history: {
+        title: "Historial de Transacciones",
+        emptyState: {
+            title: "No se encontraron transacciones",
+            description: "Intenta cambiar tus filtros para ver más transacciones"
+        },
+        filters: {
+            all: "Todas",
+            deposits: "Depósitos",
+            withdrawals: "Retiros",
+            profits: "Ganancias",
+            losses: "Pérdidas",
+            conversions: "Conversiones",
+            stacking: "Staking"
+        },
+        statusFilters: {
+            allStatus: "Todos los Estados",
+            completed: "Completado",
+            pending: "Pendiente",
+            canceled: "Cancelado"
+        },
+        timeFilters: {
+            allTime: "Todo el Tiempo",
+            today: "Hoy",
+            week: "Semana",
+            month: "Mes",
+            year: "Año"
+        },
+        status: {
+            completed: "Completado",
+            pending: "Pendiente",
+            canceled: "Cancelado"
+        },
+        dateFormats: {
+            today: "Hoy, {0}",
+            yesterday: "Ayer, {0}"
+        },
+        transactionTypes: {
+            transaction: "Transacción",
+            deposit: "Depósito",
+            withdrawal: "Retiro",
+            convertedFrom: "Convertido desde {0}",
+            convertedTo: "Convertido a {0}",
+            conversionIn: "Conversión Entrante",
+            conversionOut: "Conversión Saliente",
+            stakedAmount: "Monto en Staking",
+            stakingRewards: "Recompensas de Staking",
+            futuresReserved: "Futuros Reservados",
+            futuresProfit: "Ganancia de Futuros",
+            futuresLoss: "Pérdida de Futuros",
+            futuresSettlement: "Liquidación de Futuros",
+            futuresFee: "Comisión de Futuros",
+            futuresRefund: "Reembolso de Futuros",
+            futuresBonus: "Bono de Futuros",
+            futuresCommission: "Comisión de Futuros",
+            manualProfit: "Ganancia Manual",
+            manualLoss: "Pérdida Manual",
+            manualAdjustment: "Ajuste Manual",
+            spotTradingProfit: "Ganancia de Trading Spot",
+            spotTradingLoss: "Pérdida de Trading Spot",
+            referralReward: "Recompensa de Referido",
+            bonus: "Bono",
+            referralCommission: "Comisión de Referido",
+            orderReserved: "Orden Reservada",
+            orderCancelled: "Orden Cancelada",
+            orderPartialFill: "Orden Parcialmente Ejecutada",
+            orderCompleted: "Orden Completada",
+            feePayment: "Pago de Comisión",
+            balanceAdjustment: "Ajuste de Saldo",
+            transfer: "Transferencia"
+        }
+    },
+    withdraw: {
+        title: "Retirar Cripto",
+        selectCurrency: "Seleccionar Moneda",
+        selectPlaceholder: "Selecciona una moneda",
+        selectHint: "Por favor selecciona una moneda para continuar",
+        withdrawalAddress: "Dirección de Retiro",
+        withdrawalAmount: "Monto de Retiro",
+        withdrawalPassword: "Contraseña de Retiro",
+        passwordPlaceholder: "Ingresa la contraseña de retiro",
+        available: "Disponible",
+        amountWithdrawal: "Monto de retiro",
+        minimumWithdrawal: "Retiro mínimo",
+        networkFee: "Comisión de red",
+        youWillReceive: "Recibirás",
+        confirmWithdrawal: "Confirmar Retiro",
+        processing: "Procesando...",
+        securityVerification: "Verificación de Seguridad",
+        securityMessage: "Para tu seguridad, los retiros requieren confirmación de contraseña y pueden estar sujetos a revisión. Los retiros a direcciones incorrectas no pueden revertirse.",
+        networkInfo: "Red: {0} ({1})",
+        noWalletAddress: "(Sin dirección de wallet)",
+        noWallet: {
+            title: "No Se Encontró Dirección de Wallet",
+            description: "Aún no has añadido direcciones de wallet. Por favor añade una dirección de retiro para proceder con tu transacción.",
+            addButton: "Añadir Dirección de Wallet"
+        },
+        security: {
+            title: "La Seguridad es lo Primero",
+            description: "Para tu seguridad, requerimos una dirección de retiro verificada para cada criptomoneda. Esto ayuda a prevenir errores y asegura que tus fondos lleguen al destino correcto."
+        },
+        errors: {
+            amountNumber: "El monto de retiro debe ser un número",
+            amountRequired: "El monto de retiro es requerido",
+            amountPositive: "El monto de retiro debe ser mayor a 0",
+            amountMin: "El monto está por debajo del retiro mínimo para esta moneda",
+            passwordRequired: "La contraseña de retiro es requerida",
+            noWalletAddress: "No se encontró dirección de wallet para {0}. Por favor añade una dirección de wallet primero.",
+            minimumWithdraw: "Retiro mínimo para {0}: {1} {2}",
+            insufficientForFee: "Saldo insuficiente para cubrir la comisión ({0} {1})"
+        },
+        validation: {
+            selectCurrency: "Seleccionar moneda",
+            enterAmount: "Ingresar monto",
+            belowMin: "Por debajo del mínimo ({0} {1})",
+            insufficientBalance: "Saldo insuficiente",
+            insufficientForFee: "Saldo insuficiente (comisión incluida)",
+            enterPassword: "Ingresar contraseña"
+        }
+    },
+    deposit: {
+        title: "Depositar Cripto",
+        loading: "Cargando método de depósito ...",
+        selectNetwork: "Seleccionar Red",
+        depositAddress: "Tu dirección de depósito",
+        copyAddress: "Copiar Dirección",
+        amountLabel: "Monto de depósito ({0})",
+        amountPlaceholder: "Mínimo: {0} {1}",
+        txidLabel: "ID de Transacción (TXID)",
+        txidPlaceholder: "Ingresa el TXID",
+        minimumDeposit: "Depósito mínimo",
+        importantNotice: "Aviso Importante",
+        warningMessage: "Por favor asegúrate de seleccionar la red correcta para tu depósito. Enviar fondos a través de la red incorrecta puede resultar en la pérdida permanente de tus activos, que no podrá recuperarse.",
+        confirmDeposit: "Confirmar Depósito",
+        network: "Red",
+        estimatedArrival: "Llegada estimada",
+        networkConfirmations: "3 confirmaciones de red",
+        processingTime: "Tiempo de procesamiento",
+        processingTimeValue: "10-30 minutos",
+        noMethods: "No hay métodos de depósito disponibles en este momento.",
+        addressCopied: "¡Dirección copiada al portapapeles!",
+        unknownNetwork: "Red Desconocida"
+    },
+    wallet: {
+        totalPortfolioValue: "Valor Total de Portafolio",
+        myAssets: "Mis Activos",
+        manage: "Gestionar",
+        noAssets: "No se encontraron activos",
+        quickActions: {
+            deposit: "Depositar",
+            withdraw: "Retirar",
+            history: "Historial",
+            convert: "Convertir",
+            staking: "Staking"
+        }
+    },
+    trade: {
+        title: "SPOT",
+        buy: "COMPRAR",
+        sell: "VENDER",
+        limit: "LÍMITE",
+        market: "MERCADO",
+        orderType: "Tipo de Orden",
+        price: "Precio (USDT)",
+        amount: "Cantidad",
+        available: "Disponible",
+        placing: "Colocando...",
+        increasePrice: "aumentar precio",
+        decreasePrice: "disminuir precio",
+        errors: {
+            invalidQuantity: "Por favor ingresa una cantidad válida.",
+            invalidPrice: "Por favor ingresa un precio válido.",
+            insufficientUSDT: "Saldo USDT insuficiente. Disponible: {0} USDT",
+            insufficientCoin: "Saldo {1} insuficiente. Disponible: {0} {1}",
+            failedOrder: "Error al colocar la orden. Por favor intenta nuevamente."
+        },
+        orderBook: {
+            price: "Precio (USDT)",
+            amount: "Cantidad"
+        },
+        openOrders: {
+            title: "ÓRDENES ABIERTAS",
+            viewAll: "ver todas las órdenes",
+            status: "Estado",
+            price: "Precio",
+            amount: "Cantidad",
+            total: "Total",
+            cancel: "Cancelar",
+            noOrders: "Aún no hay órdenes abiertas",
+            noOrdersSubtext: "Tus órdenes abiertas aparecerán aquí"
+        }
+    },
+    market: {
+        title: "MERCADO USDT",
+        noResults: "No se encontraron criptomonedas",
+        volume: "Vol",
+        search: {
+            placeholder: "Buscar cripto",
+            clear: "Limpiar búsqueda"
+        },
+        tabs: {
+            all: "Todas",
+            gainers: "Ganadoras",
+            losers: "Perdedoras",
+            favorites: "Favoritas"
+        }
+    },
+    signup: {
+        title: "REGISTRARSE",
+        creatingAccount: "CREANDO...",
+        createAccount: "CREAR CUENTA",
+        refresh: "Actualizar",
+        captchaMismatch: "El captcha no coincide",
+        alreadyHaveAccount: "¿Ya tienes una cuenta? Inicia sesión",
+        terms: {
+            text: "Al crear una cuenta, aceptas nuestros",
+            link: "Términos de Servicio"
+        },
+        labels: {
+            email: "Correo Electrónico",
+            phoneNumber: "Número de Teléfono",
+            captcha: "Captcha Gráfico",
+            password: "Contraseña",
+            confirmPassword: "Confirmar Contraseña",
+            withdrawPassword: "Contraseña de Retiro",
+            invitationCode: "Código de Invitación"
+        },
+        placeholders: {
+            email: "Ingresa tu correo electrónico",
+            phoneNumber: "Ingresa tu número de teléfono",
+            captcha: "Ingresa el código",
+            password: "Crea una contraseña",
+            confirmPassword: "Confirma tu contraseña",
+            withdrawPassword: "Ingresa la contraseña de retiro",
+            invitationCode: "Ingresa el código de invitación"
+        }
+    },
+    home: {
+        quickAccess: {
+            title: "Acceso Rápido",
+            deposit: "Depósito",
+            security: "Seguridad",
+            faqCenter: "Centro de Ayuda",
+            invitation: "Invitación",
+            staking: "Staking"
+        },
+        popularCryptos: "Criptomonedas Populares",
+        seeAll: "Ver todo",
+        volume: "Vol",
+        loading: "Cargando...",
+        notifications: {
+            btcAlert: "Alerta de Precio BTC",
+            btcReached: "Bitcoin alcanzó $45,000",
+            fiveMinAgo: "Hace 5 min",
+            depositSuccess: "Depósito Exitoso",
+            depositConfirmed: "Tu depósito de 0.5 ETH está confirmado",
+            oneHourAgo: "Hace 1 hora",
+            securityUpdate: "Actualización de Seguridad",
+            newSecurityFeatures: "Nuevas funciones de seguridad disponibles",
+            twoHoursAgo: "Hace 2 horas",
+            marketNews: "Noticias del Mercado",
+            ethUpgrade: "Actualización de Ethereum completada exitosamente",
+            fiveHoursAgo: "Hace 5 horas"
+        }
+    },
+    faq: {
+        title: "Centro de Ayuda",
+        hero: {
+            title: "Preguntas Frecuentes",
+            subtitle: "Encuentra respuestas a preguntas comunes sobre el uso de Nexus"
+        },
+        search: {
+            placeholder: "Buscar respuestas..."
+        },
+        categories: {
+            gettingStarted: "Para Comenzar",
+            managingAccount: "Gestionando Tu Cuenta"
+        },
+        questions: {
+            howToCreateAccount: "¿Cómo creo una cuenta?",
+            howToCompleteVerification: "¿Cómo completo la verificación?",
+            howToBuyCrypto: "¿Cómo compro criptomonedas?",
+            howToTrade: "¿Cómo opero con criptomonedas?",
+            howToSendReceive: "¿Cómo recibo y envío cripto?",
+            howToBecomeP2PMerchant: "¿Cómo me convierto en un Comerciante P2P?",
+            howStakingWorks: "¿Cómo funciona el staking?"
+        },
+        answers: {
+            verificationProcess: "Carga una identificación gubernamental y una foto selfie. La verificación usualmente se aprueba en horas."
+        },
+        steps: {
+            goToWebsite: "Ve a https://nexus-exchange.com",
+            clickSignUp: 'Haz clic en "Registrarse"',
+            enterDetails: "Ingresa tus datos",
+            verifyEmail: "Verifica tu dirección de correo",
+            completeVerification: "Completa primero la verificación",
+            clickBuyCrypto: 'Haz clic en "Comprar Cripto"',
+            selectCoinAndPayment: "Selecciona moneda y método de pago",
+            confirmTransaction: "Confirma la transacción",
+            cryptoInWallet: "La cripto aparecerá en tu wallet",
+            goToTradeMarkets: 'Ve a "Operar/Mercados"',
+            pickTradingPair: "Elige un par de trading (ej. BTC/USDT)",
+            placeOrders: "Coloca órdenes de mercado o límite",
+            receiveCrypto: "Ve a Wallet > Recibir → copia dirección o código QR",
+            sendCrypto: "Ve a Wallet > Enviar → ingresa dirección/monto → confirma",
+            applyP2P: 'Postúlate en la sección "P2P"',
+            meetCriteria: "Cumple con los criterios de elegibilidad",
+            createOffers: "Una vez aprobado, crea ofertas y opera",
+            goToStaking: "Ve a Carteras > Staking",
+            pickStakingPlan: "Elige un plan de staking",
+            selectAmount: "Selecciona el monto para staking",
+            confirmStaking: "Confirma la transacción",
+            rewardsProcessed: "Las recompensas se procesan automáticamente al final del período"
+        },
+        labels: {
+            toReceive: "Para recibir:",
+            toSend: "Para enviar:"
+        },
+        futures: {
+            title: "Trading de Futuros Explicado",
+            whatAreFutures: "¿Qué son los contratos de futuros?",
+            futuresExplanation: "Acuerdos para comprar o vender cripto a un precio predeterminado en una fecha futura (liquidado en efectivo).",
+            whatIsLeverage: "¿Qué es el apalancamiento?",
+            leverageExplanation: "Capacidad de operar con más capital del que tienes (ej. apalancamiento 10x, 20x, 50x).",
+            longShortPositions: "¿Qué son las posiciones Largo y Corto?",
+            long: "Largo",
+            longExplanation: "= apostar que el precio subirá",
+            short: "Corto",
+            shortExplanation: "= apostar que el precio bajará",
+            marginLiquidation: "¿Qué son Margen y Liquidación?",
+            marginExplanation: "Riesgo de liquidación de posición si tu colateral baja demasiado para mantener la posición.",
+            fundingRate: "¿Qué es la Tasa de Financiamiento?",
+            fundingRateExplanation: "Comisión intercambiada cada 8 horas entre traders largos y cortos para equilibrar precios de contratos perpetuos con precios spot.",
+            profitLossCalculation: "¿Cómo se calcula Ganancia/Pérdida?",
+            profitLossExplanation: "Calculado en base a la diferencia de precio multiplicada por tu apalancamiento y tamaño de posición."
+        },
+        benefits: {
+            title: "¿Por Qué Elegir Nexus Futures?",
+            hedge: "Cobertura contra la volatilidad del mercado",
+            multiplyProfits: "Multiplica ganancias con apalancamiento",
+            tradeBothMarkets: "Opera en mercados alcistas y bajistas",
+            advancedStrategies: "Implementa estrategias de trading avanzadas"
+        },
+        actionCards: {
+            contactSupport: "Contactar Soporte",
+            getHelp: "Obtén ayuda de nuestro equipo",
+            community: "Comunidad",
+            joinDiscussions: "Únete a discusiones"
+        },
+        footer: {
+            copyright: "© 2025 Nexus Exchange. Todos los derechos reservados.",
+            needHelp: "¿Necesitas más ayuda? Contacta a support@nexus-exchange.com"
+        }
+    },
+    tabBottomNavigator: {
+        home: "inicio",
+        grap: "gráfico",
+        records: "historial",
+        starting: "inicio"
+    },
+    language: {
+        title: "Idioma de la App",
+        selectLanguage: "Seleccionar Idioma",
+        choosePreferred: "Elige tu idioma preferido",
+        searchPlaceholder: "Buscar idiomas...",
+        currentLanguage: "Idioma Actual",
+        languages: {
+            english: "Inglés",
+            french: "Francés",
+            russian: "Ruso",
+            german: "Alemán",
+            spanish: "Español"
+        },
+        nativeNames: {
+            english: "English",
+            french: "Français",
+            russian: "Русский",
+            german: "Deutsch",
+            spanish: "Español"
+        }
+    }
+},
 
-  plan: {
-    menu: 'Planos',
-    title: 'Planos',
 
-    free: {
-      label: 'Gratuito',
-      price: '$0',
-    },
-    growth: {
-      label: 'Growth',
-      price: '$10',
-    },
-    enterprise: {
-      label: 'Enterprise',
-      price: '$50',
-    },
 
-    pricingPeriod: '/mês',
-    current: 'Plano Atual',
-    subscribe: 'Assinar',
-    manage: 'Gerenciar Assinatura',
-    somethingWrong:
-      'Há algo errado com sua assinatura. Por favor clique em Gerenciar Assinatura para mais informações.',
-    cancelAtPeriodEnd:
-      'O plano será cancelado no fim do período.',
-    notPlanUser: `Esta assinatura não é controlada por você.`,
-  },
-
-  auditLog: {
-    menu: 'Registros de Auditoria',
-    title: 'Registros de Auditoria',
-    exporterFileName: 'registros_autoria_exportados',
-    entityNamesHint:
-      'Separe múltiplas entidades por vírgula',
-    fields: {
-      id: 'Id',
-      timestampRange: 'Período',
-      entityName: 'Entidade',
-      entityNames: 'Entidades',
-      entityId: 'ID da Entidade',
-      action: 'Ação',
-      values: 'Valores',
-      timestamp: 'Data',
-      createdByEmail: 'Email do Usuário',
-    },
-  },
-  settings: {
-    title: 'Configurações',
-    menu: 'Configurações',
-    save: {
-      success: 'Configurações salvas com sucesso.',
-    },
-    fields: {
-      theme: 'Tema',
-      logos: 'Logo',
-      backgroundImages: 'Papel de Parede',
-    },
-    colors: {
-      default: 'Escuro',
-      light: 'Claro',
-      cyan: 'Ciano',
-      'geek-blue': 'Azul escuro',
-      gold: 'Ouro',
-      lime: 'Limão',
-      magenta: 'Magenta',
-      orange: 'Laranja',
-      'polar-green': 'Verde polar',
-      purple: 'Roxo',
-      red: 'Vermelho',
-      volcano: 'Vúlcão',
-      yellow: 'Amarelo',
-    },
-  },
-  dashboard: {
-    menu: 'Inicial',
-    message: `Esta página usa dados falsos apenas para fins de demonstração. Você pode editá-la em frontend/view/dashboard/DashboardPage.ts.`,
-    charts: {
-      day: 'Dia',
-      red: 'Vermelho',
-      green: 'Verde',
-      yellow: 'Amarelho',
-      grey: 'Cinza',
-      blue: 'Azul',
-      orange: 'Laranja',
-      months: {
-        1: 'Janeiro',
-        2: 'Fevereiro',
-        3: 'Março',
-        4: 'Abril',
-        5: 'Maio',
-        6: 'Junho',
-        7: 'Julho',
+  entities: {
+    record: {
+      menu: "Registros",
+      fields: {
+        user: "usuário",
+        product: "produto",
+        number: "número do registro",
+        status: "status",
       },
-      eating: 'Comendo',
-      drinking: 'Bebendo',
-      sleeping: 'Dormindo',
-      designing: 'Projetando',
-      coding: 'Codificando',
-      cycling: 'Pedalando',
-      running: 'Correndo',
-      adherenter: 'Cliente',
+      list: {
+        title: "Lista de registros",
+      },
+      view: {
+        title: "Detalhe do Registro",
+      },
+      edit: {
+        title: "Editar Registro",
+      },
+      create: {
+        success: "Produto enviado com sucesso.",
+      },
+      update: {
+        success: "Produto enviado com sucesso.",
+      },
+      destroy: {
+        success: "Registro excluído com sucesso",
+      },
+      destroyAll: {
+        success: "Registro excluído com sucesso",
+      },
+      enumerators: {
+        status: {
+          pending: "Pendente",
+          completed: "Concluído",
+          canceled: "Cancelado",
+        },
+      },
     },
+
+    category: {
+      name: "categoria",
+      label: "Categorias",
+      menu: "Categorias",
+      exporterFileName: "exportacao_categoria",
+      list: {
+        menu: "Categorias",
+        title: "Categorias",
+      },
+      create: {
+        success: "Categoria salva com sucesso",
+      },
+      update: {
+        success: "Categoria salva com sucesso",
+      },
+      destroy: {
+        success: "Categoria excluída com sucesso",
+      },
+      destroyAll: {
+        success: "Categoria(s) excluída(s) com sucesso",
+      },
+      edit: {
+        title: "Editar Categoria",
+      },
+      fields: {
+        id: "Id",
+        name: "Nome",
+        slug: "Slug",
+        photo: "Foto",
+        metaKeywords: "Palavras-chave Meta",
+        metaDescriptions: "Descrições Meta",
+        status: "Status",
+        isFeature: "É Destaque",
+        serialRange: "Serial",
+        serial: "Serial",
+        createdAt: "Criado em",
+        updatedAt: "Atualizado em",
+        createdAtRange: "Criado em",
+      },
+      enumerators: {
+        status: {
+          enable: "Ativar",
+          disable: "Desativar",
+        },
+      },
+      placeholders: {},
+      hints: {},
+      new: {
+        title: "Nova Categoria",
+      },
+      view: {
+        title: "Ver Categoria",
+      },
+      importer: {
+        title: "Importar Categorias",
+        fileName: "modelo_importacao_categoria",
+        hint: "As colunas Arquivos/Imagens devem ser os URLs dos arquivos separados por espaço.",
+      },
+    },
+
+    product: {
+      name: "produto",
+      label: "Produtos",
+      menu: "Produtos",
+      exporterFileName: "exportacao_produto",
+      list: {
+        menu: "Produtos",
+        title: "Produtos",
+      },
+      create: {
+        success: "Produto salvo com sucesso",
+      },
+      update: {
+        success: "Produto salvo com sucesso",
+      },
+      destroy: {
+        success: "Produto excluído com sucesso",
+      },
+      destroyAll: {
+        success: "Produto(s) excluído(s) com sucesso",
+      },
+      edit: {
+        title: "Editar Produto",
+      },
+      fields: {
+        id: "Id",
+        name: "Nome",
+        slug: "Slug",
+        tags: "Tags",
+        video: "Vídeo",
+        specificationName: "Nome da Especificação",
+        specificationDesciption: "Descrição da Especificação",
+        isSpecification: "É Especificação",
+        details: "Detalhes",
+        photo: "Foto",
+        discountPriceRange: "Preço com Desconto",
+        discountPrice: "Preço Atual",
+        previousPriceRange: "Preço Anterior",
+        previousPrice: "Preço Anterior",
+        stockRange: "Estoque",
+        stock: "Estoque",
+        metaKeywords: "Palavras-chave Meta",
+        metaDesctiption: "Descrição Curta",
+        status: "Status",
+        isType: "Tipo",
+        dateRange: "Data",
+        date: "Data",
+        itemType: "Tipo de Item",
+        file: "Arquivo",
+        link: "Link",
+        fileType: "Tipo de Arquivo",
+        taxe: "Imposto",
+        category: "Categoria",
+        subcategory: "Subcategoria",
+        childcategory: "Sub-subcategoria",
+        brand: "Marca",
+        gallery: "Galeria",
+        createdAt: "Criado em",
+        updatedAt: "Atualizado em",
+        createdAtRange: "Criado em",
+      },
+      enumerators: {
+        status: {
+          enable: "Ativar",
+          disable: "Desativar",
+        },
+        itemType: {
+          physical: "físico",
+          digitale: "Digital",
+        },
+        fileType: {
+          file: "Arquivo",
+          link: "Link",
+        },
+        isType: {
+          new_arrival: "Novo Lançamento",
+          feature_product: "Produto em Destaque",
+          top_pdroduct: "Produto Popular",
+          best_product: "Melhor Produto",
+          flash_deal_product: "Produto em Promoção Relâmpago",
+        },
+      },
+      placeholders: {},
+      hints: {},
+      new: {
+        title: "Novo Produto",
+      },
+      view: {
+        title: "Ver Produto",
+      },
+      importer: {
+        title: "Importar Produtos",
+        fileName: "modelo_importacao_produto",
+        hint: "As colunas Arquivos/Imagens devem ser os URLs dos arquivos separados por espaço.",
+      },
+    },
+    transaction: {
+      name: "transação",
+      label: "Transações",
+      menu: "Transações",
+      exporterFileName: "exportacao_transacao",
+      list: {
+        menu: "Transações",
+        title: "Transações",
+      },
+      create: {
+        success: "Transação enviada com sucesso",
+      },
+      update: {
+        success: "Transação salva com sucesso",
+      },
+      destroy: {
+        success: "Transação excluída com sucesso",
+      },
+      destroyAll: {
+        success: "Transação(ões) excluída(s) com sucesso",
+      },
+      edit: {
+        title: "Editar Transação",
+      },
+      fields: {
+        id: "Id",
+        amountRange: "Valor",
+        amount: "Valor",
+        email: "Email",
+        tax: "Imposto",
+        currencySign: "Símbolo da Moeda",
+        currencyValue: "Valor da Moeda",
+        orderId: "ID do Pedido",
+        createdAt: "Criado em",
+        updatedAt: "Atualizado em",
+        createdAtRange: "Criado em",
+      },
+      enumerators: {
+        status: {
+          pending: "Pendente",
+          completed: "Sucesso",
+          canceled: "Cancelado",
+        },
+      },
+      placeholders: {},
+      hints: {},
+      new: {
+        title: "Nova Transação",
+      },
+      view: {
+        title: "Ver Transação",
+      },
+      importer: {
+        title: "Importar Transações",
+        fileName: "modelo_importacao_transacao",
+        hint: "As colunas Arquivos/Imagens devem ser os URLs dos arquivos separados por espaço.",
+      },
+    },
+
+    order: {
+      name: "pedido",
+      label: "Pedidos",
+      menu: "Pedidos",
+      exporterFileName: "exportacao_pedido",
+      list: {
+        menu: "Pedidos",
+        title: "Pedidos",
+      },
+      create: {
+        success: "Pedido salvo com sucesso",
+      },
+      update: {
+        success: "Pedido salvo com sucesso",
+      },
+      destroy: {
+        success: "Pedido excluído com sucesso",
+      },
+      destroyAll: {
+        success: "Pedido(s) excluído(s) com sucesso",
+      },
+      edit: {
+        title: "Editar Pedido",
+      },
+      fields: {
+        id: "Id",
+        userId: "Usuário",
+        cart: "Carrinho",
+        shipping: "Envio",
+        discountRange: "Desconto",
+        discount: "Desconto",
+        paymentMethod: "Método de Pagamento",
+        taxe: "Imposto",
+        transactionNumber: "Número da Transação",
+        orderStatus: "Status do Pedido",
+        createdAt: "Criado em",
+        updatedAt: "Atualizado em",
+        createdAtRange: "Criado em",
+      },
+      enumerators: {
+        orderStatus: {
+          pending: "Pendente",
+          in_progress: "Em Andamento",
+          delivered: "Entregue",
+          canceled: "Cancelado",
+        },
+      },
+      placeholders: {},
+      hints: {},
+      new: {
+        title: "Novo Pedido",
+      },
+      view: {
+        title: "Ver Pedido",
+      },
+      importer: {
+        title: "Importar Pedidos",
+        fileName: "modelo_importacao_pedido",
+        hint: "As colunas Arquivos/Imagens devem ser os URLs dos arquivos separados por espaço.",
+      },
+    },
+  },
+
+
+
+  buttons: {
+    login: "Entrar",
+    registerNow: "Registrar Agora",
+    signup: "Cadastrar-se",
+    start: "Iniciar",
+    orders: "Pedidos",
+    submit: "Enviar",
+    backtohome: "Voltar para a Página Inicial",
+    confirm: "Confirmar",
+    logout: "Sair",
+    getstarted: "Começar",
+  },
+  text: {
+    welcome: "Bem-vindo",
+    discover: "Descubra ofertas exclusivas para você",
+    signin: "Entrar",
+    haveaccount: "Já tem uma conta?",
+    noaccount: "Não tem uma conta?",
+    showingnow: "Em Exibição",
+    comingsoon: "Em Breve",
+    termsconditions: "Termos & Condições",
+    todayearning: "Ganhos de Hoje",
+    accountbalance: "Saldo da Conta",
+    freezebalance: "Saldo Congelado",
+    sumbitInformation: "Enviar Informações",
+    order: "Pedido",
+    pending: "Pendente",
+    completed: "Concluído",
+    canceled: "Cancelado",
+    notransaction: "Nenhuma transação até agora!",
+    createdtime: "Data de Criação",
+    creationtime: "Hora de criação",
+    orderNumber: "Número do Pedido",
+    orderamount: "Valor do Pedido",
+    income: "Rendimento",
+    buyerating: "Avaliação do Comprador",
+    uid: "UID",
+    promotioncode: "Código Promocional",
+    walletamount: "Saldo da Carteira",
+    creditassesment: "Avaliação de Crédito",
+    myfinance: "Minhas Finanças",
+    withdraw: "Saque",
+    mydetails: "Meus Dados",
+    profile: "Perfil",
+    wallet: "Carteira",
+    other: "Outros",
+    customersupport: "Atendimento ao Cliente",
+    transaction: "Transação",
+    taskshistory: "Histórico de Tarefas",
+    security: "Segurança",
+    sponsor: `Nossa segurança é nossa maior prioridade e queremos garantir que 
+              você esteja protegido contra qualquer risco potencial. Lembre-se 
+              de que nunca pediremos para enviar dinheiro para um endereço desconhecido. 
+              Antes de fazer qualquer pagamento, pedimos que verifique as informações conosco.`,
   },
   errors: {
-    backToHome: 'Voltar a página inicial',
-    403: `Desculpe, você não tem acesso a esta página`,
-    404: 'Desculpe, a página que você visitou não existe',
-    500: 'Desculpe, o servidor está relatando um erro',
-    429: 'Muitas requisições. Por favor, tente novamente mais tarde.',
+    backToHome: "Voltar para a Página Inicial",
+    403: "Desculpe, você não tem acesso a esta página",
+    404: "Desculpe, a página que você visitou não existe",
+    500: "Desculpe, o servidor está reportando um erro",
+    429: "Muitas solicitações. Tente novamente mais tarde.",
     forbidden: {
-      message: 'Acesso negado',
+      message: "Acesso Negado",
     },
     validation: {
-      message: 'Ocorreu um erro',
+      message: "Ocorreu um erro",
     },
-    defaultErrorMessage: 'Ops, ocorreu um erro',
+    defaultErrorMessage: "Ops, ocorreu um erro",
   },
 
-  preview: {
-    error:
-      'Desculpe, esta operação não é permitida em modo de demonstração.',
+  withdraw: {
+    withdrawamount: "Valor do Saque",
+    Withdrawpassword: "Senha de Saque",
+    availablebalance: "Saldo Disponível",
+    rules: "Descrição das Regras",
+    rule1: "O saque mínimo é de $20",
+    rule2: "O pagamento será feito dentro de 24 horas após a solicitação de saque",
+    rule3: "A submissão incompleta dos pedidos diários impede o saque; todos os produtos devem ser enviados para retirada"
+  },
+  profile: {
+    profile: "Perfil",
+    fullname: "Nome Completo",
+    email: "E-mail",
+    phonenumber: "Número de Telefone",
+    country: "País",
+    Invitationcode: "Código de Convite"
+  },
+  wallet: {
+    wallet: "Carteira",
+    info: "Informações sobre o método de saque",
+    username: "Nome de Usuário",
+    walletname: "Nome da Carteira",
+    walletaddress: "Endereço da Carteira",
+    note: "Nota",
+    notedesctiption: "Por favor, preencha estas informações com cuidado."
   },
 
-  // See https://github.com/jquense/yup#using-a-adherent-locale-dictionary
-  /* eslint-disable */
+  cs: {
+    cs: "Atendimento ao Cliente",
+    note: "Se tiver alguma dúvida ou encontrar problemas, envie-nos um e-mail ou converse com nossa equipe de suporte online.",
+    contactnow: "Entre em Contato Agora"
+  },
+  transaction: {
+    transaction: "Transação",
+    all: "Todos",
+    withdraw: "Saque",
+    dposit: "Depósito",
+    notransaction: "Nenhuma tran
+    sação até agora!"
+  },
+  order: {
+    order: "Pedido",
+    completed: "Concluído",
+    pending: "Pendente",
+    canceled: "Cancelado",
+    ordertime: "Hora do Pedido",
+    ordernumber: "Número do Pedido",
+    total: "Valor Total do Pedido",
+    commission: "Comissão",
+    return: "Retorno Estimado"
+  },
+
+  security: {
+    changepassword: "Alterar Senha",
+    oldpassword: "Senha Antiga",
+    newpassword: "Nova Senha",
+    confirmpassword: "Confirmar Senha",
+    note: "Nota",
+    notedesc: "Por favor, preencha estas informações com cuidado"
+  },
+
+
+
+  tabbarmenue: {
+    home: "Início",
+    rate: "Avaliar",
+    profile: "Perfil"
+  },
   validation: {
     mixed: {
-      default: '${path} é inválido',
-      required: '${path} é obrigatório',
-      oneOf:
-        '${path} deve ser um dos seguintes valores: ${values}',
-      notOneOf:
-        '${path} não deve ser um dos seguintes valores: ${values}',
+      default: "${path} é inválido",
+      required: "${path} é obrigatório",
+      oneOf: "${path} deve ser um dos seguintes valores: ${values}",
+      notOneOf: "${path} não deve ser um dos seguintes valores: ${values}",
       notType: ({ path, type, value, originalValue }) => {
         return `${path} deve ser um ${type}`;
       },
     },
     string: {
-      length: '${path} deve possuir ${length} caracteres',
-      min: '${path} deve possuir ao menos ${min} caracteres',
-      max: '${path} deve possui no máximo ${max} caracteres',
-      matches:
-        '${path} deve respeitar o padrão: "${regex}"',
-      email: '${path} deve ser um email válido',
-      url: '${path} deve ser uma URL válida',
-      trim: '${path} deve ser uma palavra sem espaços em branco',
-      lowercase: '${path} deve ser minúsculo',
-      uppercase: '${path} deve ser maiúsculo',
-      selected: '${path} deve ser selecionado',
+      length: "${path} deve ter exatamente ${length} caracteres",
+      min: "${path} deve ter pelo menos ${min} caracteres",
+      max: "${path} deve ter no máximo ${max} caracteres",
+      matches: '${path} deve corresponder ao seguinte padrão: "${regex}"',
+      email: "${path} deve ser um e-mail válido",
+      url: "${path} deve ser um URL válido",
+      trim: "${path} deve ser uma string sem espaços extras",
+      lowercase: "${path} deve estar em letras minúsculas",
+      uppercase: "${path} deve estar em letras maiúsculas",
+      selected: "${path} deve ser selecionado",
     },
     number: {
-      min: '${path} deve ser maior ou igual a ${min}',
-      max: '${path} deve ser menor ou igual a ${max}',
-      lessThan: '${path} deve ser menor que ${less}',
-      moreThan: '${path} deve ser maior que ${more}',
-      notEqual: '${path} não deve ser igual a ${notEqual}',
-      positive: '${path} deve ser um número positivo',
-      negative: '${path} deve ser um número negativo',
-      integer: '${path} deve ser um inteiro',
+      min: "${path} deve ser maior ou igual a ${min}",
+      max: "${path} deve ser menor ou igual a ${max}",
+      lessThan: "${path} deve ser menor que ${less}",
+      moreThan: "${path} deve ser maior que ${more}",
+      notEqual: "${path} não deve ser igual a ${notEqual}",
+      positive: "${path} deve ser um número positivo",
+      negative: "${path} deve ser um número negativo",
+      integer: "${path} deve ser um número inteiro",
     },
     date: {
-      min: '${path} deve ser posterior a ${min}',
-      max: '${path} deve ser mais cedo do que ${max}',
+      min: "${path} deve ser posterior a ${min}",
+      max: "${path} deve ser anterior a ${max}",
     },
     boolean: {},
     object: {
       noUnknown:
-        '${path} não pode ter atributos não especificados no formato do objeto',
+        "${path} não pode conter chaves não especificadas na estrutura do objeto",
     },
     array: {
       min: ({ min, path }) =>
         min === 1
           ? `${path} é obrigatório`
-          : `'${path} deve possuir ao menos ${min} itens`,
-      max: '${path} deve possuir no máximo ${max} itens',
+          : `${path} deve ter pelo menos ${min} itens`,
+      max: "${path} deve ter no máximo ${max} itens",
     },
   },
   /* eslint-disable */
   fileUploader: {
-    upload: 'Upload',
-    image: 'Você deve fazer upload de uma imagem',
-    size: 'O arquivo é muito grande. O tamanho máximo permitido é {0}',
-    formats: `Formato inválido. Deve ser um destes: {0}.`,
-  },
-  importer: {
-    line: 'Linha',
-    status: 'Estado',
-    pending: 'Pendente',
-    imported: 'Importado',
-    error: 'Erro',
-    total: `{0} importado, {1} pendente e {2} com erro`,
-    importedMessage: `Processados {0} de {1}.`,
-    noNavigateAwayMessage:
-      'Não saia desta página ou a importação será interrompida.',
-    completed: {
-      success:
-        'Importação concluída. Todas as linhas foram importadas com sucesso.',
-      someErrors:
-        'O processamento foi concluído, mas algumas linhas não puderam ser importadas.',
-      allErrors:
-        'Importação falhou. Não há linhas válidas.',
-    },
-    form: {
-      downloadTemplate: 'Baixe o modelo',
-      hint: 'Clique ou arraste o arquivo para esta área para continuar.',
-    },
-    list: {
-      discardConfirm:
-        'Você tem certeza? Dados não importados serão perdidos.',
-    },
-    errors: {
-      invalidFileEmpty: 'O arquivo está vazio',
-      invalidFileExcel:
-        'Apenas arquivos Excel (.xlsx) são permitidos',
-      invalidFileUpload:
-        'Arquivo inválido. Verifique se você está usando a última versão do modelo.',
-      importHashRequired: 'Hash de importação é necessário',
-      importHashExistent: 'Dados já foram importados',
-    },
+    upload: "Enviar",
+    image: "Você deve enviar uma imagem",
+    size: "O arquivo é muito grande. O tamanho máximo permitido é {0}",
+    formats: `Formato inválido. Deve ser um dos seguintes: {0}.`,
   },
 
-  autocomplete: {
-    loading: 'Carregando...',
-    noOptions: 'Não foram encontrados resultados',
-  },
 
-  imagesViewer: {
-    noImage: 'Sem imagem',
-  },
 
-  table: {
-    noData: 'Nenhum Registro Encontrado',
-    loading: 'Carregando...',
-  },
-
-  pagination: {
-    items_per_page: '/ página',
-    jump_to: 'Vá até',
-    jump_to_confirm: 'confirme',
-    page: '',
-
-    prev_page: 'Página anterior',
-    next_page: 'Próxima página',
-    prev_5: '5 páginas anteriores',
-    next_5: '5 próximas páginas',
-    prev_3: '3 páginas anteriores',
-    next_3: '3 próximas páginas',
-  },
 };
 
 export default ptBR;

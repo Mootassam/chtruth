@@ -7,6 +7,7 @@ import productListActions from "src/modules/product/list/productListActions";
 import selector from "src/modules/product/list/productListSelectors";
 import News from "./News";
 import Header from "src/view/shared/Header/Header";
+import { i18n } from "../../../i18n";
 
 // Add interface for cryptocurrency data
 interface CryptoData {
@@ -50,36 +51,34 @@ function Home() {
     "/images/3.png",
   ];
 
-  // Notification state
-
   // Sample notifications data
   const notifications = [
     {
       id: 1,
-      title: "BTC Price Alert",
-      message: "Bitcoin reached $45,000",
-      time: "5 min ago",
+      title: i18n("pages.home.notifications.btcAlert"),
+      message: i18n("pages.home.notifications.btcReached"),
+      time: i18n("pages.home.notifications.fiveMinAgo"),
       unread: true,
     },
     {
       id: 2,
-      title: "Deposit Successful",
-      message: "Your deposit of 0.5 ETH is confirmed",
-      time: "1 hour ago",
+      title: i18n("pages.home.notifications.depositSuccess"),
+      message: i18n("pages.home.notifications.depositConfirmed"),
+      time: i18n("pages.home.notifications.oneHourAgo"),
       unread: true,
     },
     {
       id: 3,
-      title: "Security Update",
-      message: "New security features available",
-      time: "2 hours ago",
+      title: i18n("pages.home.notifications.securityUpdate"),
+      message: i18n("pages.home.notifications.newSecurityFeatures"),
+      time: i18n("pages.home.notifications.twoHoursAgo"),
       unread: false,
     },
     {
       id: 4,
-      title: "Market News",
-      message: "Ethereum upgrade completed successfully",
-      time: "5 hours ago",
+      title: i18n("pages.home.notifications.marketNews"),
+      message: i18n("pages.home.notifications.ethUpgrade"),
+      time: i18n("pages.home.notifications.fiveHoursAgo"),
       unread: false,
     },
   ];
@@ -185,27 +184,27 @@ function Home() {
     setActiveItem(path);
   };
 
-  // New Quick Access data - Replaced Support with Terms of Use
+  // New Quick Access data
   const quickAccessItems = [
     {
       path: "/security-tips",
       icon: "fas fa-shield-alt",
-      name: "Security ",
+      name: i18n("pages.home.quickAccess.security"),
     },
     {
       path: "/faq-center",
       icon: "fas fa-question-circle",
-      name: "FAQ Center",
+      name: i18n("pages.home.quickAccess.faqCenter"),
     },
     {
       icon: "fas fa-gift",
       path: "/invitation",
-      name: "Invitation",
+      name: i18n("pages.home.quickAccess.invitation"),
     },
     {
       path: "/stacking",
       icon: "fas fa-coins ",
-      name: "Staking",
+      name: i18n("pages.home.quickAccess.staking"),
     },
   ];
 
@@ -269,15 +268,15 @@ function Home() {
         </div>
       </div>
 
-      {/* Quick Access Section - Replaced the old quick-actions and feature-shortcuts */}
+      {/* Quick Access Section */}
       <div className="quick-access">
         <div className="section-header">
-          <h2 className="section-title">Quick Access</h2>
+          <h2 className="section-title">{i18n("pages.home.quickAccess.title")}</h2>
           <Link to="/deposit" className="deposit-header-button remove_blue">
             <div className="deposit-header-icon">
               <i className="fas fa-wallet" />
             </div>
-            <span className="deposit-header-text">Deposit</span>
+            <span className="deposit-header-text">{i18n("pages.home.quickAccess.deposit")}</span>
           </Link>
         </div>
         <div className="access-grid">
@@ -296,15 +295,14 @@ function Home() {
         </div>
       </div>
 
-      {/* Portfolio Section */}
-
       {/* Favorites Section */}
       <div className="favorites-header">
-        <div className="favorites-title">Popular Cryptocurrencies</div>
+        <div className="favorites-title">{i18n("pages.home.popularCryptos")}</div>
         <Link to="/market" className="see-all remove_blue">
-          See all →
+          {i18n("pages.home.seeAll")} →
         </Link>
       </div>
+      
       {/* Market List with Real-time Data */}
       <div className="market-list" style={{ padding: "0 15px" }}>
         {topCryptos.map((crypto) => {
@@ -332,13 +330,13 @@ function Home() {
                 <div>
                   <div className="crypto-name">{displayName}</div>
                   <div className="crypto-volume">
-                    Vol: {data ? data.volumeFormatted : "Loading..."}
+                    {i18n("pages.home.volume")}: {data ? data.volumeFormatted : i18n("pages.home.loading")}
                   </div>
                 </div>
               </div>
               <div className="price-info">
                 <div className="price">
-                  {data ? `$${data.price}` : "Loading..."}
+                  {data ? `$${data.price}` : i18n("pages.home.loading")}
                 </div>
                 <div
                   className={`change ${data ? (data.isPositive ? "positive" : "negative") : ""
@@ -346,7 +344,7 @@ function Home() {
                 >
                   {data
                     ? `${data.isPositive ? "+" : ""}${data.changePercent}%`
-                    : "Loading..."}
+                    : i18n("pages.home.loading")}
                 </div>
               </div>
               <div className="chart">
@@ -365,6 +363,7 @@ function Home() {
           );
         })}
       </div>
+
       {/* News Section */}
       <News topic={selectNews} loading={selectloadingNews} />
 

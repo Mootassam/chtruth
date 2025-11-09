@@ -42,12 +42,12 @@ class TransactionRepository {
 
       const oldAmount = parseFloat(currentUser.balance);
       if (isNaN(oldAmount)) {
-        throw new Error405("Invalid balance for the current user");
+throw new Error400(options.language, "errors.invalidUserBalance");
       }
 
       const requestAmount = parseFloat(data.amount);
       if (isNaN(requestAmount)) {
-        throw new Error405("Invalid request amount");
+throw new Error400(options.language, "errors.invalidRequestAmount");
       }
 
       const id = currentUser.id;

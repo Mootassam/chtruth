@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { i18n } from '../../../i18n';
 
 // Define TypeScript interfaces
 interface FAQItem {
@@ -28,24 +29,24 @@ const Faq: React.FC = () => {
   const faqData: FAQItem[] = [
     {
       id: '1',
-      question: 'How do I create an account?',
+      question: i18n('pages.faq.questions.howToCreateAccount'),
       answer: (
         <div className="step-list">
           <div className="step-items">
             <i className="fas fa-arrow-right step-arrow" />
-            Go to https://nexus-exchange.com
+            {i18n('pages.faq.steps.goToWebsite')}
           </div>
           <div className="step-items">
             <i className="fas fa-arrow-right step-arrow" />
-            Click "Sign Up"
+            {i18n('pages.faq.steps.clickSignUp')}
           </div>
           <div className="step-items">
             <i className="fas fa-arrow-right step-arrow" />
-            Enter your details
+            {i18n('pages.faq.steps.enterDetails')}
           </div>
           <div className="step-items">
             <i className="fas fa-arrow-right step-arrow" />
-            Verify your email address
+            {i18n('pages.faq.steps.verifyEmail')}
           </div>
         </div>
       ),
@@ -54,35 +55,35 @@ const Faq: React.FC = () => {
     },
     {
       id: '2',
-      question: 'How do I complete verification?',
-      answer: 'Upload a government-issued ID and a selfie photo. Verification is usually approved within hours.',
+      question: i18n('pages.faq.questions.howToCompleteVerification'),
+      answer: i18n('pages.faq.answers.verificationProcess'),
       icon: 'fa-id-card',
       category: 'getting-started'
     },
     {
       id: '3',
-      question: 'How do I buy cryptocurrency?',
+      question: i18n('pages.faq.questions.howToBuyCrypto'),
       answer: (
         <div className="step-list">
           <div className="step-items">
             <i className="fas fa-arrow-right step-arrow" />
-            Complete verification first
+            {i18n('pages.faq.steps.completeVerification')}
           </div>
           <div className="step-items">
             <i className="fas fa-arrow-right step-arrow" />
-            Click "Buy Crypto"
+            {i18n('pages.faq.steps.clickBuyCrypto')}
           </div>
           <div className="step-items">
             <i className="fas fa-arrow-right step-arrow" />
-            Select coin and payment method
+            {i18n('pages.faq.steps.selectCoinAndPayment')}
           </div>
           <div className="step-items">
             <i className="fas fa-arrow-right step-arrow" />
-            Confirm transaction
+            {i18n('pages.faq.steps.confirmTransaction')}
           </div>
           <div className="step-items">
             <i className="fas fa-arrow-right step-arrow" />
-            Crypto will appear in your wallet
+            {i18n('pages.faq.steps.cryptoInWallet')}
           </div>
         </div>
       ),
@@ -91,20 +92,20 @@ const Faq: React.FC = () => {
     },
     {
       id: '4',
-      question: 'How do I trade cryptocurrencies?',
+      question: i18n('pages.faq.questions.howToTrade'),
       answer: (
         <div className="step-list">
           <div className="step-items">
             <i className="fas fa-arrow-right step-arrow" />
-            Go to "Trade/Markets"
+            {i18n('pages.faq.steps.goToTradeMarkets')}
           </div>
           <div className="step-items">
             <i className="fas fa-arrow-right step-arrow" />
-            Pick a trading pair (e.g., BTC/USDT)
+            {i18n('pages.faq.steps.pickTradingPair')}
           </div>
           <div className="step-items">
             <i className="fas fa-arrow-right step-arrow" />
-            Place market or limit orders
+            {i18n('pages.faq.steps.placeOrders')}
           </div>
         </div>
       ),
@@ -113,13 +114,13 @@ const Faq: React.FC = () => {
     },
     {
       id: '5',
-      question: 'How do I receive and send crypto?',
+      question: i18n('pages.faq.questions.howToSendReceive'),
       answer: (
         <>
-          <strong>To receive:</strong> Go to Wallet &gt; Receive → copy address or QR code
+          <strong>{i18n('pages.faq.labels.toReceive')}</strong> {i18n('pages.faq.steps.receiveCrypto')}
           <br />
           <br />
-          <strong>To send:</strong> Go to Wallet &gt; Send → enter address/amount → confirm
+          <strong>{i18n('pages.faq.labels.toSend')}</strong> {i18n('pages.faq.steps.sendCrypto')}
         </>
       ),
       icon: 'fa-wallet',
@@ -127,20 +128,20 @@ const Faq: React.FC = () => {
     },
     {
       id: '6',
-      question: 'How do I become a P2P Merchant?',
+      question: i18n('pages.faq.questions.howToBecomeP2PMerchant'),
       answer: (
         <div className="step-list">
           <div className="step-items">
             <i className="fas fa-arrow-right step-arrow" />
-            Apply under "P2P" section
+            {i18n('pages.faq.steps.applyP2P')}
           </div>
           <div className="step-items">
             <i className="fas fa-arrow-right step-arrow" />
-            Meet eligibility criteria
+            {i18n('pages.faq.steps.meetCriteria')}
           </div>
           <div className="step-items">
             <i className="fas fa-arrow-right step-arrow" />
-            Once approved, create offers & trade
+            {i18n('pages.faq.steps.createOffers')}
           </div>
         </div>
       ),
@@ -149,28 +150,28 @@ const Faq: React.FC = () => {
     },
     {
       id: '7',
-      question: 'How does staking work?',
+      question: i18n('pages.faq.questions.howStakingWorks'),
       answer: (
         <div className="step-list">
           <div className="step-items">
             <i className="fas fa-arrow-right step-arrow" />
-            Go to Wallets &gt; Staking
+            {i18n('pages.faq.steps.goToStaking')}
           </div>
           <div className="step-items">
             <i className="fas fa-arrow-right step-arrow" />
-            Pick a staking plan
+            {i18n('pages.faq.steps.pickStakingPlan')}
           </div>
           <div className="step-items">
             <i className="fas fa-arrow-right step-arrow" />
-            Select amount to stake
+            {i18n('pages.faq.steps.selectAmount')}
           </div>
           <div className="step-items">
             <i className="fas fa-arrow-right step-arrow" />
-            Confirm transaction
+            {i18n('pages.faq.steps.confirmStaking')}
           </div>
           <div className="step-items">
             <i className="fas fa-arrow-right step-arrow" />
-            Rewards processed automatically at end of period
+            {i18n('pages.faq.steps.rewardsProcessed')}
           </div>
         </div>
       ),
@@ -182,26 +183,26 @@ const Faq: React.FC = () => {
   const futuresData: FAQItem[] = [
     {
       id: 'f1',
-      question: 'What are futures contracts?',
-      answer: 'Agreements to buy or sell crypto at a predetermined price on a future date (cash-settled).',
+      question: i18n('pages.faq.futures.whatAreFutures'),
+      answer: i18n('pages.faq.futures.futuresExplanation'),
       icon: 'fa-file-contract',
       category: 'futures'
     },
     {
       id: 'f2',
-      question: 'What is leverage?',
-      answer: 'Ability to trade with more capital than you have (e.g., 10x, 20x, 50x leverage).',
+      question: i18n('pages.faq.futures.whatIsLeverage'),
+      answer: i18n('pages.faq.futures.leverageExplanation'),
       icon: 'fa-arrows-alt-h',
       category: 'futures'
     },
     {
       id: 'f3',
-      question: 'What are Long and Short positions?',
+      question: i18n('pages.faq.futures.longShortPositions'),
       answer: (
         <>
-          <strong>Long</strong> = betting the price will go up
+          <strong>{i18n('pages.faq.futures.long')}</strong> {i18n('pages.faq.futures.longExplanation')}
           <br />
-          <strong>Short</strong> = betting the price will go down
+          <strong>{i18n('pages.faq.futures.short')}</strong> {i18n('pages.faq.futures.shortExplanation')}
         </>
       ),
       icon: 'fa-long-arrow-alt-up',
@@ -209,22 +210,22 @@ const Faq: React.FC = () => {
     },
     {
       id: 'f4',
-      question: 'What are Margin & Liquidation?',
-      answer: 'Risk of position liquidation if your collateral drops too low to maintain the position.',
+      question: i18n('pages.faq.futures.marginLiquidation'),
+      answer: i18n('pages.faq.futures.marginExplanation'),
       icon: 'fa-exclamation-triangle',
       category: 'futures'
     },
     {
       id: 'f5',
-      question: 'What is the Funding Rate?',
-      answer: 'Fee exchanged every 8 hours between long and short traders to balance perpetual contract prices with spot prices.',
+      question: i18n('pages.faq.futures.fundingRate'),
+      answer: i18n('pages.faq.futures.fundingRateExplanation'),
       icon: 'fa-percentage',
       category: 'futures'
     },
     {
       id: 'f6',
-      question: 'How is Profit/Loss calculated?',
-      answer: 'Calculated based on price difference multiplied by your leverage and position size.',
+      question: i18n('pages.faq.futures.profitLossCalculation'),
+      answer: i18n('pages.faq.futures.profitLossExplanation'),
       icon: 'fa-calculator',
       category: 'futures'
     }
@@ -233,23 +234,21 @@ const Faq: React.FC = () => {
   const actionCards: ActionCard[] = [
     {
       id: 'ac1',
-      title: 'Contact Support',
-      description: 'Get help from our team',
+      title: i18n('pages.faq.actionCards.contactSupport'),
+      description: i18n('pages.faq.actionCards.getHelp'),
       icon: 'fa-headset',
-      link: '/liveChat', // Internal route
+      link: '/liveChat',
       isExternal: false
     },
     {
       id: 'ac4',
-      title: 'Community',
-      description: 'Join discussions',
+      title: i18n('pages.faq.actionCards.community'),
+      description: i18n('pages.faq.actionCards.joinDiscussions'),
       icon: 'fa-comments',
-      link: 'https://t.me/nexusexchange_official', // External URL
+      link: 'https://t.me/nexusexchange_official',
       isExternal: true
     }
   ];
-
-
 
   // Filter FAQs based on search term
   const filteredFaqs = faqData.filter(item =>
@@ -271,14 +270,8 @@ const Faq: React.FC = () => {
   const handleActionCardClick = (card: ActionCard) => {
     if (card.link) {
       if (card.isExternal) {
-        // Open external link in new tab
         window.open(card.link, '_blank', 'noopener,noreferrer');
       } else {
-        // Navigate to internal route
-        // Using React Router (if you're using it)
-        // navigate(card.link);
-
-        // Or using window.location for simple navigation
         window.location.href = card.link;
       }
     }
@@ -296,16 +289,16 @@ const Faq: React.FC = () => {
           <div className="back-button" onClick={handleBackClick}>
             <i className="fas fa-arrow-left" />
           </div>
-          <div className="page-title">FAQ Center</div>
+          <div className="page-title">{i18n('pages.faq.title')}</div>
           <div className="placeholder"></div>
         </div>
       </div>
 
       {/* Hero Section */}
       <div className="hero-section">
-        <div className="hero-title">Frequently Asked Questions</div>
+        <div className="hero-title">{i18n('pages.faq.hero.title')}</div>
         <div className="hero-subtitle">
-          Find answers to common questions about using Nexus
+          {i18n('pages.faq.hero.subtitle')}
         </div>
       </div>
 
@@ -314,7 +307,7 @@ const Faq: React.FC = () => {
         <input
           type="text"
           className="search-bar"
-          placeholder="Search for answers..."
+          placeholder={i18n('pages.faq.search.placeholder')}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
@@ -323,7 +316,7 @@ const Faq: React.FC = () => {
       {/* Getting Started Section */}
       {gettingStartedFaqs.length > 0 && (
         <div className="faq-section">
-          <div className="section-title">Getting Started</div>
+          <div className="section-title">{i18n('pages.faq.categories.gettingStarted')}</div>
           <div className="faq-category">
             {gettingStartedFaqs.map((faq) => (
               <div key={faq.id} className="faq-item">
@@ -343,7 +336,7 @@ const Faq: React.FC = () => {
       {/* Managing Your Account Section */}
       {managingAccountFaqs.length > 0 && (
         <div className="faq-section">
-          <div className="section-title">Managing Your Account</div>
+          <div className="section-title">{i18n('pages.faq.categories.managingAccount')}</div>
           <div className="faq-category">
             {managingAccountFaqs.map((faq) => (
               <div key={faq.id} className="faq-item">
@@ -365,7 +358,7 @@ const Faq: React.FC = () => {
         <div className="futures-section">
           <div className="futures-title">
             <i className="fas fa-chart-bar" />
-            Futures Trading Explained
+            {i18n('pages.faq.futures.title')}
           </div>
           {filteredFutures.map((faq) => (
             <div key={faq.id} className="faq-item">
@@ -385,31 +378,31 @@ const Faq: React.FC = () => {
       <div className="benefits-section">
         <div className="benefits-title">
           <i className="fas fa-star" />
-          Why Choose Nexus Futures?
+          {i18n('pages.faq.benefits.title')}
         </div>
         <ul className="benefits-list">
           <li className="benefit-item">
             <i className="fas fa-shield-alt benefit-icon" />
             <div className="benefit-content">
-              <div className="benefit-text">Hedge against market volatility</div>
+              <div className="benefit-text">{i18n('pages.faq.benefits.hedge')}</div>
             </div>
           </li>
           <li className="benefit-item">
             <i className="fas fa-rocket benefit-icon" />
             <div className="benefit-content">
-              <div className="benefit-text">Multiply profits with leverage</div>
+              <div className="benefit-text">{i18n('pages.faq.benefits.multiplyProfits')}</div>
             </div>
           </li>
           <li className="benefit-item">
             <i className="fas fa-arrows-alt-v benefit-icon" />
             <div className="benefit-content">
-              <div className="benefit-text">Trade both rising and falling markets</div>
+              <div className="benefit-text">{i18n('pages.faq.benefits.tradeBothMarkets')}</div>
             </div>
           </li>
           <li className="benefit-item">
             <i className="fas fa-chess benefit-icon" />
             <div className="benefit-content">
-              <div className="benefit-text">Implement advanced trading strategies</div>
+              <div className="benefit-text">{i18n('pages.faq.benefits.advancedStrategies')}</div>
             </div>
           </li>
         </ul>
@@ -440,9 +433,9 @@ const Faq: React.FC = () => {
 
       {/* Footer */}
       <div className="footer">
-        © 2025 Nexus Exchange. All rights reserved.
+        {i18n('pages.faq.footer.copyright')}
         <br />
-        Need more help? Contact support@nexus-exchange.com
+        {i18n('pages.faq.footer.needHelp')}
       </div>
 
       {/* Notification Element */}
@@ -452,6 +445,7 @@ const Faq: React.FC = () => {
       >
         {notificationMessage}
       </div>
+
 
 
       <style>{`
