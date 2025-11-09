@@ -1875,8 +1875,7 @@ pages: {
     all: "Todos",
     withdraw: "Saque",
     dposit: "Depósito",
-    notransaction: "Nenhuma tran
-    sação até agora!"
+    notransaction: "Nenhuma transação até agora!"
   },
   order: {
     order: "Pedido",
