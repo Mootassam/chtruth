@@ -1,1 +1,0 @@
-import{H as t,i as r,ai as n,j as a,D as o}from"./index-aca44342.js";function u(){return new URLSearchParams(o().search)}function f(){const e=t(),s=u().get("token");return r.useEffect(()=>{s?(n.set(s,!0),e.replace("/")):e.replace("/auth/signin")},[s,e]),a.jsx("div",{children:"Logging in as user..."})}export{f as default};
