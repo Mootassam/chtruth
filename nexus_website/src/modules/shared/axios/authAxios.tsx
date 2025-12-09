@@ -6,11 +6,10 @@ import moment from 'moment';
 import AuthToken from 'src/modules/auth/authToken';
 
 const authAxios = Axios.create({
-  baseURL: "https://nexus-exchange.com/api",
+  // baseURL: "https://nexus-exchange.com/api",
 
-  // baseURL: "http://localhost:8084/api",
+  baseURL: "http://localhost:8084/api",
 
-  
   paramsSerializer: function (params) {
     return Qs.stringify(params, {
       arrayFormat: 'brackets',

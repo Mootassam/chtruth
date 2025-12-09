@@ -368,11 +368,8 @@ function Withdraw() {
                       <div className="inputWrapper">
                         <FieldFormItem
                           name="withdrawAmount"
-                          type="number"
                           className="amountField"
                           placeholder="0.0"
-                          step="any"
-                          min="0"
                           disabled={isSubmitting}
                         />
                         <div className="balanceText">

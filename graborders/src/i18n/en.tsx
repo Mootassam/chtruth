@@ -1263,8 +1263,6 @@ const en = {
       }
     },
 
-
-
     tabBottomNavigator: {
       home: "home",
       grap: "grap",
@@ -1279,7 +1277,6 @@ const en = {
       searchPlaceholder: "Search languages...",
       currentLanguage: "Current Language",
 
-      // Language names (if needed for dynamic content)
       languages: {
         english: "English",
         french: "French",
@@ -1287,6 +1284,7 @@ const en = {
         german: "German",
         spanish: "Spanish"
       },
+
       nativeNames: {
         english: "English",
         french: "Français",
@@ -1298,12 +1296,6 @@ const en = {
 
 
   },
-
-
-
-
-
-
 
 
 
