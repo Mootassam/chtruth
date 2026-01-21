@@ -60,7 +60,7 @@ const Market: React.FC = () => {
       try {
         setIsLoading(true);
         const response = await axios.get(
-          "https://api.binance.com/api/v3/ticker/24hr"
+          "https://api.binance.us/api/v3/ticker/24hr"
         );
 
         // Process only USDT pairs
@@ -131,7 +131,7 @@ const Market: React.FC = () => {
   // Setup WebSocket for real-time updates
   useEffect(() => {
     // Create WebSocket connection for all tickers
-    ws.current = new WebSocket("wss://stream.binance.com:9443/ws/!ticker@arr");
+    ws.current = new WebSocket("wss://stream.binance.us:9443/ws/!ticker@arr");
 
     ws.current.onmessage = (event) => {
       const data: BinanceTicker[] = JSON.parse(event.data);

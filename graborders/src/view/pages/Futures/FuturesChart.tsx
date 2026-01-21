@@ -94,7 +94,7 @@ const FuturesChart: React.FC<FuturesChartProps> = ({ symbol = "BTCUSDT" }) => {
   // fetch historical data
   const loadData = async (tf: TF) => {
     try {
-      const url = `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${tfToBinance[tf]}&limit=500`;
+      const url = `https://api.binance.us/api/v3/klines?symbol=${symbol}&interval=${tfToBinance[tf]}&limit=500`;
       const res = await fetch(url);
       const raw = await res.json();
       const data: KLineData[] = raw.map((d: any) => ({
@@ -115,7 +115,7 @@ const FuturesChart: React.FC<FuturesChartProps> = ({ symbol = "BTCUSDT" }) => {
   // websocket live updates
   const startWS = (tf: TF) => {
     wsRef.current?.close();
-    const stream = `wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}@kline_${tfToBinance[tf]}`;
+    const stream = `wss://stream.binance.us:9443/ws/${symbol.toLowerCase()}@kline_${tfToBinance[tf]}`;
     try {
       const ws = new WebSocket(stream);
       wsRef.current = ws;

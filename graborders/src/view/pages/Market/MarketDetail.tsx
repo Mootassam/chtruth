@@ -72,8 +72,8 @@ function MarketDetail() {
       try {
         setIsLoading(true);
         const [tickerResponse, tradesResponse] = await Promise.all([
-          axios.get(`https://api.binance.com/api/v3/ticker/24hr?symbol=${selectedCoin}`),
-          axios.get(`https://api.binance.com/api/v3/trades?symbol=${selectedCoin}&limit=10`)
+          axios.get(`https://api.binance.us/api/v3/ticker/24hr?symbol=${selectedCoin}`),
+          axios.get(`https://api.binance.us/api/v3/trades?symbol=${selectedCoin}&limit=10`)
         ]);
         
         // Set initial data from REST API
@@ -107,7 +107,7 @@ function MarketDetail() {
       }
 
       tickerWs.current = new WebSocket(
-        `wss://stream.binance.com:9443/ws/${selectedCoin.toLowerCase()}@ticker`
+        `wss://stream.binance.us:9443/ws/${selectedCoin.toLowerCase()}@ticker`
       );
 
       tickerWs.current.onmessage = (event: MessageEvent) => {
@@ -134,7 +134,7 @@ function MarketDetail() {
       }
 
       tradeWs.current = new WebSocket(
-        `wss://stream.binance.com:9443/ws/${selectedCoin.toLowerCase()}@trade`
+        `wss://stream.binance.us:9443/ws/${selectedCoin.toLowerCase()}@trade`
       );
 
       tradeWs.current.onmessage = (event: MessageEvent) => {

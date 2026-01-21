@@ -59,7 +59,7 @@ function CoinHeader() {
     const fetchInitialData = async () => {
       try {
         setIsLoading(true);
-        const tickerResponse = await axios.get(`https://api.binance.com/api/v3/ticker/24hr?symbol=${selectedCoin}`);
+        const tickerResponse = await axios.get(`https://api.binance.us/api/v3/ticker/24hr?symbol=${selectedCoin}`);
         
         // Set initial data from REST API
         const tickerData = tickerResponse.data;
@@ -91,7 +91,7 @@ function CoinHeader() {
 
       // Connect to ticker stream
       tickerWs.current = new WebSocket(
-        `wss://stream.binance.com:9443/ws/${selectedCoin.toLowerCase()}@ticker`
+        `wss://stream.binance.us:9443/ws/${selectedCoin.toLowerCase()}@ticker`
       );
 
       tickerWs.current.onopen = () => {

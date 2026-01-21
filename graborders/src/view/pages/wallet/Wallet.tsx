@@ -88,7 +88,7 @@ function Wallet() {
     setIsMarketDataLoading(true);
 
     // Use a single WebSocket connection with optimized data processing
-    ws.current = new WebSocket("wss://stream.binance.com:9443/ws/!ticker@arr");
+    ws.current = new WebSocket("wss://stream.binance.us:9443/ws/!ticker@arr");
 
     // Throttle updates to prevent excessive re-renders
     let lastUpdateTime = 0;

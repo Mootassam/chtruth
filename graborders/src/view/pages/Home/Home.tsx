@@ -111,7 +111,7 @@ function Home() {
       .map((symbol) => `${symbol.toLowerCase()}@ticker`)
       .join("/");
     ws.current = new WebSocket(
-      `wss://stream.binance.com:9443/stream?streams=${streams}`
+      `wss://stream.binance.us:9443/stream?streams=${streams}`
     );
 
     ws.current.onopen = () => {

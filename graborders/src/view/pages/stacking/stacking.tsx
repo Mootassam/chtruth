@@ -240,7 +240,7 @@ const validateStake = () => {
         if (currency === 'USDT') return { currency, price: 1 };
 
         try {
-          const response = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${currency}USDT`);
+          const response = await fetch(`https://api.binance.us/api/v3/ticker/price?symbol=${currency}USDT`);
           const data = await response.json();
           return { currency, price: parseFloat(data.price) };
         } catch (error) {
