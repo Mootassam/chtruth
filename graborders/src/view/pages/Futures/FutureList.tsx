@@ -14,7 +14,7 @@ function FutureList(props) {
                         onClick={() => handleOpenOrderModal(order)}
                     >
                         <div className="order-header">
-                            <div className="order-pair">{order.symbol || "BTC/USDT"}</div>
+                            <div className="order-pair">{order.futureCoin || "BTC/USDT"}</div>
                             <div
                                 className={`order-direction ${order.futuresStatus === "long" ? "buy" : "sell"
                                     }`}

@@ -14,7 +14,7 @@ interface FuturesModalProps {
   selectedCoin: string;
   marketPrice: string;
   availableBalance: number;
-  setOpeningOrders
+  setOpeningOrders;
 }
 
 const FuturesModal: React.FC<FuturesModalProps> = ({
@@ -28,8 +28,8 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
   availableBalance,
   setOpeningOrders
 }) => {
-  const [selectedDuration, setSelectedDuration] = useState<string>("120");
-  const [selectvalue, setSelectedValue] = useState<string>("20") // Set default value to "20"
+  const [selectedDuration, setSelectedDuration] = useState<string>("30");
+  const [selectvalue, setSelectedValue] = useState<string>("10");
   const [selectedLeverage, setSelectedLeverage] = useState<string>("2");
   const [futuresAmount, setFuturesAmount] = useState<number>(30);
   const [tradeStatus, setTradeStatus] = useState<
@@ -43,10 +43,23 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
   const [isCreating, setIsCreating] = useState<boolean>(false);
   const [tradeDetails, setTradeDetails] = useState<any>(null);
 
+  // Updated duration/payout mapping
+  const durationOptions = [
+    { duration: "30", payout: "10" },
+    { duration: "60", payout: "20" },
+    { duration: "90", payout: "30" },
+    { duration: "120", payout: "40" },
+    { duration: "150", payout: "50" },
+    { duration: "180", payout: "80" },
+    { duration: "240", payout: "100" },
+  ];
+
+  const leverageOptions = ["1", "2", "3", "4", "5", "6", "8", "10", "20", "100"];
+
   const changeValues = (duration: string, value: string) => {
     setSelectedDuration(duration);
     setSelectedValue(value);
-  }
+  };
 
   // prevent background scroll when modal open
   useEffect(() => {
@@ -86,7 +99,6 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
           setTimeLeft((prev) => prev - 1);
         }, 1000);
       } else {
-        // if timeLeft is 0 and we're in-progress -> finalize
         (async () => {
           await completeTrade();
         })();
@@ -96,7 +108,6 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
     return () => {
       if (interval) clearInterval(interval);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tradeStatus, timeLeft]);
 
   // Start the trade: create backend record then start timer
@@ -107,14 +118,12 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
 
     setIsCreating(true);
     try {
-      const created = await create(); // create returns created record or null
+      const created = await create();
       if (!created || !created.id) {
-        // creation failed, don't start
         setIsCreating(false);
         return;
       }
 
-      // Set trade details for display
       setTradeDetails({
         futuresAmount,
         contractDuration: selectedDuration,
@@ -127,7 +136,7 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
       });
 
       setOpeningOrders(prev => [...prev, {
-        id: futureId, // Use the actual ID from created record
+        id: futureId,
         futuresAmount,
         contractDuration: selectedDuration,
         futuresStatus: direction === "up" ? "long" : "short",
@@ -138,11 +147,8 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
         closePositionTime: null
       }]);
 
-      // ensure timeLeft set from chosen duration (seconds)
       const secs = parseInt(selectedDuration, 10) || 0;
       setTimeLeft(secs);
-
-      // set status after create succeeded
       setTradeStatus("in-progress");
     } catch (err) {
       console.error("startTrade error", err);
@@ -153,11 +159,9 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
 
   // completeTrade: fetch finalized trade from backend and show real PnL
   const completeTrade = async () => {
-    // ensure we have a future id
     setOpeningOrders([]);
     if (!futureId) {
-      // no id => nothing we can fetch; fallback to internal calculation
-      const calculatedIsWin = false; // fallback: treat as loss
+      const calculatedIsWin = false;
       setTradeResult(calculatedIsWin ? "win" : "loss");
       if (calculatedIsWin) {
         setPnlDisplay(`+${calculateProfit(futuresAmount, selectedLeverage, selectvalue).toFixed(2)} USDT`);
@@ -169,19 +173,16 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
     }
 
     try {
-      // dispatch the view action to fetch the latest trade from backend
       const result = await dispatch(futuresViewActions.doFind(futureId));
       const trade = result && result.payload ? result.payload : result;
 
       if (!trade) {
-        // fallback: mark as loss
         setTradeResult("loss");
         setPnlDisplay(`-${futuresAmount.toFixed(2)} USDT`);
         setTradeStatus("completed");
         return;
       }
 
-      // Update trade details with finalized data
       setTradeDetails({
         ...tradeDetails,
         closePositionPrice: trade.closePositionPrice,
@@ -189,7 +190,6 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
         profitAndLossAmount: trade.profitAndLossAmount
       });
 
-      // Backend should set trade.control (profit | loss), profitAndLossAmount, futuresAmount
       if (trade.control === "profit") {
         setTradeResult("win");
         const pnl = Number(trade.profitAndLossAmount ?? calculateProfit(futuresAmount, selectedLeverage, selectvalue));
@@ -201,13 +201,9 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
       }
 
       setTradeStatus("completed");
-
-      // refresh lists/view after finalization
       dispatch(futuresListAction.doFetchPending());
-
     } catch (err) {
       console.error("completeTrade error", err);
-      // fallback to computed display
       setTradeResult("loss");
       setPnlDisplay(`-${futuresAmount.toFixed(2)} USDT`);
       setTradeStatus("completed");
@@ -218,19 +214,18 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
   const create = async () => {
     const currentPrice = parseFloat(marketPrice || "0") || 0;
 
-    // derive close price assuming no real result yet; backend or worker will update it later
     let closePrice = currentPrice;
     if (direction === "up") {
-      closePrice = currentPrice * 0.95; // default placeholder
+      closePrice = currentPrice * 0.95;
     } else {
-      closePrice = currentPrice * 1.05; // placeholder
+      closePrice = currentPrice * 1.05;
     }
 
     const payload = {
       futuresStatus: direction === "up" ? "long" : "short",
       profitAndLossAmount: '',
       leverage: parseInt(selectedLeverage, 10),
-      control: "loss", // default — worker/ admin may set later
+      control: "loss",
       operate: "low",
       futureCoin: selectedCoin.replace("USDT", "/USDT"),
       closePositionTime: '',
@@ -267,8 +262,8 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
     setPnlDisplay("");
     setTradeDetails(null);
     setFuturesAmount(30);
-    setSelectedValue("20"); // Reset to default value
-    setSelectedDuration("120"); // Reset duration as well
+    setSelectedValue("10");
+    setSelectedDuration("30");
   };
 
   const calculateProfit = (
@@ -276,11 +271,9 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
     leverage: string,
     value: string
   ): number => {
-    // Ensure all values are valid numbers, use 0 as fallback
     const validAmount = Number.isFinite(amount) ? amount : 0;
     const validLeverage = parseInt(leverage, 10) || 0;
     const validValue = parseInt(value, 10) || 0;
-    
     return (validAmount * validLeverage * validValue) / 100;
   };
 
@@ -301,7 +294,6 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
     return new Date(date).toLocaleTimeString();
   };
 
-  // Handle amount input change
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseInt(e.target.value, 10) || 0;
     setFuturesAmount(value);
@@ -388,7 +380,6 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
               </div>
             )}
 
-
             <div className="trade-actions">
               {tradeStatus === "in-progress" && (
                 <button className="trade-action-btn keep-buying" onClick={onClose}>
@@ -426,17 +417,15 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
                   <span>Payout</span>
                 </div>
                 <div className="options-container">
-                  {[{ duration: "60", payout: "10" }, { duration: "120", payout: "20" }, { duration: "180", payout: "40" }, { duration: "240", payout: "80" }].map(
-                    (option) => (
-                      <button
-                        key={option.duration}
-                        className={`option-btn ${selectedDuration === option.duration ? "selected" : ""}`}
-                        onClick={() => changeValues(option.duration, option.payout)}
-                      >
-                        {option.duration}s ({option.payout}%)
-                      </button>
-                    )
-                  )}
+                  {durationOptions.map((option) => (
+                    <button
+                      key={option.duration}
+                      className={`option-btn ${selectedDuration === option.duration ? "selected" : ""}`}
+                      onClick={() => changeValues(option.duration, option.payout)}
+                    >
+                      {option.duration}s ({option.payout}%)
+                    </button>
+                  ))}
                 </div>
               </div>
 
@@ -446,7 +435,7 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
                   <span>Leverage</span>
                 </div>
                 <div className="options-container">
-                  {["1", "2", "5", "10", "20"].map((leverage) => (
+                  {leverageOptions.map((leverage) => (
                     <button
                       key={leverage}
                       className={`option-btn ${selectedLeverage === leverage ? "selected" : ""}`}
@@ -523,7 +512,8 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
       justify-content: center;
       align-items: center;
       z-index: 100000;
-      padding: 20px;
+      // padding: 20px;
+      height: 100vh;
   }
 
   .modal-container {
@@ -533,7 +523,7 @@ const FuturesModal: React.FC<FuturesModalProps> = ({
       max-width: 400px;
       box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
       overflow: hidden;
-      max-height: 90vh;
+      // max-height: 90vh;
       overflow-y: auto;
   }
 

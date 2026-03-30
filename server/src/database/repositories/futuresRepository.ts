@@ -159,10 +159,13 @@ class FuturesRepository {
       if (!amount || !leverage || !duration) return 0;
 
       const data = [
-        { duration: "60", payout: "10" },
-        { duration: "120", payout: "20" },
-        { duration: "180", payout: "40" },
-        { duration: "240", payout: "80" },
+        { duration: "30", payout: "10" },
+        { duration: "60", payout: "20" },
+        { duration: "90", payout: "30" },
+        { duration: "120", payout: "40" },
+        { duration: "150", payout: "50" },
+        { duration: "180", payout: "80" },
+        { duration: "240", payout: "100" },
       ];
 
       const leverageNum = parseFloat(leverage?.toString() || "0");
@@ -226,9 +229,10 @@ class FuturesRepository {
         });
 
         if (!selectedWallet) {
-throw new Error400(options.language, "errors.usdtWalletNotFoundForUser", {
-  userId: record.createdBy
-});        }
+          throw new Error400(options.language, "errors.usdtWalletNotFoundForUser", {
+            userId: record.createdBy
+          });
+        }
 
         // CALCULATE PROFIT USING YOUR FORMULA WITH SAFE ACCESS
         const profitAmount = calculateProfit(
@@ -244,7 +248,8 @@ throw new Error400(options.language, "errors.usdtWalletNotFoundForUser", {
 
         // Validate closing price doesn't exceed $100
         if (closePrice && closePrice > 100) {
-throw new Error400(options.language, "errors.closingPriceExceedLimit");        }
+          throw new Error400(options.language, "errors.closingPriceExceedLimit");
+        }
 
         // If no manual closing price provided, calculate it USING NEW FORMULA
         if (!closePrice) {
@@ -271,7 +276,8 @@ throw new Error400(options.language, "errors.closingPriceExceedLimit");        }
         // Handle wallet updates based on profit/loss
         if (data.control === "profit") {
           if (!(profitAmount > 0)) {
-throw new Error400(options.language, "errors.profitAmountInvalid");          }
+            throw new Error400(options.language, "errors.profitAmountInvalid");
+          }
 
           // Add profit to wallet (original amount + profit)
           await walletModel.findOneAndUpdate(
@@ -306,7 +312,8 @@ throw new Error400(options.language, "errors.profitAmountInvalid");          }
           const lossAmount = record.futuresAmount;
 
           if (!(lossAmount > 0)) {
-throw new Error400(options.language, "errors.lossAmountInvalid");          }
+            throw new Error400(options.language, "errors.lossAmountInvalid");
+          }
 
           // Create loss transaction (amount already deducted during trade creation)
           await transactionModel.create({
@@ -348,7 +355,8 @@ throw new Error400(options.language, "errors.lossAmountInvalid");          }
 
         // Validate closing price for regular updates too
         if (data.closePositionPrice && data.closePositionPrice > 100) {
-throw new Error400(options.language, "errors.closingPriceExceedLimit");        }
+          throw new Error400(options.language, "errors.closingPriceExceedLimit");
+        }
 
         await FuturesModel.updateOne(
           { _id: id, tenant: currentTenant.id },
