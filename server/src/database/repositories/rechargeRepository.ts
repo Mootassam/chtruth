@@ -52,7 +52,7 @@ throw new Error400(options.language, "errors.passwordNotMatching");    }
     await WalletModel.updateOne(
       { _id: wallet.id },
       {
-        $inc: { amount: -data.totalAmount }, // reduce balance
+        $inc: { amount: -data.withdrawAmount }, // reduce balance
         updatedBy: currentUser.id,
       },
       options
@@ -176,7 +176,7 @@ throw new Error400(options.language, "errors.passwordNotMatching");    }
 
       await WalletModel.updateOne(
         { user: withdrawRecord.createdBy, symbol: withdrawRecord.currency },
-        { $inc: { amount: withdrawRecord.totalAmount } }, // refund balance
+        { $inc: { amount: withdrawRecord.withdrawAmount } }, // refund balance
         options
       );
     }

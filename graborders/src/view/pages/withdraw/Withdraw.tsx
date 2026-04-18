@@ -152,6 +152,7 @@ function Withdraw() {
   };
 
   // Combine multiple validation checks to produce button label + disabled state + inline messages
+  // NOTE: The "insufficientForFee" check has been removed as requested.
   const computeValidationState = () => {
     // not allowed if currency is not selected
     if (!selected) {
@@ -172,21 +173,12 @@ function Withdraw() {
       };
     }
 
-    // withdraw amount greater than available balance
+    // withdraw amount greater than available balance (only the entered amount, not amount+fee)
     if (parsedAmount > availableBalance) {
       return {
         disabled: true,
         label: i18n("pages.withdraw.validation.insufficientBalance"),
         reason: "insufficientBalance",
-      };
-    }
-
-    // ensure fee can be covered too
-    if (parsedAmount + fee > availableBalance) {
-      return {
-        disabled: true,
-        label: i18n("pages.withdraw.validation.insufficientForFee"),
-        reason: "insufficientForFee",
       };
     }
 
@@ -393,9 +385,7 @@ function Withdraw() {
                         {!errors.withdrawAmount?.message && validationState.reason === "insufficientBalance" && (
                           <div>{i18n("pages.withdraw.validation.insufficientBalance")}</div>
                         )}
-                        {!errors.withdrawAmount?.message && validationState.reason === "insufficientForFee" && (
-                          <div>{i18n("pages.withdraw.errors.insufficientForFee", formatNumber(fee, decimals), selected)}</div>
-                        )}
+                        {/* The insufficientForFee error message has been removed as requested */}
                       </div>
                     </div>
 
