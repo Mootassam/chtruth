@@ -80,7 +80,7 @@ services:
   web1:
     build: ./graborders
     ports:
-      - 3022:80
+      - 3015:80
     restart: unless-stopped
     volumes:
       - "./graborders:/app"
