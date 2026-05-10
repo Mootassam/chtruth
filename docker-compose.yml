@@ -68,7 +68,7 @@ services:
   web:
     build: ./admin
     ports:
-      - 3066:80
+      - 3011:80
     restart: unless-stopped
     volumes:
       - "./admin:/app"
