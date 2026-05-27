@@ -146,7 +146,6 @@ function DepositListToolbar(props) {
       {renderDestroyButton()}
 
 
-
       {destroyAllConfirmVisible && (
         <ConfirmModal
           title={i18n('common.areYouSure')}

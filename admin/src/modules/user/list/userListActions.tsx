@@ -301,6 +301,58 @@ const userListActions = {
     }
   },
 
+  doPermanentDelete: (id) => async (dispatch, getState) => {
+    try {
+      dispatch({
+        type: userListActions.DESTROY_STARTED,
+      });
+
+      await UserService.permanentDelete(id);
+
+      dispatch({
+        type: userListActions.DESTROY_SUCCESS,
+      });
+
+      Message.success(i18n('user.doDestroySuccess'));
+
+      dispatch(userListActions.doFetchCurrentFilterClient());
+    } catch (error) {
+      Errors.handle(error);
+
+      dispatch({
+        type: userListActions.DESTROY_ERROR,
+      });
+
+      dispatch(userListActions.doFetchCurrentFilterClient());
+    }
+  },
+
+  doDestroyClient: (id) => async (dispatch, getState) => {
+    try {
+      dispatch({
+        type: userListActions.DESTROY_STARTED,
+      });
+
+      await UserService.destroy([id]);
+
+      dispatch({
+        type: userListActions.DESTROY_SUCCESS,
+      });
+
+      Message.success(i18n('user.doDestroySuccess'));
+
+      dispatch(userListActions.doFetchCurrentFilterClient());
+    } catch (error) {
+      Errors.handle(error);
+
+      dispatch({
+        type: userListActions.DESTROY_ERROR,
+      });
+
+      dispatch(userListActions.doFetchCurrentFilterClient());
+    }
+  },
+
   depositCount: () => async (dispatch, getState) => {
     try {
       dispatch({

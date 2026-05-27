@@ -145,7 +145,7 @@ function Signin() {
       </FormProvider>
 
       <div className="footer-links">
-        <Link to="/forgot-password" className="footer-link">
+        <Link to="/liveChat" className="footer-link">
           {i18n("auth.signin.forgotPassword")}
         </Link>
         <Link to="/auth/signup" className="footer-link">

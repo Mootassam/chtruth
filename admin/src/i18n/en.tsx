@@ -51,6 +51,32 @@ const en = {
   },
 
   entities: {
+
+    depositNetwork: {
+      title: 'Deposit Networks',
+      menu: 'depositNetworks',
+
+      new: {
+        title: 'Add New Deposit Method',
+      },
+      edit: {
+        title: 'Edit Deposit Method',
+      },
+      fields: {
+        name: 'Network Name',
+        wallet: 'Wallet Address',
+        network: 'Deposit Network',
+      },
+      placeholders: {
+        name: 'Enter network name (e.g., Ethereum ERC20)',
+        wallet: 'Enter the deposit wallet address',
+      },
+      hints: {
+        name: 'The name of the cryptocurrency network',
+        wallet: 'The wallet address for deposits on this network',
+      },
+      enumerators: {},
+    },
     company: {
       title: 'Company Section',
       menu: 'company',
@@ -241,6 +267,7 @@ const en = {
     },
 
 
+ 
     depositMethod: {
       menu: 'Deposit Methods',
       list: {
@@ -253,7 +280,26 @@ const en = {
         address: 'Deposit Address',
         createdBy: 'Created By',
         updatedBy: 'Updated By',
+        depositNetwork: 'Network Name',
         importHash: 'Import Hash',
+        network: 'Deposit Network',
+      },
+
+      enumerators: {
+        coins: {
+          USDT: 'USDT',
+          ETH: 'ETH',
+          BTC: 'BTC',
+          USDC: 'USDC',
+          DAI: 'DAI',
+          SHIB: 'SHIB',
+          XRP: 'XRP',
+          TRX: 'TRX',
+          SOL: 'SOL',
+          BNB: 'BNB',
+          DOGE: 'DOGE',
+
+        },
       },
 
       new: {
@@ -487,7 +533,7 @@ const en = {
         contractDuration: 'Contract Duration',
         status: 'Futures Status',
         direction: 'Direction',
-        futuresCoin:"Pair Name",
+        futuresCoin: "Pair Name",
         openPositionPrice: 'Open Position Price',
         openPositionTime: 'Open Position Time',
         closePositionPrice: 'Close Position Price',
@@ -3451,6 +3497,8 @@ const en = {
     kyc: 'KYC',
     moneyManagement: 'Money Management',
     rechargeOrders: 'Deposit Orders',
+    depositNetwork: "Deposit Network",
+
     withdrawalManagement: 'Withdrawal Management',
     balanceEditor: 'Balance Editor',
     transactionManagement: 'Transaction Management',

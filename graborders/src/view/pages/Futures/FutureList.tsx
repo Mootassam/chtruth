@@ -6,7 +6,7 @@ function FutureList(props) {
     
     return (
         <div className="orders-container">
-            {countFutures && !futuretLoading &&
+            {countFutures > 0 && !futuretLoading &&
                 listFutures?.map((order) => (
                     <div
                         key={order.id}

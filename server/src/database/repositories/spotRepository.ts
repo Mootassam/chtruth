@@ -19,61 +19,56 @@ class SpotRepository {
       let targetWallet;
       let sourceWallet;
 
+      const WalletModel = Wallet(options.database);
+
       if (data.direction === "BUY") {
-        // BUY LOGIC: Convert quote currency to base currency
+        // BUY: spend quote currency (e.g. USDT), receive base currency (e.g. BTC)
 
-        // 1. Find or create the target wallet (base currency)
-        targetWallet = await Wallet(options.database).findOne({
-          user: currentUser.id,
-          symbol: baseCurrency,
-          tenant: currentTenant.id
-        });
-
-        if (!targetWallet) {
-          // Create new wallet for the base currency
-          [targetWallet] = await Wallet(options.database).create([{
-            user: currentUser.id,
-            symbol: baseCurrency,
-            coinName: baseCurrency,
-            amount: 0,
-            status: "available",
-            tenant: currentTenant.id,
-            createdBy: currentUser.id,
-            updatedBy: currentUser.id
-          }]);
-        }
-
-        // 2. Find the source wallet (quote currency - usually USDT)
-        sourceWallet = await Wallet(options.database).findOne({
+        // 1. Source wallet (quote currency) — must exist
+        sourceWallet = await WalletModel.findOne({
           user: currentUser.id,
           symbol: quoteCurrency,
-          tenant: currentTenant.id
+          tenant: currentTenant.id,
         });
-
         if (!sourceWallet) {
           throw new Error(`Wallet for ${quoteCurrency} not found. Please deposit ${quoteCurrency} first.`);
         }
 
-        // 3. Check if source wallet has sufficient balance
+        // 2. Check balance
         const requiredAmount = data.entrustedValue || data.orderQuantity * data.commissionPrice;
-
         if (sourceWallet.amount < requiredAmount) {
           throw new Error(`Insufficient ${quoteCurrency} balance. Available: ${sourceWallet.amount}, Required: ${requiredAmount}`);
         }
 
-        // 4. Execute the trade based on order type
+        // 3. Target wallet (base currency) — create if missing (upsert, atomic)
+        targetWallet = await WalletModel.findOneAndUpdate(
+          { user: currentUser.id, symbol: baseCurrency, tenant: currentTenant.id },
+          {
+            $setOnInsert: {
+              coinName: baseCurrency,
+              amount: 0,
+              status: "available",
+              tenant: currentTenant.id,
+              createdBy: currentUser.id,
+              updatedBy: currentUser.id,
+            },
+          },
+          { upsert: true, new: true }
+        );
+
+        // 4. Execute trade — use $inc to avoid loading+saving the full doc
+        //    (loading an old doc with status:'active' and calling .save() would
+        //     fail Mongoose enum validation even though we're only changing amount)
         if (data.delegateType === "MARKET") {
-          // MARKET ORDER: Immediate execution
-          // Deduct from source wallet (quote currency)
-          sourceWallet.amount -= requiredAmount;
-          await sourceWallet.save();
-
-          // Add to target wallet (base currency)
+          await WalletModel.findOneAndUpdate(
+            { _id: sourceWallet._id },
+            { $inc: { amount: -requiredAmount }, $set: { updatedBy: currentUser.id } }
+          );
           const receivedAmount = data.orderQuantity;
-          targetWallet.amount += receivedAmount;
-          await targetWallet.save();
-
-          // Update order status to completed for market orders
+          await WalletModel.findOneAndUpdate(
+            { _id: targetWallet._id },
+            { $inc: { amount: receivedAmount }, $set: { updatedBy: currentUser.id } }
+          );
           data.status = "completed";
           data.transactionQuantity = receivedAmount;
           data.transactionValue = requiredAmount;
@@ -81,11 +76,10 @@ class SpotRepository {
           data.closingTime = new Date();
 
         } else if (data.delegateType === "LIMIT") {
-          // LIMIT ORDER: Reserve funds (deduct from available balance)
-          sourceWallet.amount -= requiredAmount;
-          await sourceWallet.save();
-
-          // Create reservation transaction
+          await WalletModel.findOneAndUpdate(
+            { _id: sourceWallet._id },
+            { $inc: { amount: -requiredAmount }, $set: { updatedBy: currentUser.id } }
+          );
           await Transaction(options.database).create([{
             type: "order_reserved",
             wallet: sourceWallet._id,
@@ -98,65 +92,56 @@ class SpotRepository {
             dateTransaction: new Date(),
             createdBy: currentUser.id,
             updatedBy: currentUser.id,
-            referenceId: null // Will be updated after order creation
+            referenceId: null,
           }], options);
-
-          // Order remains pending
           data.status = "pending";
         }
 
       } else if (data.direction === "SELL") {
-        // SELL LOGIC: Convert base currency to quote currency
+        // SELL: spend base currency (e.g. BTC), receive quote currency (e.g. USDT)
 
-        // 1. Find the source wallet (base currency)
-        sourceWallet = await Wallet(options.database).findOne({
+        // 1. Source wallet (base currency) — must exist
+        sourceWallet = await WalletModel.findOne({
           user: currentUser.id,
           symbol: baseCurrency,
-          tenant: currentTenant.id
+          tenant: currentTenant.id,
         });
-
         if (!sourceWallet) {
           throw new Error(`Wallet for ${baseCurrency} not found. Please deposit ${baseCurrency} first.`);
         }
 
-        // 2. Check if source wallet has sufficient balance
+        // 2. Check balance
         if (sourceWallet.amount < data.orderQuantity) {
           throw new Error(`Insufficient ${baseCurrency} balance. Available: ${sourceWallet.amount}, Required: ${data.orderQuantity}`);
         }
 
-        // 3. Find or create target wallet (quote currency)
-        targetWallet = await Wallet(options.database).findOne({
-          user: currentUser.id,
-          symbol: quoteCurrency,
-          tenant: currentTenant.id
-        });
+        // 3. Target wallet (quote currency) — create if missing (upsert, atomic)
+        targetWallet = await WalletModel.findOneAndUpdate(
+          { user: currentUser.id, symbol: quoteCurrency, tenant: currentTenant.id },
+          {
+            $setOnInsert: {
+              coinName: quoteCurrency,
+              amount: 0,
+              status: "available",
+              tenant: currentTenant.id,
+              createdBy: currentUser.id,
+              updatedBy: currentUser.id,
+            },
+          },
+          { upsert: true, new: true }
+        );
 
-        if (!targetWallet) {
-          [targetWallet] = await Wallet(options.database).create([{
-            user: currentUser.id,
-            symbol: quoteCurrency,
-            coinName: quoteCurrency,
-            amount: 0,
-            status: "available",
-            tenant: currentTenant.id,
-            createdBy: currentUser.id,
-            updatedBy: currentUser.id
-          }]);
-        }
-
-        // 4. Execute the trade based on order type
+        // 4. Execute trade — use $inc to avoid full-doc validation on old docs
         if (data.delegateType === "MARKET") {
-          // MARKET ORDER: Immediate execution
-          // Deduct from source wallet (base currency)
-          sourceWallet.amount -= data.orderQuantity;
-          await sourceWallet.save();
-
-          // Add to target wallet (quote currency)
+          await WalletModel.findOneAndUpdate(
+            { _id: sourceWallet._id },
+            { $inc: { amount: -data.orderQuantity }, $set: { updatedBy: currentUser.id } }
+          );
           const receivedAmount = data.entrustedValue || data.orderQuantity * data.commissionPrice;
-          targetWallet.amount += receivedAmount;
-          await targetWallet.save();
-
-          // Update order status to completed for market orders
+          await WalletModel.findOneAndUpdate(
+            { _id: targetWallet._id },
+            { $inc: { amount: receivedAmount }, $set: { updatedBy: currentUser.id } }
+          );
           data.status = "completed";
           data.transactionQuantity = data.orderQuantity;
           data.transactionValue = receivedAmount;
@@ -164,11 +149,10 @@ class SpotRepository {
           data.closingTime = new Date();
 
         } else if (data.delegateType === "LIMIT") {
-          // LIMIT ORDER: Reserve funds (deduct from available balance)
-          sourceWallet.amount -= data.orderQuantity;
-          await sourceWallet.save();
-
-          // Create reservation transaction
+          await WalletModel.findOneAndUpdate(
+            { _id: sourceWallet._id },
+            { $inc: { amount: -data.orderQuantity }, $set: { updatedBy: currentUser.id } }
+          );
           await Transaction(options.database).create([{
             type: "order_reserved",
             wallet: sourceWallet._id,
@@ -181,10 +165,8 @@ class SpotRepository {
             dateTransaction: new Date(),
             createdBy: currentUser.id,
             updatedBy: currentUser.id,
-            referenceId: null // Will be updated after order creation
+            referenceId: null,
           }], options);
-
-          // Order remains pending
           data.status = "pending";
         }
       }
@@ -343,8 +325,10 @@ class SpotRepository {
 
         if (quoteWallet) {
           const refundAmount = record.entrustedValue || (record.orderQuantity * record.commissionPrice);
-          quoteWallet.amount += refundAmount;
-          await quoteWallet.save();
+          await Wallet(options.database).findOneAndUpdate(
+            { _id: quoteWallet._id },
+            { $inc: { amount: refundAmount }, $set: { updatedBy: currentUser.id } }
+          );
 
           // Create cancellation transaction
           await Transaction(options.database).create([{
@@ -372,8 +356,10 @@ class SpotRepository {
         });
 
         if (baseWallet) {
-          baseWallet.amount += record.orderQuantity;
-          await baseWallet.save();
+          await Wallet(options.database).findOneAndUpdate(
+            { _id: baseWallet._id },
+            { $inc: { amount: record.orderQuantity }, $set: { updatedBy: currentUser.id } }
+          );
 
           // Create cancellation transaction
           await Transaction(options.database).create([{

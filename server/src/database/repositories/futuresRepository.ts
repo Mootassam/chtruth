@@ -41,7 +41,7 @@ class FuturesRepository {
       throw new Error('Insufficient USDT balance');
     }
 
-    if (usdtWallet.status !== 'available') {
+    if (usdtWallet.status === 'locked' || usdtWallet.status === 'suspended') {
       throw new Error('USDT wallet is not available for trading');
     }
 

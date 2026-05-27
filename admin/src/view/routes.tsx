@@ -390,6 +390,52 @@ const privateRoutes = [
     exact: true,
   },
 
+
+  
+  // Deposit Network routes
+
+  {
+    path: '/depositNetwork',
+    loader: () =>
+      import('src/view/depositNetwork/list/DepositNetworkListPage'),
+    permissionRequired: permissions.categoryDestroy,
+    exact: true,
+  },
+
+  {
+    path: '/depositNetwork/new',
+    loader: () =>
+      import('src/view/depositNetwork/form/DepositNetworkFormPage'),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+  {
+    path: '/depositNetwork/importer',
+    loader: () =>
+      import(
+        'src/view/depositNetwork/importer/DepositNetworkImporterPage'
+      ),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+  {
+    path: '/depositNetwork/:id/edit',
+    loader: () =>
+      import('src/view/depositNetwork/form/DepositNetworkFormPage'),
+    permissionRequired: permissions.categoryDestroy,
+    exact: true,
+  },
+  {
+    path: '/depositNetwork/:id',
+    loader: () =>
+      import('src/view/depositNetwork/view/DepositNetworkViewPage'),
+    permissionRequired: permissions.categoryDestroy,
+    exact: true,
+  },
+
+
+  
+
   // Notification
 
 

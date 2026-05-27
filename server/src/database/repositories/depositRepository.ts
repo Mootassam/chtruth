@@ -7,7 +7,6 @@ import FileRepository from "./fileRepository";
 import Deposit from "../models/deposit";
 import assets from "../models/wallet";
 import transaction from "../models/transaction";
-import wallet from "../models/wallet";
 import { sendNotification } from "../../services/notificationServices";
 
 class DepositRepository {
@@ -30,17 +29,33 @@ class DepositRepository {
     const WalletModel = assets(options.database);
     const TransactionModel = options.database.model("transaction");
 
-    // 1️⃣ Fetch the user's wallet for the given asset
-    let wallet = await WalletModel.findOne({
-      user: currentUser.id,
-      symbol: data.rechargechannel.toUpperCase(),
-    });
+    const coinSymbol = data.rechargechannel.toUpperCase();
+
+    // 1️⃣ Fetch the user's wallet for the given asset, creating it if it doesn't exist
+    const wallet = await WalletModel.findOneAndUpdate(
+      {
+        user: currentUser.id,
+        symbol: coinSymbol,
+        tenant: currentTenant.id,
+      },
+      {
+        $setOnInsert: {
+          coinName: coinSymbol,
+          amount: 0,
+          status: "available",
+          tenant: currentTenant.id,
+          createdBy: currentUser.id,
+          updatedBy: currentUser.id,
+        },
+      },
+      { upsert: true, new: true }
+    );
 
     // 3️⃣ Create a transaction log
     await TransactionModel.create({
       type: "deposit",
-      wallet: wallet.id,
-      asset: wallet.symbol,
+      wallet: wallet._id,
+      asset: coinSymbol,
       amount: data.amount,
       referenceId: record.id,
       direction: "in",
@@ -53,15 +68,14 @@ class DepositRepository {
 
 
     await sendNotification({
-      userId: data.createdBy, // the user to notify
-      message: ` ${data.amount} ${data.rechargechannel.toUpperCase()} `,
-      type: "deposit", // type of notification
+      userId: currentUser.id,
+      message: ` ${data.amount} ${coinSymbol} `,
+      type: "deposit",
       forAdmin: true,
-      options, // your repository options
+      options,
     });
 
-    // 4️⃣ Return the updated wallet
-    return wallet;
+    return record;
   }
 
   static async update(id, data, io, options: IRepositoryOptions) {
@@ -124,8 +138,8 @@ class DepositRepository {
       options
     );
 
-   const value = this.findById(id, options)
-    return value
+    const value = await this.findById(id, options);
+    return value;
   }
 
   static async destroy(id, options: IRepositoryOptions) {

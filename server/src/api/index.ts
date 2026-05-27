@@ -12,6 +12,7 @@ import setupSwaggerUI from "./apiDocumentation";
 import { Server as SocketIOServer } from "socket.io";
 import { createServer } from "http";
 import { setSocketIO } from "../services/notificationServices";
+import { initMarketDataService } from "../services/marketDataService";
 
 const app = express();
 const server = createServer(app);
@@ -24,6 +25,7 @@ const io = new SocketIOServer(server, {
 });
 
 setSocketIO(io);
+initMarketDataService(io);
 
 // Enables CORS
 app.use(cors({ origin: true }));
@@ -97,7 +99,9 @@ require("./stackingPlan").default(routes, io);
 require("./spot").default(routes, io);
 require("./futures").default(routes, io);
 require("./userMessage").default(routes, io);
+require("./depositNetwork").default(routes, io);
 
+require("./market").default(routes);
 require("./product").default(routes);
 require("./company").default(routes);
 // Loads the Tenant if the :tenantId param is passed

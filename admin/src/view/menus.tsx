@@ -176,6 +176,15 @@ export default [
     className: 'menu-li side-menue sub-item',
     permissionRequired: permissions.categoryRead,
   },
+  {
+    id: 'recharge-orders',
+    path: '/depositNetwork',
+    exact: true,
+    icon: 'fas fa-credit-card',
+    label: i18n('dashboard.depositNetwork'),
+    className: 'menu-li side-menue sub-item',
+    permissionRequired: permissions.categoryRead,
+  },
 
   // Mining Financial Management Section
   {

@@ -84,29 +84,49 @@ const assetsListActions = {
   doFetch:
     (filter?, rawFilter?, keepPagination = false) =>
     async (dispatch, getState) => {
+      const CACHE_KEY = 'wallet:assets:v1';
+
+      // Stale-while-revalidate: serve cached assets immediately so the wallet
+      // renders without a loading spinner, then refresh in the background.
+      let hasCachedData = false;
       try {
+        const raw = sessionStorage.getItem(CACHE_KEY);
+        if (raw) {
+          const cached = JSON.parse(raw);
+          dispatch({
+            type: assetsListActions.FETCH_SUCCESS,
+            payload: { rows: cached.rows, count: cached.count },
+          });
+          hasCachedData = true;
+        }
+      } catch (_) {}
+
+      if (!hasCachedData) {
         dispatch({
           type: assetsListActions.FETCH_STARTED,
           payload: { filter, rawFilter, keepPagination },
         });
+      }
+
+      try {
         const response = await depositService.list(
           filter,
           selectors.selectOrderBy(getState()),
           selectors.selectLimit(getState()),
           selectors.selectOffset(getState()),
         );
+        try {
+          sessionStorage.setItem(CACHE_KEY, JSON.stringify({ rows: response.rows, count: response.count }));
+        } catch (_) {}
         dispatch({
           type: assetsListActions.FETCH_SUCCESS,
-          payload: {
-            rows: response.rows,
-            count: response.count,
-          },
+          payload: { rows: response.rows, count: response.count },
         });
       } catch (error) {
         Errors.handle(error);
-        dispatch({
-          type: assetsListActions.FETCH_ERROR,
-        });
+        if (!hasCachedData) {
+          dispatch({ type: assetsListActions.FETCH_ERROR });
+        }
       }
     },
 };

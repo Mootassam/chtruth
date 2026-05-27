@@ -11,6 +11,8 @@ import { sendNotification } from "../../services/notificationServices";
 import axios from "axios";
 import User from "../models/user";
 import UserRepository from "./userRepository";
+import redis from "../redisConnection";
+import { buildAssetsCacheKey } from "../../api/assets/AssetsListMobile";
 class WalletRepository {
   static async create(data, options: IRepositoryOptions) {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
@@ -103,6 +105,10 @@ class WalletRepository {
         new: true,
       }
     );
+
+    // Invalidate cached assets for this user
+    const tenantId = MongooseRepository.getCurrentTenant(options).id;
+    redis.del(buildAssetsCacheKey(String(tenantId), String(currentUser.id))).catch(() => {});
 
     return {
       from: sourceWallet,
@@ -293,33 +299,42 @@ class WalletRepository {
     // 2️⃣ Convert deposit to USDT for referral rewards
     let usdtAmount = depositAmount;
 
-    if (coinSymbol !== "USDT") {
+    // Stablecoins are 1:1 with USD — skip the CoinGecko call
+    const STABLECOINS = new Set(["USDT", "USDC", "DAI"]);
+
+    if (!STABLECOINS.has(coinSymbol)) {
       try {
-        const coinMap = {
-          BTC: "bitcoin",
-          ETH: "ethereum",
-          SOL: "solana",
-          XRP: "ripple",
-          USDT: "tether",
+        const coinMap: Record<string, string> = {
+          BTC:  "bitcoin",
+          ETH:  "ethereum",
+          BNB:  "binancecoin",
+          SOL:  "solana",
+          XRP:  "ripple",
+          TRX:  "tron",
+          DOGE: "dogecoin",
+          SHIB: "shiba-inu",
         };
 
         const coinId = coinMap[coinSymbol];
-        if (!coinId) throw new Error(`Unsupported coin: ${coinSymbol}`);
+        if (!coinId) {
+          console.warn(`No CoinGecko mapping for ${coinSymbol}, skipping referral conversion`);
+          usdtAmount = 0;
+        } else {
+          const resp = await axios.get(
+            "https://api.coingecko.com/api/v3/simple/price",
+            {
+              params: {
+                ids: coinId,
+                vs_currencies: "usd",
+              },
+            }
+          );
 
-        const resp = await axios.get(
-          "https://api.coingecko.com/api/v3/simple/price",
-          {
-            params: {
-              ids: coinId,
-              vs_currencies: "usd",
-            },
-          }
-        );
+          const price = Number(resp.data[coinId]?.usd || 0);
+          if (!price) throw new Error("Price not found from CoinGecko");
 
-        const price = Number(resp.data[coinId]?.usd || 0);
-        if (!price) throw new Error("Price not found from CoinGecko");
-
-        usdtAmount = depositAmount * price;
+          usdtAmount = depositAmount * price;
+        }
       } catch (err) {
         console.error("Error converting coin to USDT", err);
         throw new Error(
@@ -387,6 +402,10 @@ class WalletRepository {
         { firstDepositDone: true }
       );
     }
+
+    // Invalidate the cached wallet assets so the next page load reflects the deposit
+    const tenantId = MongooseRepository.getCurrentTenant(options).id;
+    redis.del(buildAssetsCacheKey(String(tenantId), String(userId))).catch(() => {});
 
     return {
       depositedAmount: depositAmount,
@@ -528,59 +547,43 @@ class WalletRepository {
     return { rows, count };
   }
   static async findAndCountAllMobile(
-    { filter, limit = 0, offset = 0, orderBy = "" },
+    { filter, limit = 100, offset = 0, orderBy = "" },
     options: IRepositoryOptions
   ) {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
     const currentUser = MongooseRepository.getCurrentUser(options);
 
-    let criteriaAnd: any = [];
-
-    criteriaAnd.push({
+    const criteria: any = {
       tenant: currentTenant.id,
-    });
-
-    criteriaAnd.push({
       user: currentUser.id,
-    });
+    };
 
-    if (filter) {
-      if (filter.id) {
-        criteriaAnd.push({
-          ["_id"]: MongooseQueryUtils.uuid(filter.id),
-        });
-      }
-
-      if (filter.user) {
-        criteriaAnd.push({
-          user: filter.user,
-        });
-      }
-
-      if (filter.idnumer) {
-        criteriaAnd.push({
-          idnumer: {
-            $regex: MongooseQueryUtils.escapeRegExp(filter.idnumer),
-            $options: "i",
-          },
-        });
-      }
+    if (filter?.id) {
+      criteria._id = MongooseQueryUtils.uuid(filter.id);
     }
 
     const sort = MongooseQueryUtils.sort(orderBy || "createdAt_DESC");
-    const skip = Number(offset || 0) || undefined;
-    const limitEscaped = Number(limit || 0) || undefined;
-    const criteria = criteriaAnd.length ? { $and: criteriaAnd } : null;
-    let rows = await Wallet(options.database)
-      .find(criteria)
-      .skip(skip)
-      .sort(sort)
-      .populate("user")
-      .populate("createdBy");
+    const skip = Number(offset) || 0;
+    const limitNum = Number(limit) || 100;
 
-    const count = await Wallet(options.database).countDocuments(criteria);
+    // Run find and count in parallel, use lean() for raw JS objects (50-80% faster than Mongoose Documents)
+    const [rawRows, count] = await Promise.all([
+      Wallet(options.database)
+        .find(criteria)
+        .skip(skip)
+        .limit(limitNum)
+        .sort(sort)
+        .select("symbol coinName amount status _id")
+        .lean(),
+      Wallet(options.database).countDocuments(criteria),
+    ]);
 
-    rows = await Promise.all(rows.map(this._fillFileDownloadUrls));
+    // lean() returns plain objects where _id is an ObjectId — explicitly map to string id
+    // so the frontend receives { id: "...", _id: "...", symbol, coinName, amount, status }
+    const rows = rawRows.map((r: any) => ({
+      ...r,
+      id: r._id ? r._id.toString() : undefined,
+    }));
 
     return { rows, count };
   }

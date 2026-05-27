@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir \"d:\\\\Milan\\\\admin\\\\src\")",
+      "Bash(dir \"d:\\\\Milan\\\\server\\\\src\")"
+    ]
+  }
+}

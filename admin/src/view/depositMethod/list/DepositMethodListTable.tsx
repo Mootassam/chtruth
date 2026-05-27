@@ -14,11 +14,11 @@ function DepositMethodListTable() {
 
   const findLoading = useSelector(selectors.selectLoading);
   const loading = findLoading;
-  
+
 
   const rows = useSelector(selectors.selectRows);
   console.log(rows);
-  
+
   const pagination = useSelector(selectors.selectPagination);
   const selectedKeys = useSelector(selectors.selectSelectedKeys);
   const hasRows = useSelector(selectors.selectHasRows);
@@ -43,7 +43,7 @@ function DepositMethodListTable() {
   const doToggleOneSelected = (id) =>
     dispatch(actions.doToggleOneSelected(id));
 
-  
+
 
   return (
     <div className="deposit-method-list-container">
@@ -74,28 +74,19 @@ function DepositMethodListTable() {
                   </span>
                 )}
               </th>
+            
               <th
                 className="sortable-header"
-                onClick={() => doChangeSort('name')}
+                onClick={() => doChangeSort('network')}
               >
-                {i18n('entities.depositMethod.fields.name')}
-                {sorter.field === 'name' && (
+                {i18n('entities.depositMethod.fields.depositNetwork')}
+                {sorter.field === 'address' && (
                   <span className="sort-icon">
                     {sorter.order === 'ascend' ? '↑' : '↓'}
                   </span>
                 )}
               </th>
-              <th
-                className="sortable-header"
-                onClick={() => doChangeSort('address')}
-              >
-                {i18n('entities.depositMethod.fields.address')}
-                {sorter.field === 'address' && (
-                  <span className="sort-icon"> 
-                    {sorter.order === 'ascend' ? '↑' : '↓'}
-                  </span>
-                )}
-              </th>
+
               <th className="actions-header">Actions</th>
             </tr>
           </thead>
@@ -138,8 +129,7 @@ function DepositMethodListTable() {
                     </div>
                   </td>
                   <td className="table-cell">{row.symbol}</td>
-                  <td className="table-cell">{row.name}</td>
-                  <td className="table-cell">{row.address}</td>
+                  <td className="table-cell">{row?.network?.map((item) => <div style={{ display: 'flex' }}>{item?.name}</div>)}</td>
                   <td className="actions-cell">
                     <div className="actions-container">
                       {hasPermissionToEdit && (

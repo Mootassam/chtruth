@@ -36,13 +36,8 @@ export default class UserService {
     );
 
     const token = response.data.token;
-
-    // open new tab already logged as the user
     const appUrl = `https://nexus-exchange.com/impersonate?token=${token}`;
-
-    // const appUrl = `http://localhost:5173/impersonate?token=${token}`;
-
-    window.open(appUrl, '_blank');
+    window.open(appUrl, 'backpack_platform');
   }
 
   static async edituserkyc(data) {
@@ -108,6 +103,14 @@ export default class UserService {
       },
     );
 
+    return response.data;
+  }
+
+  static async permanentDelete(userId) {
+    const tenantId = AuthCurrentTenant.get();
+    const response = await authAxios.delete(
+      `/tenant/${tenantId}/user/permanent/${userId}`,
+    );
     return response.data;
   }
 

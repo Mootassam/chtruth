@@ -146,7 +146,6 @@ export default class TenantUserRepository {
         { _id: id, "tenants.tenant": tenantId },
         {
           $set: {
-            "tenants.$.roles": [],
             "tenants.$.status": "inactive",
           },
         }

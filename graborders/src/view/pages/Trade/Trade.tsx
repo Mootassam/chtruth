@@ -7,8 +7,9 @@ import spotListActions from "src/modules/spot/list/spotListActions";
 import spotFormActions from "src/modules/spot/form/spotFormActions";
 import assetsActions from "src/modules/assets/list/assetsListActions";
 import assetsListSelectors from "src/modules/assets/list/assetsListSelectors";
-import spotService from "src/modules/spot/spotService";
 import { i18n } from "../../../i18n";
+import authAxios from "src/modules/shared/axios/authAxios";
+import { getMarketSocket } from "src/modules/shared/marketSocket";
 
 // Utility: safe parseFloat that returns NaN if invalid
 const safeParse = (v) => {
@@ -39,11 +40,7 @@ function Trade() {
   const [placing, setPlacing] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  // Refs for websockets and throttling
-  const tickerWs = useRef(null);
-  const depthWs = useRef(null);
   const lastTickerUpdate = useRef(0);
-  const lastDepthUpdate = useRef(0);
 
   // Memoized balances mapping
   const balances = useMemo(() => {
@@ -145,99 +142,56 @@ function Trade() {
     });
   }, []);
 
-  // Throttled ticker websocket
+  // ── initial price + order book fetch (Redis-cached, works any country) ──────
   useEffect(() => {
     if (!selectedCoin) return;
-
-    // Cleanup previous
-    if (tickerWs.current) {
-      try {
-        tickerWs.current.close();
-      } catch (e) { }
-      tickerWs.current = null;
-    }
-
-    try {
-      const symbol = selectedCoin.toLowerCase();
-      const ws = new WebSocket(`wss://stream.binance.com:9443/ws/${symbol}@ticker`);
-      tickerWs.current = ws;
-
-      ws.onmessage = (event) => {
-        try {
-          const data = JSON.parse(event.data);
-          const now = performance.now();
-          // throttle to ~200ms
-          if (now - lastTickerUpdate.current > 180) {
-            lastTickerUpdate.current = now;
-            if (data.c !== undefined) {
-              setMarketPrice(data.c);
-            }
-            if (data.P !== undefined) setPriceChangePercent(data.P);
-          }
-        } catch (err) {
-          // ignore malformed messages
-        }
-      };
-
-      ws.onerror = (error) => {
-        console.error("Ticker WebSocket error:", error);
-      };
-
-    } catch (err) {
-      console.error("Ticker WS init error", err);
-    }
-
-    return () => {
-      if (tickerWs.current) {
-        try {
-          tickerWs.current.close();
-        } catch (e) { }
-        tickerWs.current = null;
+    authAxios.get("/market/tickers").then(({ data }) => {
+      const t = (data.data || []).find((x: any) => x.s === selectedCoin);
+      if (t) {
+        setMarketPrice(t.c);
+        setPriceChangePercent(t.P);
       }
-    };
+    }).catch(() => {});
+
+    authAxios.get("/market/orderbook", { params: { symbol: selectedCoin, limit: 10 } })
+      .then(({ data }) => {
+        const book = data.data || {};
+        setOrderBook({ asks: book.asks || [], bids: book.bids || [] });
+      }).catch(() => {});
   }, [selectedCoin]);
 
-  // Throttled depth websocket
+  // ── Socket.IO: live ticker via shared market:update stream ───────────────────
   useEffect(() => {
     if (!selectedCoin) return;
+    const socket = getMarketSocket();
+    const handle = (arr: any[]) => {
+      const t = arr.find((x) => x.s === selectedCoin);
+      if (!t) return;
+      const now = performance.now();
+      if (now - lastTickerUpdate.current < 180) return;
+      lastTickerUpdate.current = now;
+      setMarketPrice(t.c);
+      setPriceChangePercent(t.P);
+    };
+    socket.on("market:update", handle);
+    return () => { socket.off("market:update", handle); };
+  }, [selectedCoin]);
 
-    if (depthWs.current) {
-      try {
-        depthWs.current.close();
-      } catch (e) { }
-      depthWs.current = null;
-    }
+  // ── Socket.IO: live order book via per-symbol depth subscription ─────────────
+  useEffect(() => {
+    if (!selectedCoin) return;
+    const socket = getMarketSocket();
+    const eventKey = `market:depth:${selectedCoin}`;
 
-    try {
-      const symbol = selectedCoin.toLowerCase();
-      const ws = new WebSocket(`wss://stream.binance.com:9443/ws/${symbol}@depth20@100ms`);
-      depthWs.current = ws;
-
-      ws.onmessage = (event) => {
-        try {
-          const data = JSON.parse(event.data);
-          const now = performance.now();
-          if (now - lastDepthUpdate.current > 180) {
-            lastDepthUpdate.current = now;
-            const asks = (data.asks || []).slice(0, 5).map((a) => ({ price: a[0], amount: a[1] }));
-            const bids = (data.bids || []).slice(0, 5).map((b) => ({ price: b[0], amount: b[1] }));
-            setOrderBook({ asks, bids });
-          }
-        } catch (err) {
-          // ignore
-        }
-      };
-    } catch (err) {
-      console.error("Depth WS init error", err);
-    }
+    socket.emit("subscribe:depth", { symbol: selectedCoin });
+    const handle = (book: any) => {
+      setOrderBook({ asks: book.asks || [], bids: book.bids || [] });
+    };
+    socket.on(eventKey, handle);
 
     return () => {
-      if (depthWs.current) {
-        try {
-          depthWs.current.close();
-        } catch (e) { }
-        depthWs.current = null;
-      }
+      socket.off(eventKey, handle);
+      socket.emit("unsubscribe:depth", { symbol: selectedCoin });
     };
   }, [selectedCoin]);
 

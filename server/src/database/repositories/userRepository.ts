@@ -818,25 +818,11 @@ static async findAndCountAll(
       tenants: { $elemMatch: { tenant: currentTenant.id } },
     });
 
-    // 🟩 MODIFIED: Filter by role = "admin" OR "agent" OR status = "empty-permissions"
     criteriaAnd.push({
       $or: [
-        // Users with admin or agent roles
-        {
-          tenants: { 
-            $elemMatch: { 
-              roles: { $in: ["admin", "agent"] } 
-            } 
-          },
-        },
-        // Users with empty-permissions status
-        {
-          tenants: {
-            $elemMatch: {
-              status: "empty-permissions"
-            }
-          }
-        }
+        { tenants: { $elemMatch: { roles: { $in: ["admin", "agent"] } } } },
+        { tenants: { $elemMatch: { status: "empty-permissions" } } },
+        { tenants: { $elemMatch: { status: "inactive" } } },
       ]
     });
 
@@ -953,9 +939,11 @@ static async findAndCountAll(
       tenants: { $elemMatch: { tenant: currentTenant.id } },
     });
 
-    // 🟩 ADDED: Always filter by role = "member"
     criteriaAnd.push({
-      tenants: { $elemMatch: { roles: "member" } },
+      $or: [
+        { tenants: { $elemMatch: { roles: "member" } } },
+        { tenants: { $elemMatch: { status: "inactive" } } },
+      ]
     });
 
     if (filter) {
@@ -1422,9 +1410,8 @@ static async findAndCountAll(
     const status = tenantUser ? tenantUser.status : "active";
     const roles = tenantUser ? tenantUser.roles : ["member"];
 
-    // If the user is only invited,
-    // tenant members can only see its email
-    const otherData = status === "active" ? user.toObject() : {};
+    // Only restrict data for invited/pending users, not for active or inactive
+    const otherData = (status === "active" || status === "inactive") ? user.toObject() : {};
 
     return {
       ...otherData,

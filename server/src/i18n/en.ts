@@ -4,7 +4,7 @@
 
 const en = {
   app: {
-    title: 'Nexus Exchanage'
+    title: 'Backpack Exchanage'
   },
 
   auth: {

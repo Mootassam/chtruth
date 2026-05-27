@@ -1,5 +1,7 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import { init, dispose, KLineData } from "klinecharts";
+import authAxios from "src/modules/shared/axios/authAxios";
+import { getMarketSocket } from "src/modules/shared/marketSocket";
 
 const INDICATORS = ["MA", "EMA", "BOLL", "MACD", "RSI", "WR", "VOL"] as const;
 type IndicatorName = (typeof INDICATORS)[number];
@@ -7,139 +9,104 @@ type IndicatorName = (typeof INDICATORS)[number];
 const TIMEFRAMES = ["1m", "5m", "15m", "1h", "4h", "1d"] as const;
 type TF = (typeof TIMEFRAMES)[number];
 
-const tfToBinance: Record<TF, string> = {
-  "1m": "1m",
-  "5m": "5m",
-  "15m": "15m",
-  "1h": "1h",
-  "4h": "4h",
-  "1d": "1d",
-};
-
 const chartTypes = ["candle", "bar", "area"] as const;
 type ChartType = (typeof chartTypes)[number];
 
 interface FuturesChartProps {
-  symbol?: string; // optional, will fallback to BTCUSDT
+  symbol?: string;
 }
 
-/**
- * Helpers to keep compatibility across klinecharts versions
- */
+// ─── klinecharts compat wrappers ─────────────────────────────────────────────
+
 const tryCreateIndicator = (chart: any, name: string, isOverlay: boolean) => {
   const paneOptionsOverlay = { id: "candle_pane" };
-  const paneOptionsOsc = { id: "osc_pane", height: 140 };
+  const paneOptionsOsc     = { id: "osc_pane", height: 140 };
   const paneOptions = isOverlay ? paneOptionsOverlay : paneOptionsOsc;
 
   const attempts: Array<() => any> = [
-    () => chart.createIndicator && chart.createIndicator(name, isOverlay, paneOptions),
-    () => chart.createIndicator && chart.createIndicator({ name }, isOverlay, paneOptions),
-    () => chart.createTechnicalIndicator && chart.createTechnicalIndicator(name, isOverlay, paneOptions),
-    () => chart.createTechnicalIndicator && chart.createTechnicalIndicator({ name }, isOverlay, paneOptions),
-    () => chart.addIndicator && chart.addIndicator(name, paneOptions),
-    () => chart.addTechnicalIndicator && chart.addTechnicalIndicator(name, isOverlay, paneOptions),
-    () => chart.overrideIndicator && chart.overrideIndicator(name, paneOptions),
+    () => chart.createIndicator?.(name, isOverlay, paneOptions),
+    () => chart.createIndicator?.({ name }, isOverlay, paneOptions),
+    () => chart.createTechnicalIndicator?.(name, isOverlay, paneOptions),
+    () => chart.createTechnicalIndicator?.({ name }, isOverlay, paneOptions),
+    () => chart.addIndicator?.(name, paneOptions),
+    () => chart.addTechnicalIndicator?.(name, isOverlay, paneOptions),
   ];
 
   for (const fn of attempts) {
     try {
       const res = fn();
       if (typeof res === "string") return res;
-      if (res && typeof res === "object") {
-        if ("id" in res) return (res as any).id;
-        if ("indicatorId" in res) return (res as any).indicatorId;
-      }
+      if (res && typeof res === "object" && ("id" in res || "indicatorId" in res))
+        return (res as any).id ?? (res as any).indicatorId;
       if (res === undefined) return true;
-    } catch (e) {}
+    } catch (_) {}
   }
-  console.warn("[kline-compat] failed to create indicator:", name);
   return null;
 };
 
 const tryRemoveIndicator = (chart: any, nameOrId: string) => {
   const attempts: Array<() => any> = [
-    () => chart.removeIndicator && chart.removeIndicator({ id: nameOrId }),
-    () => chart.removeTechnicalIndicatorByName && chart.removeTechnicalIndicatorByName(nameOrId),
-    () => chart.removeTechnicalIndicator && chart.removeTechnicalIndicator(nameOrId),
-    () => chart.removeIndicatorById && chart.removeIndicatorById(nameOrId),
-    () => chart.removeIndicatorByName && chart.removeIndicatorByName(nameOrId),
-    () => chart.removeIndicator && chart.removeIndicator(nameOrId),
+    () => chart.removeIndicator?.({ id: nameOrId }),
+    () => chart.removeTechnicalIndicatorByName?.(nameOrId),
+    () => chart.removeTechnicalIndicator?.(nameOrId),
+    () => chart.removeIndicatorById?.(nameOrId),
+    () => chart.removeIndicatorByName?.(nameOrId),
+    () => chart.removeIndicator?.(nameOrId),
   ];
-
   for (const fn of attempts) {
-    try {
-      const res = fn();
-      if (res !== undefined) return true;
-    } catch (e) {}
+    try { if (fn() !== undefined) return; } catch (_) {}
   }
-
-  try {
-    if (chart.removeTechnicalIndicator) {
-      chart.removeTechnicalIndicator(nameOrId);
-      return true;
-    }
-  } catch (e) {}
-  console.warn("[kline-compat] failed to remove indicator:", nameOrId);
-  return false;
 };
+
+// ─── component ───────────────────────────────────────────────────────────────
 
 const FuturesChart: React.FC<FuturesChartProps> = ({ symbol = "BTCUSDT" }) => {
   const chartRef = useRef<any>(null);
-  const wsRef = useRef<WebSocket | null>(null);
-
-  const [activeTf, setActiveTf] = useState<TF>("1m");
+  const [activeTf, setActiveTf]         = useState<TF>("1m");
   const [activeIndicators, setActiveIndicators] = useState<Record<string, string | true>>({});
-  const [chartType, setChartType] = useState<ChartType>("candle");
+  const [chartType, setChartType]       = useState<ChartType>("candle");
+  const [isLoading, setIsLoading]       = useState(true);
 
-  // fetch historical data
-  const loadData = async (tf: TF) => {
+  // ── load historical klines from backend (Redis-cached, no binance.us) ──────
+  const loadData = useCallback(async (tf: TF) => {
+    setIsLoading(true);
     try {
-      const url = `https://api.binance.us/api/v3/klines?symbol=${symbol}&interval=${tfToBinance[tf]}&limit=500`;
-      const res = await fetch(url);
-      const raw = await res.json();
-      const data: KLineData[] = raw.map((d: any) => ({
-        timestamp: d[0],
-        open: +d[1],
-        high: +d[2],
-        low: +d[3],
-        close: +d[4],
-        volume: +d[5],
-      }));
-      chartRef.current?.applyNewData?.(data);
-      chartRef.current?.setData?.(data);
-    } catch (e) {
-      console.error("loadData error", e);
+      const { data } = await authAxios.get("/market/klines", {
+        params: { symbol, interval: tf, limit: 500 },
+      });
+      const candles: KLineData[] = data.data || [];
+      if (candles.length) {
+        chartRef.current?.applyNewData?.(candles);
+        chartRef.current?.setData?.(candles);
+      }
+    } catch (err) {
+      console.error("[FuturesChart] loadData error", err);
+    } finally {
+      setIsLoading(false);
     }
-  };
+  }, [symbol]);
 
-  // websocket live updates
-  const startWS = (tf: TF) => {
-    wsRef.current?.close();
-    const stream = `wss://stream.binance.us:9443/ws/${symbol.toLowerCase()}@kline_${tfToBinance[tf]}`;
-    try {
-      const ws = new WebSocket(stream);
-      wsRef.current = ws;
-      ws.onmessage = (ev) => {
-        const msg = JSON.parse(ev.data);
-        const k = msg?.k;
-        if (!k) return;
-        const payload = {
-          timestamp: k.t,
-          open: +k.o,
-          high: +k.h,
-          low: +k.l,
-          close: +k.c,
-          volume: +k.v,
-        };
-        chartRef.current?.updateData?.(payload);
-        chartRef.current?.appendData?.(payload);
-      };
-    } catch (e) {
-      console.warn("WS start failed", e);
-    }
-  };
+  // ── subscribe to live candle updates via Socket.IO ───────────────────────
+  const startKlineSubscription = useCallback((tf: TF) => {
+    const socket   = getMarketSocket();
+    const eventKey = `market:kline:${symbol}:${tf}`;
 
-  // init chart
+    socket.emit("subscribe:kline", { symbol, interval: tf });
+
+    const handler = (candle: KLineData) => {
+      chartRef.current?.updateData?.(candle);
+      chartRef.current?.appendData?.(candle);
+    };
+
+    socket.on(eventKey, handler);
+
+    return () => {
+      socket.off(eventKey, handler);
+      socket.emit("unsubscribe:kline", { symbol, interval: tf });
+    };
+  }, [symbol]);
+
+  // ── init chart once ──────────────────────────────────────────────────────
   useEffect(() => {
     const chart = init("futures-chart");
     chartRef.current = chart;
@@ -148,9 +115,9 @@ const FuturesChart: React.FC<FuturesChartProps> = ({ symbol = "BTCUSDT" }) => {
       candle: {
         type: "candle_solid",
         bar: {
-          upColor: "#0ECB81",
-          downColor: "#F6465D",
-          noChangeColor: "#999",
+          upColor:      "#0ECB81",
+          downColor:    "#F6465D",
+          noChangeColor:"#999",
         },
         priceMark: {
           last: {
@@ -161,32 +128,29 @@ const FuturesChart: React.FC<FuturesChartProps> = ({ symbol = "BTCUSDT" }) => {
       },
       grid: {
         horizontal: { color: "rgba(255,255,255,0.06)" },
-        vertical: { color: "rgba(255,255,255,0.03)" },
+        vertical:   { color: "rgba(255,255,255,0.03)" },
       },
     });
-
-    loadData(activeTf);
-    startWS(activeTf);
 
     const onResize = () => chart.resize?.();
     window.addEventListener("resize", onResize);
 
     return () => {
       window.removeEventListener("resize", onResize);
-      wsRef.current?.close();
       dispose("futures-chart");
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // reload on timeframe or symbol change
+  // ── reload on tf or symbol change ────────────────────────────────────────
   useEffect(() => {
     if (!chartRef.current) return;
     loadData(activeTf);
-    startWS(activeTf);
-  }, [activeTf, symbol]);
+    const unsubscribe = startKlineSubscription(activeTf);
+    return unsubscribe;
+  }, [activeTf, symbol, loadData, startKlineSubscription]);
 
-  // chart type updates
+  // ── chart type styles ────────────────────────────────────────────────────
   useEffect(() => {
     if (!chartRef.current) return;
     if (chartType === "candle") {
@@ -210,97 +174,75 @@ const FuturesChart: React.FC<FuturesChartProps> = ({ symbol = "BTCUSDT" }) => {
     }
   }, [chartType]);
 
-  // toggle indicator
+  // ── toggle indicator ─────────────────────────────────────────────────────
   const toggleIndicator = (name: IndicatorName) => {
     const chart = chartRef.current;
     if (!chart) return;
 
     const exists = activeIndicators[name];
     if (exists) {
-      const idOrName = typeof exists === "string" ? exists : name;
-      tryRemoveIndicator(chart, idOrName as string);
-      const copy = { ...activeIndicators };
-      delete copy[name];
-      setActiveIndicators(copy);
+      tryRemoveIndicator(chart, typeof exists === "string" ? exists : name);
+      setActiveIndicators((p) => { const c = { ...p }; delete c[name]; return c; });
       return;
     }
 
     const overlayNames = ["MA", "EMA", "BOLL", "VOL", "BBI", "SMA", "SAR"];
-    const isOverlay = overlayNames.includes(name);
-
-    const res = tryCreateIndicator(chart, name, isOverlay);
-    if (res) {
-      setActiveIndicators((p) => ({
-        ...p,
-        [name]: typeof res === "string" ? (res as string) : true,
-      }));
-    } else {
-      setActiveIndicators((p) => ({ ...p, [name]: true }));
-    }
+    const res = tryCreateIndicator(chart, name, overlayNames.includes(name));
+    setActiveIndicators((p) => ({
+      ...p,
+      [name]: typeof res === "string" ? res : true,
+    }));
   };
 
+  const btnStyle = (active: boolean): React.CSSProperties => ({
+    padding: "6px 10px",
+    background: active ? "#0ECB81" : "transparent",
+    color:      active ? "#000"    : "#fff",
+    borderRadius: 6,
+    border: "1px solid rgba(255,255,255,0.06)",
+    cursor: "pointer",
+    fontSize: 12,
+  });
+
   return (
-    <div style={{ width: "100%", height: "100%", background: "#0B0E11", color: "#fff", padding: 8 }}>
-      {/* toolbar */}
+    <div style={{ width: "100%", background: "#0B0E11", color: "#fff", padding: 8 }}>
+      {/* timeframe toolbar */}
       <div style={{ display: "flex", justifyContent: "space-between", gap: 12, marginBottom: 8, alignItems: "center" }}>
-        <div style={{ display: "flex", gap: 6 }}>
+        <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
           {TIMEFRAMES.map((tf) => (
-            <button
-              key={tf}
-              onClick={() => setActiveTf(tf)}
-              style={{
-                padding: "6px 10px",
-                background: activeTf === tf ? "#0ECB81" : "transparent",
-                color: activeTf === tf ? "#000" : "#fff",
-                borderRadius: 6,
-                border: "1px solid rgba(255,255,255,0.06)",
-                cursor: "pointer",
-              }}
-            >
+            <button key={tf} onClick={() => setActiveTf(tf)} style={btnStyle(activeTf === tf)}>
               {tf}
             </button>
           ))}
         </div>
-
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <select
-            value={chartType}
-            onChange={(e) => setChartType(e.target.value as ChartType)}
-            style={{
-              padding: "6px 10px",
-              borderRadius: 6,
-              background: "#0B0E11",
-              color: "#fff",
-              border: "1px solid rgba(255,255,255,0.06)",
-            }}
-          >
-            {chartTypes.map((t) => (
-              <option key={t} value={t}>
-                {t}
-              </option>
-            ))}
-          </select>
-        </div>
+        <select
+          value={chartType}
+          onChange={(e) => setChartType(e.target.value as ChartType)}
+          style={{ padding: "6px 10px", borderRadius: 6, background: "#0B0E11", color: "#fff", border: "1px solid rgba(255,255,255,0.06)", fontSize: 12 }}
+        >
+          {chartTypes.map((t) => <option key={t} value={t}>{t}</option>)}
+        </select>
       </div>
 
-      {/* chart */}
-      <div id="futures-chart" style={{ width: "100%", height: '380px' }} />
+      {/* chart canvas */}
+      <div style={{ position: "relative" }}>
+        <div id="futures-chart" style={{ width: "100%", height: 380 }} />
+        {isLoading && (
+          <div style={{
+            position: "absolute", inset: 0,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            background: "rgba(11,14,17,0.7)",
+            fontSize: 13, color: "#aaa",
+          }}>
+            Loading chart…
+          </div>
+        )}
+      </div>
 
       {/* indicators */}
-      <div style={{ display: "flex", gap: 6 }}>
+      <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 8 }}>
         {INDICATORS.map((ind) => (
-          <button
-            key={ind}
-            onClick={() => toggleIndicator(ind)}
-            style={{
-              padding: "6px 10px",
-              borderRadius: 6,
-              background: activeIndicators[ind] ? "#0ECB81" : "transparent",
-              color: activeIndicators[ind] ? "#000" : "#fff",
-              border: "1px solid rgba(255,255,255,0.06)",
-              cursor: "pointer",
-            }}
-          >
+          <button key={ind} onClick={() => toggleIndicator(ind)} style={btnStyle(!!activeIndicators[ind])}>
             {ind}
           </button>
         ))}

@@ -1,6 +1,5 @@
 
 
-import path from "path";
 import Permissions from "src/security/permissions";
 const permissions = Permissions.values;
 
@@ -64,7 +63,7 @@ const privateRoutes = [
 
   {
     path: "/trade",
-    loader: () => import("src/view/pages/Trade/trade"),
+    loader: () => import("src/view/pages/Trade/Trade"),
     permissionRequired: permissions.categoryRead,
     exact: true,
   },
@@ -76,7 +75,7 @@ const privateRoutes = [
   },
   {
     path: "/wallets",
-    loader: () => import("src/view/pages/wallet/wallet"),
+    loader: () => import("src/view/pages/wallet/Wallet"),
     permissionRequired: permissions.categoryRead,
     exact: true,
   },
@@ -114,6 +113,13 @@ const screenRoutes = [
 
   {
     path: "/deposit",
+    loader: () => import("src/view/pages/deposit/depositPage"),
+    permissionRequired: permissions.categoryRead,
+    exact: true,
+  },
+
+  {
+    path: "/deposit/wallet/:id",
     loader: () => import("src/view/pages/deposit/deposit"),
     permissionRequired: permissions.categoryRead,
     exact: true,
@@ -262,16 +268,16 @@ const publicRoutes = [
   },
 
 
-  {
-    path: "/impersonate",
-    loader: () => import("src/view/pages/Auth/ImpersonatePage"),
-  },
 
 ];
 const simpleRoutes = [
   {
     path: "/403",
     loader: () => import("src/view/shared/errors/Error403Page"),
+  },
+  {
+    path: "/impersonate",
+    loader: () => import("src/view/pages/Auth/ImpersonatePage"),
   },
   {
     path: "/500",

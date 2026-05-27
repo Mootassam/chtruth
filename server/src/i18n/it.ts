@@ -1,7 +1,7 @@
 
 const it = {
   app: {
-    title: 'Nexus Exchange'
+    title: 'Backpack Exchange'
   },
 
   auth: {

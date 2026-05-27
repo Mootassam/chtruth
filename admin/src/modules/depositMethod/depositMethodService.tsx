@@ -33,12 +33,12 @@ export default class stackingService {
     return response.data;
   }
 
-  static async create() {
+  static async create(data) {
 
 
     const tenantId = AuthCurrentTenant.get();
     const response = await authAxios.post(
-      `/tenant/${tenantId}/method`,
+      `/tenant/${tenantId}/method`, { data }
     );
 
     return response.data;

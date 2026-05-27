@@ -4,7 +4,7 @@
 
 const es = {
   app: {
-    title: 'Nexus Exchange'
+    title: 'Backpack Exchange'
   },
 
   auth: {

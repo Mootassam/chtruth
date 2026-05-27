@@ -50,13 +50,13 @@ const DepopsitFormActions = {
     }
   },
 
-  doCreate: () => async (dispatch) => {
+  doCreate: (data) => async (dispatch) => {
     try {
       dispatch({
         type: DepopsitFormActions.CREATE_STARTED,
       });
 
-      await DepositMethod.create();
+      await DepositMethod.create(data);
 
       dispatch({
         type: DepopsitFormActions.CREATE_SUCCESS,

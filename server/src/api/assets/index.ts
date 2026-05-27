@@ -29,6 +29,10 @@ export default (app) => {
     require('./AssetsListMobile').default,
   );
   app.get(
+    `/tenant/:tenantId/prices`,
+    require('./AssetsPrices').default,
+  );
+  app.get(
     `/tenant/:tenantId/assets/:id`,
     require('./AssetsFind').default,
   );

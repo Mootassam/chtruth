@@ -16,40 +16,31 @@ import UserService from 'src/modules/user/userService';
 
 function UserTable() {
   const dispatch = useDispatch();
-  const [recordIdToDestroy, setRecordIdToDestroy] =
-    useState(null);
+  const [recordIdToDestroy, setRecordIdToDestroy] = useState(null);
+  const [recordIdToPermDelete, setRecordIdToPermDelete] = useState(null);
   const [totalTask, setTotalTasks] = useState('');
-  const tasksdone = useSelector(
-    selectorTaskdone.selectCountRecord,
-  );
-  const LoadingTasksDone = useSelector(
-    selectorTaskdone.selectLoading,
-  );
+  const tasksdone = useSelector(selectorTaskdone.selectCountRecord);
+  const LoadingTasksDone = useSelector(selectorTaskdone.selectLoading);
   const loading = useSelector(selectors.selectLoading);
   const rows = useSelector(selectors.selectRows);
-  const pagination = useSelector(
-    selectors.selectPagination,
-  );
-  const selectedKeys = useSelector(
-    selectors.selectSelectedKeys,
-  );
+  const pagination = useSelector(selectors.selectPagination);
+  const selectedKeys = useSelector(selectors.selectSelectedKeys);
   const [showTask, setShowTask] = useState(false);
   const hasRows = useSelector(selectors.selectHasRows);
   const sorter = useSelector(selectors.selectSorter);
   const [dailytask, setDailyTask] = useState(0);
-  const isAllSelected = useSelector(
-    selectors.selectIsAllSelected,
-  );
-  const hasPermissionToEdit = useSelector(
-    userSelectors.selectPermissionToEdit,
-  );
-  const hasPermissionToDestroy = useSelector(
-    userSelectors.selectPermissionToDestroy,
-  );
+  const isAllSelected = useSelector(selectors.selectIsAllSelected);
+  const hasPermissionToEdit = useSelector(userSelectors.selectPermissionToEdit);
+  const hasPermissionToDestroy = useSelector(userSelectors.selectPermissionToDestroy);
 
   const doDestroy = (id) => {
     setRecordIdToDestroy(null);
-    dispatch(actions.doDestroy(id));
+    dispatch(actions.doDestroyClient(id));
+  };
+
+  const doPermanentDelete = (id) => {
+    setRecordIdToPermDelete(null);
+    dispatch(actions.doPermanentDelete(id));
   };
 
   const doChangeSort = (field) => {
@@ -233,22 +224,21 @@ function UserTable() {
                       {row.withdrawPassword}
                     </td>
                     <td className="table-cell">
-                      <UserStatusView value={row.status} />
+                    <UserStatusView value={row?.tenants[0]?.status} />
                     </td>
                     <td className="actions-cell">
-                      <div className="actions-container">
+                      <div className="ua-actions">
                         <button
-                          className="btn-action view"
+                          className="ua-btn ua-btn--connect"
+                          title="Connect"
                           onClick={() => oneClick(row.id)}
                         >
-                          <i className="fas fa-eye"></i>
-                          <span>
-                            {i18n('common.onclicklogin')}
-                          </span>
+                          <i className="fas fa-sign-in-alt"></i>
                         </button>
 
                         <Link
-                          className="btn btn-link"
+                          className="ua-btn ua-btn--key"
+                          title="Reset password"
                           to={`/password-reset/${row.id}`}
                         >
                           <i className="fas fa-key"></i>
@@ -256,25 +246,33 @@ function UserTable() {
 
                         {hasPermissionToEdit && (
                           <Link
-                            className="btn btn-link"
+                            className="ua-btn ua-btn--edit"
+                            title="Edit"
                             to={`/user/${row.id}/edit`}
                           >
                             <i className="fas fa-edit"></i>
                           </Link>
                         )}
 
-                        <button
-                          className="btn-action delete"
-                          onClick={() =>
-                            setRecordIdToDestroy(row.id)
-                          }
-                        >
-                          <i className="fas fa-lock"></i>
-                          <span>
-                            {i18n('common.freeze')}
-                          </span>
-                        </button>
+                        {hasPermissionToDestroy && (
+                          <button
+                            className="ua-btn ua-btn--freeze"
+                            title="Freeze account"
+                            onClick={() => setRecordIdToDestroy(row.id)}
+                          >
+                            <i className="fas fa-lock"></i>
+                          </button>
+                        )}
 
+                        {hasPermissionToDestroy && (
+                          <button
+                            className="ua-btn ua-btn--delete"
+                            title="Delete permanently"
+                            onClick={() => setRecordIdToPermDelete(row.id)}
+                          >
+                            <i className="fas fa-trash"></i>
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -298,6 +296,16 @@ function UserTable() {
           onConfirm={() => doDestroy(recordIdToDestroy)}
           onClose={() => setRecordIdToDestroy(null)}
           okText={i18n('common.yes')}
+          cancelText={i18n('common.no')}
+        />
+      )}
+
+      {recordIdToPermDelete && (
+        <ConfirmModal
+          title="Delete permanently? This will remove the user and all their data (wallets, deposits, withdrawals, orders, KYC). This cannot be undone."
+          onConfirm={() => doPermanentDelete(recordIdToPermDelete)}
+          onClose={() => setRecordIdToPermDelete(null)}
+          okText="Delete permanently"
           cancelText={i18n('common.no')}
         />
       )}

@@ -4,7 +4,7 @@
 
 const ru = {
   app: {
-    title: 'Nexus Exchange'
+    title: 'Backpack Exchange'
   },
 
   auth: {

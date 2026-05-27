@@ -10,6 +10,8 @@ import { useDispatch, useSelector } from "react-redux";
 import assetsActions from "src/modules/assets/list/assetsListActions";
 import assetsListSelectors from "src/modules/assets/list/assetsListSelectors";
 import { i18n } from "../../../i18n";
+import authAxios from "src/modules/shared/axios/authAxios";
+import AuthCurrentTenant from "src/modules/auth/authCurrentTenant";
 
 interface BinanceTicker {
   s: string;
@@ -67,6 +69,28 @@ function Wallet() {
     if (num % 1 === 0) return num.toString();
 
     return num.toFixed(8).replace(/\.?0+$/, "");
+  }, []);
+
+  // Fetch initial prices from the Redis-cached REST endpoint so the wallet
+  // shows real values immediately — before the WebSocket delivers its first message.
+  useEffect(() => {
+    const tenantId = AuthCurrentTenant.get();
+    authAxios
+      .get(`/tenant/${tenantId}/prices`)
+      .then((response) => {
+        const prices: Record<string, { c: string; P: string }> = response.data?.data || {};
+        if (Object.keys(prices).length === 0) return;
+        setMarketData((prev) => {
+          const merged = { ...prev };
+          Object.entries(prices).forEach(([symbol, ticker]) => {
+            merged[symbol] = { s: symbol, c: ticker.c, P: ticker.P };
+            marketDataCache.current[symbol] = { s: symbol, c: ticker.c, P: ticker.P };
+          });
+          return merged;
+        });
+        setIsMarketDataLoading(false);
+      })
+      .catch(() => {});
   }, []);
 
   // Update symbols we care about only when assets actually change

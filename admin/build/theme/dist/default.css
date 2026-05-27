@@ -11640,6 +11640,63 @@ td {
   background-color: #ffe3e3;
 }
 
+/* Compact icon-only action buttons for user tables */
+.ua-actions {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.ua-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.7rem;
+  text-decoration: none;
+  transition: opacity 0.15s, transform 0.1s;
+  flex-shrink: 0;
+}
+
+.ua-btn:hover {
+  opacity: 0.82;
+  transform: translateY(-1px);
+}
+
+.ua-btn--connect {
+  background-color: #1971c2;
+  color: #fff;
+}
+
+.ua-btn--key {
+  background-color: #e9ecef;
+  color: #495057;
+}
+
+.ua-btn--edit {
+  background-color: #e9f7ef;
+  color: #0ca678;
+}
+
+.ua-btn--freeze {
+  background-color: #fff3bf;
+  color: #e67700;
+}
+
+.ua-btn--delete {
+  background-color: #fff5f5;
+  color: #e03131;
+}
+
+.ua-btn--delete:hover {
+  background-color: #ffe3e3;
+  opacity: 1;
+}
+
 .loading-cell {
   padding: 40px 20px;
   text-align: center;

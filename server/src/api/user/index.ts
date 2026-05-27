@@ -26,6 +26,7 @@ export default (app) => {
 
   app.post(`/tenant/:tenantId/user/import`, require("./userImport").default);
   app.delete(`/tenant/:tenantId/user`, require("./userDestroy").default);
+  app.delete(`/tenant/:tenantId/user/permanent/:userId`, require("./userPermanentDelete").default);
   app.get(`/tenant/:tenantId/user`, require("./userList").default);
   app.get(`/tenant/:tenantId/clients`, require("./userListClients").default);
 

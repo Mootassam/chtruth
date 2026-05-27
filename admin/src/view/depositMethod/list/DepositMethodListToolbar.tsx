@@ -54,12 +54,6 @@ function DepositMethodListToolbar(props) {
 
   };
 
-  const doSubmit = () => {
-
-
-    dispatch(actionsForm.doCreate());
-
-  };
 
   const doDestroyAllSelected = () => {
     doCloseDestroyAllConfirmModal();
@@ -107,7 +101,7 @@ function DepositMethodListToolbar(props) {
   return (
     <Toolbar>
       {hasPermissionToCreate && (
-        <div onClick={() => doSubmit()}>
+        <Link to="/depositMethod/new">
           <span
             data-tip={i18n('common.new')}
             data-for="charge-list-toolbar-new-tooltip"
@@ -120,7 +114,7 @@ function DepositMethodListToolbar(props) {
             </button>
             <ReactTooltip id="charge-list-toolbar-new-tooltip" />
           </span>
-        </div>
+        </Link>
       )}
 
    
