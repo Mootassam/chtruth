@@ -1,1 +1,0 @@
-import{l as o}from"./index-d9998155.js";import{q as r}from"./index-49a858b3.js";let e=null;function a(){if(!e){const t=r.defaults.baseURL.replace("/api","");e=o(t,{transports:["websocket"],reconnection:!0,reconnectionAttempts:10,reconnectionDelay:2e3})}return e}export{a as g};

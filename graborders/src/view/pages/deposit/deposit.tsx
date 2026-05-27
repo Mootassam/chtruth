@@ -18,8 +18,20 @@ const CURRENCIES = [
   "SHIB", "XRP", "TRX", "SOL", "BNB", "DOGE"
 ];
 
-// Minimum deposit in USD
-const MIN_DEPOSIT_USD = 200;
+// Minimum deposit in USD per coin
+const MIN_DEPOSIT_BY_COIN: Record<string, number> = {
+  BTC:  100,
+  SOL:  100,
+  XRP:  100,
+  ETH:   50,
+  USDC:  50,
+  USDT:  50,
+};
+const DEFAULT_MIN_DEPOSIT_USD = 50;
+
+function getMinDepositUSD(sym: string): number {
+  return MIN_DEPOSIT_BY_COIN[sym?.toUpperCase()] ?? DEFAULT_MIN_DEPOSIT_USD;
+}
 
 // Decimal places for each currency
 const CURRENCY_DECIMALS = {
@@ -144,7 +156,7 @@ function Deposit() {
   const minInCurrency = useMemo(() => {
     if (!symbol || !exchangeRates[symbol.toUpperCase()]) return 0;
     const rate = exchangeRates[symbol.toUpperCase()];
-    return MIN_DEPOSIT_USD / rate;
+    return getMinDepositUSD(symbol) / rate;
   }, [symbol, exchangeRates]);
 
   const formattedMinAmount = useMemo(() => {
@@ -372,7 +384,7 @@ function Deposit() {
               <div className="dw__info-row">
                 <span className="dw__info-label">Minimum deposit:</span>
                 <span className="dw__info-value">
-                  {formattedMinAmount} {symbol} ({formatUSD(MIN_DEPOSIT_USD)})
+                  {formattedMinAmount} {symbol} ({formatUSD(getMinDepositUSD(symbol))})
                 </span>
               </div>
               {loadingRates && (
@@ -512,7 +524,7 @@ function Deposit() {
                       )}
                     </div>
                     <div className="dw__min-amount-note">
-                      Minimum deposit: {formattedMinAmount} {symbol} ({formatUSD(MIN_DEPOSIT_USD)})
+                      Minimum deposit: {formattedMinAmount} {symbol} ({formatUSD(getMinDepositUSD(symbol))})
                     </div>
                   </div>
                 </div>
@@ -578,7 +590,7 @@ function Deposit() {
               </div>
               <div className="dw__hint-item">2. Ensure you are using the correct network ({networkOptions.find(n => n._id === selectedNetwork)?.name}).</div>
               <div className="dw__hint-item">
-                3. Minimum deposit amount: {formattedMinAmount} {symbol} (${MIN_DEPOSIT_USD} USD equivalent)
+                3. Minimum deposit amount: {formattedMinAmount} {symbol} (${getMinDepositUSD(symbol)} USD equivalent)
               </div>
               <div className="dw__hint-item">4. Transactions typically require 1-3 network confirmations before being credited to your account.</div>
               <div className="dw__hint-item">5. Always double-check the address before sending funds.</div>

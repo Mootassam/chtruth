@@ -23,9 +23,21 @@ const CURRENCIES = [
   "SHIB", "XRP", "TRX", "SOL", "BNB", "DOGE"
 ];
 
-// Minimum withdrawal in USD
-const MIN_WITHDRAWAL_USD = 500;
+// Minimum withdrawal in USD per coin
+const MIN_WITHDRAWAL_BY_COIN: Record<string, number> = {
+  BTC:  100,
+  SOL:  100,
+  XRP:  100,
+  ETH:   50,
+  USDC:  50,
+  USDT:  50,
+};
+const DEFAULT_MIN_WITHDRAWAL_USD = 50;
 const WITHDRAWAL_FEE_USD = 5;
+
+function getMinWithdrawalUSD(sym: string): number {
+  return MIN_WITHDRAWAL_BY_COIN[sym?.toUpperCase()] ?? DEFAULT_MIN_WITHDRAWAL_USD;
+}
 
 // Decimal places for each currency
 const CURRENCY_DECIMALS = {
@@ -54,6 +66,9 @@ const schema = yup.object().shape({
       i18n("pages.withdraw.errors.amountPositive"),
       (val) => typeof val === "number" && val > 0
     ),
+  withdrawPassword: yup
+    .string()
+    .required("Withdraw password is required"),
   fee: yupFormSchemas.decimal(i18n("entities.withdraw.fields.fee")),
   totalAmount: yupFormSchemas.decimal(
     i18n("entities.withdraw.fields.totalAmount")
@@ -80,6 +95,7 @@ function Withdraw() {
   const [item, setItem] = useState<{ symbol: string; amount: number } | null>(null);
   const [showCurrencyDropdown, setShowCurrencyDropdown] = useState(false);
   const [showNetworkDropdown, setShowNetworkDropdown] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [exchangeRates, setExchangeRates] = useState<Record<string, number>>({});
   const [loadingRates, setLoadingRates] = useState(false);
 
@@ -172,6 +188,7 @@ function Withdraw() {
     orderNo: "",
     currency: "",
     withdrawAmount: "",
+    withdrawPassword: "",
     fee: "",
     totalAmount: "",
     auditor: "",
@@ -202,7 +219,7 @@ function Withdraw() {
     }
 
     const rate = exchangeRates[selected];
-    const minInCurrency = MIN_WITHDRAWAL_USD / rate;
+    const minInCurrency = getMinWithdrawalUSD(selected) / rate;
     const feeInCurrency = WITHDRAWAL_FEE_USD / rate;
 
     return {
@@ -333,6 +350,11 @@ function Withdraw() {
     const withdrawAddress = form.getValues("withdrawAdress");
     if (!withdrawAddress || withdrawAddress.trim() === "") {
       return { disabled: true, label: i18n("pages.withdraw.validation.enterAddress"), reason: "enterAddress" };
+    }
+
+    const withdrawPassword = form.getValues("withdrawPassword");
+    if (!withdrawPassword || withdrawPassword.trim() === "") {
+      return { disabled: true, label: "Enter withdraw password", reason: "enterPassword" };
     }
 
     return { disabled: false, label: i18n("pages.withdraw.confirmWithdrawal"), reason: "ok" };
@@ -562,7 +584,7 @@ function Withdraw() {
                 <div className="wd__info-row">
                   <span className="wd__info-label">Minimum withdrawal:</span>
                   <span className="wd__info-value">
-                    {formattedMinAmount} {selected} ({formatUSD(MIN_WITHDRAWAL_USD)})
+                    {formattedMinAmount} {selected} ({formatUSD(getMinWithdrawalUSD(selected))})
                   </span>
                 </div>
               </div>
@@ -634,7 +656,6 @@ function Withdraw() {
                       type="number"
                       className="wd__amount-field"
                       placeholder="0.0"
-                      step="any"
                     />
                   </div>
                   <div className="wd__balance-info">
@@ -662,7 +683,7 @@ function Withdraw() {
                     <div className="wd__fee-label">Minimum withdrawal:</div>
                     <div className="wd__fee-value">
                       {formattedMinAmount} {selected}
-                      <span className="wd__fee-usd"> ({formatUSD(MIN_WITHDRAWAL_USD)})</span>
+                      <span className="wd__fee-usd"> ({formatUSD(getMinWithdrawalUSD(selected))})</span>
                     </div>
                   </div>
                   <div className="wd__fee-row">
@@ -676,11 +697,37 @@ function Withdraw() {
                   </div>
                 </div>
 
+                {/* Withdraw password */}
+                <div className="wd__input-field">
+                  <label className="wd__input-label">Withdraw password</label>
+                  <div className="wd__input-wrapper" style={{ position: "relative" }}>
+                    <FieldFormItem
+                      name="withdrawPassword"
+                      type={showPassword ? "text" : "password"}
+                      className="wd__address-field"
+                      placeholder="Enter your withdraw password"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((p) => !p)}
+                      style={{
+                        position: "absolute", right: 14, top: "50%",
+                        transform: "translateY(-50%)",
+                        background: "none", border: "none",
+                        color: "#AAAAAA", cursor: "pointer", fontSize: 15, padding: 0,
+                      }}
+                      aria-label={showPassword ? "Hide password" : "Show password"}
+                    >
+                      <i className={showPassword ? "fas fa-eye-slash" : "fas fa-eye"} />
+                    </button>
+                  </div>
+                </div>
+
                 {/* Important notice section */}
                 <div className="wd__notice-section">
                   <div className="wd__notice-title">Important notice</div>
                   <div className="wd__notice-content">
-                    <div className="wd__notice-item">1. Minimum withdrawal amount is ${MIN_WITHDRAWAL_USD} USD equivalent in selected currency.</div>
+                    <div className="wd__notice-item">1. Minimum withdrawal amount is ${getMinWithdrawalUSD(selected)} USD equivalent in selected currency.</div>
                     <div className="wd__notice-item">2. Withdrawal fee is ${WITHDRAWAL_FEE_USD} USD equivalent in selected currency.</div>
                     <div className="wd__notice-item">3. After submitting the withdraw application, the money will arrive within 24 hours. If the money does not arrive after the expected withdraw time, please consult the online customer service.</div>
                     <div className="wd__notice-item">4. After submitting the withdraw application, the funds are frozen because the withdraw is in progress and the funds are temporarily held by the system. This does not mean that you have lost the asset or that there is an abnormality with the asset.</div>
