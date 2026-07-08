@@ -22,6 +22,9 @@ export function FieldFormItem(props) {
     className1,
     className2,
     className3,
+    inputMode,
+    step,
+    pattern,
   } = props;
 
   const [showPassword, setShowPassword] = useState(false);
@@ -43,56 +46,62 @@ export function FieldFormItem(props) {
     isSubmitted
   );
 
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
-
-  // Determine the input type based on whether it's a password and if we should show it
-  const inputType = type === "password" && showPassword ? "text" : type;
+  const inputType =
+    type === "password" && showPassword ? "text" : type;
 
   return (
     <div className={className1}>
       {Boolean(label) && (
         <label
-          className={`${className2} ${required ? "required" : null}`}
+          className={`${className2} ${required ? "required" : ""}`}
           htmlFor={name}
         >
           {label}
         </label>
       )}
+
       {description}
+
       <div
         className={className3}
         style={className === "captcha-input" ? { padding: 0 } : {}}
       >
         <input
-          className={`${props.className} ${errorMessage ? "__danger" : ""}`}
+          className={`${className} ${errorMessage ? "__danger" : ""}`}
           id={name}
           name={name}
           type={inputType}
+          step={step}
+          inputMode={inputMode}
+          pattern={pattern}
           ref={register}
           onChange={(event) => {
-            props.onChange && props.onChange(event.target.value);
+            props.onChange?.(event.target.value);
           }}
           onBlur={(event) => {
-            props.onBlur && props.onBlur(event);
+            props.onBlur?.(event);
           }}
-          placeholder={placeholder || undefined}
-          autoFocus={autoFocus || undefined}
-          autoComplete={autoComplete || undefined}
+          placeholder={placeholder}
+          autoFocus={autoFocus}
+          autoComplete={autoComplete}
           disabled={disabled}
         />
 
-
-        
-
-        {/* Eye icon for password fields */}
         {inputType === "password" && (
-          <button className="toggle-password" type="button">
-            <i className="fas fa-eye" />
+          <button
+            className="toggle-password"
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+          >
+            <i
+              className={`fas ${
+                showPassword ? "fa-eye-slash" : "fa-eye"
+              }`}
+            />
           </button>
         )}
       </div>
+
       {endAdornment && (
         <div className="input-group-append">
           <span className="input-group-text">{endAdornment}</span>
@@ -100,7 +109,12 @@ export function FieldFormItem(props) {
       )}
 
       <div className="invalid-feedback">{errorMessage}</div>
-      {Boolean(hint) && <small className="form-text text-muted">{hint}</small>}
+
+      {Boolean(hint) && (
+        <small className="form-text text-muted">
+          {hint}
+        </small>
+      )}
     </div>
   );
 }
@@ -108,6 +122,9 @@ export function FieldFormItem(props) {
 FieldFormItem.defaultProps = {
   type: "text",
   required: false,
+  step: undefined,
+  inputMode: undefined,
+  pattern: undefined,
 };
 
 FieldFormItem.propTypes = {
@@ -115,7 +132,7 @@ FieldFormItem.propTypes = {
   required: PropTypes.bool,
   type: PropTypes.string,
   label: PropTypes.string,
-  description: PropTypes.string,
+  description: PropTypes.node,
   hint: PropTypes.string,
   autoFocus: PropTypes.bool,
   disabled: PropTypes.bool,
@@ -124,11 +141,20 @@ FieldFormItem.propTypes = {
   autoComplete: PropTypes.string,
   externalErrorMessage: PropTypes.string,
   endAdornment: PropTypes.any,
-  onChange: PropTypes.any,
+  onChange: PropTypes.func,
+  onBlur: PropTypes.func,
   className: PropTypes.string,
   className1: PropTypes.string,
   className2: PropTypes.string,
   className3: PropTypes.string,
+
+  // Number/decimal support
+  step: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number,
+  ]),
+  inputMode: PropTypes.string,
+  pattern: PropTypes.string,
 };
 
 export default FieldFormItem;

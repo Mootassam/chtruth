@@ -25,12 +25,12 @@ const CURRENCIES = [
 
 // Minimum withdrawal in USD per coin
 const MIN_WITHDRAWAL_BY_COIN: Record<string, number> = {
-  BTC:  100,
-  SOL:  100,
-  XRP:  100,
-  ETH:   50,
-  USDC:  50,
-  USDT:  50,
+  BTC: 100,
+  SOL: 100,
+  XRP: 100,
+  ETH: 50,
+  USDC: 50,
+  USDT: 50,
 };
 const DEFAULT_MIN_WITHDRAWAL_USD = 50;
 const WITHDRAWAL_FEE_USD = 5;
@@ -123,7 +123,7 @@ function Withdraw() {
             },
           }
         );
-        
+
         if (response.data && response.data.Response !== "Error") {
           const rates: Record<string, number> = {};
           CURRENCIES.forEach(currency => {
@@ -153,7 +153,7 @@ function Withdraw() {
       const symbol = defaultCurrency.symbol || defaultCurrency.id;
       setSelected(symbol);
       form.setValue("currency", symbol);
-      
+
       if (defaultCurrency.network && defaultCurrency.network.length > 0) {
         setSelectedNetwork(defaultCurrency.network[0]._id || defaultCurrency.network[0].name);
       }
@@ -172,7 +172,7 @@ function Withdraw() {
       setAddress(walletAddress);
 
       form.setValue("currency", selected);
-      
+
       if (walletAddress) {
         form.setValue("withdrawAdress", walletAddress);
       }
@@ -259,14 +259,14 @@ function Withdraw() {
     if (typeof value !== "number" || !isFinite(value) || value === 0) {
       return "0";
     }
-    
+
     const decimalPlaces = decimals !== undefined ? decimals : (CURRENCY_DECIMALS[selected] || 2);
-    
+
     // For very small numbers, show more precision but not scientific notation
     if (value > 0 && value < 0.000001) {
       return value.toFixed(decimalPlaces > 8 ? decimalPlaces : 8);
     }
-    
+
     // For regular numbers
     return new Intl.NumberFormat('en-US', {
       minimumFractionDigits: 0,
@@ -279,12 +279,12 @@ function Withdraw() {
     if (typeof value !== "number" || !isFinite(value) || value === 0) {
       return "$0.00";
     }
-    
+
     // For very small USD values, show more precision
     if (value > 0 && value < 0.01) {
       return `$${value.toFixed(6)}`;
     }
-    
+
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
@@ -602,16 +602,16 @@ function Withdraw() {
                     <div className="wd__selected-display">
                       <i className="fas fa-network-wired wd__network-icon" />
                       <span className="wd__network-text">
-                        {networkList.find(n => 
-                          n._id === selectedNetwork || 
-                          n.id === selectedNetwork || 
+                        {networkList.find(n =>
+                          n._id === selectedNetwork ||
+                          n.id === selectedNetwork ||
                           n.name === selectedNetwork
                         )?.name || "Select Network"}
                       </span>
                     </div>
                     <i className="fas fa-chevron-down wd__dropdown-arrow" />
                   </div>
-                  
+
                   {showNetworkDropdown && (
                     <div className="wd__dropdown">
                       {networkList.map((network) => (
@@ -652,10 +652,12 @@ function Withdraw() {
                   <label className="wd__input-label">Amount of coins withdrawn</label>
                   <div className="wd__input-wrapper">
                     <FieldFormItem
+                      className="wd__amount-field"
                       name="withdrawAmount"
                       type="number"
-                      className="wd__amount-field"
-                      placeholder="0.0"
+                      step="any"
+                      inputMode="decimal"
+                      placeholder="0.00"           // allows only digits and optional decimal
                     />
                   </div>
                   <div className="wd__balance-info">
