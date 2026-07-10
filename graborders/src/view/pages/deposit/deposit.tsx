@@ -5,12 +5,13 @@ import { QRCodeCanvas } from "qrcode.react";
 import { useForm, FormProvider } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import axios from "axios";
 
 import method from "src/modules/depositMethod/list/depositMethodListActions";
 import selectors from "src/modules/depositMethod/list/depositMethodSelectors";
 import depositActions from "src/modules/deposit/form/depositFormActions";
 import FieldFormItem from "src/shared/form/FieldFormItem";
+import authAxios from "src/modules/shared/axios/authAxios";
+import AuthCurrentTenant from "src/modules/auth/authCurrentTenant";
 
 // Currency configurations
 const CURRENCIES = [
@@ -24,6 +25,8 @@ const MIN_DEPOSIT_BY_COIN: Record<string, number> = {
   SOL:  100,
   XRP:  100,
   ETH:  100,
+  BNB:  100,
+  DOGE: 100,
   USDC:  50,
   USDT:  50,
 };
@@ -32,6 +35,10 @@ const DEFAULT_MIN_DEPOSIT_USD = 50;
 function getMinDepositUSD(sym: string): number {
   return MIN_DEPOSIT_BY_COIN[sym?.toUpperCase()] ?? DEFAULT_MIN_DEPOSIT_USD;
 }
+
+// Stablecoins are pegged 1:1 with USD, so we don't need to wait on a live
+// exchange rate fetch to know their minimum in coin units.
+const STABLECOINS = new Set(["USDT", "USDC", "DAI"]);
 
 // Decimal places for each currency
 const CURRENCY_DECIMALS = {
@@ -117,30 +124,26 @@ function Deposit() {
   const [minDepositAmount, setMinDepositAmount] = useState(0);
   const [submittedAmount, setSubmittedAmount] = useState("");
 
-  // Fetch exchange rates
+  // Fetch exchange rates from our own backend (Redis-cached Binance prices) instead of
+  // calling a third-party API directly from the browser — cryptocompare blocks CORS
+  // requests from this origin in production, which silently broke rate lookups.
   useEffect(() => {
     const fetchExchangeRates = async () => {
       try {
         setLoadingRates(true);
-        const response = await axios.get(
-          "https://min-api.cryptocompare.com/data/pricemulti",
-          {
-            params: {
-              fsyms: CURRENCIES.join(","),
-              tsyms: "USD",
-            },
+        const tenantId = AuthCurrentTenant.get();
+        const response = await authAxios.get(`/tenant/${tenantId}/prices`);
+
+        const prices: Record<string, { c: string }> = response.data?.data || {};
+        const rates: Record<string, number> = {};
+        CURRENCIES.forEach((currency) => {
+          const ticker = prices[`${currency}USDT`];
+          const price = Number(ticker?.c);
+          if (price > 0) {
+            rates[currency] = price;
           }
-        );
-        
-        if (response.data && response.data.Response !== "Error") {
-          const rates: Record<string, number> = {};
-          CURRENCIES.forEach(currency => {
-            if (response.data[currency]?.USD) {
-              rates[currency] = response.data[currency].USD;
-            }
-          });
-          setExchangeRates(rates);
-        }
+        });
+        setExchangeRates(rates);
       } catch (error) {
         console.error("Failed to fetch exchange rates:", error);
       } finally {
@@ -153,28 +156,47 @@ function Deposit() {
     return () => clearInterval(interval);
   }, []);
 
-  const minInCurrency = useMemo(() => {
-    if (!symbol || !exchangeRates[symbol.toUpperCase()]) return 0;
-    const rate = exchangeRates[symbol.toUpperCase()];
-    return getMinDepositUSD(symbol) / rate;
+  // Stablecoins always have a rate of 1 so they never depend on the live rate fetch;
+  // other coins are blocked (rateAvailable = false) until a real rate is loaded, so we
+  // never silently treat the minimum as 0 and let a below-minimum deposit through.
+  const { minInCurrency, rateAvailable } = useMemo(() => {
+    if (!symbol) return { minInCurrency: 0, rateAvailable: false };
+
+    const sym = symbol.toUpperCase();
+    const isStable = STABLECOINS.has(sym);
+    const rate = isStable ? 1 : exchangeRates[sym];
+
+    if (!rate) return { minInCurrency: 0, rateAvailable: false };
+
+    return { minInCurrency: getMinDepositUSD(symbol) / rate, rateAvailable: true };
   }, [symbol, exchangeRates]);
 
   const formattedMinAmount = useMemo(() => {
+    if (!rateAvailable) return "...";
     if (minInCurrency === 0) return "0";
     return formatNumberHelper(minInCurrency, symbol);
-  }, [minInCurrency, symbol]);
+  }, [minInCurrency, symbol, rateAvailable]);
 
   const schema = useMemo(() => {
+    // If we can't yet verify the minimum, require an impossibly high amount so the
+    // form can never validate as "ready" until the rate/minimum is confirmed.
+    const effectiveMin = rateAvailable ? (minInCurrency || 0) : Number.POSITIVE_INFINITY;
+
     return yup.object().shape({
       amount: yup
         .number()
         .typeError("Amount must be a number")
         .positive("Amount must be positive")
         .required("Amount is required")
-        .min(minInCurrency || 0, `Minimum deposit is ${formattedMinAmount} ${symbol}`),
+        .min(
+          effectiveMin,
+          rateAvailable
+            ? `Minimum deposit is ${formattedMinAmount} ${symbol}`
+            : "Verifying minimum deposit amount, please wait"
+        ),
       txid: yup.string().required("Transaction ID is required"),
     });
-  }, [minInCurrency, formattedMinAmount, symbol]);
+  }, [minInCurrency, formattedMinAmount, symbol, rateAvailable]);
 
   const formMethods = useForm({
     resolver: yupResolver(schema),
@@ -355,13 +377,21 @@ function Deposit() {
     return `https://images.weserv.nl/?url=https://bin.bnbstatic.com/static/assets/logos/${cleanSymbol}.png`;
   }, []);
 
+  // Effective rate for the selected symbol: stablecoins are always 1:1 with USD.
+  const currentRate = useMemo(() => {
+    if (!symbol) return 0;
+    const sym = symbol.toUpperCase();
+    if (STABLECOINS.has(sym)) return 1;
+    return exchangeRates[sym] || 0;
+  }, [symbol, exchangeRates]);
+
   const enteredAmount = formMethods.watch("amount");
   const enteredAmountUSD = useMemo(() => {
-    if (!enteredAmount || !exchangeRates[symbol?.toUpperCase()]) return 0;
+    if (!enteredAmount || !currentRate) return 0;
     const amountNum = Number(enteredAmount);
     if (isNaN(amountNum) || !isFinite(amountNum)) return 0;
-    return amountNum * exchangeRates[symbol.toUpperCase()];
-  }, [enteredAmount, symbol, exchangeRates]);
+    return amountNum * currentRate;
+  }, [enteredAmount, currentRate]);
 
   return (
     <div className="dw__container">
@@ -379,7 +409,7 @@ function Deposit() {
       <div className="dw__content-area">
         <div className="dw__content-wrapper">
           {/* Minimum deposit requirement */}
-          {symbol && exchangeRates[symbol.toUpperCase()] && (
+          {symbol && rateAvailable && (
             <div className="dw__info-box">
               <div className="dw__info-row">
                 <span className="dw__info-label">Minimum deposit:</span>
@@ -426,9 +456,9 @@ function Deposit() {
               </div>
               <div className="dw__currency-details">
                 <div className="dw__currency-name">{currentCurrency?.name || symbol}</div>
-                {exchangeRates[symbol?.toUpperCase()] && (
+                {rateAvailable && (
                   <div className="dw__currency-rate">
-                    1 {symbol} ≈ {formatUSD(exchangeRates[symbol.toUpperCase()])}
+                    1 {symbol} ≈ {formatUSD(currentRate)}
                   </div>
                 )}
               </div>
@@ -544,8 +574,8 @@ function Deposit() {
                   <button
                     type="submit"
                     className="dw__submit-btn"
-                    disabled={!formMethods.formState.isValid || isSubmitting || loadingRates}
-                    aria-disabled={!formMethods.formState.isValid || isSubmitting || loadingRates}
+                    disabled={!formMethods.formState.isValid || isSubmitting || loadingRates || !rateAvailable}
+                    aria-disabled={!formMethods.formState.isValid || isSubmitting || loadingRates || !rateAvailable}
                   >
                     {isSubmitting ? (
                       <>

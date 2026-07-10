@@ -15,7 +15,8 @@ import assetsListActions from "src/modules/assets/list/assetsListActions";
 import SuccessModalComponent from "src/view/shared/modals/sucessModal";
 import method from "src/modules/depositMethod/list/depositMethodListActions";
 import depositMethodselectors from "src/modules/depositMethod/list/depositMethodSelectors";
-import axios from "axios";
+import authAxios from "src/modules/shared/axios/authAxios";
+import AuthCurrentTenant from "src/modules/auth/authCurrentTenant";
 
 // Currency configurations
 const CURRENCIES = [
@@ -29,6 +30,8 @@ const MIN_WITHDRAWAL_BY_COIN: Record<string, number> = {
   SOL: 100,
   XRP: 100,
   ETH: 100,
+  BNB: 100,
+  DOGE: 100,
   USDC: 50,
   USDT: 50,
 };
@@ -47,6 +50,10 @@ function getMinWithdrawalUSD(sym: string): number {
 function getWithdrawalFeeUSD(sym: string): number {
   return WITHDRAWAL_FEE_BY_COIN[sym?.toUpperCase()] ?? DEFAULT_WITHDRAWAL_FEE_USD;
 }
+
+// Stablecoins are pegged 1:1 with USD, so we don't need to wait on a live
+// exchange rate fetch to know their minimum/fee in coin units.
+const STABLECOINS = new Set(["USDT", "USDC", "DAI"]);
 
 // Decimal places for each currency
 const CURRENCY_DECIMALS = {
@@ -118,30 +125,26 @@ function Withdraw() {
     dispatch(method.doFetch());
   }, [dispatch]);
 
-  // Fetch exchange rates
+  // Fetch exchange rates from our own backend (Redis-cached Binance prices) instead of
+  // calling a third-party API directly from the browser — cryptocompare blocks CORS
+  // requests from this origin in production, which silently broke rate lookups.
   useEffect(() => {
     const fetchExchangeRates = async () => {
       try {
         setLoadingRates(true);
-        const response = await axios.get(
-          "https://min-api.cryptocompare.com/data/pricemulti",
-          {
-            params: {
-              fsyms: CURRENCIES.join(","),
-              tsyms: "USD",
-            },
-          }
-        );
+        const tenantId = AuthCurrentTenant.get();
+        const response = await authAxios.get(`/tenant/${tenantId}/prices`);
 
-        if (response.data && response.data.Response !== "Error") {
-          const rates: Record<string, number> = {};
-          CURRENCIES.forEach(currency => {
-            if (response.data[currency]?.USD) {
-              rates[currency] = response.data[currency].USD;
-            }
-          });
-          setExchangeRates(rates);
-        }
+        const prices: Record<string, { c: string }> = response.data?.data || {};
+        const rates: Record<string, number> = {};
+        CURRENCIES.forEach((currency) => {
+          const ticker = prices[`${currency}USDT`];
+          const price = Number(ticker?.c);
+          if (price > 0) {
+            rates[currency] = price;
+          }
+        });
+        setExchangeRates(rates);
       } catch (error) {
         console.error("Failed to fetch exchange rates:", error);
       } finally {
@@ -221,19 +224,26 @@ function Withdraw() {
   const isAmountNumber = !Number.isNaN(parsedAmount) && isFinite(parsedAmount);
   const availableBalance = item ? Number(item.amount) || 0 : 0;
 
-  // Calculate minimum withdrawal and fee in selected currency
-  const { minInCurrency, feeInCurrency } = useMemo(() => {
-    if (!selected || !exchangeRates[selected]) {
-      return { minInCurrency: 0, feeInCurrency: 0 };
+  // Calculate minimum withdrawal and fee in selected currency.
+  // Stablecoins always have a rate of 1 so they never depend on the live rate fetch;
+  // other coins are blocked (rateAvailable = false) until a real rate is loaded, so we
+  // never silently treat the minimum/fee as 0.
+  const { minInCurrency, feeInCurrency, rateAvailable } = useMemo(() => {
+    if (!selected) {
+      return { minInCurrency: 0, feeInCurrency: 0, rateAvailable: false };
     }
 
-    const rate = exchangeRates[selected];
-    const minInCurrency = getMinWithdrawalUSD(selected) / rate;
-    const feeInCurrency = getWithdrawalFeeUSD(selected) / rate;
+    const isStable = STABLECOINS.has(selected.toUpperCase());
+    const rate = isStable ? 1 : exchangeRates[selected];
+
+    if (!rate) {
+      return { minInCurrency: 0, feeInCurrency: 0, rateAvailable: false };
+    }
 
     return {
-      minInCurrency,
-      feeInCurrency,
+      minInCurrency: getMinWithdrawalUSD(selected) / rate,
+      feeInCurrency: getWithdrawalFeeUSD(selected) / rate,
+      rateAvailable: true,
     };
   }, [selected, exchangeRates]);
 
@@ -324,6 +334,14 @@ function Withdraw() {
       return { disabled: true, label: i18n("pages.withdraw.validation.selectNetwork"), reason: "selectNetwork" };
     }
 
+    if (!rateAvailable) {
+      return {
+        disabled: true,
+        label: "Unable to verify minimum amount, please try again",
+        reason: "rateUnavailable",
+      };
+    }
+
     if (!isAmountNumber || parsedAmount <= 0) {
       return { disabled: true, label: i18n("pages.withdraw.validation.enterAmount"), reason: "enterAmount" };
     }
@@ -367,7 +385,7 @@ function Withdraw() {
     }
 
     return { disabled: false, label: i18n("pages.withdraw.confirmWithdrawal"), reason: "ok" };
-  }, [selected, networkList, selectedNetwork, isAmountNumber, parsedAmount, minInCurrency, availableBalance, feeInCurrency, form, formatNumber]);
+  }, [selected, networkList, selectedNetwork, rateAvailable, isAmountNumber, parsedAmount, minInCurrency, availableBalance, feeInCurrency, form, formatNumber]);
 
   const validationState = computeValidationState();
 
@@ -419,23 +437,24 @@ function Withdraw() {
     setShowNetworkDropdown(false);
   }, [form]);
 
+  // Effective rate for the selected symbol: stablecoins are always 1:1 with USD.
+  const currentRate = useMemo(() => {
+    if (!selected) return 0;
+    if (STABLECOINS.has(selected.toUpperCase())) return 1;
+    return exchangeRates[selected] || 0;
+  }, [selected, exchangeRates]);
+
   // Calculate USD value of withdrawal amount
   const withdrawalUSDValue = useMemo(() => {
-    if (!isAmountNumber || !exchangeRates[selected]) return 0;
-    return parsedAmount * exchangeRates[selected];
-  }, [parsedAmount, selected, exchangeRates, isAmountNumber]);
-
-  // Calculate USD value of fee
-  const feeUSDValue = useMemo(() => {
-    if (!exchangeRates[selected]) return 0;
-    return feeInCurrency * exchangeRates[selected];
-  }, [feeInCurrency, selected, exchangeRates]);
+    if (!isAmountNumber || !currentRate) return 0;
+    return parsedAmount * currentRate;
+  }, [parsedAmount, currentRate, isAmountNumber]);
 
   // Calculate USD value of receive amount
   const receiveUSDValue = useMemo(() => {
-    if (!exchangeRates[selected]) return 0;
-    return receiveAmount * exchangeRates[selected];
-  }, [receiveAmount, selected, exchangeRates]);
+    if (!currentRate) return 0;
+    return receiveAmount * currentRate;
+  }, [receiveAmount, currentRate]);
 
   // Format available balance with proper handling
   const formattedAvailableBalance = useMemo(() => {
@@ -445,15 +464,17 @@ function Withdraw() {
 
   // Format minimum withdrawal amount
   const formattedMinAmount = useMemo(() => {
+    if (!rateAvailable) return "...";
     if (minInCurrency === 0) return "0";
     return formatNumber(minInCurrency);
-  }, [minInCurrency, formatNumber]);
+  }, [minInCurrency, formatNumber, rateAvailable]);
 
   // Format fee amount
   const formattedFeeAmount = useMemo(() => {
+    if (!rateAvailable) return "...";
     if (feeInCurrency === 0) return "0";
     return formatNumber(feeInCurrency);
-  }, [feeInCurrency, formatNumber]);
+  }, [feeInCurrency, formatNumber, rateAvailable]);
 
   // Format receive amount
   const formattedReceiveAmount = useMemo(() => {
@@ -518,9 +539,9 @@ function Withdraw() {
                       <span className="wd__currency-text">{selected}</span>
                       {loadingRates ? (
                         <span className="wd__rate-loading">Loading rates...</span>
-                      ) : exchangeRates[selected] ? (
+                      ) : currentRate ? (
                         <span className="wd__currency-rate">
-                          (1 {selected} ≈ {formatUSD(exchangeRates[selected])})
+                          (1 {selected} ≈ {formatUSD(currentRate)})
                         </span>
                       ) : null}
                     </div>
@@ -571,9 +592,9 @@ function Withdraw() {
                               <span className="wd__currency-text">{symbol}</span>
                               {loadingRates ? (
                                 <span className="wd__rate-loading-small">...</span>
-                              ) : exchangeRates[symbol] ? (
+                              ) : (STABLECOINS.has(symbol.toUpperCase()) || exchangeRates[symbol]) ? (
                                 <span className="wd__currency-rate-small">
-                                  ({formatUSD(exchangeRates[symbol])})
+                                  ({formatUSD(STABLECOINS.has(symbol.toUpperCase()) ? 1 : exchangeRates[symbol])})
                                 </span>
                               ) : null}
                             </div>
@@ -588,7 +609,7 @@ function Withdraw() {
             </div>
 
             {/* Minimum withdrawal requirement */}
-            {selected && exchangeRates[selected] && (
+            {selected && rateAvailable && (
               <div className="wd__info-box">
                 <div className="wd__info-row">
                   <span className="wd__info-label">Minimum withdrawal:</span>
@@ -650,7 +671,7 @@ function Withdraw() {
                       type="text"
                       className="wd__address-field"
                       placeholder="Enter your wallet address"
-                      onChange={(e) => setAddress(e.target.value)}
+                      onChange={(value) => setAddress(value)}
                     />
                   </div>
                   <br />
@@ -687,7 +708,7 @@ function Withdraw() {
                     <div className="wd__fee-label">Withdrawal fee:</div>
                     <div className="wd__fee-value">
                       {formattedFeeAmount} {selected}
-                      <span className="wd__fee-usd"> ({formatUSD(feeUSDValue)})</span>
+                      <span className="wd__fee-usd"> ({formatUSD(getWithdrawalFeeUSD(selected))})</span>
                     </div>
                   </div>
                   <div className="wd__fee-row">

@@ -68,6 +68,7 @@ const vipFormActions = {
       dispatch({
         type: vipFormActions.CREATE_ERROR,
       });
+      throw error;
     }
   },
 

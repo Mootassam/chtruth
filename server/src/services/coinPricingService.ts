@@ -8,6 +8,8 @@ export const MIN_AMOUNT_USD_BY_COIN: Record<string, number> = {
   SOL: 100,
   XRP: 100,
   ETH: 100,
+  BNB: 100,
+  DOGE: 100,
   USDC: 50,
   USDT: 50,
 };
