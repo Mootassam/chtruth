@@ -95,6 +95,11 @@ const en = {
     pleaseWriteAmount: "Please write amount",
     withdrawalExceedsBalance: "It looks like your withdrawal amount exceeds your balance",
     withdrawPasswordIncorrect: "Your withdraw Password is not correct please check again",
+    belowMinimumWithdrawal: "Withdrawal amount is below the minimum allowed for {0}",
+    invalidWithdrawAmount: "Please enter a valid withdrawal amount",
+    walletNotFound: "Wallet not found for this asset",
+    belowMinimumDeposit: "Deposit amount is below the minimum allowed for {0}",
+    invalidDepositAmount: "Please enter a valid deposit amount",
     notFound: {
       message: 'Not Found',
     },

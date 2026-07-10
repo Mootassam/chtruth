@@ -23,7 +23,7 @@ const MIN_DEPOSIT_BY_COIN: Record<string, number> = {
   BTC:  100,
   SOL:  100,
   XRP:  100,
-  ETH:   50,
+  ETH:  100,
   USDC:  50,
   USDT:  50,
 };

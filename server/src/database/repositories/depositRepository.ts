@@ -8,11 +8,30 @@ import Deposit from "../models/deposit";
 import assets from "../models/wallet";
 import transaction from "../models/transaction";
 import { sendNotification } from "../../services/notificationServices";
+import Error400 from "../../errors/Error400";
+import { getMinDepositUsd, getUsdPrice } from "../../services/coinPricingService";
 
 class DepositRepository {
   static async create(data, options: IRepositoryOptions) {
     const currentTenant = MongooseRepository.getCurrentTenant(options);
     const currentUser = MongooseRepository.getCurrentUser(options);
+
+    const depositAmount = Number(data.amount);
+    if (!depositAmount || !isFinite(depositAmount) || depositAmount <= 0) {
+      throw new Error400(options.language, "errors.invalidDepositAmount");
+    }
+
+    // Enforce the minimum deposit amount server-side so it can't be bypassed by
+    // calling the API directly.
+    const price = await getUsdPrice(data.rechargechannel);
+    const minDepositUsd = getMinDepositUsd(data.rechargechannel);
+    if (depositAmount * price < minDepositUsd) {
+      throw new Error400(
+        options.language,
+        "errors.belowMinimumDeposit",
+        data.rechargechannel
+      );
+    }
 
     const [record] = await Deposit(options.database).create(
       [

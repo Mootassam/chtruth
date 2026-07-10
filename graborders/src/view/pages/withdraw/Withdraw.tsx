@@ -28,15 +28,24 @@ const MIN_WITHDRAWAL_BY_COIN: Record<string, number> = {
   BTC: 100,
   SOL: 100,
   XRP: 100,
-  ETH: 50,
+  ETH: 100,
   USDC: 50,
   USDT: 50,
 };
 const DEFAULT_MIN_WITHDRAWAL_USD = 50;
-const WITHDRAWAL_FEE_USD = 5;
+
+// Withdrawal fee in USD per coin
+const WITHDRAWAL_FEE_BY_COIN: Record<string, number> = {
+  XRP: 10,
+};
+const DEFAULT_WITHDRAWAL_FEE_USD = 5;
 
 function getMinWithdrawalUSD(sym: string): number {
   return MIN_WITHDRAWAL_BY_COIN[sym?.toUpperCase()] ?? DEFAULT_MIN_WITHDRAWAL_USD;
+}
+
+function getWithdrawalFeeUSD(sym: string): number {
+  return WITHDRAWAL_FEE_BY_COIN[sym?.toUpperCase()] ?? DEFAULT_WITHDRAWAL_FEE_USD;
 }
 
 // Decimal places for each currency
@@ -220,7 +229,7 @@ function Withdraw() {
 
     const rate = exchangeRates[selected];
     const minInCurrency = getMinWithdrawalUSD(selected) / rate;
-    const feeInCurrency = WITHDRAWAL_FEE_USD / rate;
+    const feeInCurrency = getWithdrawalFeeUSD(selected) / rate;
 
     return {
       minInCurrency,
@@ -730,7 +739,7 @@ function Withdraw() {
                   <div className="wd__notice-title">Important notice</div>
                   <div className="wd__notice-content">
                     <div className="wd__notice-item">1. Minimum withdrawal amount is ${getMinWithdrawalUSD(selected)} USD equivalent in selected currency.</div>
-                    <div className="wd__notice-item">2. Withdrawal fee is ${WITHDRAWAL_FEE_USD} USD equivalent in selected currency.</div>
+                    <div className="wd__notice-item">2. Withdrawal fee is ${getWithdrawalFeeUSD(selected)} USD equivalent in selected currency.</div>
                     <div className="wd__notice-item">3. After submitting the withdraw application, the money will arrive within 24 hours. If the money does not arrive after the expected withdraw time, please consult the online customer service.</div>
                     <div className="wd__notice-item">4. After submitting the withdraw application, the funds are frozen because the withdraw is in progress and the funds are temporarily held by the system. This does not mean that you have lost the asset or that there is an abnormality with the asset.</div>
                   </div>

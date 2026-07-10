@@ -11,6 +11,11 @@ import { sendNotification } from "../../services/notificationServices";
 import Error405 from "../../errors/Error405";
 import User from "../models/user";
 import Error400 from "../../errors/Error400";
+import {
+  getMinWithdrawalUsd,
+  getWithdrawalFeeUsd,
+  getUsdPrice,
+} from "../../services/coinPricingService";
 
 class WithdrawRepository {
   static async create(data, options: IRepositoryOptions) {
@@ -22,6 +27,54 @@ class WithdrawRepository {
     if (!user || user.withdrawPassword !== data.withdrawPassword) {
 throw new Error400(options.language, "errors.passwordNotMatching");    }
 
+    const withdrawAmount = Number(data.withdrawAmount);
+    if (!withdrawAmount || !isFinite(withdrawAmount) || withdrawAmount <= 0) {
+      throw new Error400(options.language, "errors.invalidWithdrawAmount");
+    }
+
+    const WalletModel = assets(options.database);
+    const TransactionModel = options.database.model("transaction");
+
+    // 1️⃣ Fetch the user's wallet for the given asset
+    let wallet = await WalletModel.findOne({
+      user: currentUser.id,
+      symbol: data.currency,
+    });
+
+    if (!wallet) {
+      throw new Error400(options.language, "errors.walletNotFound");
+    }
+
+    if (wallet.amount < withdrawAmount) {
+      throw new Error400(options.language, "errors.withdrawalExceedsBalance");
+    }
+
+    // 2️⃣ Enforce the minimum withdrawal amount and compute the fee server-side
+    // so the client cannot bypass the minimum or tamper with the fee/totalAmount.
+    const price = await getUsdPrice(data.currency);
+    const minWithdrawalUsd = getMinWithdrawalUsd(data.currency);
+    const feeUsd = getWithdrawalFeeUsd(data.currency);
+
+    const amountUsd = withdrawAmount * price;
+    if (amountUsd < minWithdrawalUsd) {
+      throw new Error400(
+        options.language,
+        "errors.belowMinimumWithdrawal",
+        data.currency
+      );
+    }
+
+    const fee = feeUsd / price;
+    if (withdrawAmount <= fee) {
+      throw new Error400(
+        options.language,
+        "errors.belowMinimumWithdrawal",
+        data.currency
+      );
+    }
+
+    data.fee = fee;
+    data.totalAmount = withdrawAmount - fee;
 
     const [record] = await Withdraw(options.database).create(
       [
@@ -35,30 +88,17 @@ throw new Error400(options.language, "errors.passwordNotMatching");    }
       options
     );
 
-    const WalletModel = assets(options.database);
-    const TransactionModel = options.database.model("transaction");
-
-    // 1️⃣ Fetch the user's wallet for the given asset
-    let wallet = await WalletModel.findOne({
-      user: currentUser.id,
-      symbol: data.currency,
-    });
-
-    if (!wallet) {
-      throw new Error("Wallet not found for this asset");
-    }
-
-    // 2️⃣ Reduce balance immediately (hold funds while withdrawal is pending)
+    // 3️⃣ Reduce balance immediately (hold funds while withdrawal is pending)
     await WalletModel.updateOne(
       { _id: wallet.id },
       {
-        $inc: { amount: -data.withdrawAmount }, // reduce balance
+        $inc: { amount: -withdrawAmount }, // reduce balance
         updatedBy: currentUser.id,
       },
       options
     );
 
-    // 3️⃣ Create a transaction log
+    // 4️⃣ Create a transaction log
     await TransactionModel.create({
       type: "withdraw",
       wallet: wallet.id,
