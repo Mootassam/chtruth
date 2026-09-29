@@ -156,7 +156,7 @@ function termservice() {
       <div className="section-content">
         <p>For questions about these Terms, please contact us at:</p>
         <p>
-          Email: support@nexus-exchange.com
+          Email: support@mevexchange.com
           <br />
           Address: 981 OAV Street, Wilmington, DE 19801
         </p>

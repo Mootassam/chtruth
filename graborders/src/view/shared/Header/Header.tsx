@@ -144,7 +144,7 @@ function Header() {
   const logoSection = useMemo(() => (
     <div className="logo-section">
       <img 
-        src="/icons/nexus.png" 
+        src="/icons/mev.png" 
         alt="App Logo" 
         style={{ height: 35 }}
         loading="lazy" // Improve loading performance

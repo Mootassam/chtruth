@@ -60,7 +60,7 @@ function Invitation() {
 
   // ✅ Share functionality
   const shareReferral = (platform: string) => {
-    const shareText = `Join NEXUS using my referral code: ${currentUser?.refcode}`;
+    const shareText = `Join MEV using my referral code: ${currentUser?.refcode}`;
     const shareUrl = window.location.origin;
 
     switch (platform) {
@@ -72,7 +72,7 @@ function Invitation() {
         break;
       case "email":
         window.open(
-          `mailto:?subject=Join NEXUS&body=${encodeURIComponent(shareText)}`,
+          `mailto:?subject=Join MEV&body=${encodeURIComponent(shareText)}`,
           "_blank"
         );
         break;
@@ -82,7 +82,7 @@ function Invitation() {
       case "more":
         if (navigator.share) {
           navigator.share({
-            title: "NEXUS Referral",
+            title: "MEV Referral",
             text: shareText,
             url: shareUrl,
           });

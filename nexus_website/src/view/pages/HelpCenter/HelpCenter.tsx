@@ -8,7 +8,7 @@ const HelpCenter: React.FC = () => {
     technical: {
       name: "Dr. Sarah Chen",
       title: "Head of Technical Team",
-      email: "support@nexus-exchange.com",
+      email: "support@mevexchange.com",
       picture: "/sara.jpg",
       description: "15+ years experience in blockchain technology and cybersecurity. Leads our technical infrastructure and platform development.",
       expertise: ["Blockchain Technology", "System Architecture", "Security", "API Integration"]
@@ -16,7 +16,7 @@ const HelpCenter: React.FC = () => {
     transactions: {
       name: "Michael Rodriguez",
       title: "Head of Transactions Team",
-      email: "security@nexus-exchange.com",
+      email: "security@mevexchange.com",
       picture: "/micheal.jpg",
       description: "Financial services expert with extensive background in digital asset management and transaction processing.",
       expertise: ["Payment Processing", "Risk Management", "Compliance", "Customer Support"]
@@ -24,9 +24,9 @@ const HelpCenter: React.FC = () => {
   };
 
   const contactInfo = {
-    general: "support@nexus-exchange.com",
-    technical: "affiliate@nexus-exchange.com",
-    security: "security@nexus-exchange.com",
+    general: "support@mevexchange.com",
+    technical: "affiliate@mevexchange.com",
+    security: "security@mevexchange.com",
   };
 
   const addresses = {
@@ -39,7 +39,7 @@ const HelpCenter: React.FC = () => {
   const faqCategories = {
     general: [
       {
-        question: "How do I create an account on Nexus Exchange?",
+        question: "How do I create an account on Mev Exchange?",
         answer: "Click the 'Register' button on our homepage, provide your email address, create a strong password, and complete the verification process. You'll need to verify your email and complete KYC procedures."
       },
       {
@@ -76,7 +76,7 @@ const HelpCenter: React.FC = () => {
       },
       {
         question: "How do I report a suspicious transaction?",
-        answer: "Immediately contact our security team at security@nexus-exchange.com with transaction details. Include your account email and any relevant transaction IDs or screenshots."
+        answer: "Immediately contact our security team at security@mevexchange.com with transaction details. Include your account email and any relevant transaction IDs or screenshots."
       }
     ]
   };
@@ -483,7 +483,7 @@ const HelpCenter: React.FC = () => {
       {/* Hero Section */}
       <section className="help-hero">
         <div className="container">
-          <h1 className="help-hero-title">Nexus <span>Help Center</span></h1>
+          <h1 className="help-hero-title">MEV <span>Help Center</span></h1>
           <p className="help-hero-subtitle">
             Get the support you need. Find answers, contact our team, or explore our resources.
           </p>

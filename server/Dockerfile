@@ -15,7 +15,7 @@ RUN npm install --legacy-peer-deps
 COPY . .
 
 # Set environment variables
-ENV BACKEND_URL="https://www.nexus-exchange.com/api"
+ENV BACKEND_URL="https://www.mevexchange.com/api"
 
 # Expose your app port
 EXPOSE 8084

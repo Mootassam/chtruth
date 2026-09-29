@@ -40,20 +40,20 @@ function Header() {
   };
 
   return (
-    <header className="nexus-header">
-      <div className="nexus-container">
-        <div className="nexus-header-content">
+    <header className="MEV-header">
+      <div className="MEV-container">
+        <div className="MEV-header-content">
           {/* Left side - Logo and Navigation */}
-          <div className="nexus-header-left">
-            <div className="nexus-logo">
-              <img src="./logo.png" alt="Nexus Exchange" width={140} />
+          <div className="MEV-header-left">
+            <div className="MEV-logo">
+              <img src="./logo.png" alt="Mev Exchange" width={140} />
             </div>
-            <ul className={`nexus-nav-menu ${isMobileMenuOpen ? 'nexus-active' : ''}`}>
+            <ul className={`MEV-nav-menu ${isMobileMenuOpen ? 'MEV-active' : ''}`}>
               {router.map((item, index) => (
                 <li key={index}>
                   <Link 
                     to={item.path} 
-                    className="nexus-nav-link"
+                    className="MEV-nav-link"
                     onClick={closeMobileMenu}
                   >
                     {item.text}
@@ -64,27 +64,27 @@ function Header() {
           </div>
 
           {/* Right side - Auth Buttons */}
-          <div className="nexus-header-right">
-            <div className="nexus-auth-buttons">
-              <a href="https://nexus-exchange.com/auth/signin" target='_blank' className="nexus-btn nexus-btn-login">
+          <div className="MEV-header-right">
+            <div className="MEV-auth-buttons">
+              <a href="https://mevexchange.com/auth/signin" target='_blank' className="MEV-btn MEV-btn-login">
                 <i className="fas fa-sign-in-alt"></i>
                 Login
               </a>
-              <a href="https://nexus-exchange.com/auth/signup" target='_blank' className="nexus-btn nexus-btn-register">
+              <a href="https://mevexchange.com/auth/signup" target='_blank' className="MEV-btn MEV-btn-register">
                 <i className="fas fa-user-plus"></i>
                 Register
               </a>
             </div>
           </div>
 
-          <div className="nexus-mobile-toggle" onClick={toggleMobileMenu}>
+          <div className="MEV-mobile-toggle" onClick={toggleMobileMenu}>
             <i className={`fas ${isMobileMenuOpen ? 'fa-times' : 'fa-bars'}`} />
           </div>
         </div>
       </div>
 
       <style>{`
-        .nexus-header {
+        .MEV-header {
           background-color: rgba(0, 0, 0, 0.9);
           padding: 20px 0;
           position: fixed;
@@ -94,37 +94,37 @@ function Header() {
           box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
         }
 
-        .nexus-container {
+        .MEV-container {
           max-width: 1200px;
           margin: 0 auto;
           padding: 0 20px;
         }
 
-        .nexus-header-content {
+        .MEV-header-content {
           display: flex;
           justify-content: space-between;
           align-items: center;
           width: 100%;
         }
 
-        .nexus-header-left {
+        .MEV-header-left {
           display: flex;
           align-items: center;
           gap: 40px;
         }
 
-        .nexus-header-right {
+        .MEV-header-right {
           display: flex;
           align-items: center;
         }
 
-        .nexus-auth-buttons {
+        .MEV-auth-buttons {
           display: flex;
           gap: 15px;
           align-items: center;
         }
 
-        .nexus-btn {
+        .MEV-btn {
           padding: 10px 20px;
           border-radius: 8px;
           font-weight: 600;
@@ -138,29 +138,29 @@ function Header() {
           gap: 8px;
         }
 
-        .nexus-btn-login {
+        .MEV-btn-login {
           background-color: transparent;
           color: #FFFFFF;
           border-color: #F3BA2F;
         }
 
-        .nexus-btn-login:hover {
+        .MEV-btn-login:hover {
           background-color: rgba(243, 186, 47, 0.1);
           transform: translateY(-2px);
         }
 
-        .nexus-btn-register {
+        .MEV-btn-register {
           background-color: #F3BA2F;
           color: #000000;
         }
 
-        .nexus-btn-register:hover {
+        .MEV-btn-register:hover {
           background-color: #e0a91a;
           transform: translateY(-2px);
           box-shadow: 0 5px 15px rgba(243, 186, 47, 0.3);
         }
 
-        .nexus-nav-menu {
+        .MEV-nav-menu {
           display: flex;
           list-style: none;
           gap: 30px;
@@ -168,7 +168,7 @@ function Header() {
           padding: 0;
         }
 
-        .nexus-nav-link {
+        .MEV-nav-link {
           color: #FFFFFF;
           text-decoration: none;
           font-weight: 500;
@@ -176,11 +176,11 @@ function Header() {
           position: relative;
         }
 
-        .nexus-nav-link:hover {
+        .MEV-nav-link:hover {
           color: #F3BA2F;
         }
 
-        .nexus-nav-link::after {
+        .MEV-nav-link::after {
           content: '';
           position: absolute;
           width: 0;
@@ -191,11 +191,11 @@ function Header() {
           transition: width 0.3s;
         }
 
-        .nexus-nav-link:hover::after {
+        .MEV-nav-link:hover::after {
           width: 100%;
         }
 
-        .nexus-mobile-toggle {
+        .MEV-mobile-toggle {
           display: none;
           font-size: 24px;
           cursor: pointer;
@@ -204,28 +204,28 @@ function Header() {
 
         /* Mobile Responsive */
         @media (max-width: 768px) {
-          .nexus-header-left {
+          .MEV-header-left {
             gap: 20px;
           }
 
-          .nexus-auth-buttons {
+          .MEV-auth-buttons {
             gap: 10px;
           }
 
-          .nexus-btn {
+          .MEV-btn {
             padding: 8px 16px;
             font-size: 13px;
           }
 
-          .nexus-btn i {
+          .MEV-btn i {
             display: none;
           }
 
-          .nexus-nav-menu {
+          .MEV-nav-menu {
             display: none;
           }
 
-          .nexus-nav-menu.nexus-active {
+          .MEV-nav-menu.MEV-active {
             display: flex;
             flex-direction: column;
             position: absolute;
@@ -239,38 +239,38 @@ function Header() {
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
           }
 
-          .nexus-nav-menu.nexus-active li {
+          .MEV-nav-menu.MEV-active li {
             padding: 10px 0;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
           }
 
-          .nexus-nav-menu.nexus-active li:last-child {
+          .MEV-nav-menu.MEV-active li:last-child {
             border-bottom: none;
           }
 
-          .nexus-mobile-toggle {
+          .MEV-mobile-toggle {
             display: block;
             z-index: 1002;
           }
 
-          .nexus-header-right {
+          .MEV-header-right {
             display: none;
           }
         }
 
         @media (max-width: 480px) {
-          .nexus-header-content {
+          .MEV-header-content {
             flex-wrap: wrap;
           }
 
-          .nexus-auth-buttons {
+          .MEV-auth-buttons {
             order: 3;
             width: 100%;
             justify-content: center;
             margin-top: 15px;
           }
 
-          .nexus-btn {
+          .MEV-btn {
             flex: 1;
             max-width: 120px;
             text-align: center;

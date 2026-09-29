@@ -318,6 +318,16 @@ function Withdraw() {
     return `https://images.weserv.nl/?url=https://bin.bnbstatic.com/static/assets/logos/${cleanSymbol}.png`;
   }, []);
 
+  // Fill the amount field with the full available balance (truncated, never rounded
+  // up, so the resulting amount can never exceed what the user actually has).
+  const handleMaxClick = useCallback(() => {
+    if (!selected || availableBalance <= 0) return;
+    const decimals = CURRENCY_DECIMALS[selected] || 2;
+    const factor = Math.pow(10, decimals);
+    const maxAmount = Math.floor(availableBalance * factor) / factor;
+    form.setValue("withdrawAmount", maxAmount.toString(), { shouldValidate: true });
+  }, [selected, availableBalance, form]);
+
   // Handle network selection
   const handleNetworkSelect = useCallback((network: any) => {
     setSelectedNetwork(network._id || network.name);
@@ -356,21 +366,15 @@ function Withdraw() {
       };
     }
 
-    // Check available balance
+    // Check available balance. The withdrawal fee is deducted FROM the requested
+    // amount (see receiveAmount = amount - fee), not charged on top of it, so the
+    // only balance requirement is that the requested amount itself fits — this lets
+    // a user withdraw their full balance without a false "insufficient balance".
     if (parsedAmount > availableBalance) {
       return {
         disabled: true,
         label: i18n("pages.withdraw.validation.insufficientBalance"),
         reason: "insufficientBalance",
-      };
-    }
-
-    // Check if fee can be covered
-    if (parsedAmount + feeInCurrency > availableBalance) {
-      return {
-        disabled: true,
-        label: i18n("pages.withdraw.validation.insufficientForFee"),
-        reason: "insufficientForFee",
       };
     }
 
@@ -385,7 +389,7 @@ function Withdraw() {
     }
 
     return { disabled: false, label: i18n("pages.withdraw.confirmWithdrawal"), reason: "ok" };
-  }, [selected, networkList, selectedNetwork, rateAvailable, isAmountNumber, parsedAmount, minInCurrency, availableBalance, feeInCurrency, form, formatNumber]);
+  }, [selected, networkList, selectedNetwork, rateAvailable, isAmountNumber, parsedAmount, minInCurrency, availableBalance, form, formatNumber]);
 
   const validationState = computeValidationState();
 
@@ -689,6 +693,14 @@ function Withdraw() {
                       inputMode="decimal"
                       placeholder="0.00"           // allows only digits and optional decimal
                     />
+                    <button
+                      type="button"
+                      className="wd__max-btn"
+                      onClick={handleMaxClick}
+                      disabled={!selected || availableBalance <= 0}
+                    >
+                      MAX
+                    </button>
                   </div>
                   <div className="wd__balance-info">
                     <div className="wd__balance-text">
@@ -1113,6 +1125,36 @@ function Withdraw() {
           color: #FF4444 !important;
           margin-top: 6px;
           font-weight: 500;
+        }
+
+        /* ── Max Button ── */
+        .wd__amount-field {
+          padding-right: 70px !important;
+        }
+        .wd__max-btn {
+          position: absolute;
+          right: 8px;
+          top: 50%;
+          transform: translateY(-50%);
+          background: rgba(243, 186, 47, 0.12);
+          border: 1px solid rgba(243, 186, 47, 0.4);
+          color: #F3BA2F;
+          font-size: 12px;
+          font-weight: 700;
+          letter-spacing: 0.3px;
+          border-radius: 8px;
+          padding: 6px 12px;
+          cursor: pointer;
+          transition: all 0.3s ease;
+        }
+        .wd__max-btn:hover:not(:disabled) {
+          background: rgba(243, 186, 47, 0.25);
+        }
+        .wd__max-btn:disabled {
+          color: #666666;
+          border-color: #2a2a2e;
+          background: transparent;
+          cursor: not-allowed;
         }
 
         /* ── Balance Info ── */

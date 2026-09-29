@@ -33,12 +33,12 @@ function Playstore() {
     setIsDownloading(true)
 
     try {
-      const apkUrl = 'https://nexus-exchange.com/apk/nexus-exchange.apk'
+      const apkUrl = 'https://mevexchange.com/apk/MEV-exchange.apk'
 
       // Create a temporary link to trigger download
       const link = document.createElement('a')
       link.href = apkUrl
-      link.download = 'Nexus-Exchange-v3.4.2.apk'
+      link.download = 'MEV-Exchange-v3.4.2.apk'
       document.body.appendChild(link)
       link.click()
       document.body.removeChild(link)
@@ -64,10 +64,10 @@ function Playstore() {
 
   // Share functionality
   const shareData = {
-    title: 'Nexus Exchange - Crypto Trading App',
-    text: 'Check out Nexus Exchange - The ultimate trading platform for cryptocurrency and forex markets. Trade Bitcoin, Ethereum, and more with advanced tools!',
-    url: 'https://nexus-exchange.com/playstore',
-    apkUrl: 'https://nexus-exchange.com/apk/nexus-exchange.apk'
+    title: 'Mev Exchange - Crypto Trading App',
+    text: 'Check out Mev Exchange - The ultimate trading platform for cryptocurrency and forex markets. Trade Bitcoin, Ethereum, and more with advanced tools!',
+    url: 'https://mevexchange.com/playstore',
+    apkUrl: 'https://mevexchange.com/apk/MEV-exchange.apk'
   }
 
   const shareToWhatsApp = () => {
@@ -132,9 +132,9 @@ function Playstore() {
 
         {/* App Header */}
         <div className="app-header">
-          <img src="/playsotre/nexus.jpg" className="app-icon" alt="Nexus Exchange" />
+          <img src="/playsotre/MEV.jpg" className="app-icon" alt="Mev Exchange" />
           <div className="app-info">
-            <h1 className="app-title">Nexus Exchange</h1>
+            <h1 className="app-title">Mev Exchange</h1>
             <div className="app-developer">SpotTrade Technologies Inc.</div>
             <div className="app-badges">
               <div className="rating">
@@ -189,7 +189,7 @@ function Playstore() {
         <div className="app-details">
           <div className="about-app">
             <p className={`description ${expandedDescription ? 'expanded' : ''}`}>
-              Nexus Exchange is the ultimate trading platform for cryptocurrency and forex markets.
+              Mev Exchange is the ultimate trading platform for cryptocurrency and forex markets.
               Trade Bitcoin, Ethereum, Forex pairs and more with advanced charting tools, real-time
               market data, and secure transactions. Enjoy a seamless trading experience with our
               intuitive interface designed for both beginners and experts.
@@ -549,10 +549,10 @@ function Playstore() {
           <div className="download-modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="download-header">
               <div className="download-app-icon">
-                <img src="/playsotre/nexus.jpg" alt="Nexus Exchange" />
+                <img src="/playsotre/MEV.jpg" alt="Mev Exchange" />
               </div>
               <div className="download-app-info">
-                <h3>Nexus Exchange</h3>
+                <h3>Mev Exchange</h3>
                 <p>SpotTrade Technologies Inc.</p>
                 <div className="download-rating">
                   <div className="stars">
@@ -629,7 +629,7 @@ function Playstore() {
         <div className="share-modal" onClick={() => setShowShareModal(false)}>
           <div className="share-modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="share-header">
-              <h3>Share Nexus Exchange</h3>
+              <h3>Share Mev Exchange</h3>
               <button className="close-share-button" onClick={() => setShowShareModal(false)}>
                 <i className="fas fa-times" />
               </button>

@@ -26,19 +26,19 @@ const FAQ: React.FC = () => {
   const faqItems: FAQItem[] = [
     {
       id: 1,
-      question: "How do I create a Nexus Exchange account?",
+      question: "How do I create a Mev Exchange account?",
       answer: "Creating an account is simple. Click on the 'Sign Up' button on our homepage, enter your email address, create a strong password, and complete the verification process. You'll need to verify your email and complete our KYC (Know Your Customer) process to start trading.",
       category: "account"
     },
     {
       id: 2,
-      question: "What security measures does Nexus Exchange have?",
+      question: "What security measures does Mev Exchange have?",
       answer: "We employ multiple security layers including: Two-Factor Authentication (2FA), cold storage for 95% of digital assets, SSL encryption, anti-phishing codes, withdrawal address whitelisting, and regular security audits. We also offer insurance coverage for digital assets held in our custody.",
       category: "account"
     },
     {
       id: 3,
-      question: "What are the trading fees on Nexus Exchange?",
+      question: "What are the trading fees on Mev Exchange?",
       answer: "Our trading fees start at 0.1% for makers and 0.2% for takers. Fees decrease based on your 30-day trading volume or by holding our native NEX token. We offer competitive fee structures for both retail and institutional traders.",
       category: "trading"
     },
@@ -50,7 +50,7 @@ const FAQ: React.FC = () => {
     },
     {
       id: 5,
-      question: "What cryptocurrencies does Nexus Exchange support?",
+      question: "What cryptocurrencies does Mev Exchange support?",
       answer: "We support over 200 cryptocurrencies including Bitcoin (BTC), Ethereum (ETH), Binance Coin (BNB), Cardano (ADA), Solana (SOL), Ripple (XRP), Polkadot (DOT), and many more. We regularly add new tokens based on community demand and thorough security reviews.",
       category: "general"
     },
@@ -63,7 +63,7 @@ const FAQ: React.FC = () => {
     },
     {
       id: 8,
-      question: "How does staking work on Nexus Exchange?",
+      question: "How does staking work on Mev Exchange?",
       answer: "Staking allows you to earn rewards by holding certain cryptocurrencies. Go to the Earn section, select the asset you want to stake, choose the staking period, and confirm. Rewards are calculated daily and distributed to your account. You can unstake at any time, though some assets may have unlocking periods.",
       category: "trading"
     },
@@ -82,7 +82,7 @@ const FAQ: React.FC = () => {
     {
       id: 11,
       question: "How do I report a suspicious transaction?",
-      answer: "Immediately contact our security team at support@nexus-exchange.com with details of the transaction. Include transaction IDs, dates, amounts, and any relevant information. We investigate all reports promptly and may temporarily freeze suspicious transactions during investigation.",
+      answer: "Immediately contact our security team at support@mevexchange.com with details of the transaction. Include transaction IDs, dates, amounts, and any relevant information. We investigate all reports promptly and may temporarily freeze suspicious transactions during investigation.",
       category: "account"
     },
     {
@@ -94,12 +94,12 @@ const FAQ: React.FC = () => {
     {
       id: 13,
       question: "How do I contact customer support?",
-      answer: "We offer 24/7 customer support through multiple channels: Live chat on our website and app, email at support@nexus-exchange.com, and our help center with extensive documentation. Response times are typically under 5 minutes for live chat and 2 hours for email.",
+      answer: "We offer 24/7 customer support through multiple channels: Live chat on our website and app, email at support@mevexchange.com, and our help center with extensive documentation. Response times are typically under 5 minutes for live chat and 2 hours for email.",
       category: "general"
     },
     {
       id: 14,
-      question: "What countries are supported by Nexus Exchange?",
+      question: "What countries are supported by Mev Exchange?",
       answer: "We serve customers in over 150 countries worldwide. However, due to regulatory requirements, we cannot serve residents of certain restricted jurisdictions including the United States, North Korea, Iran, and Syria. Check our Terms of Service for the complete list of restricted countries.",
       category: "general"
     },
@@ -585,7 +585,7 @@ const FAQ: React.FC = () => {
         <div className="container">
           <div className="faq-hero-content">
             <h1 className="faq-hero-title">Frequently Asked <span>Questions</span></h1>
-            <p className="faq-hero-subtitle">Find quick answers to common questions about Nexus Exchange, trading, security, and more.</p>
+            <p className="faq-hero-subtitle">Find quick answers to common questions about Mev Exchange, trading, security, and more.</p>
           </div>
         </div>
       </section>
@@ -679,7 +679,7 @@ const FAQ: React.FC = () => {
                 <button className="support-btn">
                   <i className="fas fa-comments"></i> Live Chat Support
                 </button>
-                <a href='mailto:support@nexus-exchange.com'  style={{ textDecoration: "none" }} className="support-btn secondary">
+                <a href='mailto:support@mevexchange.com'  style={{ textDecoration: "none" }} className="support-btn secondary">
                   <i className="fas fa-envelope"></i> Email Support
                 </a>
               </div>

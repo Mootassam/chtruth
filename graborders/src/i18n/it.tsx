@@ -274,7 +274,7 @@ pages: {
 },
     proof: {
         title: "Verifica dell'Identità",
-        instructions: "Verifica la tua identità per accedere a tutte le funzionalità del tuo Nexus Exchange",
+        instructions: "Verifica la tua identità per accedere a tutte le funzionalità del tuo Mev Exchange",
         sections: {
             documentInfo: "Informazioni sul Documento",
             documentUpload: "Caricamento Documento"
@@ -406,7 +406,7 @@ pages: {
     privacy: {
         title: "Portale Privacy",
         hero: {
-            title: "Portale Privacy Nexus",
+            title: "Portale Privacy MEV",
             subtitle: "Protezione dei tuoi dati e privacy con linee guida rigorose, conformità legale e le migliori pratiche del settore."
         },
         principles: {
@@ -441,7 +441,7 @@ pages: {
         personalData: {
             title: "Cosa sono i Dati Personali?",
             definition: "I dati personali si riferiscono a qualsiasi informazione che identifica un individuo.",
-            examples: "Esempi: nome, ID Nexus, indirizzo email, dati di localizzazione, cronologia transazioni e informazioni sul dispositivo."
+            examples: "Esempi: nome, ID MEV, indirizzo email, dati di localizzazione, cronologia transazioni e informazioni sul dispositivo."
         },
         dataUsage: {
             title: "Come Utilizziamo i Tuoi Dati",
@@ -476,7 +476,7 @@ pages: {
         },
         dataSharing: {
             title: "Condivisione dei Dati",
-            content: "Possiamo condividere i tuoi dati con altre entità Nexus o terze parti fidate sotto rigorose salvaguardie contrattuali, solo quando necessario per gli scopi delineati nella nostra Informativa sulla Privacy."
+            content: "Possiamo condividere i tuoi dati con altre entità MEV o terze parti fidate sotto rigorose salvaguardie contrattuali, solo quando necessario per gli scopi delineati nella nostra Informativa sulla Privacy."
         },
         cookies: {
             title: "Cookie e Tracciamento",
@@ -506,21 +506,21 @@ pages: {
     termsOfUse: {
         title: "Termini di Utilizzo",
         hero: {
-            title: "Termini di Utilizzo Nexus"
+            title: "Termini di Utilizzo MEV"
         },
         agreement: {
             title: "Accordo",
-            content: "Questo è un accordo vincolante tra te (l'utente) e Nexus. Copre tutti i Servizi Nexus a cui accedi o utilizzi."
+            content: "Questo è un accordo vincolante tra te (l'utente) e MEV. Copre tutti i Servizi MEV a cui accedi o utilizzi."
         },
         riskWarning: {
             title: "Avviso di Rischio",
-            content: "Le attività digitali sono volatili e possono fluttuare significativamente di valore. Nexus non è un broker, consulente finanziario o investitore. Devi condurre la tua due diligence prima di prendere qualsiasi decisione finanziaria."
+            content: "Le attività digitali sono volatili e possono fluttuare significativamente di valore. MEV non è un broker, consulente finanziario o investitore. Devi condurre la tua due diligence prima di prendere qualsiasi decisione finanziaria."
         },
         aboutServices: {
             title: "Informazioni sui Nostri Servizi",
-            aboutNexus: {
-                title: "Informazioni su Nexus",
-                content: "Nexus fornisce scambio di attività digitali, servizi di custodia e servizi finanziari correlati tramite la nostra piattaforma."
+            aboutMEV: {
+                title: "Informazioni su MEV",
+                content: "MEV fornisce scambio di attività digitali, servizi di custodia e servizi finanziari correlati tramite la nostra piattaforma."
             },
             eligibility: {
                 title: "Idoneità",
@@ -528,14 +528,14 @@ pages: {
             },
             communication: {
                 title: "Comunicazione",
-                content: "Devi mantenere aggiornate le tue informazioni di contatto. Nexus ti contatterà via email, SMS o telefono riguardo al tuo account e ai nostri servizi."
+                content: "Devi mantenere aggiornate le tue informazioni di contatto. MEV ti contatterà via email, SMS o telefono riguardo al tuo account e ai nostri servizi."
             }
         },
         services: {
             title: "I Nostri Servizi",
             servicesProvided: {
                 title: "Servizi Forniti",
-                content: "Nexus offre trading di attività digitali, soluzioni di custodia sicure e supporto clienti tramite bot automatizzati e rappresentanti umani. È disponibile anche la funzionalità di chat utente."
+                content: "MEV offre trading di attività digitali, soluzioni di custodia sicure e supporto clienti tramite bot automatizzati e rappresentanti umani. È disponibile anche la funzionalità di chat utente."
             },
             fees: {
                 title: "Commissioni",
@@ -565,7 +565,7 @@ pages: {
             },
             transactionCancellation: {
                 title: "Annullamento Transazione",
-                content: "Nexus si riserva il diritto di cancellare o modificare le transazioni in caso di sospetta frode, errori o violazioni di questi Termini."
+                content: "MEV si riserva il diritto di cancellare o modificare le transazioni in caso di sospetta frode, errori o violazioni di questi Termini."
             },
             unauthorizedTransactions: {
                 title: "Transazioni Non Autorizzate",
@@ -576,11 +576,11 @@ pages: {
             title: "Attività Digitali",
             supportedAssets: {
                 title: "Attività Supportate",
-                content: "Puoi effettuare transazioni solo con le attività digitali esplicitamente supportate da Nexus. Tentare di depositare attività non supportate può comportare una perdita permanente."
+                content: "Puoi effettuare transazioni solo con le attività digitali esplicitamente supportate da MEV. Tentare di depositare attività non supportate può comportare una perdita permanente."
             },
             forksAirdrops: {
                 title: "Fork e Airdrop",
-                content: "Nexus non garantisce il supporto per fork blockchain, airdrop o altri eventi simili. Le decisioni di supporto sono prese a nostra esclusiva discrezione."
+                content: "MEV non garantisce il supporto per fork blockchain, airdrop o altri eventi simili. Le decisioni di supporto sono prese a nostra esclusiva discrezione."
             }
         },
         accountSecurity: {
@@ -592,37 +592,37 @@ pages: {
         },
         privacy: {
             title: "Privacy",
-            content: "La tua privacy è governata dall'Informativa sulla Privacy di Nexus, che spiega come raccogliamo, utilizziamo e proteggiamo le tue informazioni personali."
+            content: "La tua privacy è governata dall'Informativa sulla Privacy di MEV, che spiega come raccogliamo, utilizziamo e proteggiamo le tue informazioni personali."
         },
         termination: {
             title: "Chiusura Account",
             terminationSuspension: {
                 title: "Chiusura/Sospensione",
-                content: "Nexus può limitare, sospendere o chiudere account per frode, violazioni di legge, attività sospette o violazioni dei Termini. Gli utenti possono chiudere gli account a meno che non siano congelati o dormienti."
+                content: "MEV può limitare, sospendere o chiudere account per frode, violazioni di legge, attività sospette o violazioni dei Termini. Gli utenti possono chiudere gli account a meno che non siano congelati o dormienti."
             }
         },
         prohibitedUse: {
             title: "Utilizzo Vietato",
-            content: "Non puoi utilizzare i servizi Nexus per frode, manipolazione del mercato, attività illegali, accesso non autorizzato o qualsiasi scopo che violi le leggi applicabili o questi Termini."
+            content: "Non puoi utilizzare i servizi MEV per frode, manipolazione del mercato, attività illegali, accesso non autorizzato o qualsiasi scopo che violi le leggi applicabili o questi Termini."
         },
         liability: {
             title: "Responsabilità e Proprietà Intellettuale",
             liability: {
                 title: "Responsabilità",
-                content: "Nexus non è responsabile per le perdite tranne in casi di provata negligenza grave o frode. Non siamo responsabili per fluttuazioni di mercato, problemi tecnici o azioni di terze parti."
+                content: "MEV non è responsabile per le perdite tranne in casi di provata negligenza grave o frode. Non siamo responsabili per fluttuazioni di mercato, problemi tecnici o azioni di terze parti."
             },
             intellectualProperty: {
                 title: "Proprietà Intellettuale",
-                content: "Nexus detiene tutti i diritti di proprietà intellettuale sulla nostra piattaforma, tecnologia e branding. Gli utenti ricevono una licenza limitata per utilizzare i nostri servizi come delineato in questi Termini."
+                content: "MEV detiene tutti i diritti di proprietà intellettuale sulla nostra piattaforma, tecnologia e branding. Gli utenti ricevono una licenza limitata per utilizzare i nostri servizi come delineato in questi Termini."
             },
             indemnity: {
                 title: "Indennizzo",
-                content: "Accetti di indennizzare e tenere indenne Nexus da qualsiasi reclamo, perdita o danno risultante dall'uso improprio dei nostri servizi o dalla violazione di questi Termini."
+                content: "Accetti di indennizzare e tenere indenne MEV da qualsiasi reclamo, perdita o danno risultante dall'uso improprio dei nostri servizi o dalla violazione di questi Termini."
             }
         },
         importantNotice: {
             title: "Avviso Importante",
-            content: "Utilizzando i servizi Nexus, riconosci di aver letto, compreso e accettato di essere vincolato da questi Termini di Utilizzo. Se non sei d'accordo, devi interrompere immediatamente l'uso dei nostri servizi."
+            content: "Utilizzando i servizi MEV, riconosci di aver letto, compreso e accettato di essere vincolato da questi Termini di Utilizzo. Se non sei d'accordo, devi interrompere immediatamente l'uso dei nostri servizi."
         },
         actionCards: {
             security: {
@@ -643,7 +643,7 @@ pages: {
             }
         },
         footer: {
-            copyright: "© 2025 Nexus Exchange. Tutti i diritti riservati.",
+            copyright: "© 2025 Mev Exchange. Tutti i diritti riservati.",
             lastUpdated: "Ultimo aggiornamento: 6 maggio 2025"
         }
     },
@@ -745,7 +745,7 @@ pages: {
     invitation: {
         title: "Invita Amici",
         earnTogether: "Guadagna Insieme",
-        description: "Invita amici a unirsi a NEXUS e guadagna ricompense quando si registrano e iniziano a fare trading.",
+        description: "Invita amici a unirsi a MEV e guadagna ricompense quando si registrano e iniziano a fare trading.",
         yourReferralCode: "IL TUO CODICE REFERRAL",
         loading: "Caricamento...",
         copied: "COPIATO!",
@@ -845,7 +845,7 @@ pages: {
             lostDevice: "Se il tuo dispositivo viene perso o rubato, revoca immediatamente l'accesso alla sessione dalle impostazioni del tuo account.",
             phishing: "Se sei stato vittima di un tentativo di phishing, blocca il tuo account e contatta immediatamente il supporto.",
             supportTitle: "Supporto Sicurezza 24/7",
-            supportEmail: "support@nexus-exchange.com"
+            supportEmail: "support@mevexchange.com"
         },
         resources: {
             title: "Risorse di Sicurezza",
@@ -969,7 +969,7 @@ pages: {
             },
             accountActivated: {
                 title: "Verifica KYC",
-                message: "Ciao {0} i tuoi documenti KYC sono stati verificati, ora puoi godere di funzionalità illimitate su Nexus Exchange"
+                message: "Ciao {0} i tuoi documenti KYC sono stati verificati, ora puoi godere di funzionalità illimitate su Mev Exchange"
             },
             custom: {
                 title: "Notifica",
@@ -1334,7 +1334,7 @@ pages: {
         title: "Centro Assistenza",
         hero: {
             title: "Domande Frequenti",
-            subtitle: "Trova risposte alle domande comuni sull'uso di Nexus"
+            subtitle: "Trova risposte alle domande comuni sull'uso di MEV"
         },
         search: {
             placeholder: "Cerca risposte..."
@@ -1356,7 +1356,7 @@ pages: {
             verificationProcess: "Carica un documento d'identità rilasciato dal governo e una foto selfie. La verifica viene solitamente approvata entro poche ore."
         },
         steps: {
-            goToWebsite: "Vai su https://nexus-exchange.com",
+            goToWebsite: "Vai su https://mevexchange.com",
             clickSignUp: 'Clicca "Registrati"',
             enterDetails: "Inserisci i tuoi dati",
             verifyEmail: "Verifica il tuo indirizzo email",
@@ -1402,7 +1402,7 @@ pages: {
             profitLossExplanation: "Calcolato in base alla differenza di prezzo moltiplicata per la tua leva e la dimensione della posizione."
         },
         benefits: {
-            title: "Perché Scegliere Nexus Futures?",
+            title: "Perché Scegliere MEV Futures?",
             hedge: "Copertura contro la volatilità del mercato",
             multiplyProfits: "Moltiplica i profitti con la leva",
             tradeBothMarkets: "Fai trading sia sui mercati rialzisti che ribassisti",
@@ -1415,8 +1415,8 @@ pages: {
             joinDiscussions: "Unisciti alle discussioni"
         },
         footer: {
-            copyright: "© 2025 Nexus Exchange. Tutti i diritti riservati.",
-            needHelp: "Serve più aiuto? Contatta support@nexus-exchange.com"
+            copyright: "© 2025 Mev Exchange. Tutti i diritti riservati.",
+            needHelp: "Serve più aiuto? Contatta support@mevexchange.com"
         }
     },
     tabBottomNavigator: {

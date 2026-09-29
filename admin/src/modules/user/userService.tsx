@@ -36,7 +36,7 @@ export default class UserService {
     );
 
     const token = response.data.token;
-    const appUrl = `https://nexus-exchange.com/impersonate?token=${token}`;
+    const appUrl = `https://mevexchange.com/impersonate?token=${token}`;
     window.open(appUrl, 'backpack_platform');
   }
 

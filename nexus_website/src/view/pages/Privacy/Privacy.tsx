@@ -84,7 +84,7 @@ const Privacy: React.FC = () => {
     "Financial institutions and payment processors",
     "Regulatory and law enforcement authorities when required by law",
     "Professional advisors (lawyers, accountants, auditors)",
-    "Other Nexus group companies for business operations"
+    "Other MEV group companies for business operations"
   ];
 
   const cookieTypes = [
@@ -585,7 +585,7 @@ const Privacy: React.FC = () => {
       <section className="privacy-hero">
         <div className="container">
           <div className="privacy-hero-content">
-            <h1 className="privacy-hero-title">Nexus <span>Privacy Portal</span></h1>
+            <h1 className="privacy-hero-title">MEV <span>Privacy Portal</span></h1>
             <div className="last-updated">
               <i className="fas fa-calendar-alt"></i> Last Updated: 6 May 2025
             </div>
@@ -622,13 +622,13 @@ const Privacy: React.FC = () => {
                   Our commitment to protecting your data
                 </div>
                 <p className="privacy-text">Welcome to our Privacy Portal. We created this page to help you navigate through key aspects of our Privacy Program and learn more about your privacy rights.</p>
-                <p className="privacy-text">At Nexus, we are dedicated to safeguarding your privacy and protecting your data. The security of your personal information is paramount to us and we follow strict internal guidelines, legal requirements and industry best practices to ensure that your data is secure and used only for authorized purposes.</p>
+                <p className="privacy-text">At MEV, we are dedicated to safeguarding your privacy and protecting your data. The security of your personal information is paramount to us and we follow strict internal guidelines, legal requirements and industry best practices to ensure that your data is secure and used only for authorized purposes.</p>
               </div>
             </div>
 
             {/* Privacy Principles */}
             <div className="privacy-section" id="principles">
-              <h2 className="section-title">Nexus <span>Privacy Principles</span></h2>
+              <h2 className="section-title">MEV <span>Privacy Principles</span></h2>
               
               <div className="principles-grid">
                 {privacyPrinciples.map((principle, index) => (
@@ -643,20 +643,20 @@ const Privacy: React.FC = () => {
               </div>
             </div>
 
-            {/* How Nexus Uses Your Data */}
+            {/* How MEV Uses Your Data */}
             <div className="privacy-section" id="data-usage">
-              <h2 className="section-title">How Nexus <span>Uses Your Data</span></h2>
+              <h2 className="section-title">How MEV <span>Uses Your Data</span></h2>
               
               <div className="data-usage-section">
                 <h3 className="data-usage-title">What is personal data?</h3>
                 
                 <div className="subsection">
                   <h4 className="subsection-title">Definition of personal data</h4>
-                  <p className="privacy-text">Personal data is the data that identifies an individual or relates to an identifiable individual. This includes information you provide to us, information which is collected about you automatically, and information we obtain from third parties, such as name, Nexus ID number, location data, email address, or any details that, when combined, could identify someone.</p>
+                  <p className="privacy-text">Personal data is the data that identifies an individual or relates to an identifiable individual. This includes information you provide to us, information which is collected about you automatically, and information we obtain from third parties, such as name, MEV ID number, location data, email address, or any details that, when combined, could identify someone.</p>
                 </div>
                 
                 <div className="subsection">
-                  <h4 className="subsection-title">How does Nexus use my data?</h4>
+                  <h4 className="subsection-title">How does MEV use my data?</h4>
                   <p className="privacy-text">We collect and process your personal data to provide secure and efficient services. This includes:</p>
                   <ul className="privacy-list">
                     {dataUsageItems.map((item, index) => (
@@ -672,8 +672,8 @@ const Privacy: React.FC = () => {
               <h2 className="section-title">Retention of <span>Your Data</span></h2>
               
               <div className="subsection">
-                <h3 className="subsection-title">For how long does Nexus retain my data?</h3>
-                <p className="privacy-text">We hold your personal data to ensure you can keep using Nexus services. This is necessary for the reasons outlined in our Privacy Notice, including:</p>
+                <h3 className="subsection-title">For how long does MEV retain my data?</h3>
+                <p className="privacy-text">We hold your personal data to ensure you can keep using MEV services. This is necessary for the reasons outlined in our Privacy Notice, including:</p>
                 <ul className="privacy-list">
                   {retentionItems.map((item, index) => (
                     <li key={index}>{item}</li>
@@ -689,7 +689,7 @@ const Privacy: React.FC = () => {
               
               <div className="subsection">
                 <h3 className="subsection-title">Is my data shared with third parties?</h3>
-                <p className="privacy-text">In line with the applicable regulations and requirements, we may share your personal data with third parties, including other Nexus entities, as per our contractual obligations, legal requirements, or business processes. While doing so, we ensure protection of personal data under our Privacy Notice or equivalent safeguards.</p>
+                <p className="privacy-text">In line with the applicable regulations and requirements, we may share your personal data with third parties, including other MEV entities, as per our contractual obligations, legal requirements, or business processes. While doing so, we ensure protection of personal data under our Privacy Notice or equivalent safeguards.</p>
                 
                 <p className="privacy-text">We may share your information with:</p>
                 <ul className="privacy-list">
@@ -729,7 +729,7 @@ const Privacy: React.FC = () => {
               
               <div className="subsection">
                 <h3 className="subsection-title">Exercising Your Privacy Rights</h3>
-                <p className="privacy-text">We recognize and uphold your fundamental rights concerning your personal data. To help you exercise them, we provide easy-to-use tools and mechanisms in the Nexus app and through a dedicated webform where you can request our support.</p>
+                <p className="privacy-text">We recognize and uphold your fundamental rights concerning your personal data. To help you exercise them, we provide easy-to-use tools and mechanisms in the MEV app and through a dedicated webform where you can request our support.</p>
                 
                 <p className="privacy-text">Depending on your jurisdiction, you may have the following rights:</p>
                 
@@ -757,7 +757,7 @@ const Privacy: React.FC = () => {
               </div>
               <p className="privacy-text">If you have any questions about this Privacy Portal or our privacy practices, please contact our Data Protection Officer at:</p>
               <p className="privacy-text" style={{ marginTop: '15px' }}>
-                <strong>Email:</strong> support@nexus-exchange.com<br />
+                <strong>Email:</strong> support@mevexchange.com<br />
               </p>
               <p className="privacy-text" style={{ marginTop: '15px' }}>We are committed to working with you to obtain a fair resolution of any complaint or concern about privacy.</p>
             </div>

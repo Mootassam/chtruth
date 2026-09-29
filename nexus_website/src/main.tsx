@@ -7,6 +7,6 @@ import { i18n, init as i18nInit } from './i18n';
 (async function () {
 
 
-  document.title = 'Nexus Exchange';
+  document.title = 'Mev Exchange';
   ReactDOM.render(<App />, document.getElementById('root'));
 })();

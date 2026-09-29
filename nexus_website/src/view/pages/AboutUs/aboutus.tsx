@@ -512,10 +512,10 @@ const AboutUs: React.FC = () => {
       <section className="about-hero">
         <div className="container">
           <div className="about-hero-content">
-            <h1 className="about-hero-title">About <span>Nexus Exchange</span></h1>
-            <p className="about-hero-subtitle">Nexus Exchange is a next-generation crypto trading ecosystem built to empower individuals and businesses to trade, earn, and grow with ease.</p>
+            <h1 className="about-hero-title">About <span>Mev Exchange</span></h1>
+            <p className="about-hero-subtitle">Mev Exchange is a next-generation crypto trading ecosystem built to empower individuals and businesses to trade, earn, and grow with ease.</p>
             <div className="about-cta-buttons">
-              <a href="https://nexus-exchange.com/auth/signup" target='_blank' className="btn btn-primary">Create Account</a>
+              <a href="https://mevexchange.com/auth/signup" target='_blank' className="btn btn-primary">Create Account</a>
               <Link to="/faqs" className="btn btn-secondary">How It Works</Link>
             </div>
           </div>
@@ -531,8 +531,8 @@ const AboutUs: React.FC = () => {
             </div>
             <div className="content-text">
               <h2 className="section-title">Our <span>Vision</span></h2>
-              <p className="section-desc">At Nexus Exchange, we empower users to trade, earn, and manage digital assets with confidence. From high-speed feature and spot trading to automated earnings through staking, we provide a seamless experience for both beginners and professionals.</p>
-              <p className="section-desc">Our secure cold wallet ensures your assets are safely stored, while our low-fee conversion tools make it easy to exchange your holdings into any currency anytime, anywhere. Headquartered in New York, with teams across Dubai, London, Los Angeles, and Miami, Nexus is more than just a trading platform it's a movement toward financial freedom.</p>
+              <p className="section-desc">At Mev Exchange, we empower users to trade, earn, and manage digital assets with confidence. From high-speed feature and spot trading to automated earnings through staking, we provide a seamless experience for both beginners and professionals.</p>
+              <p className="section-desc">Our secure cold wallet ensures your assets are safely stored, while our low-fee conversion tools make it easy to exchange your holdings into any currency anytime, anywhere. Headquartered in New York, with teams across Dubai, London, Los Angeles, and Miami, MEV is more than just a trading platform it's a movement toward financial freedom.</p>
               <p className="section-desc">Driven by innovation, trust, and user-first technology, we're redefining what's possible in the world of digital finance.</p>
             </div>
           </div>
@@ -548,10 +548,10 @@ const AboutUs: React.FC = () => {
             </div>
             <div className="content-text">
               <h2 className="section-title">User <span>First Philosophy</span></h2>
-              <p className="section-desc">At Nexus, we believe in putting users first with complete transparency and control over your crypto journey.</p>
-              <p className="section-desc">Your Keys. Your Control. With Nexus, your wallet keys never leave your hands. Every transaction runs on secure, audited smart contracts recorded transparently on the public blockchain. No intermediaries. No compromises.</p>
-              <p className="section-desc">Trade. Stake. Convert. Grow. From advanced trading and staking to mirroring top-performing portfolios, Nexus equips you with powerful, trustless tools to grow your digital assets confidently and securely.</p>
-              <p className="section-desc">Whether you're trading, staking, or copying top traders, Nexus gives you the tools to grow with confidence.</p>
+              <p className="section-desc">At MEV, we believe in putting users first with complete transparency and control over your crypto journey.</p>
+              <p className="section-desc">Your Keys. Your Control. With MEV, your wallet keys never leave your hands. Every transaction runs on secure, audited smart contracts recorded transparently on the public blockchain. No intermediaries. No compromises.</p>
+              <p className="section-desc">Trade. Stake. Convert. Grow. From advanced trading and staking to mirroring top-performing portfolios, MEV equips you with powerful, trustless tools to grow your digital assets confidently and securely.</p>
+              <p className="section-desc">Whether you're trading, staking, or copying top traders, MEV gives you the tools to grow with confidence.</p>
             </div>
           </div>
         </div>
@@ -560,7 +560,7 @@ const AboutUs: React.FC = () => {
       {/* Stats Section */}
       <section className="stats-section">
         <div className="container">
-          <h2 className="section-title">Nexus <span>By The Numbers</span></h2>
+          <h2 className="section-title">MEV <span>By The Numbers</span></h2>
           <div className="stats-grid">
             {stats.map((stat, index) => (
               <div key={index} className="stat-item">
@@ -570,8 +570,8 @@ const AboutUs: React.FC = () => {
             ))}
           </div>
           <div className="about-cta-buttons" style={{ marginTop: '50px' }}>
-            <a href="https://nexus-exchange.com/playstore" target='_blank' className="btn btn-primary">Go To Apps</a>
-            <a href="https://nexus-exchange.com" target='_blank' className="btn btn-secondary">Learn More</a>
+            <a href="https://mevexchange.com/playstore" target='_blank' className="btn btn-primary">Go To Apps</a>
+            <a href="https://mevexchange.com" target='_blank' className="btn btn-secondary">Learn More</a>
           </div>
         </div>
       </section>
@@ -581,12 +581,12 @@ const AboutUs: React.FC = () => {
         <div className="container">
           <div className="mission-content">
             <h2 className="section-title">WE ARE BUILDING THE <span>FUTURE OF CRYPTO FINANCE</span></h2>
-            <p className="section-desc">Nexus Exchange was founded with a clear purpose to make crypto trading simple, smart, and accessible for everyone. Our mission is to empower users with the tools to trade, stake, and grow their assets confidently whether they're beginners or pros.</p>
-            <p className="section-desc">From fast-paced Quick Trades to passive earning through Staking and Copy Trading, Nexus brings the power of Web3 into your hands without the complexity. We're building a unified ecosystem where anyone can participate, profit, and thrive no coding, no confusion, just pure control.</p>
-            <p className="section-desc">At Nexus, our goal is to bridge traditional finance and decentralized technology by offering fast execution, passive earning tools like staking and copy trading, and a frictionless trading experience for all.</p>
+            <p className="section-desc">Mev Exchange was founded with a clear purpose to make crypto trading simple, smart, and accessible for everyone. Our mission is to empower users with the tools to trade, stake, and grow their assets confidently whether they're beginners or pros.</p>
+            <p className="section-desc">From fast-paced Quick Trades to passive earning through Staking and Copy Trading, MEV brings the power of Web3 into your hands without the complexity. We're building a unified ecosystem where anyone can participate, profit, and thrive no coding, no confusion, just pure control.</p>
+            <p className="section-desc">At MEV, our goal is to bridge traditional finance and decentralized technology by offering fast execution, passive earning tools like staking and copy trading, and a frictionless trading experience for all.</p>
             <p className="section-desc">To achieve this, we're developing advanced tools, strategic partnerships, and an open infrastructure that brings true financial freedom to users around the world.</p>
             <div className="about-cta-buttons" style={{ marginTop: '40px' }}>
-              <a href="https://nexus-exchange.com"  target='_blank' className="btn btn-primary">Start Exploring Nexus</a>
+              <a href="https://mevexchange.com"  target='_blank' className="btn btn-primary">Start Exploring MEV</a>
             </div>
           </div>
         </div>
@@ -597,15 +597,15 @@ const AboutUs: React.FC = () => {
         <div className="container">
           <div className="content-wrapper">
             <div className="content-image">
-              <img src='/4.jpg' />
+              <img src='/44.png' />
             </div>
             <div className="content-text">
               <h2 className="section-title">OUR <span>CONCEPT & MISSION</span></h2>
-              <p className="section-desc">Nexus Exchange was founded with a clear purpose to make crypto trading simple, smart, and accessible for everyone. Our mission is to empower users with the tools to trade, stake, and grow their assets confidently whether they're beginners or pros.</p>
-              <p className="section-desc">From fast-paced Quick Trades to passive earning through Staking and Copy Trading, Nexus brings the power of Web3 into your hands without the complexity.</p>
+              <p className="section-desc">Mev Exchange was founded with a clear purpose to make crypto trading simple, smart, and accessible for everyone. Our mission is to empower users with the tools to trade, stake, and grow their assets confidently whether they're beginners or pros.</p>
+              <p className="section-desc">From fast-paced Quick Trades to passive earning through Staking and Copy Trading, MEV brings the power of Web3 into your hands without the complexity.</p>
               <p className="section-desc">We're building a unified ecosystem where anyone can participate, profit, and thrive no coding, no confusion, just pure control.</p>
               <div className="about-cta-buttons" style={{ marginTop: '30px' }}>
-                <a href="https://nexus-exchange.com"  target='_blank' className="btn btn-primary">Join the Nexus Movement</a>
+                <a href="https://mevexchange.com"  target='_blank' className="btn btn-primary">Join the MEV Movement</a>
               </div>
             </div>
           </div>

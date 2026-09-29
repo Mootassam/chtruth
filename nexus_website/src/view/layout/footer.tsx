@@ -8,15 +8,15 @@ function TabBottomNavigator() {
         <div className="container">
           <div className="footer-content">
             <div className="footer-column">
-              <h3>NEXUS EXCHANGE</h3>
+              <h3>Mev Exchange</h3>
               <p style={{ color: 'var(--light-gray)', marginBottom: '20px' }}>The All-In-One Crypto Trading Hub for
                 professional traders and beginners alike.</p>
                 <div className="social-links">
-    <a href="mailto:support@nexus-exchange.com" className="social-link"  style={{ textDecoration: "none" }}>
+    <a href="mailto:support@mevexchange.com" className="social-link"  style={{ textDecoration: "none" }}>
         <i className="fas fa-envelope"></i>
     </a>
 
-    <a href="https://t.me/nexusexchange_official" target="_blank" className="social-link"  style={{ textDecoration: "none" }}>
+    <a href="https://t.me/MEVexchange_official" target="_blank" className="social-link"  style={{ textDecoration: "none" }}>
         <i className="fab fa-telegram-plane"></i>
     </a>
 </div>
@@ -29,9 +29,9 @@ function TabBottomNavigator() {
                 <li><Link to="/">Home</Link></li>
                 <li><Link to="/services">About Us</Link></li>
                 <li><Link to="/market">Market Trends</Link></li>
-                <li><a href="https://nexus-exchange.com/">Trading</a></li>
-                <li><a href="https://nexus-exchange.com">How It Works</a></li>
-                <li><a href="https://nexus-exchange.com/playstore">Download App</a></li>
+                <li><a href="https://mevexchange.com/">Trading</a></li>
+                <li><a href="https://mevexchange.com">How It Works</a></li>
+                <li><a href="https://mevexchange.com/playstore">Download App</a></li>
                 <li><Link to="/helpcenter">Help & Support</Link></li>
                 <li><Link to="/faqs">FAQs</Link></li>
               </ul>
@@ -49,12 +49,12 @@ function TabBottomNavigator() {
               <h3>Support</h3>
               <ul className="footer-links">
                 <li><Link to="/helpcenter">Help Center</Link></li>
-                <li><a href="mailto:support@nexus-exchange.com">Contact Us</a></li>
+                <li><a href="mailto:support@mevexchange.com">Contact Us</a></li>
               </ul>
             </div>
           </div>
           <div className="copyright">
-            <p>&copy; 2025 Nexus Exchange. All rights reserved.</p>
+            <p>&copy; 2025 Mev Exchange. All rights reserved.</p>
           </div>
         </div>
       </footer>

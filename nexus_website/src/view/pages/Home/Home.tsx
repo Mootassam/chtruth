@@ -169,7 +169,7 @@ const Home: React.FC = () => {
     },
     {
       question: "Do you have 24/7 customer support?",
-      answer: "Yes, we offer 24/7 chat support. You can contact us via our Customer Support team at https://nexus-exchange.com/LiveChat or email at support@nexus-exchange.com."
+      answer: "Yes, we offer 24/7 chat support. You can contact us via our Customer Support team at https://mevexchange.com/LiveChat or email at support@mevexchange.com."
     }
   ];
 
@@ -983,13 +983,13 @@ const Home: React.FC = () => {
         <div className="container">
           <div className="hero-content">
             <div className="hero-text">
-              <h1 className="hero-title">NEXUS: The All In One <span>Crypto Trading Hub</span></h1>
+              <h1 className="hero-title">MEV: The All In One <span>Crypto Trading Hub</span></h1>
               <p className="hero-subtitle">From lightning-fast trades to seamless conversions and lucrative staking
-                rewards, Nexus is built to empower every type of trader. Whether you're just getting started or
-                managing a diversified portfolio, Nexus delivers institution-grade tools within an intuitive,
+                rewards, MEV is built to empower every type of trader. Whether you're just getting started or
+                managing a diversified portfolio, MEV delivers institution-grade tools within an intuitive,
                 user-friendly interface.</p>
               <div className="cta-buttons">
-                <a href="https://nexus-exchange.com/auth/signup" target='_blank' className="btn btn-primary">Create Account</a>
+                <a href="https://mevexchange.com/auth/signup" target='_blank' className="btn btn-primary">Create Account</a>
                 <a href="#download" className="btn btn-secondary">Download App</a>
               </div>
             </div>
@@ -1011,17 +1011,17 @@ const Home: React.FC = () => {
       {/* About Section */}
       <section className="about" id="about">
         <div className="container">
-          <h2 className="section-title">About <span>NEXUS EXCHANGE</span></h2>
+          <h2 className="section-title">About <span>Mev Exchange</span></h2>
           <div className="about-content">
             <div className="about-image">
               <div style={{ width: '100%', height: '400px', background: 'linear-gradient(145deg, var(--primary), var(--accent))', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--dark)', fontSize: '18px', fontWeight: 'bold' }}>
-                <img src="./3.png" style={{ height: '400px' }} alt="About Nexus" />
+                <img src="./3.png" style={{ height: '400px' }} alt="About MEV" />
               </div>
             </div>
             <div className="about-text">
-              <h3 className="about-title">Nexus: The Future of <span>Intelligent Crypto Trading</span></h3>
-              <p className="about-desc">Nexus is your next-generation crypto trading platform built for power, speed,
-                and trust. Whether you're a beginner or a pro, Nexus gives you everything you need to trade
+              <h3 className="about-title">MEV: The Future of <span>Intelligent Crypto Trading</span></h3>
+              <p className="about-desc">MEV is your next-generation crypto trading platform built for power, speed,
+                and trust. Whether you're a beginner or a pro, MEV gives you everything you need to trade
                 smarter from lightning-fast executions to secure earnings through staking.</p>
               <p className="about-desc">Our goal is simple: Make advanced trading tools easy, accessible, and
                 rewarding for everyone. Execute trades instantly, mirror the strategies of top-performing
@@ -1178,20 +1178,20 @@ const Home: React.FC = () => {
         <div className="container">
           <h2 className="section-title">How To Get <span>Started</span></h2>
           <p style={{ textAlign: 'center', color: 'var(--light-gray)', maxWidth: '700px', margin: '0 auto 50px' }}>Simple and
-            easy way to start your Nexus trading Journey</p>
+            easy way to start your MEV trading Journey</p>
 
           <div className="steps">
             <div className="step">
               <div className="step-number">01</div>
               <h3 className="step-title">Create Account</h3>
               <p className="step-desc">Sign up in seconds with your email and secure your identity. Your data and
-                funds are always protected on Nexus.</p>
+                funds are always protected on MEV.</p>
             </div>
             <div className="step">
               <div className="step-number">02</div>
               <h3 className="step-title">Go To Dashboard</h3>
               <p className="step-desc">Connect your bank or crypto wallet. Instantly deposit and get ready to explore
-                all trading features on Nexus.</p>
+                all trading features on MEV.</p>
             </div>
             <div className="step">
               <div className="step-number">03</div>
@@ -1202,7 +1202,7 @@ const Home: React.FC = () => {
           </div>
 
           <div style={{ textAlign: 'center', marginTop: '50px' }}>
-            <a href="https://nexus-exchange.com/auth/signin" target="_blank" className="btn btn-primary">Get Started</a>
+            <a href="https://mevexchange.com/auth/signin" target="_blank" className="btn btn-primary">Get Started</a>
           </div>
         </div>
       </section>
@@ -1210,7 +1210,7 @@ const Home: React.FC = () => {
       {/* Download App Section */}
       <section className="download-app" id="download">
         <div className="container">
-          <h2 className="section-title">Download <span>Nexus App</span></h2>
+          <h2 className="section-title">Download <span>MEV App</span></h2>
           <div className="app-content">
             <div className="">
               <div
@@ -1232,7 +1232,7 @@ const Home: React.FC = () => {
             </div>
             <div className="app-text">
               <h3 style={{ fontSize: '2rem', marginBottom: '20px' }}>Trade On The Go</h3>
-              <p style={{ color: 'var(--light-gray)', marginBottom: '30px' }}>Access all Nexus features from your mobile
+              <p style={{ color: 'var(--light-gray)', marginBottom: '30px' }}>Access all MEV features from your mobile
                 device. Download our app for iOS and Android to trade anytime, anywhere.</p>
 
               <div className="app-buttons">
@@ -1243,7 +1243,7 @@ const Home: React.FC = () => {
                     <div style={{ fontWeight: 'bold' }}>App Store</div>
                   </div>
                 </a>
-                <a href="https://nexus-exchange.com/playstore" target="_blank" className="app-btn">
+                <a href="https://mevexchange.com/playstore" target="_blank" className="app-btn">
                   <i className="fab fa-google-play" style={{ fontSize: '20px' }}></i>
                   <div>
                     <div style={{ fontSize: '12px' }}>Get it on</div>
@@ -1264,22 +1264,22 @@ const Home: React.FC = () => {
             <div className="support-info">
               <div className="support-option">
                 <h4>24/7 Chat Support</h4>
-                <p>How you can contact us. For more information on Nexus, you may refer to the information found
+                <p>How you can contact us. For more information on MEV, you may refer to the information found
                   on our Website. If you have questions, feedback or complaints you can contact us via our
-                  Customer Support team at https://nexus-exchange.com/LiveChat or email at
-                  support@nexus-exchange.com. These Terms may specify contact details for particular notices.
+                  Customer Support team at https://mevexchange.com/LiveChat or email at
+                  support@mevexchange.com. These Terms may specify contact details for particular notices.
                   This address is not monitored for those notices.</p>
-                <a href="mailto:support@nexus-exchange.com" className="btn btn-primary">Chat Now</a>
+                <a href="mailto:support@mevexchange.com" className="btn btn-primary">Chat Now</a>
               </div>
             </div>
             <div className="support-info">
               <div className="legal-card">
                 <h4>Terms & Conditions</h4>
-                <p>These Terms constitute a legally binding agreement between you ("you" or "your") and Nexus
-                  ("Nexus", "we", "our" or "us"). The Terms govern your use of the Nexus Services made
-                  available to you on or through the Platform or otherwise. Nexus Services may be provided by
-                  Nexus or, if specified in these Terms, any Product Terms or any additional terms, by any
-                  Nexus Affiliate.</p>
+                <p>These Terms constitute a legally binding agreement between you ("you" or "your") and MEV
+                  ("MEV", "we", "our" or "us"). The Terms govern your use of the MEV Services made
+                  available to you on or through the Platform or otherwise. MEV Services may be provided by
+                  MEV or, if specified in these Terms, any Product Terms or any additional terms, by any
+                  MEV Affiliate.</p>
                 <Link to="/terms-of-use" className="btn btn-secondary">Learn More</Link>
               </div>
             </div>
@@ -1288,7 +1288,7 @@ const Home: React.FC = () => {
                 <h4>Privacy Policy</h4>
                 <p>Our commitment to protecting your data Welcome to our Privacy Portal. We created this page to
                   help you navigate through key aspects of our Privacy Program and learn more about your
-                  privacy rights. At Nexus, we are dedicated to safeguarding your privacy and protecting your
+                  privacy rights. At MEV, we are dedicated to safeguarding your privacy and protecting your
                   data.</p>
                 <Link to="/privacy" className="btn btn-secondary">Learn More</Link>
               </div>

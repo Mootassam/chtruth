@@ -910,7 +910,7 @@ const Market: React.FC = () => {
         <div className="container">
           <div className="markets-hero-content">
             <h1 className="markets-hero-title">Live <span>Market Trends</span></h1>
-            <p className="markets-hero-subtitle">Track real-time cryptocurrency prices, trends, and market movements with Nexus Exchange's advanced market tools.</p>
+            <p className="markets-hero-subtitle">Track real-time cryptocurrency prices, trends, and market movements with Mev Exchange's advanced market tools.</p>
           </div>
         </div>
       </section>

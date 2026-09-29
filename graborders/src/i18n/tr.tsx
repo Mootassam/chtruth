@@ -277,7 +277,7 @@ pages: {
 },
     proof: {
         title: "Kimlik Doğrulama",
-        instructions: "Nexus Exchange'in tüm özelliklerine erişmek için kimliğinizi doğrulayın",
+        instructions: "Mev Exchange'in tüm özelliklerine erişmek için kimliğinizi doğrulayın",
         sections: {
             documentInfo: "Belge Bilgileri",
             documentUpload: "Belge Yükleme"
@@ -409,7 +409,7 @@ pages: {
     privacy: {
         title: "Gizlilik Portalı",
         hero: {
-            title: "Nexus Gizlilik Portalı",
+            title: "MEV Gizlilik Portalı",
             subtitle: "Verilerinizi ve gizliliğinizi katı kurallar, yasal uyumluluk ve sektör en iyi uygulamaları ile koruyoruz."
         },
         principles: {
@@ -444,7 +444,7 @@ pages: {
         personalData: {
             title: "Kişisel Veri Nedir?",
             definition: "Kişisel veri, bir bireyi tanımlayan her türlü bilgiyi ifade eder.",
-            examples: "Örnekler: isim, Nexus ID, e-posta adresi, konum verileri, işlem geçmişi ve cihaz bilgisi."
+            examples: "Örnekler: isim, MEV ID, e-posta adresi, konum verileri, işlem geçmişi ve cihaz bilgisi."
         },
         dataUsage: {
             title: "Verilerinizi Nasıl Kullanıyoruz?",
@@ -479,7 +479,7 @@ pages: {
         },
         dataSharing: {
             title: "Veri Paylaşımı",
-            content: "Verilerinizi, Gizlilik Bildirimimizde belirtilen amaçlar için yalnızca gerekli olduğunda, katı sözleşmesel güvenceler altında diğer Nexus birimleri veya güvenilir üçüncü taraflarla paylaşabiliriz."
+            content: "Verilerinizi, Gizlilik Bildirimimizde belirtilen amaçlar için yalnızca gerekli olduğunda, katı sözleşmesel güvenceler altında diğer MEV birimleri veya güvenilir üçüncü taraflarla paylaşabiliriz."
         },
         cookies: {
             title: "Çerezler ve İzleme",
@@ -509,21 +509,21 @@ pages: {
     termsOfUse: {
         title: "Kullanım Koşulları",
         hero: {
-            title: "Nexus Kullanım Koşulları"
+            title: "MEV Kullanım Koşulları"
         },
         agreement: {
             title: "Anlaşma",
-            content: "Bu, sizin (kullanıcı) ile Nexus arasında bağlayıcı bir anlaşmadır. Eriştiğiniz veya kullandığınız tüm Nexus Hizmetlerini kapsar."
+            content: "Bu, sizin (kullanıcı) ile MEV arasında bağlayıcı bir anlaşmadır. Eriştiğiniz veya kullandığınız tüm MEV Hizmetlerini kapsar."
         },
         riskWarning: {
             title: "Risk Uyarısı",
-            content: "Dijital varlıklar oynaktır ve değerleri önemli ölçüde dalgalanabilir. Nexus bir aracı, finansal danışman veya yatırım danışmanı değildir. Herhangi bir finansal karar vermeden önce kendi due diligence'inizi yapmalısınız."
+            content: "Dijital varlıklar oynaktır ve değerleri önemli ölçüde dalgalanabilir. MEV bir aracı, finansal danışman veya yatırım danışmanı değildir. Herhangi bir finansal karar vermeden önce kendi due diligence'inizi yapmalısınız."
         },
         aboutServices: {
             title: "Hizmetlerimiz Hakkında",
-            aboutNexus: {
-                title: "Nexus Hakkında",
-                content: "Nexus, platformumuz aracılığıyla dijital varlık değişimi, saklama hizmetleri ve ilgili finansal hizmetler sağlar."
+            aboutMEV: {
+                title: "MEV Hakkında",
+                content: "MEV, platformumuz aracılığıyla dijital varlık değişimi, saklama hizmetleri ve ilgili finansal hizmetler sağlar."
             },
             eligibility: {
                 title: "Uygunluk",
@@ -531,14 +531,14 @@ pages: {
             },
             communication: {
                 title: "İletişim",
-                content: "İletişim bilgilerinizi güncel tutmalısınız. Nexus, hesabınız ve hizmetlerimiz hakkında sizinle e-posta, SMS veya telefon yoluyla iletişime geçecektir."
+                content: "İletişim bilgilerinizi güncel tutmalısınız. MEV, hesabınız ve hizmetlerimiz hakkında sizinle e-posta, SMS veya telefon yoluyla iletişime geçecektir."
             }
         },
         services: {
             title: "Hizmetlerimiz",
             servicesProvided: {
                 title: "Sağlanan Hizmetler",
-                content: "Nexus, hem otomatik botlar hem de insan temsilciler aracılığıyla dijital varlık ticareti, güvenli saklama çözümleri ve müşteri desteği sunar. Kullanıcı sohbet işlevselliği de mevcuttur."
+                content: "MEV, hem otomatik botlar hem de insan temsilciler aracılığıyla dijital varlık ticareti, güvenli saklama çözümleri ve müşteri desteği sunar. Kullanıcı sohbet işlevselliği de mevcuttur."
             },
             fees: {
                 title: "Ücretler",
@@ -568,7 +568,7 @@ pages: {
             },
             transactionCancellation: {
                 title: "İşlem İptali",
-                content: "Nexus, şüpheli dolandırıcılık, hatalar veya bu Koşulların ihlali durumlarında işlemleri iptal etme veya değiştirme hakkını saklı tutar."
+                content: "MEV, şüpheli dolandırıcılık, hatalar veya bu Koşulların ihlali durumlarında işlemleri iptal etme veya değiştirme hakkını saklı tutar."
             },
             unauthorizedTransactions: {
                 title: "Yetkisiz İşlemler",
@@ -579,11 +579,11 @@ pages: {
             title: "Dijital Varlıklar",
             supportedAssets: {
                 title: "Desteklenen Varlıklar",
-                content: "Yalnızca Nexus tarafından açıkça desteklenen dijital varlıklarla işlem yapabilirsiniz. Desteklenmeyen varlıkları yatırmaya çalışmak, varlıklarınızın kalıcı kaybına neden olabilir."
+                content: "Yalnızca MEV tarafından açıkça desteklenen dijital varlıklarla işlem yapabilirsiniz. Desteklenmeyen varlıkları yatırmaya çalışmak, varlıklarınızın kalıcı kaybına neden olabilir."
             },
             forksAirdrops: {
                 title: "Fork'lar ve Airdrop'lar",
-                content: "Nexus, blok zinciri fork'ları, airdrop'lar veya benzer diğer etkinlikler için destek garanti etmez. Destek kararları tamamen kendi takdirimize bağlı olarak verilir."
+                content: "MEV, blok zinciri fork'ları, airdrop'lar veya benzer diğer etkinlikler için destek garanti etmez. Destek kararları tamamen kendi takdirimize bağlı olarak verilir."
             }
         },
         accountSecurity: {
@@ -595,37 +595,37 @@ pages: {
         },
         privacy: {
             title: "Gizlilik",
-            content: "Gizliliğiniz, kişisel bilgilerinizi nasıl topladığımızı, kullandığımızı ve koruduğumuzu açıklayan Nexus Gizlilik Bildirimi tarafından yönetilir."
+            content: "Gizliliğiniz, kişisel bilgilerinizi nasıl topladığımızı, kullandığımızı ve koruduğumuzu açıklayan MEV Gizlilik Bildirimi tarafından yönetilir."
         },
         termination: {
             title: "Hesap Sonlandırma",
             terminationSuspension: {
                 title: "Sonlandırma/Askıya Alma",
-                content: "Nexus, dolandırıcılık, yasa ihlalleri, şüpheli aktivite veya Koşul ihlalleri nedeniyle hesapları kısıtlayabilir, askıya alabilir veya sonlandırabilir. Kullanıcılar, dondurulmamış veya etkin olmayan hesaplar dışında hesaplarını kapatabilir."
+                content: "MEV, dolandırıcılık, yasa ihlalleri, şüpheli aktivite veya Koşul ihlalleri nedeniyle hesapları kısıtlayabilir, askıya alabilir veya sonlandırabilir. Kullanıcılar, dondurulmamış veya etkin olmayan hesaplar dışında hesaplarını kapatabilir."
             }
         },
         prohibitedUse: {
             title: "Yasaklanmış Kullanım",
-            content: "Nexus hizmetlerini dolandırıcılık, piyasa manipülasyonu, yasa dışı faaliyetler, yetkisiz erişim veya uygulanabilir yasaları veya bu Koşulları ihlal eden herhangi bir amaç için kullanamazsınız."
+            content: "MEV hizmetlerini dolandırıcılık, piyasa manipülasyonu, yasa dışı faaliyetler, yetkisiz erişim veya uygulanabilir yasaları veya bu Koşulları ihlal eden herhangi bir amaç için kullanamazsınız."
         },
         liability: {
             title: "Sorumluluk ve Fikri Mülkiyet",
             liability: {
                 title: "Sorumluluk",
-                content: "Nexus, kanıtlanmış ağır ihmal veya dolandırıcılık durumları dışındaki kayıplardan sorumlu değildir. Piyasa dalgalanmaları, teknik sorunlar veya üçüncü taraf eylemlerinden sorumlu değiliz."
+                content: "MEV, kanıtlanmış ağır ihmal veya dolandırıcılık durumları dışındaki kayıplardan sorumlu değildir. Piyasa dalgalanmaları, teknik sorunlar veya üçüncü taraf eylemlerinden sorumlu değiliz."
             },
             intellectualProperty: {
                 title: "Fikri Mülkiyet",
-                content: "Nexus, platformumuz, teknolojimiz ve markalaşmamız üzerindeki tüm fikri mülkiyet haklarını saklı tutar. Kullanıcılar, bu Koşullarda belirtildiği şekilde hizmetlerimizi kullanmak için sınırlı bir lisans alır."
+                content: "MEV, platformumuz, teknolojimiz ve markalaşmamız üzerindeki tüm fikri mülkiyet haklarını saklı tutar. Kullanıcılar, bu Koşullarda belirtildiği şekilde hizmetlerimizi kullanmak için sınırlı bir lisans alır."
             },
             indemnity: {
                 title: "Tazminat",
-                content: "Hizmetlerimizi kötüye kullanmanız veya bu Koşulları ihlal etmenizden kaynaklanan herhangi bir talep, kayıp veya zarara karşı Nexus'u tazmin etmeyi kabul edersiniz."
+                content: "Hizmetlerimizi kötüye kullanmanız veya bu Koşulları ihlal etmenizden kaynaklanan herhangi bir talep, kayıp veya zarara karşı MEV'u tazmin etmeyi kabul edersiniz."
             }
         },
         importantNotice: {
             title: "Önemli Bildirim",
-            content: "Nexus hizmetlerini kullanarak, bu Kullanım Koşullarını okuduğunuzu, anladığınızı ve bunlara bağlı kalacağınızı kabul etmiş olursunuz. Kabul etmiyorsanız, hizmetlerimizi kullanmayı derhal bırakmalısınız."
+            content: "MEV hizmetlerini kullanarak, bu Kullanım Koşullarını okuduğunuzu, anladığınızı ve bunlara bağlı kalacağınızı kabul etmiş olursunuz. Kabul etmiyorsanız, hizmetlerimizi kullanmayı derhal bırakmalısınız."
         },
         actionCards: {
             security: {
@@ -646,7 +646,7 @@ pages: {
             }
         },
         footer: {
-            copyright: "© 2025 Nexus Exchange. Tüm hakları saklıdır.",
+            copyright: "© 2025 Mev Exchange. Tüm hakları saklıdır.",
             lastUpdated: "Son güncelleme: 6 Mayıs 2025"
         }
     },
@@ -748,7 +748,7 @@ pages: {
     invitation: {
         title: "Arkadaşlarını Davet Et",
         earnTogether: "Birlikte Kazanın",
-        description: "Arkadaşlarınızı NEXUS'a katılmaya davet edin, kaydolup işlem yapmaya başladıklarında ödüller kazanın.",
+        description: "Arkadaşlarınızı MEV'a katılmaya davet edin, kaydolup işlem yapmaya başladıklarında ödüller kazanın.",
         yourReferralCode: "REFERANS KODUNUZ",
         loading: "Yükleniyor...",
         copied: "KOPYALANDI!",
@@ -848,7 +848,7 @@ pages: {
             lostDevice: "Cihazınız kaybolursa veya çalınırsa, hesap ayarlarından oturum erişimini derhal iptal edin.",
             phishing: "Bir oltalama saldırısının kurbanı olduysanız, hesabınızı dondurun ve derhal destekle iletişime geçin.",
             supportTitle: "7/24 Güvenlik Desteği",
-            supportEmail: "support@nexus-exchange.com"
+            supportEmail: "support@mevexchange.com"
         },
         resources: {
             title: "Güvenlik Kaynakları",
@@ -972,7 +972,7 @@ pages: {
             },
             accountActivated: {
                 title: "KYC Doğrulama",
-                message: "Merhaba {0}, KYC belgeleriniz doğrulandı, artık Nexus Exchange'de sınırsız özelliklerin keyfini çıkarabilirsiniz"
+                message: "Merhaba {0}, KYC belgeleriniz doğrulandı, artık Mev Exchange'de sınırsız özelliklerin keyfini çıkarabilirsiniz"
             },
             custom: {
                 title: "Bildirim",
@@ -1337,7 +1337,7 @@ pages: {
         title: "SSS Merkezi",
         hero: {
             title: "Sıkça Sorulan Sorular",
-            subtitle: "Nexus kullanımı hakkında yaygın soruların yanıtlarını bulun"
+            subtitle: "MEV kullanımı hakkında yaygın soruların yanıtlarını bulun"
         },
         search: {
             placeholder: "Yanıtlar için ara..."
@@ -1359,7 +1359,7 @@ pages: {
             verificationProcess: "Resmi bir kimlik ve selfie fotoğrafı yükleyin. Doğrulama genellikle saatler içinde onaylanır."
         },
         steps: {
-            goToWebsite: "https://nexus-exchange.com adresine gidin",
+            goToWebsite: "https://mevexchange.com adresine gidin",
             clickSignUp: '"Kayıt Ol"a tıklayın',
             enterDetails: "Bilgilerinizi girin",
             verifyEmail: "E-posta adresinizi doğrulayın",
@@ -1405,7 +1405,7 @@ pages: {
             profitLossExplanation: "Fiyat farkının kaldıracınız ve pozisyon büyüklüğünüzle çarpılmasına dayanarak hesaplanır."
         },
         benefits: {
-            title: "Neden Nexus Futures'ı Seçmelisiniz?",
+            title: "Neden MEV Futures'ı Seçmelisiniz?",
             hedge: "Piyasa oynaklığına karşı korunun",
             multiplyProfits: "Kaldıraçla karları katlayın",
             tradeBothMarkets: "Hem yükselen hem de düşen piyasalarda işlem yapın",
@@ -1418,8 +1418,8 @@ pages: {
             joinDiscussions: "Tartışmalara katılın"
         },
         footer: {
-            copyright: "© 2025 Nexus Exchange. Tüm hakları saklıdır.",
-            needHelp: "Daha fazla yardıma mı ihtiyacınız var? support@nexus-exchange.com adresinden iletişime geçin"
+            copyright: "© 2025 Mev Exchange. Tüm hakları saklıdır.",
+            needHelp: "Daha fazla yardıma mı ihtiyacınız var? support@mevexchange.com adresinden iletişime geçin"
         }
     },
     tabBottomNavigator: {

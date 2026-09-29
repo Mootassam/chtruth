@@ -16,7 +16,7 @@ export default function useNotifications(
     if (!userId) return;
     
     if (!socket) {
-      socket = io("https://nexus-exchange.com", {
+      socket = io("https://mevexchange.com", {
         transports: ["websocket"],
         // Optional: Add reconnection options
         reconnection: true,
